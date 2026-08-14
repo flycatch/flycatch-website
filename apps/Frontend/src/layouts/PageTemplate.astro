@@ -1,0 +1,55 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { buildPageMetadata } from '../lib/metadata';
+import { buildStructuredData } from '../lib/json-ld';
+import { getSiteSettings } from '../lib/published-snapshot';
+import { t } from '../lib/i18n';
+import type { PageContent } from '../lib/published-snapshot';
+
+interface Props {
+  page: PageContent;
+}
+
+const { page } = Astro.props;
+const siteSettings = getSiteSettings();
+const metadata = buildPageMetadata(page.seo, siteSettings);
+const structuredData = buildStructuredData(
+  page.seo.structured_data_templates,
+  metadata,
+  page.seo,
+  siteSettings,
+);
+const summaryKey = page.message_keys?.summary;
+const bodyKey = page.message_keys?.body;
+const summaryText = summaryKey ? t(summaryKey) : page.seo.summary;
+const bodyText = bodyKey ? t(bodyKey) : page.body;
+---
+<BaseLayout title={metadata.title} metadata={metadata} structuredData={structuredData}>
+  <header class="site-header">
+    <div class="container">
+      <p class="site-name">{siteSettings.site_name}</p>
+      <nav aria-label="Primary">
+        <ul class="nav-list">
+          <li><a href="/">{t('nav.home')}</a></li>
+          <li><a href="/about">{t('nav.about')}</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="site-main">
+    <div class="container">
+      <h1>{page.seo.primary_heading}</h1>
+      <section class="summary-region" aria-label="Summary">
+        <p>{summaryText}</p>
+      </section>
+      <section class="body-region" aria-label="Content">
+        <p>{bodyText}</p>
+      </section>
+    </div>
+  </main>
+  <footer class="site-footer">
+    <div class="container">
+      <p>{t('site.footer.copyright')}</p>
+    </div>
+  </footer>
+</BaseLayout>

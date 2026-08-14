@@ -30,6 +30,7 @@ paths:
       summary: Return draft and published site settings
       responses:
         '200':
+          description: Site settings record
           content:
             application/json:
               schema:
@@ -49,6 +50,7 @@ paths:
               $ref: './site-settings.v1.yaml#/components/schemas/SiteSettings'
       responses:
         '200':
+          description: Site settings record
           content:
             application/json:
               schema:
@@ -67,6 +69,7 @@ paths:
         - $ref: '#/components/parameters/Slug'
       responses:
         '200':
+          description: Page record
           content:
             application/json:
               schema:
@@ -89,6 +92,7 @@ paths:
               $ref: './content.v1.yaml#/components/schemas/PageContent'
       responses:
         '200':
+          description: Page record
           content:
             application/json:
               schema:

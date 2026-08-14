@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+.astro/
+build/
+*.egg-info/
+.eggs/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+
+# Environment
+.env
+.env.*
+!.env.example
+deployment/.env
+
+# Logs
+*.log
+npm-debug.log*
+
+# IDE / OS
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.vscode/
+.idea/
+
+# Test artifacts
+test-results/
+playwright-report/
+coverage/
+
+# Generated (regenerate from contracts)
+apps/Frontend/src/generated/
+apps/Administration-FE/src/generated/
+
+# Local snapshot export
+apps/Frontend/src/data/published.json

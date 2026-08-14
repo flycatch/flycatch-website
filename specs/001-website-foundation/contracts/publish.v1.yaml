@@ -55,6 +55,7 @@ paths:
       security: []
       responses:
         '200':
+          description: Published snapshot export
           content:
             application/json:
               schema:

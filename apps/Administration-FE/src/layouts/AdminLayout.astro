@@ -1,0 +1,18 @@
+---
+import '../styles/tokens.css';
+import '../styles/admin.css';
+---
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta http-equiv="X-Robots-Tag" content="noindex, nofollow" />
+    <title><slot name="title" /></title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <slot />
+  </body>
+</html>

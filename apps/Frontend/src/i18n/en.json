@@ -1,0 +1,11 @@
+{
+  "site.header.title": "Flycatch",
+  "site.skip_to_content": "Skip to content",
+  "site.footer.copyright": "© Flycatch. All rights reserved.",
+  "page.home.summary": "Foundation placeholder for the public website.",
+  "page.home.body": "This is the foundation home page. Content is bound at build time from the published snapshot.",
+  "page.about.summary": "About this foundation site.",
+  "page.about.body": "This placeholder route demonstrates repeatable scaffolding conventions.",
+  "nav.home": "Home",
+  "nav.about": "About"
+}

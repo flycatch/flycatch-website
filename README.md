@@ -82,6 +82,41 @@ Environment variables are documented in `deployment/.env.example`. Do not commit
 | `deployment/.env.example` | Shared environment configuration |
 | `deployment/Caddyfile` | Path-based gateway routing |
 
+## Local Development (Running Individually)
+
+While Docker Compose runs all services together, you can also run them individually during development. 
+
+Make sure to install dependencies for the respective services first.
+
+### 1. Frontend
+The public website (Astro).
+```bash
+cd apps/Frontend
+npm install
+npm run dev
+```
+Runs at: `http://localhost:4321`
+
+### 2. Administration FE
+The admin dashboard (Astro + React).
+```bash
+cd apps/Administration-FE
+npm install
+npm run dev
+```
+Runs at: `http://localhost:4173`
+
+### 3. Backend
+The API server (FastAPI). Ensure you have PostgreSQL running.
+```bash
+cd apps/Backend
+python -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+fastapi dev src/flycatch_api/main.py
+```
+Runs at: `http://localhost:8000` (FastAPI default)
+
 ## Documentation
 
 | Document | Description |

@@ -1,0 +1,21 @@
+---
+import AdminLayout from './AdminLayout.astro';
+import { t } from '../lib/i18n';
+---
+<AdminLayout>
+  <Fragment slot="title">{t('admin.workspace.title')}</Fragment>
+  <header class="admin-header">
+    <div class="container">
+      <h1>{t('admin.workspace.title')}</h1>
+      <slot name="actions" />
+    </div>
+  </header>
+  <div class="admin-body container">
+    <nav class="admin-nav" aria-label="Administration">
+      <slot name="nav" />
+    </nav>
+    <main id="main" class="admin-main">
+      <slot />
+    </main>
+  </div>
+</AdminLayout>

@@ -1,0 +1,8 @@
+---
+import PageTemplate from '../layouts/PageTemplate.astro';
+import { getPageBySlug } from '../lib/published-snapshot';
+
+const page = getPageBySlug('about');
+if (!page) throw new Error('About page missing from published snapshot');
+---
+<PageTemplate page={page} />

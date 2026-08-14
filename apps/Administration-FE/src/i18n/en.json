@@ -1,0 +1,17 @@
+{
+  "admin.sign_in.title": "Sign in",
+  "admin.sign_in.email": "Email",
+  "admin.sign_in.password": "Password",
+  "admin.sign_in.submit": "Sign in",
+  "admin.sign_in.error": "Invalid email or password.",
+  "admin.sign_out": "Sign out",
+  "admin.workspace.title": "Administration",
+  "admin.workspace.site_settings": "Site settings",
+  "admin.workspace.home_page": "Home page",
+  "admin.save_draft": "Save draft",
+  "admin.publish": "Publish",
+  "admin.publish.success": "Published. Rebuild the public site to see changes.",
+  "admin.field.required": "This field is required.",
+  "admin.csrf.failed": "Request could not be verified. Refresh and try again.",
+  "admin.action.forbidden": "You do not have permission for this action."
+}

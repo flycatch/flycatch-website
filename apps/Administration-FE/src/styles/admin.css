@@ -1,0 +1,107 @@
+@import './tokens.css';
+
+body {
+  margin: 0;
+  font-family: var(--font-family-base);
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-md);
+}
+
+.admin-header {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.admin-body {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+@media (min-width: 768px) {
+  .admin-body {
+    grid-template-columns: 12rem 1fr;
+  }
+}
+
+.admin-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.admin-nav button,
+.admin-nav a {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--space-sm);
+  margin-bottom: var(--space-xs);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.admin-nav button[aria-current='page'],
+.admin-nav button.active {
+  border-color: var(--color-accent);
+}
+
+label {
+  display: block;
+  margin-bottom: var(--space-md);
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: var(--space-sm);
+  border: 1px solid var(--color-border);
+  font: inherit;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+button.primary {
+  background: var(--color-accent);
+  color: #fff;
+  border-color: var(--color-accent);
+}
+
+.error {
+  color: var(--color-error);
+  margin-top: var(--space-sm);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+
+.skip-link:focus {
+  position: static;
+}

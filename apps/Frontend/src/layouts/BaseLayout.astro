@@ -1,0 +1,59 @@
+---
+import '../styles/tokens.css';
+import '../styles/layout.css';
+import type { PageMetadata } from '../lib/metadata';
+import { t } from '../lib/i18n';
+
+interface Props {
+  title: string;
+  metadata: PageMetadata;
+  structuredData?: object[];
+  lang?: string;
+  dir?: string;
+}
+
+const { title, metadata, structuredData = [], lang = 'en', dir = 'ltr' } = Astro.props;
+---
+<!doctype html>
+<html lang={lang} dir={dir}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={metadata.description} />
+    <link rel="canonical" href={metadata.canonical} />
+    {!metadata.indexable && <meta name="robots" content="noindex, nofollow" />}
+    <meta property="og:title" content={metadata.socialTitle} />
+    <meta property="og:description" content={metadata.socialDescription} />
+    <meta property="og:url" content={metadata.canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={metadata.socialTitle} />
+    <meta name="twitter:description" content={metadata.socialDescription} />
+    {structuredData.map((block) => (
+      <script type="application/ld+json" set:html={JSON.stringify(block)} />
+    ))}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t('site.skip_to_content')}</a>
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .skip-link:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-accent);
+    color: #fff;
+  }
+</style>
