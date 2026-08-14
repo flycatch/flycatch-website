@@ -1,0 +1,132 @@
+openapi: 3.1.0
+info:
+  title: Administration Sign-In
+  version: 1.0.0
+  summary: Server-backed session for provisioned administrators.
+  description: |
+    No self-registration. Failed sign-in MUST use a generic error and MUST NOT
+    disclose whether the account exists. Session token is cookie-only.
+servers:
+  - url: /api/v1
+paths:
+  /admin/auth/sign-in:
+    post:
+      operationId: adminSignIn
+      summary: Create a session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignInRequest'
+      responses:
+        '204':
+          description: Signed in; session cookie set
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: HttpOnly session cookie
+        '401':
+          description: Invalid or unknown credentials (generic)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthError'
+        '422':
+          description: Field-level validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FieldErrors'
+  /admin/auth/sign-out:
+    post:
+      operationId: adminSignOut
+      summary: Revoke the current session
+      security:
+        - sessionCookie: []
+      responses:
+        '204':
+          description: Signed out; cookie cleared
+        '401':
+          description: Not signed in
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthError'
+  /admin/auth/session:
+    get:
+      operationId: adminSession
+      summary: Return the current session if valid
+      security:
+        - sessionCookie: []
+      responses:
+        '200':
+          description: Active session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        '401':
+          description: Missing, expired, idle-timed-out, or revoked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthError'
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: admin_session
+  schemas:
+    SignInRequest:
+      type: object
+      additionalProperties: false
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 1
+          writeOnly: true
+    Session:
+      type: object
+      additionalProperties: false
+      required: [administrator_id, email, idle_expires_at]
+      properties:
+        administrator_id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        idle_expires_at:
+          type: string
+          format: date-time
+    AuthError:
+      type: object
+      additionalProperties: false
+      required: [code, message_key]
+      properties:
+        code:
+          type: string
+          enum: [unauthenticated, invalid_credentials]
+        message_key:
+          type: string
+          description: i18n key; same key for unknown and wrong password
+    FieldErrors:
+      type: object
+      additionalProperties: false
+      required: [fields]
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            type: object
+            required: [message_key]
+            properties:
+              message_key:
+                type: string

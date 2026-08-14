@@ -1,0 +1,134 @@
+openapi: 3.1.0
+info:
+  title: Publish
+  version: 1.0.0
+  summary: Promote a draft to published and write the public snapshot.
+  description: |
+    Publish copies draft_payload to published_payload, writes the published
+    snapshot to object storage, and is complete only after the documented
+    static rebuild of apps/Frontend. Draft-only content MUST NOT become a public URL.
+servers:
+  - url: /api/v1
+security:
+  - sessionCookie: []
+paths:
+  /admin/publish:
+    post:
+      operationId: publishRecord
+      summary: Publish one managed record
+      parameters:
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublishRequest'
+      responses:
+        '200':
+          description: Record published; snapshot written; rebuild still required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublishResult'
+        '401':
+          description: Not signed in
+        '403':
+          description: CSRF failed or action denied
+        '404':
+          description: Unknown record
+        '409':
+          description: Draft failed publish validation (e.g. missing unique metadata)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublishRejected'
+  /published/snapshot:
+    get:
+      operationId: getPublishedSnapshot
+      summary: Build-pipeline export of published payloads only
+      description: Not for ordinary public browsing. Used by export/rebuild.
+      security: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublishedSnapshot'
+        '401':
+          description: Missing build credential when required in preview/production
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: admin_session
+  schemas:
+    PublishRequest:
+      type: object
+      additionalProperties: false
+      required: [type, slug]
+      properties:
+        type:
+          type: string
+          enum: [site_settings, page]
+        slug:
+          type: string
+          examples: [default, home]
+    PublishResult:
+      type: object
+      additionalProperties: false
+      required: [type, slug, published_at, snapshot_revision, rebuild_required]
+      properties:
+        type:
+          type: string
+          enum: [site_settings, page]
+        slug:
+          type: string
+        published_at:
+          type: string
+          format: date-time
+        snapshot_revision:
+          type: string
+        rebuild_required:
+          type: boolean
+          const: true
+          description: Public HTML updates only after the documented static rebuild
+    PublishRejected:
+      type: object
+      additionalProperties: false
+      required: [code, message_key]
+      properties:
+        code:
+          type: string
+          enum: [validation_failed]
+        message_key:
+          type: string
+        fields:
+          type: object
+          additionalProperties:
+            type: object
+            required: [message_key]
+            properties:
+              message_key:
+                type: string
+    PublishedSnapshot:
+      type: object
+      additionalProperties: false
+      required: [revision, written_at, site_settings, pages]
+      properties:
+        revision:
+          type: string
+        written_at:
+          type: string
+          format: date-time
+        site_settings:
+          $ref: './site-settings.v1.yaml#/components/schemas/SiteSettings'
+        pages:
+          type: array
+          items:
+            $ref: './content.v1.yaml#/components/schemas/PageContent'

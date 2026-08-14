@@ -1,0 +1,48 @@
+openapi: 3.1.0
+info:
+  title: Site Settings
+  version: 1.0.0
+  summary: Site-wide defaults distinct from per-page SEO metadata.
+  description: Only the published payload is eligible for the public static site.
+servers:
+  - url: /api/v1
+    description: Shared origin; build/admin only
+paths: {}
+components:
+  schemas:
+    LocaleUrlStrategy:
+      type: string
+      enum: [unprefixed_default]
+      description: Default locale has no prefix; later locales use /{locale}/
+    RobotsPolicy:
+      type: string
+      enum: [index_public]
+      description: Public indexable routes may be indexed; admin and API must not
+    SiteSettings:
+      type: object
+      additionalProperties: false
+      required:
+        - site_name
+        - default_locale
+        - locale_url_strategy
+        - robots_policy
+        - canonical_origin
+      properties:
+        site_name:
+          type: string
+          minLength: 1
+          maxLength: 80
+          description: Placeholder site name; not an invented legal entity fact
+        default_locale:
+          type: string
+          enum: [en]
+        locale_url_strategy:
+          $ref: '#/components/schemas/LocaleUrlStrategy'
+        robots_policy:
+          $ref: '#/components/schemas/RobotsPolicy'
+        default_social_image_key:
+          type: [string, 'null']
+        canonical_origin:
+          type: string
+          format: uri
+          description: Origin used to compose canonical URLs

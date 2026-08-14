@@ -1,0 +1,36 @@
+openapi: 3.1.0
+info:
+  title: Content Schema
+  version: 1.0.0
+  summary: Placeholder public page content bound at build time.
+  description: |
+    Content shape for a managed public page. Ordinary public browsing
+    reads pre-rendered HTML, not this API.
+servers:
+  - url: /api/v1
+    description: Shared origin; build/admin only
+paths: {}
+components:
+  schemas:
+    PageContent:
+      type: object
+      additionalProperties: false
+      required:
+        - slug
+        - seo
+        - body
+      properties:
+        slug:
+          type: string
+          pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+          examples: [home]
+        seo:
+          $ref: './seo-metadata.v1.yaml#/components/schemas/SeoMetadata'
+        body:
+          type: string
+          description: Longer body; user-facing chrome around it uses message keys
+        message_keys:
+          type: object
+          additionalProperties:
+            type: string
+          description: Optional map of message keys used by the page template

@@ -1,0 +1,78 @@
+openapi: 3.1.0
+info:
+  title: Form Submission
+  version: 1.0.0
+  summary: Future public form intake boundary.
+  description: |
+    Stub only. Runtime public forms are out of scope for this foundation.
+    The contract exists so later work cannot invent an ad-hoc shape.
+    No consumer implementation in this phase.
+servers:
+  - url: /api/v1
+paths:
+  /public/forms/{form_id}/submissions:
+    post:
+      operationId: submitPublicForm
+      summary: Submit a public form (not implemented in foundation)
+      tags: [stub]
+      parameters:
+        - name: form_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormSubmission'
+      responses:
+        '202':
+          description: Accepted when implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormSubmissionReceipt'
+        '501':
+          description: Not implemented in this phase
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotImplemented'
+components:
+  schemas:
+    FormSubmission:
+      type: object
+      additionalProperties: false
+      required: [fields]
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            type: string
+          description: Field values; server MUST validate and encode output later
+        locale:
+          type: string
+          default: en
+    FormSubmissionReceipt:
+      type: object
+      additionalProperties: false
+      required: [id, status]
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [accepted]
+    NotImplemented:
+      type: object
+      additionalProperties: false
+      required: [code, message_key]
+      properties:
+        code:
+          type: string
+          const: not_implemented
+        message_key:
+          type: string

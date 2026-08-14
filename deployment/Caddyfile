@@ -1,0 +1,18 @@
+# Path-based gateway — single origin for Frontend, Administration FE, and Backend
+
+:{$GATEWAY_PORT:8080} {
+	# Backend API
+	handle /api/* {
+		reverse_proxy backend:8000
+	}
+
+	# Administration FE
+	handle /admin* {
+		reverse_proxy administration-fe:4173
+	}
+
+	# Public Frontend (static)
+	handle {
+		reverse_proxy frontend:4321
+	}
+}

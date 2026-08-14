@@ -1,0 +1,69 @@
+openapi: 3.1.0
+info:
+  title: SEO Metadata
+  version: 1.0.0
+  summary: Per-page SEO and social-preview fields for public pages.
+  description: |
+    Schema boundary for title, description, canonical path, indexability,
+    social-preview slots, and structured-data template names.
+    Consumed at public build time and by administration payloads.
+    No invented organisation facts.
+servers:
+  - url: /api/v1
+    description: Shared origin; not used for ordinary public browsing
+paths: {}
+components:
+  schemas:
+    SeoMetadata:
+      type: object
+      additionalProperties: false
+      required:
+        - title
+        - description
+        - canonical_path
+        - indexable
+        - primary_heading
+        - summary
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 70
+          description: Unique among indexable public pages
+        description:
+          type: string
+          minLength: 1
+          maxLength: 160
+          description: Unique among indexable public pages
+        canonical_path:
+          type: string
+          pattern: '^/'
+          description: Absolute path without origin
+        indexable:
+          type: boolean
+        social_title:
+          type: string
+          maxLength: 70
+        social_description:
+          type: string
+          maxLength: 200
+        social_image_key:
+          type: [string, 'null']
+          description: Object-storage key for the social-preview image slot
+        primary_heading:
+          type: string
+          minLength: 1
+          description: Source for the single H1
+        summary:
+          type: string
+          minLength: 1
+          maxLength: 320
+          description: Extractable snippet / answer-engine region
+        structured_data_templates:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            enum: [organization, web_page, faq]
+          default: []
+          description: Template names only; values MUST NOT invent company facts

@@ -1,0 +1,49 @@
+openapi: 3.1.0
+info:
+  title: Analytics Event Schema
+  version: 1.0.0
+  summary: Vendor-agnostic event names and properties for later measurement.
+  description: |
+    Stub only. Not an implemented tracker. No third-party script ships on
+    public foundation templates. Privacy-conscious: no secrets, no raw
+    credentials, no unnecessary personal data in properties.
+servers:
+  - url: /api/v1
+paths: {}
+components:
+  schemas:
+    AnalyticsEventName:
+      type: string
+      enum:
+        - page_view
+        - internal_link_follow
+        - admin_sign_in
+        - admin_publish
+      description: Closed set for foundation documentation; vendors map later
+    AnalyticsEvent:
+      type: object
+      additionalProperties: false
+      required: [name, locale]
+      properties:
+        name:
+          $ref: '#/components/schemas/AnalyticsEventName'
+        locale:
+          type: string
+          default: en
+        path:
+          type: string
+          description: Public path only; never an administration URL with session data
+        page_slug:
+          type: string
+        occurred_at:
+          type: string
+          format: date-time
+    AnalyticsEventBatch:
+      type: object
+      additionalProperties: false
+      required: [events]
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalyticsEvent'

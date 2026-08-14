@@ -1,0 +1,68 @@
+openapi: 3.1.0
+info:
+  title: Newsletter Signup
+  version: 1.0.0
+  summary: Future newsletter signup boundary.
+  description: |
+    Stub only. No vendor, no runtime signup, and no administration of
+    integrations in this phase.
+servers:
+  - url: /api/v1
+paths:
+  /public/newsletter/signup:
+    post:
+      operationId: newsletterSignup
+      summary: Request newsletter signup (not implemented in foundation)
+      tags: [stub]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewsletterSignup'
+      responses:
+        '202':
+          description: Accepted when implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsletterReceipt'
+        '501':
+          description: Not implemented in this phase
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotImplemented'
+components:
+  schemas:
+    NewsletterSignup:
+      type: object
+      additionalProperties: false
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+        locale:
+          type: string
+          default: en
+    NewsletterReceipt:
+      type: object
+      additionalProperties: false
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [accepted]
+        message_key:
+          type: string
+    NotImplemented:
+      type: object
+      additionalProperties: false
+      required: [code, message_key]
+      properties:
+        code:
+          type: string
+          const: not_implemented
+        message_key:
+          type: string

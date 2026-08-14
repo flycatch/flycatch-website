@@ -1,0 +1,208 @@
+openapi: 3.1.0
+info:
+  title: Administration Content and Settings Management
+  version: 1.0.0
+  summary: View and edit draft payloads for managed records.
+  description: |
+    Draft saves MUST NOT change the public static site. Publish is a separate
+    boundary (publish.v1.yaml). CSRF token required on mutations.
+servers:
+  - url: /api/v1
+security:
+  - sessionCookie: []
+paths:
+  /admin/csrf:
+    get:
+      operationId: getCsrfToken
+      summary: Issue a CSRF token for subsequent mutations
+      responses:
+        '200':
+          description: Token for state-changing requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CsrfToken'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+  /admin/site-settings:
+    get:
+      operationId: getSiteSettingsRecord
+      summary: Return draft and published site settings
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManagedSiteSettings'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+    patch:
+      operationId: saveSiteSettingsDraft
+      summary: Save site-settings draft
+      parameters:
+        - $ref: '#/components/parameters/CsrfHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './site-settings.v1.yaml#/components/schemas/SiteSettings'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManagedSiteSettings'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+  /admin/pages/{slug}:
+    get:
+      operationId: getPageRecord
+      summary: Return draft and published page
+      parameters:
+        - $ref: '#/components/parameters/Slug'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManagedPage'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '404':
+          description: Unknown slug
+    patch:
+      operationId: savePageDraft
+      summary: Save page draft
+      parameters:
+        - $ref: '#/components/parameters/Slug'
+        - $ref: '#/components/parameters/CsrfHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './content.v1.yaml#/components/schemas/PageContent'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManagedPage'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Unknown slug
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: admin_session
+  parameters:
+    Slug:
+      name: slug
+      in: path
+      required: true
+      schema:
+        type: string
+        examples: [home]
+    CsrfHeader:
+      name: X-CSRF-Token
+      in: header
+      required: true
+      schema:
+        type: string
+  responses:
+    Unauthenticated:
+      description: Not signed in
+      content:
+        application/json:
+          schema:
+            $ref: './admin-auth.v1.yaml#/components/schemas/AuthError'
+    Forbidden:
+      description: Signed in but action not permitted, or CSRF failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ActionDenied'
+    FieldErrors:
+      description: Accessible field-level validation errors
+      content:
+        application/json:
+          schema:
+            $ref: './admin-auth.v1.yaml#/components/schemas/FieldErrors'
+  schemas:
+    CsrfToken:
+      type: object
+      additionalProperties: false
+      required: [token]
+      properties:
+        token:
+          type: string
+    Attribution:
+      type: object
+      additionalProperties: false
+      required: [at, by]
+      properties:
+        at:
+          type: string
+          format: date-time
+        by:
+          type: string
+          format: uuid
+    ManagedSiteSettings:
+      type: object
+      additionalProperties: false
+      required: [type, slug, draft, draft_updated]
+      properties:
+        type:
+          type: string
+          const: site_settings
+        slug:
+          type: string
+          const: default
+        draft:
+          $ref: './site-settings.v1.yaml#/components/schemas/SiteSettings'
+        published:
+          $ref: './site-settings.v1.yaml#/components/schemas/SiteSettings'
+        draft_updated:
+          $ref: '#/components/schemas/Attribution'
+        published_meta:
+          $ref: '#/components/schemas/Attribution'
+    ManagedPage:
+      type: object
+      additionalProperties: false
+      required: [type, slug, draft, draft_updated]
+      properties:
+        type:
+          type: string
+          const: page
+        slug:
+          type: string
+        draft:
+          $ref: './content.v1.yaml#/components/schemas/PageContent'
+        published:
+          $ref: './content.v1.yaml#/components/schemas/PageContent'
+        draft_updated:
+          $ref: '#/components/schemas/Attribution'
+        published_meta:
+          $ref: '#/components/schemas/Attribution'
+    ActionDenied:
+      type: object
+      additionalProperties: false
+      required: [code, message_key]
+      properties:
+        code:
+          type: string
+          enum: [forbidden, csrf_failed]
+        message_key:
+          type: string
