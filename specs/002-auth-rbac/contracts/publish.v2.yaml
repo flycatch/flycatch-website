@@ -1,0 +1,67 @@
+openapi: 3.1.0
+info:
+  title: Publish
+  version: 2.0.0
+  summary: Promote a draft to published and write the public snapshot.
+  description: |
+    Publish copies draft_payload to published_payload, writes the published
+    snapshot to object storage, and is complete only after the documented
+    static rebuild of apps/Frontend. Draft-only content MUST NOT become a
+    public URL. Authentication is Authorization: Bearer. The caller MUST have
+    records.publish. CSRF is not used. Unauthenticated MUST be 401; missing
+    permission MUST be 403 and MUST NOT change the published site.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+  /admin/publish:
+    post:
+      operationId: publishRecord
+      summary: Publish one managed record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../../001-website-foundation/contracts/publish.v1.yaml#/components/schemas/PublishRequest'
+      responses:
+        '200':
+          description: Record published; snapshot written; rebuild still required
+          content:
+            application/json:
+              schema:
+                $ref: '../../001-website-foundation/contracts/publish.v1.yaml#/components/schemas/PublishResult'
+        '401':
+          $ref: './admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: './admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          description: Unknown record
+        '409':
+          description: Draft failed publish validation (e.g. missing unique metadata)
+          content:
+            application/json:
+              schema:
+                $ref: '../../001-website-foundation/contracts/publish.v1.yaml#/components/schemas/PublishRejected'
+  /published/snapshot:
+    get:
+      operationId: getPublishedSnapshot
+      summary: Build-pipeline export of published payloads only
+      description: Not for ordinary public browsing. Used by export/rebuild.
+      security: []
+      responses:
+        '200':
+          description: Published snapshot export
+          content:
+            application/json:
+              schema:
+                $ref: '../../001-website-foundation/contracts/publish.v1.yaml#/components/schemas/PublishedSnapshot'
+        '401':
+          description: Missing build credential when required in preview/production
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

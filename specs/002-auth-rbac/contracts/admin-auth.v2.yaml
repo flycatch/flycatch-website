@@ -1,0 +1,241 @@
+openapi: 3.1.0
+info:
+  title: Administration Sign-In (JWT)
+  version: 2.0.0
+  summary: JWT access token plus required refresh token for provisioned administrators.
+  description: |
+    No self-registration. Failed sign-in MUST use a generic error and MUST NOT
+    disclose whether the account exists. Sign-in and refresh ALWAYS return both
+    an access JWT and a refresh token. Clients MUST store both in memory only
+    and MUST send the access token as Authorization: Bearer. Refresh tokens are
+    hashed server-side (idle 30 minutes, absolute 12 hours). Access JWT lifetime
+    is 15 minutes and MUST NOT contain roles or permissions.
+servers:
+  - url: /api/v1
+paths:
+  /admin/auth/sign-in:
+    post:
+      operationId: adminSignIn
+      summary: Authenticate and issue access plus refresh tokens
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignInRequest'
+      responses:
+        '200':
+          description: Signed in; both tokens returned in the body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenPair'
+        '401':
+          description: Invalid, unknown, or inactive credentials (generic)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthError'
+        '422':
+          description: Field-level validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FieldErrors'
+  /admin/auth/refresh:
+    post:
+      operationId: adminRefresh
+      summary: Rotate the refresh token and issue a new access JWT
+      description: |
+        Refresh is required. The previous refresh token is revoked. Reuse of a
+        revoked refresh token in the same family MUST revoke the family.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: New token pair
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenPair'
+        '401':
+          description: Missing, expired, idle-timed-out, revoked, or reused refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthError'
+        '422':
+          description: Field-level validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FieldErrors'
+  /admin/auth/sign-out:
+    post:
+      operationId: adminSignOut
+      summary: Revoke the current refresh session
+      description: |
+        Prefer Authorization: Bearer (access JWT `sid`). If the access token is
+        already expired, the client MUST send refresh_token in the body so the
+        session can still be revoked.
+      security:
+        - bearerAuth: []
+        - {}
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignOutRequest'
+      responses:
+        '204':
+          description: Signed out; refresh session revoked
+        '401':
+          description: Not signed in and no valid refresh token supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthError'
+  /admin/auth/session:
+    get:
+      operationId: adminSession
+      summary: Return current identity, roles, and permissions
+      description: |
+        Roles and permissions are loaded from current assignments, not from JWT
+        claims. Inactive users MUST be treated as unauthenticated.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Active session context
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionContext'
+        '401':
+          description: Missing, expired, invalid, or inactive
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthError'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Access JWT from sign-in or refresh. Not a cookie.
+  schemas:
+    SignInRequest:
+      type: object
+      additionalProperties: false
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 1
+          writeOnly: true
+    RefreshRequest:
+      type: object
+      additionalProperties: false
+      required: [refresh_token]
+      properties:
+        refresh_token:
+          type: string
+          minLength: 1
+          writeOnly: true
+    SignOutRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        refresh_token:
+          type: string
+          minLength: 1
+          writeOnly: true
+          description: Required when the access token is missing or expired
+    TokenPair:
+      type: object
+      additionalProperties: false
+      required: [access_token, refresh_token, token_type, expires_in, session]
+      properties:
+        access_token:
+          type: string
+          minLength: 1
+        refresh_token:
+          type: string
+          minLength: 1
+        token_type:
+          type: string
+          const: bearer
+        expires_in:
+          type: integer
+          minimum: 1
+          description: Access token lifetime in seconds (900)
+        session:
+          $ref: '#/components/schemas/SessionContext'
+    SessionContext:
+      type: object
+      additionalProperties: false
+      required:
+        - administrator_id
+        - email
+        - roles
+        - permissions
+        - idle_expires_at
+        - absolute_expires_at
+      properties:
+        administrator_id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        roles:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: './admin-rbac.v1.yaml#/components/schemas/RoleName'
+        permissions:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: './admin-rbac.v1.yaml#/components/schemas/PermissionName'
+        idle_expires_at:
+          type: string
+          format: date-time
+        absolute_expires_at:
+          type: string
+          format: date-time
+    AuthError:
+      type: object
+      additionalProperties: false
+      required: [code, message_key]
+      properties:
+        code:
+          type: string
+          enum: [unauthenticated, invalid_credentials]
+        message_key:
+          type: string
+          description: i18n key; same key for unknown, wrong password, and inactive
+    FieldErrors:
+      type: object
+      additionalProperties: false
+      required: [fields]
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            type: object
+            required: [message_key]
+            properties:
+              message_key:
+                type: string

@@ -1,0 +1,94 @@
+openapi: 3.1.0
+info:
+  title: Administration RBAC
+  version: 1.0.0
+  summary: Role and permission catalogue plus permission-denied outcome.
+  description: |
+    A Role is a named set of Permissions. Effective permissions are the union
+    of a user's assigned roles. Enforcement is server-side at request time.
+    This document is the catalogue and denial contract; it does not expose
+    user or role management HTTP APIs.
+servers:
+  - url: /api/v1
+paths: {}
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    RoleName:
+      type: string
+      enum: [administrator, editor]
+    PermissionName:
+      type: string
+      enum: [records.view, drafts.save, records.publish]
+    PermissionDenied:
+      type: object
+      additionalProperties: false
+      required: [code, message_key, permission]
+      properties:
+        code:
+          type: string
+          const: permission_denied
+        message_key:
+          type: string
+          const: admin.action.forbidden
+        permission:
+          $ref: '#/components/schemas/PermissionName'
+    RoleGrant:
+      type: object
+      additionalProperties: false
+      required: [name, permissions]
+      properties:
+        name:
+          $ref: '#/components/schemas/RoleName'
+        permissions:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/PermissionName'
+    DefaultRoleCatalogue:
+      type: array
+      minItems: 2
+      items:
+        $ref: '#/components/schemas/RoleGrant'
+      example:
+        - name: administrator
+          permissions: [records.view, drafts.save, records.publish]
+        - name: editor
+          permissions: [records.view, drafts.save]
+    OperationPermissionMap:
+      type: object
+      additionalProperties: false
+      description: Required permission for each protected administration action
+      properties:
+        getSiteSettingsRecord:
+          type: string
+          const: records.view
+        getPageRecord:
+          type: string
+          const: records.view
+        saveSiteSettingsDraft:
+          type: string
+          const: drafts.save
+        savePageDraft:
+          type: string
+          const: drafts.save
+        publishRecord:
+          type: string
+          const: records.publish
+  responses:
+    Unauthenticated:
+      description: Missing, invalid, expired, or inactive — not a permission denial
+      content:
+        application/json:
+          schema:
+            $ref: './admin-auth.v2.yaml#/components/schemas/AuthError'
+    PermissionDenied:
+      description: Signed in but lacking the required permission; session remains valid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PermissionDenied'
