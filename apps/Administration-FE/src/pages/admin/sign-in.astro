@@ -1,11 +1,9 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import SignInForm from '../../components/SignInForm';
+import AdminShell from '../../components/AdminShell';
 import { t } from '../../lib/i18n';
 ---
 <AdminLayout>
   <Fragment slot="title">{t('admin.sign_in.title')}</Fragment>
-  <main id="main" class="container">
-    <SignInForm client:load />
-  </main>
+  <AdminShell client:load />
 </AdminLayout>

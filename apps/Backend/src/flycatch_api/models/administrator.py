@@ -12,6 +12,7 @@ from flycatch_api.db import Base
 
 if TYPE_CHECKING:
     from flycatch_api.models.admin_session import AdminSession
+    from flycatch_api.models.administrator_role import AdministratorRole
 
 
 class Administrator(Base):
@@ -25,3 +26,6 @@ class Administrator(Base):
     created_by: Mapped[str] = mapped_column(String(255), nullable=False)
 
     sessions: Mapped[list[AdminSession]] = relationship(back_populates="administrator")
+    role_assignments: Mapped[list[AdministratorRole]] = relationship(
+        back_populates="administrator"
+    )

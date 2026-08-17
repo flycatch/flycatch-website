@@ -1,0 +1,60 @@
+# Operator bootstrap CLI (not an HTTP API)
+# Feature: 002-auth-rbac
+# Entry point: flycatch-bootstrap
+
+command: flycatch-bootstrap
+summary: Create default roles and at least two administrative users, then assign roles.
+idempotent: true
+fail_closed: true
+
+arguments:
+  --user-1-email:
+    type: email
+    required: true
+    description: First default user. Always assigned role administrator.
+  --user-1-password:
+    type: secret
+    required: true
+    source: flag or interactive prompt
+    min_length: 12
+    description: MUST NOT be logged or written to public pages.
+  --user-2-email:
+    type: email
+    required: true
+    description: Second default user. MUST differ from user 1.
+  --user-2-password:
+    type: secret
+    required: true
+    source: flag or interactive prompt
+    min_length: 12
+  --user-2-role:
+    type: enum
+    values: [administrator, editor]
+    default: administrator
+    required: false
+  --created-by:
+    type: string
+    default: cli
+    required: false
+
+success:
+  - roles administrator and editor exist with catalogue permissions
+  - both users exist, are active, and have at least one role
+  - user 1 has administrator
+  - stdout confirms identities only (no secrets)
+
+repeat_run:
+  - matching role names are left intact
+  - matching emails are left intact (no duplicate users)
+  - missing user of the pair is created
+  - exit reports defaults already exist when nothing changed
+
+failure:
+  - missing or invalid required inputs
+  - no partial default set (no users without roles; no incomplete role catalogue)
+  - secrets never printed
+
+related:
+  flycatch-provision-admin:
+    change: --role becomes required (administrator | editor)
+    note: Additional staff after bootstrap; not a sign-up path

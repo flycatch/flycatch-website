@@ -3,11 +3,19 @@ import { t } from '../lib/i18n';
 
 interface Props {
   record: Record<string, unknown>;
+  canDraft: boolean;
+  canPublish: boolean;
   onSaveDraft: (draft: Record<string, unknown>) => Promise<void>;
   onPublish: () => Promise<void>;
 }
 
-export default function PageEditor({ record, onSaveDraft, onPublish }: Props) {
+export default function PageEditor({
+  record,
+  canDraft,
+  canPublish,
+  onSaveDraft,
+  onPublish,
+}: Props) {
   const draft = (record.draft || {}) as Record<string, unknown>;
   const seo = (draft.seo || {}) as Record<string, unknown>;
   const [title, setTitle] = useState(String(seo.title || ''));
@@ -57,13 +65,32 @@ export default function PageEditor({ record, onSaveDraft, onPublish }: Props) {
         <textarea value={body} onChange={(e) => setBody(e.target.value)} required />
       </label>
       <div className="actions">
-        <button type="button" onClick={saveDraft}>
-          {t('admin.save_draft')}
-        </button>
-        <button type="button" className="primary" onClick={onPublish}>
-          {t('admin.publish')}
-        </button>
+        {canDraft && (
+          <button type="button" onClick={saveDraft}>
+            {t('admin.save_draft')}
+          </button>
+        )}
+        {canPublish ? (
+          <button type="button" className="primary" onClick={onPublish}>
+            {t('admin.publish')}
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="primary"
+            disabled
+            aria-disabled="true"
+            title={t('admin.action.forbidden')}
+          >
+            {t('admin.publish')}
+          </button>
+        )}
       </div>
+      {!canPublish && (
+        <p className="error" role="status">
+          {t('admin.action.forbidden')}
+        </p>
+      )}
     </section>
   );
 }

@@ -4,6 +4,44 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, HttpUrl
 
+from flycatch_api.schemas.admin_auth import (
+    AuthError,
+    FieldErrorDetail,
+    FieldErrors,
+    RefreshRequest,
+    SessionContext,
+    SignInRequest,
+    SignOutRequest,
+    TokenPair,
+)
+from flycatch_api.schemas.admin_rbac import PermissionDenied
+
+__all__ = [
+    "ActionDenied",
+    "Attribution",
+    "AuthError",
+    "CsrfToken",
+    "FieldErrorDetail",
+    "FieldErrors",
+    "ManagedPage",
+    "ManagedSiteSettings",
+    "NotImplementedResponse",
+    "PageContent",
+    "PermissionDenied",
+    "PublishRejected",
+    "PublishRequest",
+    "PublishResult",
+    "PublishedSnapshot",
+    "RefreshRequest",
+    "SeoMetadata",
+    "SessionContext",
+    "SessionResponse",
+    "SignInRequest",
+    "SignOutRequest",
+    "SiteSettings",
+    "TokenPair",
+]
+
 
 class SeoMetadata(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -42,36 +80,8 @@ class SiteSettings(BaseModel):
     canonical_origin: HttpUrl
 
 
-class SignInRequest(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    email: EmailStr
-    password: str = Field(min_length=1)
-
-
-class SessionResponse(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    administrator_id: UUID
-    email: EmailStr
-    idle_expires_at: datetime
-
-
-class AuthError(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    code: Literal["unauthenticated", "invalid_credentials"]
-    message_key: str
-
-
-class FieldErrorDetail(BaseModel):
-    message_key: str
-
-
-class FieldErrors(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    fields: dict[str, FieldErrorDetail]
+class SessionResponse(SessionContext):
+    """Backward-compatible alias for SessionContext."""
 
 
 class CsrfToken(BaseModel):

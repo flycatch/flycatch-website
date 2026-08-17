@@ -10,6 +10,7 @@
     "check": "astro check",
     "generate:client": "node scripts/generate-client.mjs",
     "check:contracts": "node scripts/check-contract-drift.mjs",
+    "check:i18n": "node scripts/check-i18n.mjs",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "lint": "eslint src --ext .ts,.tsx,.astro"

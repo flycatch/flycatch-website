@@ -5,7 +5,14 @@ from sqlalchemy import engine_from_config, pool
 
 from flycatch_api.config import settings
 from flycatch_api.db import Base
-from flycatch_api.models import Administrator, AdminSession, ManagedRecord  # noqa: F401
+from flycatch_api.models import (  # noqa: F401
+    Administrator,
+    AdministratorRole,
+    AdminSession,
+    ManagedRecord,
+    Role,
+    RolePermission,
+)
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url)

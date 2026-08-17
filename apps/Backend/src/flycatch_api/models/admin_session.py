@@ -21,7 +21,8 @@ class AdminSession(Base):
     administrator_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("administrators.id"), nullable=False
     )
-    token_hash: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
+    refresh_token_hash: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
+    family_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     last_seen_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     idle_expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)

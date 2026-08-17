@@ -1,46 +1,61 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
-  getCsrfToken,
   getPageRecord,
   getSession,
   getSiteSettingsRecord,
+  hasPermission,
   publishRecord,
   savePageDraft,
   saveSiteSettingsDraft,
   signOut,
+  type SessionContext,
 } from '../lib/admin-api';
+import { hasTokens } from '../lib/token-store';
 import { t } from '../lib/i18n';
 import PageEditor from './PageEditor';
+import SignInForm from './SignInForm';
 import SiteSettingsEditor from './SiteSettingsEditor';
 
 type View = 'site_settings' | 'home';
 
 export default function AdminShell() {
   const [view, setView] = useState<View>('site_settings');
-  const [sessionEmail, setSessionEmail] = useState<string | null>(null);
-  const [csrf, setCsrf] = useState<string>('');
+  const [session, setSession] = useState<SessionContext | null>(null);
   const [siteSettings, setSiteSettings] = useState<Record<string, unknown> | null>(null);
   const [homePage, setHomePage] = useState<Record<string, unknown> | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [workspaceError, setWorkspaceError] = useState<string | null>(null);
+  const [ready, setReady] = useState(!hasTokens());
+
+  const loadWorkspace = useCallback(async () => {
+    setWorkspaceError(null);
+    const nextSession = await getSession();
+    setSession(nextSession);
+    try {
+      const settings = await getSiteSettingsRecord();
+      setSiteSettings(settings as Record<string, unknown>);
+      const page = await getPageRecord('home');
+      setHomePage(page as Record<string, unknown>);
+    } catch {
+      setSiteSettings(null);
+      setHomePage(null);
+      setWorkspaceError(t('admin.workspace.load_failed'));
+    } finally {
+      setReady(true);
+    }
+  }, []);
 
   useEffect(() => {
-    async function load() {
-      try {
-        const session = await getSession();
-        setSessionEmail(session.email);
-        const token = await getCsrfToken();
-        setCsrf(token);
-        const settings = await getSiteSettingsRecord();
-        setSiteSettings(settings as Record<string, unknown>);
-        const page = await getPageRecord('home');
-        setHomePage(page as Record<string, unknown>);
-      } catch {
-        window.location.href = '/admin/sign-in';
-      }
+    if (!hasTokens()) {
+      setReady(true);
+      return;
     }
-    load();
-  }, []);
+    loadWorkspace().catch(() => {
+      setSession(null);
+      setReady(true);
+    });
+  }, [loadWorkspace]);
 
   async function refreshData() {
     const settings = await getSiteSettingsRecord();
@@ -49,21 +64,62 @@ export default function AdminShell() {
     setHomePage(page as Record<string, unknown>);
   }
 
-  async function handleSignOut() {
-    await signOut();
-    window.location.href = '/admin/sign-in';
+  async function handleSignedIn() {
+    setError(null);
+    setWorkspaceError(null);
+    try {
+      await loadWorkspace();
+    } catch {
+      // loadWorkspace sets workspaceError when records are missing
+    }
   }
 
-  if (!sessionEmail || !siteSettings || !homePage) {
-    return <p>{t('admin.workspace.title')}</p>;
+  async function handleSignOut() {
+    await signOut();
+    setSession(null);
+    setSiteSettings(null);
+    setHomePage(null);
+    setMessage(null);
+    setError(null);
+    setWorkspaceError(null);
   }
+
+  if (!ready) {
+    return (
+      <main id="main" className="container">
+        <p>{t('admin.workspace.title')}</p>
+      </main>
+    );
+  }
+
+  if (!session) {
+    return (
+      <main id="main" className="container">
+        <SignInForm onSignedIn={handleSignedIn} />
+      </main>
+    );
+  }
+
+  if (!siteSettings || !homePage) {
+    return (
+      <main id="main" className="container">
+        <p role="alert">{workspaceError || t('admin.workspace.load_failed')}</p>
+        <button type="button" onClick={handleSignOut}>
+          {t('admin.sign_out')}
+        </button>
+      </main>
+    );
+  }
+
+  const canDraft = hasPermission(session, 'drafts.save');
+  const canPublish = hasPermission(session, 'records.publish');
 
   return (
     <div>
       <header className="admin-header">
         <div className="container">
           <h1>{t('admin.workspace.title')}</h1>
-          <p>{sessionEmail}</p>
+          <p>{session.email}</p>
           <button type="button" onClick={handleSignOut}>
             {t('admin.sign_out')}
           </button>
@@ -104,13 +160,19 @@ export default function AdminShell() {
           {view === 'site_settings' && (
             <SiteSettingsEditor
               record={siteSettings}
+              canDraft={canDraft}
+              canPublish={canPublish}
               onSaveDraft={async (draft) => {
-                await saveSiteSettingsDraft(draft, csrf);
-                setMessage('Draft saved');
+                await saveSiteSettingsDraft(draft);
+                setMessage(t('admin.draft.saved'));
                 await refreshData();
               }}
               onPublish={async () => {
-                await publishRecord('site_settings', 'default', csrf);
+                if (!canPublish) {
+                  setError(t('admin.action.forbidden'));
+                  return;
+                }
+                await publishRecord('site_settings', 'default');
                 setMessage(t('admin.publish.success'));
                 await refreshData();
               }}
@@ -119,13 +181,19 @@ export default function AdminShell() {
           {view === 'home' && (
             <PageEditor
               record={homePage}
+              canDraft={canDraft}
+              canPublish={canPublish}
               onSaveDraft={async (draft) => {
-                await savePageDraft('home', draft, csrf);
-                setMessage('Draft saved');
+                await savePageDraft('home', draft);
+                setMessage(t('admin.draft.saved'));
                 await refreshData();
               }}
               onPublish={async () => {
-                await publishRecord('page', 'home', csrf);
+                if (!canPublish) {
+                  setError(t('admin.action.forbidden'));
+                  return;
+                }
+                await publishRecord('page', 'home');
                 setMessage(t('admin.publish.success'));
                 await refreshData();
               }}

@@ -1,8 +1,10 @@
+import uuid
 from datetime import UTC, datetime
 
 from flycatch_api.db import SessionLocal
-from flycatch_api.models import ManagedRecord, RecordType
-from flycatch_api.services.record_service import RecordService
+from flycatch_api.models import Administrator, ManagedRecord, RecordType
+
+SYSTEM_ACTOR = uuid.UUID("00000000-0000-0000-0000-000000000001")
 
 SITE_SETTINGS = {
     "site_name": "Flycatch",
@@ -32,10 +34,18 @@ HOME_PAGE = {
 }
 
 
+def _attribution_actor(db) -> uuid.UUID:
+    admin = db.query(Administrator).order_by(Administrator.created_at).first()
+    return admin.id if admin else SYSTEM_ACTOR
+
+
 def main() -> None:
     db = SessionLocal()
     try:
         now = datetime.now(UTC)
+        actor = _attribution_actor(db)
+        created = 0
+        repaired = 0
         for record_type, slug, payload in [
             (RecordType.site_settings, "default", SITE_SETTINGS),
             (RecordType.page, "home", HOME_PAGE),
@@ -46,6 +56,12 @@ def main() -> None:
                 .first()
             )
             if existing:
+                if existing.draft_updated_by is None:
+                    existing.draft_updated_at = existing.draft_updated_at or now
+                    existing.draft_updated_by = actor
+                    existing.published_at = existing.published_at or now
+                    existing.published_by = existing.published_by or actor
+                    repaired += 1
                 continue
             record = ManagedRecord(
                 type=record_type,
@@ -53,13 +69,17 @@ def main() -> None:
                 draft_payload=payload,
                 published_payload=payload,
                 draft_updated_at=now,
-                draft_updated_by=None,
+                draft_updated_by=actor,
                 published_at=now,
-                published_by=None,
+                published_by=actor,
             )
             db.add(record)
+            created += 1
         db.commit()
-        print("Seeded managed records")
+        if created or repaired:
+            print(f"Seeded managed records (created={created}, repaired={repaired})")
+        else:
+            print("Managed records already exist")
     finally:
         db.close()
 

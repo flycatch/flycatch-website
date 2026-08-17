@@ -1,0 +1,167 @@
+openapi: 3.1.0
+info:
+  title: Administration Content and Settings Management
+  version: 2.0.0
+  summary: View and edit draft payloads for managed records.
+  description: |
+    Draft saves MUST NOT change the public static site. Publish is a separate
+    boundary (publish.v2.yaml). Authentication is Authorization: Bearer (access
+    JWT). CSRF is not used. GET requires records.view; PATCH requires drafts.save.
+    Unauthenticated requests MUST be 401; missing permission MUST be 403.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+  /admin/site-settings:
+    get:
+      operationId: getSiteSettingsRecord
+      summary: Return draft and published site settings
+      responses:
+        '200':
+          description: Site settings record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManagedSiteSettings'
+        '401':
+          $ref: './admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: './admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+    patch:
+      operationId: saveSiteSettingsDraft
+      summary: Save site-settings draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../../001-website-foundation/contracts/site-settings.v1.yaml#/components/schemas/SiteSettings'
+      responses:
+        '200':
+          description: Site settings record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManagedSiteSettings'
+        '401':
+          $ref: './admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: './admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+  /admin/pages/{slug}:
+    get:
+      operationId: getPageRecord
+      summary: Return draft and published page
+      parameters:
+        - $ref: '#/components/parameters/Slug'
+      responses:
+        '200':
+          description: Page record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManagedPage'
+        '401':
+          $ref: './admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: './admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          description: Unknown slug
+    patch:
+      operationId: savePageDraft
+      summary: Save page draft
+      parameters:
+        - $ref: '#/components/parameters/Slug'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../../001-website-foundation/contracts/content.v1.yaml#/components/schemas/PageContent'
+      responses:
+        '200':
+          description: Page record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManagedPage'
+        '401':
+          $ref: './admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: './admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          description: Unknown slug
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    Slug:
+      name: slug
+      in: path
+      required: true
+      schema:
+        type: string
+        examples: [home]
+  responses:
+    FieldErrors:
+      description: Accessible field-level validation errors
+      content:
+        application/json:
+          schema:
+            $ref: './admin-auth.v2.yaml#/components/schemas/FieldErrors'
+  schemas:
+    Attribution:
+      type: object
+      additionalProperties: false
+      required: [at, by]
+      properties:
+        at:
+          type: string
+          format: date-time
+        by:
+          type: string
+          format: uuid
+    ManagedSiteSettings:
+      type: object
+      additionalProperties: false
+      required: [type, slug, draft, draft_updated]
+      properties:
+        type:
+          type: string
+          const: site_settings
+        slug:
+          type: string
+          const: default
+        draft:
+          $ref: '../../001-website-foundation/contracts/site-settings.v1.yaml#/components/schemas/SiteSettings'
+        published:
+          $ref: '../../001-website-foundation/contracts/site-settings.v1.yaml#/components/schemas/SiteSettings'
+        draft_updated:
+          $ref: '#/components/schemas/Attribution'
+        published_meta:
+          $ref: '#/components/schemas/Attribution'
+    ManagedPage:
+      type: object
+      additionalProperties: false
+      required: [type, slug, draft, draft_updated]
+      properties:
+        type:
+          type: string
+          const: page
+        slug:
+          type: string
+        draft:
+          $ref: '../../001-website-foundation/contracts/content.v1.yaml#/components/schemas/PageContent'
+        published:
+          $ref: '../../001-website-foundation/contracts/content.v1.yaml#/components/schemas/PageContent'
+        draft_updated:
+          $ref: '#/components/schemas/Attribution'
+        published_meta:
+          $ref: '#/components/schemas/Attribution'
