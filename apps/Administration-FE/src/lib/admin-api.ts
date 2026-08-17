@@ -1,5 +1,6 @@
 import type { components as AuthComponents } from '../generated/admin-auth.v2';
 import type { components as RbacComponents } from '../generated/admin-rbac.v1';
+import type { components as RolesComponents } from '../generated/admin-roles.v1';
 import {
   clearTokens,
   getAccessToken,
@@ -14,6 +15,10 @@ export type SessionContext = AuthComponents['schemas']['SessionContext'];
 export type PermissionName = RbacComponents['schemas']['PermissionName'];
 export type AuthError = AuthComponents['schemas']['AuthError'];
 export type PermissionDenied = RbacComponents['schemas']['PermissionDenied'];
+export type RoleList = RolesComponents['schemas']['RoleList'];
+export type RoleDetail = RolesComponents['schemas']['RoleDetail'];
+export type RoleWrite = RolesComponents['schemas']['RoleWrite'];
+export type RoleCatalogue = RolesComponents['schemas']['RoleCatalogue'];
 
 export class AdminApiError extends Error {
   status: number;
@@ -152,4 +157,44 @@ export async function publishRecord(type: string, slug: string) {
 
 export function hasPermission(session: SessionContext | null, permission: PermissionName): boolean {
   return Boolean(session?.permissions?.includes(permission));
+}
+
+function queryString(params: Record<string, string | number | undefined>): string {
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined || value === '') continue;
+    search.set(key, String(value));
+  }
+  const encoded = search.toString();
+  return encoded ? `?${encoded}` : '';
+}
+
+export async function listRoles(q: string, page: number): Promise<RoleList> {
+  return api<RoleList>(`/admin/roles${queryString({ q: q.trim() || undefined, page, per_page: 5 })}`);
+}
+
+export async function getRoleCatalogue(): Promise<RoleCatalogue> {
+  return api<RoleCatalogue>('/admin/roles/catalogue');
+}
+
+export async function getRole(id: string): Promise<RoleDetail> {
+  return api<RoleDetail>(`/admin/roles/${id}`);
+}
+
+export async function createRole(payload: RoleWrite): Promise<RoleDetail> {
+  return api<RoleDetail>('/admin/roles', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateRole(id: string, payload: RoleWrite): Promise<RoleDetail> {
+  return api<RoleDetail>(`/admin/roles/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteRole(id: string): Promise<void> {
+  await api<void>(`/admin/roles/${id}`, { method: 'DELETE' });
 }

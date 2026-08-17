@@ -1,0 +1,318 @@
+openapi: 3.1.0
+info:
+  title: Administration Role Management
+  version: 1.0.0
+  summary: Create, list, update, and delete roles and their permission matrix.
+  description: |
+    Staff with roles.manage may list and persist roles. Permissions are stored as
+    {resource}.{action} strings. System roles administrator and editor cannot be
+    renamed or deleted. Content APIs continue to enforce records.view, drafts.save,
+    and records.publish; those grants are synced from the matrix on save.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+  /admin/roles:
+    get:
+      operationId: listRoles
+      summary: List roles with search and pagination
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5
+            default: 5
+      responses:
+        '200':
+          description: Paginated role list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleList'
+        '401':
+          $ref: './admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: './admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+    post:
+      operationId: createRole
+      summary: Create a role with a permission matrix
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleWrite'
+      responses:
+        '201':
+          description: Created role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleDetail'
+        '401':
+          $ref: './admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: './admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+  /admin/roles/catalogue:
+    get:
+      operationId: getRoleCatalogue
+      summary: Resources and actions for the permission matrix
+      responses:
+        '200':
+          description: Catalogue
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleCatalogue'
+        '401':
+          $ref: './admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: './admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+  /admin/roles/{role_id}:
+    parameters:
+      - $ref: '#/components/parameters/RoleId'
+    get:
+      operationId: getRole
+      summary: Return one role including permissions
+      responses:
+        '200':
+          description: Role detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleDetail'
+        '401':
+          $ref: './admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: './admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: updateRole
+      summary: Update role name, description, and permissions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleWrite'
+      responses:
+        '200':
+          description: Updated role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleDetail'
+        '401':
+          $ref: './admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: './admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/RoleConflict'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+    delete:
+      operationId: deleteRole
+      summary: Delete a role that is not a system role and has no users
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: './admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: './admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/RoleConflict'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    RoleId:
+      name: role_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    RoleAction:
+      type: string
+      enum: [create, read, update, delete, publish]
+    RoleResource:
+      type: object
+      additionalProperties: false
+      required: [id, type, slug]
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        slug:
+          type: string
+    RoleCatalogue:
+      type: object
+      additionalProperties: false
+      required: [actions, resources]
+      properties:
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleAction'
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleResource'
+    RoleSummary:
+      type: object
+      additionalProperties: false
+      required: [id, name, description, user_count, is_system]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        user_count:
+          type: integer
+          minimum: 0
+        is_system:
+          type: boolean
+    RoleList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleSummary'
+        page:
+          type: integer
+          minimum: 1
+        per_page:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+    RoleDetail:
+      type: object
+      additionalProperties: false
+      required: [id, name, description, permissions, user_count, is_system]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        permissions:
+          type: array
+          items:
+            type: string
+        user_count:
+          type: integer
+          minimum: 0
+        is_system:
+          type: boolean
+    RoleWrite:
+      type: object
+      additionalProperties: false
+      required: [name, permissions]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 64
+        description:
+          type: string
+          maxLength: 500
+          nullable: true
+        permissions:
+          type: array
+          items:
+            type: string
+    RoleConflict:
+      type: object
+      additionalProperties: false
+      required: [code, message_key]
+      properties:
+        code:
+          type: string
+          enum: [system_role, role_in_use]
+        message_key:
+          type: string
+    FieldErrorDetail:
+      type: object
+      additionalProperties: false
+      required: [message_key]
+      properties:
+        message_key:
+          type: string
+    FieldErrors:
+      type: object
+      additionalProperties: false
+      required: [fields]
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldErrorDetail'
+  responses:
+    NotFound:
+      description: Unknown role
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [code, message_key]
+            properties:
+              code:
+                type: string
+                const: not_found
+              message_key:
+                type: string
+                const: admin.roles.not_found
+    RoleConflict:
+      description: System role or role still assigned to users
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RoleConflict'
+    FieldErrors:
+      description: Field-level validation errors
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FieldErrors'

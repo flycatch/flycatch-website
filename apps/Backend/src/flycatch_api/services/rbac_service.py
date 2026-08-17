@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 
 from flycatch_api.models import AdministratorRole, PermissionName, Role, RolePermission
 
+ROLE_ADMINISTRATOR = "administrator"
+
 
 class RbacService:
     def role_names(self, db: Session, administrator_id: UUID) -> list[str]:
@@ -29,6 +31,8 @@ class RbacService:
             permission.value if isinstance(permission, PermissionName) else str(permission)
             for (permission,) in rows
         }
+        if ROLE_ADMINISTRATOR in self.role_names(db, administrator_id):
+            values.add(PermissionName.roles_manage.value)
         return sorted(values)
 
     def has_permission(

@@ -2,12 +2,13 @@ from io import StringIO
 from unittest.mock import patch
 
 from flycatch_api.cli.bootstrap import main
-from flycatch_api.models import Administrator, AdministratorRole, PermissionName, Role, RolePermission
+from flycatch_api.models import Administrator, AdministratorRole, Role, RolePermission
 from flycatch_api.services.bootstrap_service import (
     BootstrapError,
     BootstrapService,
     BootstrapUser,
 )
+from flycatch_api.services.role_service import default_grants
 
 
 def test_bootstrap_creates_two_users_and_catalogue(db):
@@ -17,14 +18,14 @@ def test_bootstrap_creates_two_users_and_catalogue(db):
         BootstrapUser("editor1@example.com", "editor-password", "editor"),
     )
     assert sorted(result.created_users) == ["admin1@example.com", "editor1@example.com"]
-    roles = {role.name: {grant.permission for grant in role.permissions} for role in db.query(Role).all()}
-    assert roles["administrator"] == {
-        PermissionName.records_view,
-        PermissionName.drafts_save,
-        PermissionName.records_publish,
+    grants = {
+        role.name: {item.permission for item in role.permissions} for role in db.query(Role).all()
     }
-    assert roles["editor"] == {PermissionName.records_view, PermissionName.drafts_save}
-    assert PermissionName.records_publish not in roles["editor"]
+    assert grants["administrator"] == set(default_grants("administrator"))
+    assert grants["editor"] == set(default_grants("editor"))
+    assert "records.publish" not in grants["editor"]
+    assert "roles.manage" not in grants["editor"]
+    assert "roles.manage" in grants["administrator"]
     assert db.query(Administrator).count() == 2
 
 
@@ -40,7 +41,9 @@ def test_bootstrap_is_idempotent(db):
     assert "already exist" in second.summary().lower() or second.already_existed
     assert db.query(Administrator).count() == 2
     assert db.query(Role).count() == 2
-    assert db.query(RolePermission).count() == 5
+    assert db.query(RolePermission).count() == len(default_grants("administrator")) + len(
+        default_grants("editor")
+    )
 
 
 def test_bootstrap_creates_missing_user_of_the_pair(db):

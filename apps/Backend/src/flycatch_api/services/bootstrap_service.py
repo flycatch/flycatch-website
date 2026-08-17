@@ -8,26 +8,15 @@ from sqlalchemy.orm import Session
 from flycatch_api.models import (
     Administrator,
     AdministratorRole,
-    PermissionName,
     Role,
     RolePermission,
 )
 from flycatch_api.security.password import hash_password
+from flycatch_api.services.role_service import ROLE_DESCRIPTIONS, default_grants
 
 ROLE_ADMINISTRATOR = "administrator"
 ROLE_EDITOR = "editor"
 CATALOGUE_ROLES = (ROLE_ADMINISTRATOR, ROLE_EDITOR)
-CATALOGUE_PERMISSIONS: dict[str, tuple[PermissionName, ...]] = {
-    ROLE_ADMINISTRATOR: (
-        PermissionName.records_view,
-        PermissionName.drafts_save,
-        PermissionName.records_publish,
-    ),
-    ROLE_EDITOR: (
-        PermissionName.records_view,
-        PermissionName.drafts_save,
-    ),
-}
 
 
 class BootstrapError(ValueError):
@@ -103,19 +92,25 @@ class BootstrapService:
 
     def _ensure_catalogue(self, db: Session, result: BootstrapResult) -> None:
         now = datetime.now(UTC)
-        for name, permissions in CATALOGUE_PERMISSIONS.items():
+        for name in CATALOGUE_ROLES:
             role = db.query(Role).filter(Role.name == name).first()
             if role is None:
-                role = Role(name=name, created_at=now)
+                role = Role(
+                    name=name,
+                    description=ROLE_DESCRIPTIONS[name],
+                    created_at=now,
+                )
                 db.add(role)
                 db.flush()
                 result.created_roles.append(name)
+            elif not role.description:
+                role.description = ROLE_DESCRIPTIONS[name]
             existing = {grant.permission for grant in role.permissions}
-            for permission in permissions:
+            for permission in default_grants(name):
                 if permission not in existing:
                     db.add(RolePermission(role_id=role.id, permission=permission))
                     if name not in result.created_roles:
-                        result.created_roles.append(f"{name}:{permission.value}")
+                        result.created_roles.append(f"{name}:{permission}")
 
     def _ensure_user(
         self,

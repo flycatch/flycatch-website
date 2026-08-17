@@ -7,6 +7,8 @@
   --color-focus: #0066cc;
   --color-border: #dee2e6;
   --color-error: #b00020;
+  --color-danger: #b00020;
+  --color-muted-bg: #eef1f4;
   --font-family-base: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;

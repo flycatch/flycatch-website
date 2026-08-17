@@ -15,6 +15,7 @@ def test_sign_in_returns_token_pair(client, bootstrapped):
     assert body["expires_in"] >= 1
     assert "administrator" in body["session"]["roles"]
     assert "records.publish" in body["session"]["permissions"]
+    assert "roles.manage" in body["session"]["permissions"]
 
 
 def test_generic_failure_creates_no_session(client, bootstrapped, db):

@@ -8,6 +8,8 @@ const files = [
   'components/SignInForm.tsx',
   'components/AdminShell.tsx',
   'components/PageEditor.tsx',
+  'components/RolesList.tsx',
+  'components/RoleForm.tsx',
 ];
 const allowedLiteral = new Set(['Title', 'Description', 'Primary heading', 'Summary', 'Body']);
 

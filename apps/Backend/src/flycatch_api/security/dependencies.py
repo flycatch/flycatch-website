@@ -98,3 +98,4 @@ RequireDraft = Annotated[AdminSession, Depends(require_permission(PermissionName
 RequirePublish = Annotated[
     AdminSession, Depends(require_permission(PermissionName.records_publish))
 ]
+RequireRoles = Annotated[AdminSession, Depends(require_permission(PermissionName.roles_manage))]

@@ -9,6 +9,7 @@ const required = [
   'admin-auth.v2.ts',
   'admin-rbac.v1.ts',
   'admin-management.v2.ts',
+  'admin-roles.v1.ts',
   'publish.v2.ts',
 ];
 
