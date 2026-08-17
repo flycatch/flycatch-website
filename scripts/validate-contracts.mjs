@@ -5,19 +5,27 @@ import { fileURLToPath } from 'node:url';
 import { execSync } from 'node:child_process';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const contractsDir = join(root, 'specs/001-website-foundation/contracts');
-const files = readdirSync(contractsDir).filter((f) => f.endsWith('.yaml'));
+const contractDirs = [
+  join(root, 'specs/001-website-foundation/contracts'),
+  join(root, 'specs/002-auth-rbac/contracts'),
+];
 
 let failed = false;
-for (const file of files) {
-  try {
-    execSync(`python3 -m openapi_spec_validator "${join(contractsDir, file)}"`, {
-      stdio: 'inherit',
-    });
-    console.log(`✓ ${file}`);
-  } catch {
-    failed = true;
-    console.error(`✗ ${file}`);
+for (const contractsDir of contractDirs) {
+  const files = readdirSync(contractsDir).filter(
+    (f) => f.endsWith('.yaml') && f !== 'bootstrap.cli.yaml',
+  );
+  for (const file of files) {
+    const full = join(contractsDir, file);
+    try {
+      execSync(`python3 -m openapi_spec_validator "${full}"`, {
+        stdio: 'inherit',
+      });
+      console.log(`✓ ${file}`);
+    } catch {
+      failed = true;
+      console.error(`✗ ${file}`);
+    }
   }
 }
 process.exit(failed ? 1 : 0);

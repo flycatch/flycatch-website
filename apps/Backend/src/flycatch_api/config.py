@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     s3_use_ssl: bool = False
     session_secret: str = "change-me-long-random"
     csrf_secret: str = "change-me-long-random"
+    jwt_secret: str = "change-me-long-random-jwt-secret-key"
+    jwt_access_minutes: int = 15
     build_export_token: str = "change-me-for-snapshot-export"
     public_origin: str = "http://localhost:8080"
     environment: str = "local"

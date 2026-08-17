@@ -2,7 +2,7 @@ name: Quality Gates
 
 on:
   push:
-    branches: [main, '001-website-foundation']
+    branches: [main, '001-website-foundation', '002-auth-rbac']
   pull_request:
 
 jobs:
@@ -46,3 +46,21 @@ jobs:
         working-directory: apps/Frontend
       - run: pnpm run check:all
         working-directory: apps/Frontend
+
+  administration-fe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/Administration-FE/package-lock.json
+      - run: npm ci
+        working-directory: apps/Administration-FE
+      - run: npm run generate:client
+        working-directory: apps/Administration-FE
+      - run: npm run check:contracts
+        working-directory: apps/Administration-FE
+      - run: npm run check:i18n
+        working-directory: apps/Administration-FE

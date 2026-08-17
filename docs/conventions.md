@@ -22,6 +22,9 @@
 - MUST include `<meta name="robots" content="noindex, nofollow">`
 - React hydration only in admin workspace components
 - API calls through `apps/Administration-FE/src/lib/admin-api.ts`
+- Staff auth is JWT access + refresh: store both tokens in memory only, send `Authorization: Bearer`
+- Do not use session cookies, `credentials: 'include'`, CSRF tokens, or a sign-up control
+- Types for tokens and permissions MUST come from `specs/002-auth-rbac/contracts/` via `npm run generate:client`
 
 ## Naming
 

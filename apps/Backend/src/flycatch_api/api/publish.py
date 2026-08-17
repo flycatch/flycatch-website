@@ -5,7 +5,7 @@ from flycatch_api.config import settings
 from flycatch_api.db import get_db
 from flycatch_api.models import RecordType
 from flycatch_api.schemas import PublishRequest, PublishResult, PublishedSnapshot
-from flycatch_api.security.dependencies import CurrentSession, require_csrf
+from flycatch_api.security.dependencies import RequirePublish
 from flycatch_api.services.publish_export import PublishExportService
 from flycatch_api.services.record_service import RecordService
 
@@ -17,9 +17,8 @@ _export = PublishExportService()
 @router.post("/admin/publish", response_model=PublishResult)
 def publish_record(
     payload: PublishRequest,
-    session: CurrentSession,
+    session: RequirePublish,
     db: Session = Depends(get_db),
-    _csrf: None = Depends(require_csrf),
 ):
     record_type = RecordType(payload.type)
     record = _records.publish_record(db, record_type, payload.slug, session.administrator_id)

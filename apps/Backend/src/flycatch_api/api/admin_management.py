@@ -2,22 +2,16 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from flycatch_api.db import get_db
-from flycatch_api.schemas import CsrfToken, ManagedPage, ManagedSiteSettings, PageContent, SiteSettings
-from flycatch_api.security.csrf import generate_csrf_token, sign_csrf_token
-from flycatch_api.security.dependencies import CurrentSession, require_csrf
+from flycatch_api.schemas import ManagedPage, ManagedSiteSettings, PageContent, SiteSettings
+from flycatch_api.security.dependencies import RequireDraft, RequireView
 from flycatch_api.services.record_service import RecordService
 
 router = APIRouter(prefix="/admin", tags=["admin-management"])
 _records = RecordService()
 
 
-@router.get("/csrf", response_model=CsrfToken)
-def get_csrf_token(_session: CurrentSession):
-    return CsrfToken(token=sign_csrf_token(generate_csrf_token()))
-
-
 @router.get("/site-settings", response_model=ManagedSiteSettings)
-def get_site_settings_record(_session: CurrentSession, db: Session = Depends(get_db)):
+def get_site_settings_record(_session: RequireView, db: Session = Depends(get_db)):
     record = _records.get_site_settings(db)
     return _records._to_managed_site_settings(record)
 
@@ -25,15 +19,14 @@ def get_site_settings_record(_session: CurrentSession, db: Session = Depends(get
 @router.patch("/site-settings", response_model=ManagedSiteSettings)
 def save_site_settings_draft(
     payload: SiteSettings,
-    session: CurrentSession,
+    session: RequireDraft,
     db: Session = Depends(get_db),
-    _csrf: None = Depends(require_csrf),
 ):
     return _records.save_site_settings_draft(db, payload, session.administrator_id)
 
 
 @router.get("/pages/{slug}", response_model=ManagedPage)
-def get_page_record(slug: str, _session: CurrentSession, db: Session = Depends(get_db)):
+def get_page_record(slug: str, _session: RequireView, db: Session = Depends(get_db)):
     record = _records.get_page(db, slug)
     return _records._to_managed_page(record)
 
@@ -42,8 +35,7 @@ def get_page_record(slug: str, _session: CurrentSession, db: Session = Depends(g
 def save_page_draft(
     slug: str,
     payload: PageContent,
-    session: CurrentSession,
+    session: RequireDraft,
     db: Session = Depends(get_db),
-    _csrf: None = Depends(require_csrf),
 ):
     return _records.save_page_draft(db, slug, payload, session.administrator_id)

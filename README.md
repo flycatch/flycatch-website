@@ -27,18 +27,19 @@ apps/
 └── Backend/
 deployment/                       # Docker Compose, environment config, gateway
 specs/001-website-foundation/     # Feature spec, plan, contracts, quickstart
+specs/002-auth-rbac/              # JWT auth + RBAC spec, plan, contracts, quickstart
 docs/                             # Conventions and onboarding (implementation phase)
 ```
 
 ## OpenAPI — single source of truth
 
-All cross-boundary shapes live in `specs/001-website-foundation/contracts/` (OpenAPI 3.1).
+Foundation payload schemas live in `specs/001-website-foundation/contracts/` (OpenAPI 3.1). Staff auth, RBAC, management, and publish live in `specs/002-auth-rbac/contracts/`.
 
-- **Backend** MUST implement these contracts.
+- **Backend** MUST implement these contracts. Staff auth is JWT access + refresh (`Authorization: Bearer`), not cookies or CSRF.
 - **Frontend** MUST generate or validate build-time types from the content, settings, SEO, and publish schemas.
-- **Administration FE** MUST use an OpenAPI-generated API client — no hand-written DTOs that bypass the contract.
+- **Administration FE** MUST generate types from `admin-auth.v2`, `admin-rbac.v1`, `admin-management.v2`, and `publish.v2` — no hand-written token or permission DTOs. Tokens stay in memory only.
 
-See [contracts/README.md](specs/001-website-foundation/contracts/README.md).
+See [001 contracts](specs/001-website-foundation/contracts/README.md) and [002 contracts](specs/002-auth-rbac/contracts/README.md).
 
 ## Deployment
 
@@ -68,7 +69,7 @@ Gateway (default `http://localhost:8080`):
 
 After services are healthy:
 
-1. Run Backend migrations and provision an administrator.
+1. Run Backend migrations and `flycatch-bootstrap` (two staff users + default roles). `--role` is required on later `flycatch-provision-admin` calls.
 2. Export the published snapshot and build `apps/Frontend`.
 3. Rebuild containers when app images change: `docker compose -f deployment/docker-compose.yml up -d --build`
 

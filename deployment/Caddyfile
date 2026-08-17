@@ -1,9 +1,18 @@
 # Path-based gateway — single origin for Frontend, Administration FE, and Backend
 
 :{$GATEWAY_PORT:8080} {
+	# Keep /admin on the Administration FE (never the public site)
+	redir /admin /admin/ 308
+
 	# Backend API
 	handle /api/* {
 		reverse_proxy backend:8000
+	}
+
+	# Administration FE — astro preview serves built assets at /_astro, not /admin/_astro
+	handle /admin/_astro/* {
+		uri strip_prefix /admin
+		reverse_proxy administration-fe:4173
 	}
 
 	# Administration FE

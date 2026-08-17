@@ -3,8 +3,10 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
+COPY --from=specs . /specs
+ENV CONTRACTS_DIR=/specs/002-auth-rbac/contracts
 ENV PUBLIC_ORIGIN=http://localhost:8080
-RUN npm run build
+RUN npm run generate:client && npm run build
 
 FROM node:22-alpine
 WORKDIR /app

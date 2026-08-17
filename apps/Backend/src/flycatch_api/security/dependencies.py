@@ -1,67 +1,100 @@
 from __future__ import annotations
 
-import uuid
 from datetime import UTC, datetime
 from typing import Annotated
+from uuid import UUID
 
-from fastapi import Cookie, Depends, Header, HTTPException, Request, status
+from fastapi import Depends, Header, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
-from flycatch_api.config import settings
 from flycatch_api.db import get_db
-from flycatch_api.models import AdminSession, Administrator
-from flycatch_api.schemas import ActionDenied, AuthError
-from flycatch_api.security.csrf import verify_csrf_token
-from flycatch_api.security.session import hash_token, session_idle_expiry
+from flycatch_api.models import AdminSession, Administrator, PermissionName
+from flycatch_api.schemas import AuthError, PermissionDenied
+from flycatch_api.security.jwt import JwtError, verify_access_token
+from flycatch_api.security.session import ensure_utc, session_idle_expiry
+from flycatch_api.services.rbac_service import RbacService
+
+_rbac = RbacService()
 
 
-def _auth_error(code: str, message_key: str, status_code: int) -> HTTPException:
+def _auth_error(code: str, message_key: str) -> HTTPException:
     return HTTPException(
-        status_code=status_code,
+        status_code=status.HTTP_401_UNAUTHORIZED,
         detail=AuthError(code=code, message_key=message_key).model_dump(),
     )
+
+
+def _permission_denied(permission: PermissionName) -> HTTPException:
+    return HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail=PermissionDenied(permission=permission).model_dump(mode="json"),
+    )
+
+
+def _extract_bearer(authorization: str | None) -> str | None:
+    if not authorization:
+        return None
+    scheme, _, token = authorization.partition(" ")
+    if scheme.lower() != "bearer" or not token:
+        return None
+    return token
 
 
 def get_current_session(
     request: Request,
     db: Session = Depends(get_db),
-    session_cookie: Annotated[str | None, Cookie(alias=settings.session_cookie_name)] = None,
+    authorization: Annotated[str | None, Header()] = None,
 ) -> AdminSession:
-    if not session_cookie:
-        raise _auth_error("unauthenticated", "admin.sign_in.error", status.HTTP_401_UNAUTHORIZED)
+    token = _extract_bearer(authorization)
+    if not token:
+        raise _auth_error("unauthenticated", "admin.sign_in.error")
 
-    token_hash = hash_token(session_cookie)
-    session = (
-        db.query(AdminSession)
-        .filter(AdminSession.token_hash == token_hash, AdminSession.revoked_at.is_(None))
-        .first()
-    )
-    if not session:
-        raise _auth_error("unauthenticated", "admin.sign_in.error", status.HTTP_401_UNAUTHORIZED)
+    try:
+        payload = verify_access_token(token)
+    except JwtError as exc:
+        raise _auth_error("unauthenticated", "admin.sign_in.error") from exc
+
+    try:
+        session_id = UUID(str(payload["sid"]))
+        administrator_id = UUID(str(payload["sub"]))
+    except (KeyError, ValueError) as exc:
+        raise _auth_error("unauthenticated", "admin.sign_in.error") from exc
+
+    session = db.get(AdminSession, session_id)
+    if not session or session.administrator_id != administrator_id or session.revoked_at is not None:
+        raise _auth_error("unauthenticated", "admin.sign_in.error")
 
     now = datetime.now(UTC)
-    if now >= session.idle_expires_at or now >= session.absolute_expires_at:
-        raise _auth_error("unauthenticated", "admin.sign_in.error", status.HTTP_401_UNAUTHORIZED)
+    if now >= ensure_utc(session.idle_expires_at) or now >= ensure_utc(session.absolute_expires_at):
+        raise _auth_error("unauthenticated", "admin.session.expired")
 
     admin = db.get(Administrator, session.administrator_id)
     if not admin or not admin.is_active:
-        raise _auth_error("unauthenticated", "admin.sign_in.error", status.HTTP_401_UNAUTHORIZED)
+        raise _auth_error("unauthenticated", "admin.sign_in.error")
 
     session.last_seen_at = now
     session.idle_expires_at = session_idle_expiry(now)
     db.commit()
     request.state.administrator = admin
+    request.state.session = session
     return session
 
 
-def require_csrf(
-    x_csrf_token: Annotated[str | None, Header(alias="X-CSRF-Token")] = None,
-) -> None:
-    if not x_csrf_token or not verify_csrf_token(x_csrf_token):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail=ActionDenied(code="csrf_failed", message_key="admin.csrf.failed").model_dump(),
-        )
+def require_permission(permission: PermissionName):
+    def _require(
+        session: Annotated[AdminSession, Depends(get_current_session)],
+        db: Session = Depends(get_db),
+    ) -> AdminSession:
+        if not _rbac.has_permission(db, session.administrator_id, permission):
+            raise _permission_denied(permission)
+        return session
+
+    return _require
 
 
 CurrentSession = Annotated[AdminSession, Depends(get_current_session)]
+RequireView = Annotated[AdminSession, Depends(require_permission(PermissionName.records_view))]
+RequireDraft = Annotated[AdminSession, Depends(require_permission(PermissionName.drafts_save))]
+RequirePublish = Annotated[
+    AdminSession, Depends(require_permission(PermissionName.records_publish))
+]

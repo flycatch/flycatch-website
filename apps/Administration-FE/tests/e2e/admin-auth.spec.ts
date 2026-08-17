@@ -27,6 +27,9 @@ test('sign-in success, generic failure, no sign-up, and sign-out', async ({ page
   await page.getByRole('button', { name: /^sign in$/i }).click();
   await expect(page.getByRole('heading', { name: /administration/i })).toBeVisible();
 
+  await page.reload();
+  await expect(page.getByRole('heading', { name: /administration/i })).toBeVisible();
+
   await page.getByRole('button', { name: /sign out/i }).click();
   await expect(page.getByRole('heading', { name: /sign in/i })).toBeVisible();
 });

@@ -4,7 +4,15 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const forbidden = ['SESSION_SECRET', 'CSRF_SECRET', 'BUILD_EXPORT_TOKEN', 'S3_SECRET_KEY'];
+const forbidden = [
+  'SESSION_SECRET',
+  'CSRF_SECRET',
+  'JWT_SECRET',
+  'BUILD_EXPORT_TOKEN',
+  'S3_SECRET_KEY',
+  '$argon2',
+  'eyJhbGci',
+];
 const dirs = ['apps/Frontend/dist', 'apps/Administration-FE/dist'];
 
 let failed = false;
