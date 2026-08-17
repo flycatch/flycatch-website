@@ -692,6 +692,7 @@ input[type='search'] {
 
 .roles-table td:first-child {
   font-weight: 600;
+  word-break: break-all;
 }
 
 .roles-table td:nth-child(3) {
@@ -804,6 +805,74 @@ input[type='search'] {
 
 .roles-dialog p {
   color: var(--color-muted);
+}
+
+.multi-select {
+  margin-bottom: var(--space-md);
+}
+
+.multi-select > label {
+  margin-bottom: var(--space-xs);
+}
+
+.multi-select-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  list-style: none;
+  margin: 0 0 var(--space-sm);
+  padding: 0;
+}
+
+.multi-select-chips li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 0.25rem 0.5rem 0.25rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.multi-select-remove {
+  min-height: 1.75rem;
+  padding: 0.15rem 0.45rem;
+  font-size: var(--font-size-xs);
+}
+
+select[multiple] {
+  min-height: 8rem;
+}
+
+.rte-field {
+  margin-bottom: var(--space-md);
+}
+
+.rte-label {
+  margin: 0 0 var(--space-xs);
+  font-weight: 600;
+}
+
+.rte-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xs);
+}
+
+.rte-editor {
+  min-height: 12rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.rte-editor:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
 }
 
 /* -------------------------------------------------------------------------- */

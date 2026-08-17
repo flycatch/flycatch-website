@@ -1,12 +1,14 @@
 import type { components as AuthComponents } from '../generated/admin-auth.v2';
 import type { components as RbacComponents } from '../generated/admin-rbac.v1';
 import type { components as RolesComponents } from '../generated/admin-roles.v1';
+import type { components as BlogsComponents } from '../generated/admin-blogs.v1';
 import {
   clearTokens,
   getAccessToken,
   getRefreshToken,
   setTokens,
 } from './token-store';
+import { t } from './i18n';
 
 const API_BASE = (import.meta.env.PUBLIC_ORIGIN || 'http://localhost:8080') + '/api/v1';
 
@@ -19,6 +21,16 @@ export type RoleList = RolesComponents['schemas']['RoleList'];
 export type RoleDetail = RolesComponents['schemas']['RoleDetail'];
 export type RoleWrite = RolesComponents['schemas']['RoleWrite'];
 export type RoleCatalogue = RolesComponents['schemas']['RoleCatalogue'];
+export type BlogList = BlogsComponents['schemas']['BlogList'];
+export type BlogDetail = BlogsComponents['schemas']['BlogDetail'];
+export type BlogWrite = BlogsComponents['schemas']['BlogWrite'];
+export type Author = BlogsComponents['schemas']['Author'];
+export type AuthorList = BlogsComponents['schemas']['AuthorList'];
+export type AuthorWrite = BlogsComponents['schemas']['AuthorWrite'];
+export type Category = BlogsComponents['schemas']['Category'];
+export type CategoryList = BlogsComponents['schemas']['CategoryList'];
+export type CategoryWrite = BlogsComponents['schemas']['CategoryWrite'];
+export type MediaObject = BlogsComponents['schemas']['MediaObject'];
 
 export class AdminApiError extends Error {
   status: number;
@@ -73,7 +85,8 @@ async function refreshOnce(): Promise<boolean> {
 
 async function api<T>(path: string, options: RequestInit = {}, retry = true): Promise<T> {
   const headers = new Headers(options.headers);
-  if (!headers.has('Content-Type') && options.body) {
+  const isForm = typeof FormData !== 'undefined' && options.body instanceof FormData;
+  if (!headers.has('Content-Type') && options.body && !isForm) {
     headers.set('Content-Type', 'application/json');
   }
   const access = getAccessToken();
@@ -197,4 +210,113 @@ export async function updateRole(id: string, payload: RoleWrite): Promise<RoleDe
 
 export async function deleteRole(id: string): Promise<void> {
   await api<void>(`/admin/roles/${id}`, { method: 'DELETE' });
+}
+
+export async function listBlogs(q: string, page: number): Promise<BlogList> {
+  return api<BlogList>(`/admin/blogs${queryString({ q: q.trim() || undefined, page, per_page: 10 })}`);
+}
+
+export async function getBlog(id: string): Promise<BlogDetail> {
+  return api<BlogDetail>(`/admin/blogs/${id}`);
+}
+
+export async function createBlog(payload: BlogWrite): Promise<BlogDetail> {
+  return api<BlogDetail>('/admin/blogs', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateBlog(id: string, payload: BlogWrite): Promise<BlogDetail> {
+  return api<BlogDetail>(`/admin/blogs/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteBlog(id: string): Promise<void> {
+  await api<void>(`/admin/blogs/${id}`, { method: 'DELETE' });
+}
+
+export async function listAuthors(): Promise<AuthorList> {
+  return api<AuthorList>('/admin/authors');
+}
+
+export async function getAuthor(id: string): Promise<Author> {
+  return api<Author>(`/admin/authors/${id}`);
+}
+
+export async function createAuthor(payload: AuthorWrite): Promise<Author> {
+  return api<Author>('/admin/authors', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateAuthor(id: string, payload: AuthorWrite): Promise<Author> {
+  return api<Author>(`/admin/authors/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteAuthor(id: string): Promise<void> {
+  await api<void>(`/admin/authors/${id}`, { method: 'DELETE' });
+}
+
+export async function listCategories(): Promise<CategoryList> {
+  return api<CategoryList>('/admin/categories');
+}
+
+export async function getCategory(id: string): Promise<Category> {
+  return api<Category>(`/admin/categories/${id}`);
+}
+
+export async function createCategory(payload: CategoryWrite): Promise<Category> {
+  return api<Category>('/admin/categories', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateCategory(id: string, payload: CategoryWrite): Promise<Category> {
+  return api<Category>(`/admin/categories/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteCategory(id: string): Promise<void> {
+  await api<void>(`/admin/categories/${id}`, { method: 'DELETE' });
+}
+
+export function apiErrorMessage(caught: unknown, fallback = 'admin.workspace.request_failed'): string {
+  if (caught instanceof AdminApiError) {
+    const detail = caught.detail as {
+      message_key?: string;
+      permission?: string;
+      fields?: Record<string, { message_key: string }>;
+    };
+    if (caught.status === 403 || Boolean(detail.permission)) {
+      return t('admin.action.forbidden');
+    }
+    const fieldKey = detail.fields ? Object.values(detail.fields)[0]?.message_key : undefined;
+    if (fieldKey) return t(fieldKey);
+    if (detail.message_key) return t(detail.message_key);
+  }
+  return t(fallback);
+}
+
+export async function uploadMedia(file: File): Promise<MediaObject> {
+  const body = new FormData();
+  body.append('file', file);
+  return api<MediaObject>('/admin/media', { method: 'POST', body });
+}
+
+export function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }

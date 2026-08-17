@@ -10,6 +10,13 @@ const files = [
   'components/PageEditor.tsx',
   'components/RolesList.tsx',
   'components/RoleForm.tsx',
+  'components/BlogsList.tsx',
+  'components/BlogForm.tsx',
+  'components/AuthorsList.tsx',
+  'components/AuthorForm.tsx',
+  'components/CategoriesList.tsx',
+  'components/CategoryForm.tsx',
+  'components/MultiSelect.tsx',
 ];
 const allowedLiteral = new Set(['Title', 'Description', 'Primary heading', 'Summary', 'Body']);
 

@@ -31,6 +31,23 @@ class ObjectStorageService:
             except Exception:
                 pass
 
+    def put_bytes(self, key: str, body: bytes, content_type: str) -> None:
+        self._client.put_object(
+            Bucket=settings.s3_bucket,
+            Key=key,
+            Body=body,
+            ContentType=content_type,
+        )
+
+    def get_bytes(self, key: str) -> tuple[bytes, str] | None:
+        try:
+            response = self._client.get_object(Bucket=settings.s3_bucket, Key=key)
+            body = response["Body"].read()
+            content_type = response.get("ContentType") or "application/octet-stream"
+            return body, content_type
+        except Exception:
+            return None
+
     def put_json(self, key: str, payload: dict) -> None:
         body = json.dumps(payload, default=str).encode("utf-8")
         self._client.put_object(

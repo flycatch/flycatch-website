@@ -15,4 +15,4 @@ COPY alembic ./alembic
 COPY alembic.ini ./
 COPY src ./src
 EXPOSE 8000
-CMD ["uvicorn", "flycatch_api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "alembic upgrade head && uvicorn flycatch_api.main:app --host 0.0.0.0 --port 8000"]

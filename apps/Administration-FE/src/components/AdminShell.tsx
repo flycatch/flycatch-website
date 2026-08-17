@@ -17,8 +17,24 @@ import RoleForm from './RoleForm';
 import RolesList from './RolesList';
 import SignInForm from './SignInForm';
 import SiteSettingsEditor from './SiteSettingsEditor';
+import AuthorsList from './AuthorsList';
+import AuthorForm from './AuthorForm';
+import BlogsList from './BlogsList';
+import BlogForm from './BlogForm';
+import CategoriesList from './CategoriesList';
+import CategoryForm from './CategoryForm';
 
-type View = 'site_settings' | 'home' | 'roles' | 'role_form';
+type View =
+  | 'site_settings'
+  | 'home'
+  | 'blogs'
+  | 'blog_form'
+  | 'authors'
+  | 'author_form'
+  | 'categories'
+  | 'category_form'
+  | 'roles'
+  | 'role_form';
 
 function canManageRolesFrom(session: SessionContext | null): boolean {
   return (
@@ -29,6 +45,9 @@ function canManageRolesFrom(session: SessionContext | null): boolean {
 export default function AdminShell() {
   const [view, setView] = useState<View>('site_settings');
   const [editingRoleId, setEditingRoleId] = useState<string | null>(null);
+  const [editingBlogId, setEditingBlogId] = useState<string | null>(null);
+  const [editingAuthorId, setEditingAuthorId] = useState<string | null>(null);
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const [session, setSession] = useState<SessionContext | null>(null);
   const [siteSettings, setSiteSettings] = useState<Record<string, unknown> | null>(null);
   const [homePage, setHomePage] = useState<Record<string, unknown> | null>(null);
@@ -77,6 +96,18 @@ export default function AdminShell() {
     }
     if (view === 'home') {
       document.title = t('admin.workspace.home_page');
+      return;
+    }
+    if (view === 'blogs' || view === 'blog_form') {
+      document.title = t('admin.workspace.blogs');
+      return;
+    }
+    if (view === 'authors' || view === 'author_form') {
+      document.title = t('admin.workspace.authors');
+      return;
+    }
+    if (view === 'categories' || view === 'category_form') {
+      document.title = t('admin.workspace.categories');
       return;
     }
     if (view === 'roles') {
@@ -130,12 +161,36 @@ export default function AdminShell() {
     setWorkspaceError(null);
     setView('site_settings');
     setEditingRoleId(null);
+    setEditingBlogId(null);
+    setEditingAuthorId(null);
+    setEditingCategoryId(null);
     setNavOpen(false);
   }
 
   function openRoles() {
     setView('roles');
     setEditingRoleId(null);
+    setError(null);
+    setNavOpen(false);
+  }
+
+  function openBlogs() {
+    setView('blogs');
+    setEditingBlogId(null);
+    setError(null);
+    setNavOpen(false);
+  }
+
+  function openAuthors() {
+    setView('authors');
+    setEditingAuthorId(null);
+    setError(null);
+    setNavOpen(false);
+  }
+
+  function openCategories() {
+    setView('categories');
+    setEditingCategoryId(null);
     setError(null);
     setNavOpen(false);
   }
@@ -225,6 +280,36 @@ export default function AdminShell() {
                 {t('admin.workspace.home_page')}
               </button>
             </li>
+            <li>
+              <button
+                type="button"
+                className={view === 'blogs' || view === 'blog_form' ? 'active' : ''}
+                aria-current={view === 'blogs' || view === 'blog_form' ? 'page' : undefined}
+                onClick={openBlogs}
+              >
+                {t('admin.workspace.blogs')}
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                className={view === 'authors' || view === 'author_form' ? 'active' : ''}
+                aria-current={view === 'authors' || view === 'author_form' ? 'page' : undefined}
+                onClick={openAuthors}
+              >
+                {t('admin.workspace.authors')}
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                className={view === 'categories' || view === 'category_form' ? 'active' : ''}
+                aria-current={view === 'categories' || view === 'category_form' ? 'page' : undefined}
+                onClick={openCategories}
+              >
+                {t('admin.workspace.categories')}
+              </button>
+            </li>
             {canManageRoles && (
               <li>
                 <button
@@ -266,7 +351,7 @@ export default function AdminShell() {
           </div>
         </header>
         <main id="main" className="admin-main">
-          {message && view !== 'roles' && view !== 'role_form' && (
+          {message && (view === 'site_settings' || view === 'home') && (
             <p className="alert alert-success" role="status">
               {message}
             </p>
@@ -315,6 +400,81 @@ export default function AdminShell() {
                 await publishRecord('page', 'home');
                 setMessage(t('admin.publish.success'));
                 await refreshData();
+              }}
+            />
+          )}
+          {view === 'blogs' && (
+            <BlogsList
+              notice={message}
+              onAdd={() => {
+                setEditingBlogId(null);
+                setMessage(null);
+                setView('blog_form');
+              }}
+              onEdit={(id) => {
+                setEditingBlogId(id);
+                setMessage(null);
+                setView('blog_form');
+              }}
+            />
+          )}
+          {view === 'blog_form' && (
+            <BlogForm
+              blogId={editingBlogId}
+              onCancel={openBlogs}
+              onSaved={() => {
+                setMessage(t('admin.blogs.saved'));
+                openBlogs();
+              }}
+            />
+          )}
+          {view === 'authors' && (
+            <AuthorsList
+              notice={message}
+              onAdd={() => {
+                setEditingAuthorId(null);
+                setMessage(null);
+                setView('author_form');
+              }}
+              onEdit={(id) => {
+                setEditingAuthorId(id);
+                setMessage(null);
+                setView('author_form');
+              }}
+            />
+          )}
+          {view === 'author_form' && (
+            <AuthorForm
+              authorId={editingAuthorId}
+              onCancel={openAuthors}
+              onSaved={() => {
+                setMessage(t('admin.authors.saved'));
+                openAuthors();
+              }}
+            />
+          )}
+          {view === 'categories' && (
+            <CategoriesList
+              notice={message}
+              onAdd={() => {
+                setEditingCategoryId(null);
+                setMessage(null);
+                setView('category_form');
+              }}
+              onEdit={(id) => {
+                setEditingCategoryId(id);
+                setMessage(null);
+                setView('category_form');
+              }}
+            />
+          )}
+          {view === 'category_form' && (
+            <CategoryForm
+              categoryId={editingCategoryId}
+              onCancel={openCategories}
+              onSaved={() => {
+                setMessage(t('admin.categories.saved'));
+                openCategories();
               }}
             />
           )}
