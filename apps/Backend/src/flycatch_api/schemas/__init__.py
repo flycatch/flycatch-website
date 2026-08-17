@@ -15,6 +15,15 @@ from flycatch_api.schemas.admin_auth import (
     TokenPair,
 )
 from flycatch_api.schemas.admin_rbac import PermissionDenied
+from flycatch_api.schemas.admin_roles import (
+    RoleCatalogue,
+    RoleConflict,
+    RoleDetail,
+    RoleList,
+    RoleNotFound,
+    RoleSummary,
+    RoleWrite,
+)
 
 __all__ = [
     "ActionDenied",
@@ -33,6 +42,13 @@ __all__ = [
     "PublishResult",
     "PublishedSnapshot",
     "RefreshRequest",
+    "RoleCatalogue",
+    "RoleConflict",
+    "RoleDetail",
+    "RoleList",
+    "RoleNotFound",
+    "RoleSummary",
+    "RoleWrite",
     "SeoMetadata",
     "SessionContext",
     "SessionResponse",

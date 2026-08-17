@@ -105,3 +105,244 @@ button.primary {
 .skip-link:focus {
   position: static;
 }
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.admin-header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm) var(--space-md);
+}
+
+.admin-header-inner h1 {
+  margin: 0;
+  flex: 1 1 auto;
+}
+
+.admin-header-inner p {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.admin-main h2 {
+  margin-top: 0;
+}
+
+button.danger {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+  background: var(--color-surface);
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.hint {
+  margin: calc(var(--space-sm) * -1) 0 var(--space-md);
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.roles-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.roles-toolbar h2 {
+  margin: 0;
+}
+
+.roles-notice {
+  margin: 0 0 var(--space-md);
+}
+
+.roles-search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.roles-search label {
+  flex: 1 1 16rem;
+  margin-bottom: 0;
+}
+
+.roles-table-wrap,
+.permission-table-wrap {
+  overflow-x: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+}
+
+.roles-table,
+.permission-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.roles-table th,
+.roles-table td,
+.permission-table th,
+.permission-table td {
+  text-align: left;
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.roles-table th,
+.permission-table th {
+  font-weight: 600;
+  background: var(--color-muted-bg);
+}
+
+.roles-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.roles-empty {
+  margin: 0;
+  padding: var(--space-md);
+}
+
+.roles-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.roles-pagination p {
+  margin: 0;
+}
+
+.permission-matrix {
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: var(--space-md);
+  margin: 0 0 var(--space-md);
+}
+
+.permission-matrix legend {
+  padding: 0 var(--space-xs);
+  font-weight: 600;
+}
+
+.permission-check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin: 0;
+}
+
+.permission-check input {
+  width: auto;
+}
+
+.permission-check-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.roles-dialog {
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: var(--space-lg);
+  max-width: 28rem;
+  width: calc(100% - var(--space-lg));
+}
+
+.roles-dialog::backdrop {
+  background: rgb(0 0 0 / 0.4);
+}
+
+.roles-dialog h3 {
+  margin-top: 0;
+}
+
+@media (max-width: 767px) {
+  .roles-table thead,
+  .permission-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .roles-table,
+  .permission-table,
+  .roles-table tbody,
+  .permission-table tbody,
+  .roles-table tr,
+  .permission-table tr,
+  .roles-table td,
+  .permission-table td,
+  .permission-table th {
+    display: block;
+    width: 100%;
+  }
+
+  .roles-table tr,
+  .permission-table tr {
+    padding: var(--space-md);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .roles-table td,
+  .permission-table td {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    border-bottom: 0;
+    padding: var(--space-xs) 0;
+  }
+
+  .roles-table td::before,
+  .permission-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+  }
+
+  .roles-row-actions {
+    justify-content: flex-end;
+  }
+
+  .permission-table th[scope='row'] {
+    background: transparent;
+    padding: 0 0 var(--space-sm);
+    font-size: 1rem;
+  }
+
+  .permission-check-label {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+  }
+
+  .permission-table td::before {
+    content: none;
+  }
+}

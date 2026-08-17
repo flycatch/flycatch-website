@@ -10,6 +10,7 @@ OPENAPI_FILES = [
     "admin-auth.v2.yaml",
     "admin-rbac.v1.yaml",
     "admin-management.v2.yaml",
+    "admin-roles.v1.yaml",
     "publish.v2.yaml",
 ]
 

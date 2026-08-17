@@ -23,7 +23,7 @@ components:
       enum: [administrator, editor]
     PermissionName:
       type: string
-      enum: [records.view, drafts.save, records.publish]
+      enum: [records.view, drafts.save, records.publish, roles.manage]
     PermissionDenied:
       type: object
       additionalProperties: false
@@ -56,7 +56,7 @@ components:
         $ref: '#/components/schemas/RoleGrant'
       example:
         - name: administrator
-          permissions: [records.view, drafts.save, records.publish]
+          permissions: [records.view, drafts.save, records.publish, roles.manage]
         - name: editor
           permissions: [records.view, drafts.save]
     OperationPermissionMap:

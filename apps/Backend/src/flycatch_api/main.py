@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from flycatch_api.api import admin_auth, admin_management, publish, stubs
+from flycatch_api.api import admin_auth, admin_management, admin_roles, publish, stubs
 
 app = FastAPI(title="Flycatch API", version="2.0.0", docs_url="/api/docs", openapi_url="/openapi.json")
 
@@ -35,6 +35,7 @@ app.add_middleware(
 
 app.include_router(admin_auth.router, prefix="/api/v1")
 app.include_router(admin_management.router, prefix="/api/v1")
+app.include_router(admin_roles.router, prefix="/api/v1")
 app.include_router(publish.router, prefix="/api/v1")
 app.include_router(stubs.router, prefix="/api/v1")
 
