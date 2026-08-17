@@ -1,0 +1,9 @@
+node_modules/
+dist/
+build/
+.astro/
+coverage/
+src/generated/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
