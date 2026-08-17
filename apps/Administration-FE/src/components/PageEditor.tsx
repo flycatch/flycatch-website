@@ -23,27 +23,44 @@ export default function PageEditor({
   const [heading, setHeading] = useState(String(seo.primary_heading || ''));
   const [summary, setSummary] = useState(String(seo.summary || ''));
   const [body, setBody] = useState(String(draft.body || ''));
+  const [busy, setBusy] = useState<'draft' | 'publish' | null>(null);
 
   async function saveDraft() {
-    await onSaveDraft({
-      ...draft,
-      slug: 'home',
-      body,
-      seo: {
-        ...seo,
-        title,
-        description,
-        primary_heading: heading,
-        summary,
-        canonical_path: '/',
-        indexable: true,
-      },
-    });
+    setBusy('draft');
+    try {
+      await onSaveDraft({
+        ...draft,
+        slug: 'home',
+        body,
+        seo: {
+          ...seo,
+          title,
+          description,
+          primary_heading: heading,
+          summary,
+          canonical_path: '/',
+          indexable: true,
+        },
+      });
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function publish() {
+    setBusy('publish');
+    try {
+      await onPublish();
+    } finally {
+      setBusy(null);
+    }
   }
 
   return (
     <section>
-      <h2>{t('admin.workspace.home_page')}</h2>
+      <div className="panel-header">
+        <h2>{t('admin.workspace.home_page')}</h2>
+      </div>
       <label>
         Title
         <input value={title} onChange={(e) => setTitle(e.target.value)} required />
@@ -64,14 +81,25 @@ export default function PageEditor({
         Body
         <textarea value={body} onChange={(e) => setBody(e.target.value)} required />
       </label>
-      <div className="actions">
+      <div className="actions panel-footer">
         {canDraft && (
-          <button type="button" onClick={saveDraft}>
+          <button
+            type="button"
+            onClick={saveDraft}
+            disabled={busy !== null}
+            aria-busy={busy === 'draft'}
+          >
             {t('admin.save_draft')}
           </button>
         )}
         {canPublish ? (
-          <button type="button" className="primary" onClick={onPublish}>
+          <button
+            type="button"
+            className="primary"
+            onClick={publish}
+            disabled={busy !== null}
+            aria-busy={busy === 'publish'}
+          >
             {t('admin.publish')}
           </button>
         ) : (
@@ -87,7 +115,7 @@ export default function PageEditor({
         )}
       </div>
       {!canPublish && (
-        <p className="error" role="status">
+        <p className="alert alert-warning error" role="status">
           {t('admin.action.forbidden')}
         </p>
       )}

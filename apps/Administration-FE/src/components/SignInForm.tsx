@@ -41,7 +41,11 @@ export default function SignInForm({ onSignedIn }: Props) {
   }
 
   return (
-    <form onSubmit={onSubmit} method="post" action="/admin/" noValidate>
+    <form className="auth-form" onSubmit={onSubmit} method="post" action="/admin/" noValidate>
+      <div className="auth-brand">
+        <span className="brand-mark" aria-hidden="true" />
+        <span>{t('admin.workspace.title')}</span>
+      </div>
       <h1>{t('admin.sign_in.title')}</h1>
       <label>
         {t('admin.sign_in.email')}
@@ -80,11 +84,11 @@ export default function SignInForm({ onSignedIn }: Props) {
         )}
       </label>
       {error && (
-        <p className="error" role="alert">
+        <p className="alert alert-error error" role="alert">
           {error}
         </p>
       )}
-      <button type="submit" className="primary" disabled={loading}>
+      <button type="submit" className="primary" disabled={loading} aria-busy={loading}>
         {t('admin.sign_in.submit')}
       </button>
     </form>

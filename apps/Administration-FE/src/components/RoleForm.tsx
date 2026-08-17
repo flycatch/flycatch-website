@@ -29,6 +29,7 @@ export default function RoleForm({ roleId, onCancel, onSaved }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -82,6 +83,7 @@ export default function RoleForm({ roleId, onCancel, onSaved }: Props) {
       description: description.trim() || null,
       permissions: [...grants].filter((item) => allowed.has(item)),
     };
+    setSaving(true);
     try {
       if (roleId) await updateRole(roleId, payload);
       else await createRole(payload);
@@ -98,16 +100,27 @@ export default function RoleForm({ roleId, onCancel, onSaved }: Props) {
         return;
       }
       setError(t('admin.action.forbidden'));
+    } finally {
+      setSaving(false);
     }
   }
 
   if (!ready) {
-    return <p>{t('admin.roles.title')}</p>;
+    return (
+      <section className="role-form-page">
+        <p className="loading-state" role="status">
+          <span className="spinner" aria-hidden="true" />
+          {t('admin.workspace.loading')}
+        </p>
+      </section>
+    );
   }
 
   return (
     <section className="role-form-page">
-      <h2>{roleId ? t('admin.roles.edit') : t('admin.roles.add')}</h2>
+      <div className="panel-header">
+        <h2>{roleId ? t('admin.roles.edit') : t('admin.roles.add')}</h2>
+      </div>
       <form onSubmit={save}>
         <label>
           {t('admin.roles.name')}
@@ -118,6 +131,7 @@ export default function RoleForm({ roleId, onCancel, onSaved }: Props) {
             maxLength={64}
             disabled={isSystem}
             autoComplete="off"
+            aria-invalid={Boolean(fieldError)}
           />
         </label>
         {isSystem && <p className="hint">{t('admin.roles.system_protected')}</p>}
@@ -131,12 +145,12 @@ export default function RoleForm({ roleId, onCancel, onSaved }: Props) {
           />
         </label>
         {fieldError && (
-          <p className="error" role="alert">
+          <p className="alert alert-error error" role="alert">
             {fieldError}
           </p>
         )}
         {error && (
-          <p className="error" role="alert">
+          <p className="alert alert-error error" role="alert">
             {error}
           </p>
         )}
@@ -183,11 +197,11 @@ export default function RoleForm({ roleId, onCancel, onSaved }: Props) {
             </table>
           </div>
         </fieldset>
-        <div className="actions">
-          <button type="button" onClick={onCancel}>
+        <div className="actions panel-footer">
+          <button type="button" onClick={onCancel} disabled={saving}>
             {t('admin.roles.cancel')}
           </button>
-          <button type="submit" className="primary">
+          <button type="submit" className="primary" disabled={saving} aria-busy={saving}>
             {t('admin.roles.save')}
           </button>
         </div>

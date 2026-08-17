@@ -70,6 +70,7 @@ export default function RolesList({ onAdd, onEdit, notice }: Props) {
   }
 
   const totalPages = data ? Math.max(1, Math.ceil(data.total / data.per_page)) : 1;
+  const loading = data === null && !error;
 
   return (
     <section className="roles-page">
@@ -97,11 +98,11 @@ export default function RolesList({ onAdd, onEdit, notice }: Props) {
         <button type="submit">{t('admin.roles.search.submit')}</button>
       </form>
       {error && (
-        <p className="error" role="alert">
+        <p className="alert alert-error error" role="alert">
           {error}
         </p>
       )}
-      <div className="roles-table-wrap">
+      <div className="roles-table-wrap" aria-busy={loading}>
         <table className="roles-table">
           <thead>
             <tr>
@@ -142,8 +143,14 @@ export default function RolesList({ onAdd, onEdit, notice }: Props) {
             ))}
           </tbody>
         </table>
+        {loading && (
+          <p className="loading-state" role="status">
+            <span className="spinner" aria-hidden="true" />
+            {t('admin.workspace.loading')}
+          </p>
+        )}
         {data && data.items.length === 0 && (
-          <p className="roles-empty">{t('admin.roles.empty')}</p>
+          <p className="roles-empty empty-state">{t('admin.roles.empty')}</p>
         )}
       </div>
       {data && data.total > data.per_page && (

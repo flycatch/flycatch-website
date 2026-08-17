@@ -4,18 +4,26 @@ import { t } from '../lib/i18n';
 ---
 <AdminLayout>
   <Fragment slot="title">{t('admin.workspace.title')}</Fragment>
-  <header class="admin-header">
-    <div class="container">
-      <h1>{t('admin.workspace.title')}</h1>
-      <slot name="actions" />
+  <div class="admin-app">
+    <aside class="admin-sidebar">
+      <div class="admin-brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>{t('admin.workspace.title')}</span>
+      </div>
+      <nav class="admin-nav" aria-label="Administration">
+        <slot name="nav" />
+      </nav>
+    </aside>
+    <div class="admin-frame">
+      <header class="admin-header">
+        <div class="admin-header-inner">
+          <h1>{t('admin.workspace.title')}</h1>
+          <slot name="actions" />
+        </div>
+      </header>
+      <main id="main" class="admin-main">
+        <slot />
+      </main>
     </div>
-  </header>
-  <div class="admin-body container">
-    <nav class="admin-nav" aria-label="Administration">
-      <slot name="nav" />
-    </nav>
-    <main id="main" class="admin-main">
-      <slot />
-    </main>
   </div>
 </AdminLayout>
