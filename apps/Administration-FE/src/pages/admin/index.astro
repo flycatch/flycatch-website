@@ -5,5 +5,5 @@ import { t } from '../../lib/i18n';
 ---
 <AdminLayout>
   <Fragment slot="title">{t('admin.workspace.title')}</Fragment>
-  <AdminShell client:load />
+  <AdminShell client:only="react" />
 </AdminLayout>

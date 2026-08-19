@@ -402,13 +402,21 @@ components:
     Author:
       type: object
       additionalProperties: false
-      required: [id, name]
+      required: [id, name, bio, designation, writer_image_keys]
       properties:
         id:
           type: string
           format: uuid
         name:
           type: string
+        bio:
+          type: string
+        designation:
+          type: string
+        writer_image_keys:
+          type: array
+          items:
+            type: string
     AuthorList:
       type: object
       additionalProperties: false
@@ -427,6 +435,17 @@ components:
           type: string
           minLength: 1
           maxLength: 120
+        bio:
+          type: string
+          default: ''
+        designation:
+          type: string
+          default: ''
+        writer_image_keys:
+          type: array
+          items:
+            type: string
+          default: []
     Category:
       type: object
       additionalProperties: false
@@ -509,10 +528,6 @@ components:
         - linkedin
         - twitter
         - instagram
-        - full_name
-        - bio
-        - designation
-        - writer_image_keys
         - content_available_in
         - author_ids
         - category_ids
@@ -549,16 +564,6 @@ components:
           type: string
         instagram:
           type: string
-        full_name:
-          type: string
-        bio:
-          type: string
-        designation:
-          type: string
-        writer_image_keys:
-          type: array
-          items:
-            type: string
         content_available_in:
           type: array
           items:
@@ -627,20 +632,6 @@ components:
         instagram:
           type: string
           default: ''
-        full_name:
-          type: string
-          default: ''
-        bio:
-          type: string
-          default: ''
-        designation:
-          type: string
-          default: ''
-        writer_image_keys:
-          type: array
-          items:
-            type: string
-          default: []
         author_ids:
           type: array
           items:

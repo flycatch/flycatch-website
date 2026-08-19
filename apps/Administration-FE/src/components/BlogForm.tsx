@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import {
   createBlog,
   getBlog,
@@ -12,17 +12,16 @@ import {
   type BlogWrite,
   type Category,
 } from '../lib/admin-api';
+import { hydrateRichText, persistRichText } from '../lib/rich-text';
 import MultiSelect from './MultiSelect';
+import MediaPreview from './MediaPreview';
+import RichTextEditor from './RichTextEditor';
 import { t } from '../lib/i18n';
 
 interface Props {
   blogId: string | null;
   onCancel: () => void;
   onSaved: () => void;
-}
-
-function applyFormat(command: string, value?: string) {
-  document.execCommand(command, false, value);
 }
 
 export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
@@ -45,16 +44,10 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
   const [linkedin, setLinkedin] = useState('');
   const [twitter, setTwitter] = useState('');
   const [instagram, setInstagram] = useState('');
-  const [fullName, setFullName] = useState('');
-  const [bio, setBio] = useState('');
-  const [designation, setDesignation] = useState('');
-  const [writerImageKeys, setWriterImageKeys] = useState<string[]>([]);
-  const [writerFiles, setWriterFiles] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
   const [saving, setSaving] = useState(false);
-  const bodyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function load() {
@@ -67,7 +60,7 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
         setSlug(blog.slug);
         setSlugManual(true);
         setDescription(blog.description);
-        setBody(blog.body);
+        setBody(await hydrateRichText(blog.body));
         setStatus(blog.status);
         setReadingTime(blog.reading_time);
         setImageKey(blog.image_key);
@@ -79,10 +72,6 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
         setLinkedin(blog.linkedin);
         setTwitter(blog.twitter);
         setInstagram(blog.instagram);
-        setFullName(blog.full_name);
-        setBio(blog.bio);
-        setDesignation(blog.designation);
-        setWriterImageKeys(blog.writer_image_keys);
       }
       setReady(true);
     }
@@ -91,12 +80,6 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
       setReady(true);
     });
   }, [blogId]);
-
-  useEffect(() => {
-    if (ready && bodyRef.current) {
-      bodyRef.current.innerHTML = body;
-    }
-  }, [ready, blogId]);
 
   function onTitleChange(value: string) {
     setTitle(value);
@@ -122,15 +105,11 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
       if (imageFile) {
         nextImageKey = (await uploadMedia(imageFile)).key;
       }
-      const extraWriterKeys = [];
-      for (const file of writerFiles) {
-        extraWriterKeys.push((await uploadMedia(file)).key);
-      }
       const payload: BlogWrite = {
         title: title.trim(),
         slug: nextSlug,
         description: description.trim(),
-        body: bodyRef.current?.innerHTML || body,
+        body: persistRichText(body),
         status,
         reading_time: Number.isFinite(readingTime) ? Math.max(0, Math.trunc(readingTime)) : 0,
         image_key: nextImageKey,
@@ -140,10 +119,6 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
         linkedin: linkedin.trim(),
         twitter: twitter.trim(),
         instagram: instagram.trim(),
-        full_name: fullName.trim(),
-        bio: bio.trim(),
-        designation: designation.trim(),
-        writer_image_keys: [...writerImageKeys, ...extraWriterKeys],
         author_ids: authorIds,
         category_ids: categoryIds,
       };
@@ -205,42 +180,12 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
             rows={3}
           />
         </label>
-        <div className="rte-field">
-          <p className="rte-label" id="blog-body-label">
-            {t('admin.blogs.field.body')}
-          </p>
-          <div className="rte-toolbar" role="toolbar" aria-label={t('admin.blogs.field.body')}>
-            <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat('bold')}>
-              {t('admin.blogs.rte.bold')}
-            </button>
-            <button
-              type="button"
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={() => applyFormat('italic')}
-            >
-              {t('admin.blogs.rte.italic')}
-            </button>
-            <button
-              type="button"
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={() => {
-                const href = window.prompt(t('admin.blogs.rte.link_prompt'));
-                if (href) applyFormat('createLink', href);
-              }}
-            >
-              {t('admin.blogs.rte.link')}
-            </button>
-          </div>
-          <div
-            ref={bodyRef}
-            className="rte-editor"
-            contentEditable
-            role="textbox"
-            aria-multiline="true"
-            aria-labelledby="blog-body-label"
-            onInput={() => setBody(bodyRef.current?.innerHTML || '')}
-          />
-        </div>
+        <RichTextEditor
+          id="blog-body-label"
+          label={t('admin.blogs.field.body')}
+          value={body}
+          onChange={setBody}
+        />
         <label>
           {t('admin.blogs.field.status')}
           <select value={status} onChange={(event) => setStatus(event.target.value as 'draft' | 'publish')}>
@@ -266,7 +211,11 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
             onChange={(event) => setImageFile(event.target.files?.[0] || null)}
           />
         </label>
-        {imageKey && !imageFile ? <p className="hint">{imageKey}</p> : null}
+        <MediaPreview
+          mediaKeys={imageFile ? [] : imageKey ? [imageKey] : []}
+          files={imageFile ? [imageFile] : []}
+          alt={imageAlt || t('admin.blogs.field.image')}
+        />
         <label>
           {t('admin.blogs.field.image_alt')}
           <input value={imageAlt} onChange={(event) => setImageAlt(event.target.value)} maxLength={200} />
@@ -304,32 +253,6 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
         <label>
           {t('admin.blogs.field.instagram')}
           <input value={instagram} onChange={(event) => setInstagram(event.target.value)} />
-        </label>
-        <label>
-          {t('admin.blogs.field.full_name')}
-          <input value={fullName} onChange={(event) => setFullName(event.target.value)} maxLength={200} />
-        </label>
-        <label>
-          {t('admin.blogs.field.bio')}
-          <textarea value={bio} onChange={(event) => setBio(event.target.value)} rows={3} />
-        </label>
-        <label>
-          {t('admin.blogs.field.writer_images')}
-          <input
-            type="file"
-            multiple
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            onChange={(event) => setWriterFiles(Array.from(event.target.files || []))}
-          />
-        </label>
-        {writerImageKeys.length > 0 ? (
-          <p className="hint">
-            {t('admin.blogs.field.writer_images.saved')}: {writerImageKeys.length}
-          </p>
-        ) : null}
-        <label>
-          {t('admin.blogs.field.designation')}
-          <input value={designation} onChange={(event) => setDesignation(event.target.value)} maxLength={200} />
         </label>
         {fieldError && (
           <p className="alert alert-error error" role="alert">

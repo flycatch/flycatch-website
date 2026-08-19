@@ -35,6 +35,7 @@ class AuthorService:
     def create(self, db: Session, payload: AuthorWrite) -> AuthorSchema:
         name = self._validate_name(db, payload.name, None)
         author = Author(name=name, created_at=datetime.now(UTC))
+        self._apply_profile(author, payload)
         db.add(author)
         db.commit()
         db.refresh(author)
@@ -47,6 +48,7 @@ class AuthorService:
                 404, EntityNotFound(message_key="admin.authors.not_found").model_dump()
             )
         author.name = self._validate_name(db, payload.name, author.id)
+        self._apply_profile(author, payload)
         db.commit()
         db.refresh(author)
         return self._to_schema(author)
@@ -85,5 +87,20 @@ class AuthorService:
             )
         return trimmed
 
+    def _apply_profile(self, author: Author, payload: AuthorWrite) -> None:
+        author.bio = payload.bio.strip()
+        author.designation = payload.designation.strip()
+        author.writer_image_keys = list(payload.writer_image_keys)
+
     def _to_schema(self, author: Author) -> AuthorSchema:
-        return AuthorSchema(id=author.id, name=author.name)
+        return author_schema(author)
+
+
+def author_schema(author: Author) -> AuthorSchema:
+    return AuthorSchema(
+        id=author.id,
+        name=author.name,
+        bio=author.bio or "",
+        designation=author.designation or "",
+        writer_image_keys=list(author.writer_image_keys or []),
+    )

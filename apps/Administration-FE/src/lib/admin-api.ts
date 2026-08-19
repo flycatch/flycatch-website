@@ -313,6 +313,29 @@ export async function uploadMedia(file: File): Promise<MediaObject> {
   return api<MediaObject>('/admin/media', { method: 'POST', body });
 }
 
+async function apiBlob(path: string, retry = true): Promise<Blob> {
+  const headers = new Headers();
+  const access = getAccessToken();
+  if (access) {
+    headers.set('Authorization', `Bearer ${access}`);
+  }
+  const response = await fetch(`${API_BASE}${path}`, { headers });
+  if (response.status === 401 && retry && path !== '/admin/auth/refresh') {
+    const refreshed = await refreshOnce();
+    if (refreshed) {
+      return apiBlob(path, false);
+    }
+  }
+  if (!response.ok) {
+    throw new AdminApiError(response.status, { message_key: 'admin.workspace.request_failed' });
+  }
+  return response.blob();
+}
+
+export async function fetchMediaBlob(key: string): Promise<Blob> {
+  return apiBlob(`/admin/media/${encodeURIComponent(key)}`);
+}
+
 export function slugify(value: string): string {
   return value
     .toLowerCase()

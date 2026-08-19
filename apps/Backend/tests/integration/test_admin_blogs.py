@@ -44,10 +44,17 @@ def test_author_category_and_blog_crud(client, bootstrapped):
     author = client.post(
         "/api/v1/admin/authors",
         headers=headers,
-        json={"name": "Ada Lovelace"},
+        json={
+            "name": "Ada Lovelace",
+            "bio": "Mathematician",
+            "designation": "Writer",
+        },
     )
     assert author.status_code == 201
     author_id = author.json()["id"]
+    assert author.json()["name"] == "Ada Lovelace"
+    assert author.json()["bio"] == "Mathematician"
+    assert author.json()["designation"] == "Writer"
     category = client.post(
         "/api/v1/admin/categories",
         headers=headers,
@@ -68,9 +75,6 @@ def test_author_category_and_blog_crud(client, bootstrapped):
             "reading_time": 4,
             "author_ids": [author_id],
             "category_ids": [category_id],
-            "full_name": "Ada",
-            "bio": "Mathematician",
-            "designation": "Writer",
         },
     )
     assert created.status_code == 201
@@ -81,6 +85,8 @@ def test_author_category_and_blog_crud(client, bootstrapped):
     assert blog["author_ids"] == [author_id]
     assert blog["category_ids"] == [category_id]
     assert blog["authors"][0]["name"] == "Ada Lovelace"
+    assert blog["authors"][0]["bio"] == "Mathematician"
+    assert blog["authors"][0]["designation"] == "Writer"
 
     listed = client.get("/api/v1/admin/blogs", headers=headers)
     assert listed.status_code == 200

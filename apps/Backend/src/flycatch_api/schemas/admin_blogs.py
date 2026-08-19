@@ -11,6 +11,9 @@ class Author(BaseModel):
 
     id: UUID
     name: str
+    bio: str
+    designation: str
+    writer_image_keys: list[str]
 
 
 class AuthorList(BaseModel):
@@ -23,6 +26,9 @@ class AuthorWrite(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     name: str = Field(min_length=1, max_length=120)
+    bio: str = ""
+    designation: str = ""
+    writer_image_keys: list[str] = Field(default_factory=list)
 
 
 class Category(BaseModel):
@@ -81,10 +87,6 @@ class BlogDetail(BaseModel):
     linkedin: str
     twitter: str
     instagram: str
-    full_name: str
-    bio: str
-    designation: str
-    writer_image_keys: list[str]
     content_available_in: list[str]
     author_ids: list[UUID]
     category_ids: list[UUID]
@@ -108,10 +110,6 @@ class BlogWrite(BaseModel):
     linkedin: str = ""
     twitter: str = ""
     instagram: str = ""
-    full_name: str = ""
-    bio: str = ""
-    designation: str = ""
-    writer_image_keys: list[str] = Field(default_factory=list)
     author_ids: list[UUID] = Field(default_factory=list)
     category_ids: list[UUID] = Field(default_factory=list)
 

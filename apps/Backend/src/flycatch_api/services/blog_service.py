@@ -9,7 +9,6 @@ from sqlalchemy.orm import Session, joinedload
 from flycatch_api.models import Author, Blog, BlogAuthor, BlogCategory, Category
 from flycatch_api.models.blog import BlogStatus
 from flycatch_api.schemas.admin_auth import FieldErrorDetail, FieldErrors
-from flycatch_api.schemas.admin_blogs import Author as AuthorSchema
 from flycatch_api.schemas.admin_blogs import (
     BlogDetail,
     BlogList,
@@ -20,7 +19,7 @@ from flycatch_api.schemas.admin_blogs import (
 from flycatch_api.schemas.admin_blogs import (
     Category as CategorySchema,
 )
-from flycatch_api.services.author_service import CatalogError
+from flycatch_api.services.author_service import CatalogError, author_schema
 from flycatch_api.services.text import is_valid_slug, sanitize_html, slugify
 
 PER_PAGE = 10
@@ -150,10 +149,6 @@ class BlogService:
         blog.linkedin = payload.linkedin.strip()
         blog.twitter = payload.twitter.strip()
         blog.instagram = payload.instagram.strip()
-        blog.full_name = payload.full_name.strip()
-        blog.bio = payload.bio.strip()
-        blog.designation = payload.designation.strip()
-        blog.writer_image_keys = list(payload.writer_image_keys)
         blog.content_available_in = [DEFAULT_LOCALE]
         blog.author_links = [BlogAuthor(author=author) for author in authors]
         blog.category_links = [BlogCategory(category=category) for category in categories]
@@ -206,9 +201,7 @@ class BlogService:
         )
 
     def _detail(self, blog: Blog) -> BlogDetail:
-        authors = [
-            AuthorSchema(id=link.author.id, name=link.author.name) for link in blog.author_links
-        ]
+        authors = [author_schema(link.author) for link in blog.author_links]
         categories = [
             CategorySchema(id=link.category.id, name=link.category.name)
             for link in blog.category_links
@@ -228,10 +221,6 @@ class BlogService:
             linkedin=blog.linkedin,
             twitter=blog.twitter,
             instagram=blog.instagram,
-            full_name=blog.full_name,
-            bio=blog.bio,
-            designation=blog.designation,
-            writer_image_keys=list(blog.writer_image_keys or []),
             content_available_in=list(blog.content_available_in or [DEFAULT_LOCALE]),
             author_ids=[item.id for item in authors],
             category_ids=[item.id for item in categories],
