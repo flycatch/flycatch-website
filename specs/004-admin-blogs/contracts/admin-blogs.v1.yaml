@@ -9,6 +9,14 @@ info:
     Authors and categories are separate entities mapped to blogs with many-to-many
     relations. Blog status draft/publish is stored on the blog row and does not
     use the site-settings/page publish snapshot pipeline.
+
+    The website frontend MUST NOT call these admin paths. Published reads for the
+    public site are defined in public-blogs.v1.yaml:
+
+      GET /public/blogs              list published blogs (q, page, per_page)
+      GET /public/blogs/{slug}       one published blog by slug
+
+    Drafts MUST NOT appear on those public endpoints. See also spec.md.
 servers:
   - url: /api/v1
 security:
