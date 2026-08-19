@@ -101,6 +101,7 @@ export default function CaseStudiesList({ onAdd, onEdit, notice }: Props) {
         <table className="roles-table">
           <thead>
             <tr>
+              <th scope="col">{t('admin.case_studies.id')}</th>
               <th scope="col">{t('admin.case_studies.heading')}</th>
               <th scope="col">{t('admin.case_studies.industry')}</th>
               <th scope="col">{t('admin.case_studies.order')}</th>
@@ -111,8 +112,11 @@ export default function CaseStudiesList({ onAdd, onEdit, notice }: Props) {
             </tr>
           </thead>
           <tbody>
-            {data?.items.map((item) => (
+            {data?.items.map((item, index) => (
               <tr key={item.id}>
+                <td data-label={t('admin.case_studies.id')}>
+                  {(data.page - 1) * data.per_page + index + 1}
+                </td>
                 <td data-label={t('admin.case_studies.heading')}>{item.heading}</td>
                 <td data-label={t('admin.case_studies.industry')}>{item.industry || '—'}</td>
                 <td data-label={t('admin.case_studies.order')}>{item.order}</td>

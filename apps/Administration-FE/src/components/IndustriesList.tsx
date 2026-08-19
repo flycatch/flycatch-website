@@ -110,9 +110,11 @@ export default function IndustriesList({ onAdd, onEdit, notice }: Props) {
             </tr>
           </thead>
           <tbody>
-            {data?.items.map((item) => (
+            {data?.items.map((item, index) => (
               <tr key={item.id}>
-                <td data-label={t('admin.industries.id')}>{item.id}</td>
+                <td data-label={t('admin.industries.id')}>
+                  {(data.page - 1) * data.per_page + index + 1}
+                </td>
                 <td data-label={t('admin.industries.name')}>{item.name}</td>
                 <td data-label={t('admin.industries.created_at')}>
                   {formatDateTime(item.created_at)}

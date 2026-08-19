@@ -119,6 +119,7 @@
   "admin.case_studies.edit": "Edit case study",
   "admin.case_studies.search": "Search case studies",
   "admin.case_studies.search.submit": "Search",
+  "admin.case_studies.id": "ID",
   "admin.case_studies.heading": "Heading",
   "admin.case_studies.industry": "Industry",
   "admin.case_studies.order": "Order",
