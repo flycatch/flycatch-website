@@ -12,6 +12,7 @@ const required = [
   'admin-roles.v1.ts',
   'publish.v2.ts',
   'admin-blogs.v1.ts',
+  'admin-case-studies.v1.ts',
 ];
 
 let failed = false;

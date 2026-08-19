@@ -2,6 +2,7 @@ import type { components as AuthComponents } from '../generated/admin-auth.v2';
 import type { components as RbacComponents } from '../generated/admin-rbac.v1';
 import type { components as RolesComponents } from '../generated/admin-roles.v1';
 import type { components as BlogsComponents } from '../generated/admin-blogs.v1';
+import type { components as CaseStudiesComponents } from '../generated/admin-case-studies.v1';
 import {
   clearTokens,
   getAccessToken,
@@ -31,6 +32,15 @@ export type Category = BlogsComponents['schemas']['Category'];
 export type CategoryList = BlogsComponents['schemas']['CategoryList'];
 export type CategoryWrite = BlogsComponents['schemas']['CategoryWrite'];
 export type MediaObject = BlogsComponents['schemas']['MediaObject'];
+export type CaseStudyList = CaseStudiesComponents['schemas']['CaseStudyList'];
+export type CaseStudyDetail = CaseStudiesComponents['schemas']['CaseStudyDetail'];
+export type CaseStudyWrite = CaseStudiesComponents['schemas']['CaseStudyWrite'];
+export type Industry = CaseStudiesComponents['schemas']['Industry'];
+export type IndustryList = CaseStudiesComponents['schemas']['IndustryList'];
+export type IndustryWrite = CaseStudiesComponents['schemas']['IndustryWrite'];
+export type CaseStudyCategory = CaseStudiesComponents['schemas']['CaseStudyCategory'];
+export type CaseStudyCategoryList = CaseStudiesComponents['schemas']['CaseStudyCategoryList'];
+export type CaseStudyCategoryWrite = CaseStudiesComponents['schemas']['CaseStudyCategoryWrite'];
 
 export class AdminApiError extends Error {
   status: number;
@@ -54,7 +64,7 @@ function errorBody(payload: unknown): AdminApiError['detail'] {
     }
     return record as AdminApiError['detail'];
   }
-  return { message_key: 'admin.sign_in.error' };
+  return { message_key: 'admin.workspace.request_failed' };
 }
 
 let refreshInFlight: Promise<boolean> | null = null;
@@ -288,6 +298,137 @@ export async function updateCategory(id: string, payload: CategoryWrite): Promis
 
 export async function deleteCategory(id: string): Promise<void> {
   await api<void>(`/admin/categories/${id}`, { method: 'DELETE' });
+}
+
+export async function listCaseStudies(q: string, page: number): Promise<CaseStudyList> {
+  return api<CaseStudyList>(
+    `/admin/case-studies${queryString({ q: q.trim() || undefined, page, per_page: 10 })}`,
+  );
+}
+
+export async function getCaseStudy(id: string): Promise<CaseStudyDetail> {
+  return api<CaseStudyDetail>(`/admin/case-studies/${id}`);
+}
+
+export async function createCaseStudy(payload: CaseStudyWrite): Promise<CaseStudyDetail> {
+  return api<CaseStudyDetail>('/admin/case-studies', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateCaseStudy(id: string, payload: CaseStudyWrite): Promise<CaseStudyDetail> {
+  return api<CaseStudyDetail>(`/admin/case-studies/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteCaseStudy(id: string): Promise<void> {
+  await api<void>(`/admin/case-studies/${id}`, { method: 'DELETE' });
+}
+
+export async function listIndustries(q: string, page: number): Promise<IndustryList> {
+  return api<IndustryList>(
+    `/admin/industries${queryString({ q: q.trim() || undefined, page, per_page: 10 })}`,
+  );
+}
+
+export async function listAllIndustries(): Promise<Industry[]> {
+  const items: Industry[] = [];
+  let page = 1;
+  while (true) {
+    const result = await listIndustries('', page);
+    for (const row of result.items) {
+      items.push({
+        id: row.id,
+        name: row.name,
+        status: row.state,
+        created_at: row.created_at,
+      });
+    }
+    if (page * result.per_page >= result.total) break;
+    page += 1;
+  }
+  return items;
+}
+
+export async function getIndustry(id: string): Promise<Industry> {
+  return api<Industry>(`/admin/industries/${id}`);
+}
+
+export async function createIndustry(payload: IndustryWrite): Promise<Industry> {
+  return api<Industry>('/admin/industries', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateIndustry(id: string, payload: IndustryWrite): Promise<Industry> {
+  return api<Industry>(`/admin/industries/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteIndustry(id: string): Promise<void> {
+  await api<void>(`/admin/industries/${id}`, { method: 'DELETE' });
+}
+
+export async function listCaseStudyCategories(
+  q: string,
+  page: number,
+): Promise<CaseStudyCategoryList> {
+  return api<CaseStudyCategoryList>(
+    `/admin/case-study-categories${queryString({ q: q.trim() || undefined, page, per_page: 10 })}`,
+  );
+}
+
+export async function listAllCaseStudyCategories(): Promise<CaseStudyCategory[]> {
+  const items: CaseStudyCategory[] = [];
+  let page = 1;
+  while (true) {
+    const result = await listCaseStudyCategories('', page);
+    for (const row of result.items) {
+      items.push({
+        id: row.id,
+        name: row.name,
+        status: row.state,
+        created_at: row.created_at,
+        case_studies: row.case_studies,
+      });
+    }
+    if (page * result.per_page >= result.total) break;
+    page += 1;
+  }
+  return items;
+}
+
+export async function getCaseStudyCategory(id: string): Promise<CaseStudyCategory> {
+  return api<CaseStudyCategory>(`/admin/case-study-categories/${id}`);
+}
+
+export async function createCaseStudyCategory(
+  payload: CaseStudyCategoryWrite,
+): Promise<CaseStudyCategory> {
+  return api<CaseStudyCategory>('/admin/case-study-categories', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateCaseStudyCategory(
+  id: string,
+  payload: CaseStudyCategoryWrite,
+): Promise<CaseStudyCategory> {
+  return api<CaseStudyCategory>(`/admin/case-study-categories/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteCaseStudyCategory(id: string): Promise<void> {
+  await api<void>(`/admin/case-study-categories/${id}`, { method: 'DELETE' });
 }
 
 export function apiErrorMessage(caught: unknown, fallback = 'admin.workspace.request_failed'): string {

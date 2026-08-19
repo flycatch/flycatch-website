@@ -1,0 +1,766 @@
+openapi: 3.1.0
+info:
+  title: Administration Case Studies Industries and Categories
+  version: 1.0.0
+  summary: CRUD for case studies, industries, and case study categories.
+  description: |
+    Staff with records.view may list and read case studies, industries, and
+    case study categories. Staff with drafts.save may create, update, and delete
+    them. Status draft/publish is stored on each row and does not use the
+    site-settings/page publish snapshot pipeline. Media uploads remain on
+    /admin/media from admin-blogs.v1.yaml.
+
+    Public published reads are defined in public-case-studies.v1.yaml.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+  /admin/case-studies:
+    get:
+      operationId: listCaseStudies
+      summary: List case studies with search and pagination of 10
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 10
+      responses:
+        '200':
+          description: Paginated case study list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseStudyList'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+    post:
+      operationId: createCaseStudy
+      summary: Create a case study entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseStudyWrite'
+      responses:
+        '201':
+          description: Created case study
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseStudyDetail'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+  /admin/case-studies/{case_study_id}:
+    parameters:
+      - $ref: '#/components/parameters/CaseStudyId'
+    get:
+      operationId: getCaseStudy
+      summary: Return one case study including relations
+      responses:
+        '200':
+          description: Case study detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseStudyDetail'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/CaseStudyNotFound'
+    patch:
+      operationId: updateCaseStudy
+      summary: Update a case study entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseStudyWrite'
+      responses:
+        '200':
+          description: Updated case study
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseStudyDetail'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/CaseStudyNotFound'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+    delete:
+      operationId: deleteCaseStudy
+      summary: Delete a case study entry
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/CaseStudyNotFound'
+  /admin/industries:
+    get:
+      operationId: listIndustries
+      summary: List industries with search and pagination of 10
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 10
+      responses:
+        '200':
+          description: Paginated industry list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndustryList'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+    post:
+      operationId: createIndustry
+      summary: Create an industry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndustryWrite'
+      responses:
+        '201':
+          description: Created industry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Industry'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+  /admin/industries/{industry_id}:
+    parameters:
+      - $ref: '#/components/parameters/IndustryId'
+    get:
+      operationId: getIndustry
+      summary: Return one industry
+      responses:
+        '200':
+          description: Industry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Industry'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/IndustryNotFound'
+    patch:
+      operationId: updateIndustry
+      summary: Update an industry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndustryWrite'
+      responses:
+        '200':
+          description: Updated industry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Industry'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/IndustryNotFound'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+    delete:
+      operationId: deleteIndustry
+      summary: Delete an industry
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/IndustryNotFound'
+        '409':
+          $ref: '#/components/responses/IndustryInUse'
+  /admin/case-study-categories:
+    get:
+      operationId: listCaseStudyCategories
+      summary: List case study categories with search and pagination of 10
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 10
+      responses:
+        '200':
+          description: Paginated case study category list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseStudyCategoryList'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+    post:
+      operationId: createCaseStudyCategory
+      summary: Create a case study category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseStudyCategoryWrite'
+      responses:
+        '201':
+          description: Created case study category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseStudyCategory'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+  /admin/case-study-categories/{category_id}:
+    parameters:
+      - $ref: '#/components/parameters/CaseStudyCategoryId'
+    get:
+      operationId: getCaseStudyCategory
+      summary: Return one case study category
+      responses:
+        '200':
+          description: Case study category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseStudyCategory'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/CaseStudyCategoryNotFound'
+    patch:
+      operationId: updateCaseStudyCategory
+      summary: Update a case study category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseStudyCategoryWrite'
+      responses:
+        '200':
+          description: Updated case study category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseStudyCategory'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/CaseStudyCategoryNotFound'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+    delete:
+      operationId: deleteCaseStudyCategory
+      summary: Delete a case study category
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/CaseStudyCategoryNotFound'
+        '409':
+          $ref: '#/components/responses/CaseStudyCategoryInUse'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    CaseStudyId:
+      name: case_study_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    IndustryId:
+      name: industry_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    CaseStudyCategoryId:
+      name: category_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    ContentStatus:
+      type: string
+      enum: [draft, publish]
+    Industry:
+      type: object
+      additionalProperties: false
+      required: [id, name, status, created_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+        created_at:
+          type: string
+          format: date-time
+    IndustrySummary:
+      type: object
+      additionalProperties: false
+      required: [id, name, created_at, state]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        state:
+          $ref: '#/components/schemas/ContentStatus'
+    IndustryList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/IndustrySummary'
+        page:
+          type: integer
+          minimum: 1
+        per_page:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+    IndustryWrite:
+      type: object
+      additionalProperties: false
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+          default: draft
+    CaseStudyCategory:
+      type: object
+      additionalProperties: false
+      required: [id, name, status, created_at, case_studies]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+        created_at:
+          type: string
+          format: date-time
+        case_studies:
+          type: integer
+          minimum: 0
+    CaseStudyCategorySummary:
+      type: object
+      additionalProperties: false
+      required: [id, name, case_studies, created_at, state]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        case_studies:
+          type: integer
+          minimum: 0
+        created_at:
+          type: string
+          format: date-time
+        state:
+          $ref: '#/components/schemas/ContentStatus'
+    CaseStudyCategoryList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CaseStudyCategorySummary'
+        page:
+          type: integer
+          minimum: 1
+        per_page:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+    CaseStudyCategoryWrite:
+      type: object
+      additionalProperties: false
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+          default: draft
+    CaseStudySummary:
+      type: object
+      additionalProperties: false
+      required: [id, heading, industry, order, short_heading, content_available_in, state]
+      properties:
+        id:
+          type: string
+          format: uuid
+        heading:
+          type: string
+        industry:
+          type: string
+        order:
+          type: integer
+        short_heading:
+          type: string
+        content_available_in:
+          type: string
+        state:
+          $ref: '#/components/schemas/ContentStatus'
+    CaseStudyList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CaseStudySummary'
+        page:
+          type: integer
+          minimum: 1
+        per_page:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+    CaseStudyDetail:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - heading
+        - slug
+        - short_heading
+        - description
+        - body
+        - order
+        - date
+        - status
+        - image_key
+        - image_alt
+        - content_available_in
+        - industry_ids
+        - category_ids
+        - industries
+        - categories
+      properties:
+        id:
+          type: string
+          format: uuid
+        heading:
+          type: string
+        slug:
+          type: string
+        short_heading:
+          type: string
+        description:
+          type: string
+        body:
+          type: string
+        order:
+          type: integer
+        date:
+          type: string
+          format: date
+          nullable: true
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+        image_key:
+          type: string
+          nullable: true
+        image_alt:
+          type: string
+        content_available_in:
+          type: array
+          items:
+            type: string
+        industry_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        category_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        industries:
+          type: array
+          items:
+            $ref: '#/components/schemas/Industry'
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/CaseStudyCategory'
+    CaseStudyWrite:
+      type: object
+      additionalProperties: false
+      required: [heading, slug, status]
+      properties:
+        heading:
+          type: string
+          minLength: 1
+          maxLength: 200
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 128
+        short_heading:
+          type: string
+          default: ''
+        description:
+          type: string
+          default: ''
+        body:
+          type: string
+          default: ''
+        order:
+          type: integer
+          default: 0
+        date:
+          type: string
+          format: date
+          nullable: true
+          default: null
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+        image_key:
+          type: string
+          nullable: true
+        image_alt:
+          type: string
+          default: ''
+        industry_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          default: []
+        category_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          default: []
+    FieldErrorDetail:
+      type: object
+      additionalProperties: false
+      required: [message_key]
+      properties:
+        message_key:
+          type: string
+    FieldErrors:
+      type: object
+      additionalProperties: false
+      required: [fields]
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldErrorDetail'
+    EntityInUse:
+      type: object
+      additionalProperties: false
+      required: [code, message_key]
+      properties:
+        code:
+          type: string
+          const: in_use
+        message_key:
+          type: string
+  responses:
+    FieldErrors:
+      description: Field-level validation errors
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FieldErrors'
+    CaseStudyNotFound:
+      description: Unknown case study
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [code, message_key]
+            properties:
+              code:
+                type: string
+                const: not_found
+              message_key:
+                type: string
+                const: admin.case_studies.not_found
+    IndustryNotFound:
+      description: Unknown industry
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [code, message_key]
+            properties:
+              code:
+                type: string
+                const: not_found
+              message_key:
+                type: string
+                const: admin.industries.not_found
+    CaseStudyCategoryNotFound:
+      description: Unknown case study category
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [code, message_key]
+            properties:
+              code:
+                type: string
+                const: not_found
+              message_key:
+                type: string
+                const: admin.case_study_categories.not_found
+    IndustryInUse:
+      description: Industry is assigned to one or more case studies
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EntityInUse'
+    CaseStudyCategoryInUse:
+      description: Category is assigned to one or more case studies
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EntityInUse'

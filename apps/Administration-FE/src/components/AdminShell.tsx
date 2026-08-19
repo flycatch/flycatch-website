@@ -23,12 +23,24 @@ import BlogsList from './BlogsList';
 import BlogForm from './BlogForm';
 import CategoriesList from './CategoriesList';
 import CategoryForm from './CategoryForm';
+import CaseStudiesList from './CaseStudiesList';
+import CaseStudyForm from './CaseStudyForm';
+import IndustriesList from './IndustriesList';
+import IndustryForm from './IndustryForm';
+import CaseStudyCategoriesList from './CaseStudyCategoriesList';
+import CaseStudyCategoryForm from './CaseStudyCategoryForm';
 
 type View =
   | 'site_settings'
   | 'home'
   | 'blogs'
   | 'blog_form'
+  | 'case_studies'
+  | 'case_study_form'
+  | 'industries'
+  | 'industry_form'
+  | 'case_study_categories'
+  | 'case_study_category_form'
   | 'authors'
   | 'author_form'
   | 'categories'
@@ -46,6 +58,9 @@ export default function AdminShell() {
   const [view, setView] = useState<View>('site_settings');
   const [editingRoleId, setEditingRoleId] = useState<string | null>(null);
   const [editingBlogId, setEditingBlogId] = useState<string | null>(null);
+  const [editingCaseStudyId, setEditingCaseStudyId] = useState<string | null>(null);
+  const [editingIndustryId, setEditingIndustryId] = useState<string | null>(null);
+  const [editingCaseStudyCategoryId, setEditingCaseStudyCategoryId] = useState<string | null>(null);
   const [editingAuthorId, setEditingAuthorId] = useState<string | null>(null);
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const [session, setSession] = useState<SessionContext | null>(null);
@@ -100,6 +115,18 @@ export default function AdminShell() {
     }
     if (view === 'blogs' || view === 'blog_form') {
       document.title = t('admin.workspace.blogs');
+      return;
+    }
+    if (view === 'case_studies' || view === 'case_study_form') {
+      document.title = t('admin.workspace.case_studies');
+      return;
+    }
+    if (view === 'industries' || view === 'industry_form') {
+      document.title = t('admin.workspace.industries');
+      return;
+    }
+    if (view === 'case_study_categories' || view === 'case_study_category_form') {
+      document.title = t('admin.workspace.case_study_categories');
       return;
     }
     if (view === 'authors' || view === 'author_form') {
@@ -162,6 +189,9 @@ export default function AdminShell() {
     setView('site_settings');
     setEditingRoleId(null);
     setEditingBlogId(null);
+    setEditingCaseStudyId(null);
+    setEditingIndustryId(null);
+    setEditingCaseStudyCategoryId(null);
     setEditingAuthorId(null);
     setEditingCategoryId(null);
     setNavOpen(false);
@@ -177,6 +207,27 @@ export default function AdminShell() {
   function openBlogs() {
     setView('blogs');
     setEditingBlogId(null);
+    setError(null);
+    setNavOpen(false);
+  }
+
+  function openCaseStudies() {
+    setView('case_studies');
+    setEditingCaseStudyId(null);
+    setError(null);
+    setNavOpen(false);
+  }
+
+  function openIndustries() {
+    setView('industries');
+    setEditingIndustryId(null);
+    setError(null);
+    setNavOpen(false);
+  }
+
+  function openCaseStudyCategories() {
+    setView('case_study_categories');
+    setEditingCaseStudyCategoryId(null);
     setError(null);
     setNavOpen(false);
   }
@@ -288,6 +339,46 @@ export default function AdminShell() {
                 onClick={openBlogs}
               >
                 {t('admin.workspace.blogs')}
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                className={view === 'case_studies' || view === 'case_study_form' ? 'active' : ''}
+                aria-current={
+                  view === 'case_studies' || view === 'case_study_form' ? 'page' : undefined
+                }
+                onClick={openCaseStudies}
+              >
+                {t('admin.workspace.case_studies')}
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                className={view === 'industries' || view === 'industry_form' ? 'active' : ''}
+                aria-current={view === 'industries' || view === 'industry_form' ? 'page' : undefined}
+                onClick={openIndustries}
+              >
+                {t('admin.workspace.industries')}
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                className={
+                  view === 'case_study_categories' || view === 'case_study_category_form'
+                    ? 'active'
+                    : ''
+                }
+                aria-current={
+                  view === 'case_study_categories' || view === 'case_study_category_form'
+                    ? 'page'
+                    : undefined
+                }
+                onClick={openCaseStudyCategories}
+              >
+                {t('admin.workspace.case_study_categories')}
               </button>
             </li>
             <li>
@@ -425,6 +516,81 @@ export default function AdminShell() {
               onSaved={() => {
                 setMessage(t('admin.blogs.saved'));
                 openBlogs();
+              }}
+            />
+          )}
+          {view === 'case_studies' && (
+            <CaseStudiesList
+              notice={message}
+              onAdd={() => {
+                setEditingCaseStudyId(null);
+                setMessage(null);
+                setView('case_study_form');
+              }}
+              onEdit={(id) => {
+                setEditingCaseStudyId(id);
+                setMessage(null);
+                setView('case_study_form');
+              }}
+            />
+          )}
+          {view === 'case_study_form' && (
+            <CaseStudyForm
+              caseStudyId={editingCaseStudyId}
+              onCancel={openCaseStudies}
+              onSaved={() => {
+                setMessage(t('admin.case_studies.saved'));
+                openCaseStudies();
+              }}
+            />
+          )}
+          {view === 'industries' && (
+            <IndustriesList
+              notice={message}
+              onAdd={() => {
+                setEditingIndustryId(null);
+                setMessage(null);
+                setView('industry_form');
+              }}
+              onEdit={(id) => {
+                setEditingIndustryId(id);
+                setMessage(null);
+                setView('industry_form');
+              }}
+            />
+          )}
+          {view === 'industry_form' && (
+            <IndustryForm
+              industryId={editingIndustryId}
+              onCancel={openIndustries}
+              onSaved={() => {
+                setMessage(t('admin.industries.saved'));
+                openIndustries();
+              }}
+            />
+          )}
+          {view === 'case_study_categories' && (
+            <CaseStudyCategoriesList
+              notice={message}
+              onAdd={() => {
+                setEditingCaseStudyCategoryId(null);
+                setMessage(null);
+                setView('case_study_category_form');
+              }}
+              onEdit={(id) => {
+                setEditingCaseStudyCategoryId(id);
+                setMessage(null);
+                setView('case_study_category_form');
+              }}
+            />
+          )}
+          {view === 'case_study_category_form' && (
+            <CaseStudyCategoryForm
+              categoryId={editingCaseStudyCategoryId}
+              onCancel={openCaseStudyCategories}
+              onSaved={() => {
+                setMessage(t('admin.case_study_categories.saved'));
+                openCaseStudyCategories();
               }}
             />
           )}
