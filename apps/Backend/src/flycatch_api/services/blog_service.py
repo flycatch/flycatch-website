@@ -133,12 +133,13 @@ class BlogService:
             )
             query = query.filter(Blog.id.in_(matching))
         total = query.count()
+        created_order = Blog.created_at.desc() if published_only else Blog.created_at.asc()
         rows = (
             query.options(
                 joinedload(Blog.author_links).joinedload(BlogAuthor.author),
                 joinedload(Blog.category_links).joinedload(BlogCategory.category),
             )
-            .order_by(Blog.created_at.desc())
+            .order_by(created_order)
             .offset((page - 1) * per_page)
             .limit(per_page)
             .all()

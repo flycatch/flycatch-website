@@ -111,9 +111,11 @@ export default function BlogsList({ onAdd, onEdit, notice }: Props) {
             </tr>
           </thead>
           <tbody>
-            {data?.items.map((blog) => (
+            {data?.items.map((blog, index) => (
               <tr key={blog.id}>
-                <td data-label={t('admin.blogs.id')}>{blog.id}</td>
+                <td data-label={t('admin.blogs.id')}>
+                  {(data.page - 1) * data.per_page + index + 1}
+                </td>
                 <td data-label={t('admin.blogs.title.column')}>{blog.title}</td>
                 <td data-label={t('admin.blogs.slug')}>{blog.slug}</td>
                 <td data-label={t('admin.blogs.author')}>{blog.author || '—'}</td>
