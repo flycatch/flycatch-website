@@ -1,0 +1,19 @@
+---
+description: Content Admin APIs need a separated public read counterpart
+alwaysApply: true
+---
+
+# Public API counterparts
+
+When adding a **content** Admin API (blogs, authors as public catalog, categories, similar visitor-facing records), also add a matching **public read** surface in the same change.
+
+- Contract-first: separate OpenAPI file from the admin contract (for example `public-blogs.v1.yaml` next to `admin-blogs.v1.yaml`)
+- Path prefix: `/api/v1/public/...` — never reuse `/api/v1/admin/...`
+- Separate Pydantic schemas and FastAPI router from admin modules
+- No staff session; `security: []`
+- Return only published or otherwise visitor-visible data; drafts and staff fields stay on admin
+- Public identify-by-slug (or another public key), not staff UUIDs, when the content has a slug
+
+Do **not** add public counterparts for staff-only operations: auth, RBAC, roles, publish/snapshot export, media upload, or any write/delete of content.
+
+Do **not** generate public contracts into Administration-FE `generate-client.mjs`.

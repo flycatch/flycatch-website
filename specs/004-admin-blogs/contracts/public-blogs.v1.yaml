@@ -1,0 +1,219 @@
+openapi: 3.1.0
+info:
+  title: Public Blogs
+  version: 1.0.0
+  summary: Read-only published blogs for the website frontend.
+  description: |
+    Unauthenticated list and detail of blogs with status publish.
+    Drafts MUST NOT appear in the list and MUST return 404 by slug.
+    This contract is separate from admin-blogs.v1.yaml. Staff CRUD remains
+    on /admin/blogs and requires a session.
+servers:
+  - url: /api/v1
+security: []
+paths:
+  /public/blogs:
+    get:
+      operationId: listPublicBlogs
+      summary: List published blogs with search and pagination of 10
+      tags: [public-blogs]
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 10
+      responses:
+        '200':
+          description: Paginated published blog list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicBlogList'
+  /public/blogs/{slug}:
+    get:
+      operationId: getPublicBlog
+      summary: Return one published blog by slug
+      tags: [public-blogs]
+      parameters:
+        - $ref: '#/components/parameters/BlogSlug'
+      responses:
+        '200':
+          description: Published blog detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicBlogDetail'
+        '404':
+          $ref: '#/components/responses/BlogNotFound'
+components:
+  parameters:
+    BlogSlug:
+      name: slug
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 128
+  schemas:
+    PublicAuthor:
+      type: object
+      additionalProperties: false
+      required: [name, designation, writer_image_keys]
+      properties:
+        name:
+          type: string
+        designation:
+          type: string
+        writer_image_keys:
+          type: array
+          items:
+            type: string
+    PublicCategory:
+      type: object
+      additionalProperties: false
+      required: [name]
+      properties:
+        name:
+          type: string
+    PublicBlogSummary:
+      type: object
+      additionalProperties: false
+      required:
+        - title
+        - slug
+        - description
+        - reading_time
+        - image_key
+        - image_alt
+        - authors
+        - categories
+      properties:
+        title:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        reading_time:
+          type: integer
+        image_key:
+          type: string
+          nullable: true
+        image_alt:
+          type: string
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicAuthor'
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicCategory'
+    PublicBlogList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicBlogSummary'
+        page:
+          type: integer
+          minimum: 1
+        per_page:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+    PublicBlogDetail:
+      type: object
+      additionalProperties: false
+      required:
+        - title
+        - slug
+        - description
+        - body
+        - reading_time
+        - image_key
+        - image_alt
+        - canonical_url
+        - facebook
+        - linkedin
+        - twitter
+        - instagram
+        - content_available_in
+        - authors
+        - categories
+      properties:
+        title:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        body:
+          type: string
+        reading_time:
+          type: integer
+        image_key:
+          type: string
+          nullable: true
+        image_alt:
+          type: string
+        canonical_url:
+          type: string
+        facebook:
+          type: string
+        linkedin:
+          type: string
+        twitter:
+          type: string
+        instagram:
+          type: string
+        content_available_in:
+          type: array
+          items:
+            type: string
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicAuthor'
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicCategory'
+  responses:
+    BlogNotFound:
+      description: Unknown or unpublished blog
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [code, message_key]
+            properties:
+              code:
+                type: string
+                const: not_found
+              message_key:
+                type: string
+                const: public.blogs.not_found

@@ -11,6 +11,7 @@ from flycatch_api.api import (
     admin_management,
     admin_media,
     admin_roles,
+    public_blogs,
     publish,
     stubs,
 )
@@ -63,6 +64,7 @@ app.include_router(admin_authors.router, prefix="/api/v1")
 app.include_router(admin_categories.router, prefix="/api/v1")
 app.include_router(admin_media.router, prefix="/api/v1")
 app.include_router(publish.router, prefix="/api/v1")
+app.include_router(public_blogs.router, prefix="/api/v1")
 app.include_router(stubs.router, prefix="/api/v1")
 
 

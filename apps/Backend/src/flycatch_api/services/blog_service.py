@@ -19,6 +19,13 @@ from flycatch_api.schemas.admin_blogs import (
 from flycatch_api.schemas.admin_blogs import (
     Category as CategorySchema,
 )
+from flycatch_api.schemas.public_blogs import (
+    PublicAuthor,
+    PublicBlogDetail,
+    PublicBlogList,
+    PublicBlogSummary,
+    PublicCategory,
+)
 from flycatch_api.services.author_service import CatalogError, author_schema
 from flycatch_api.services.text import is_valid_slug, sanitize_html, slugify
 
@@ -29,39 +36,43 @@ LOCALE_LABEL = "En"
 
 class BlogService:
     def list_blogs(self, db: Session, q: str | None, page: int, per_page: int) -> BlogList:
-        page = max(page, 1)
-        per_page = min(max(per_page, 1), PER_PAGE)
-        query = db.query(Blog)
-        if q and q.strip():
-            term = f"%{q.strip()}%"
-            matching = (
-                db.query(Blog.id)
-                .outerjoin(BlogAuthor, BlogAuthor.blog_id == Blog.id)
-                .outerjoin(Author, Author.id == BlogAuthor.author_id)
-                .filter(
-                    or_(
-                        Blog.title.ilike(term),
-                        Blog.slug.ilike(term),
-                        Author.name.ilike(term),
-                    )
-                )
-                .distinct()
-            )
-            query = query.filter(Blog.id.in_(matching))
-        total = query.count()
-        rows = (
-            query.options(joinedload(Blog.author_links).joinedload(BlogAuthor.author))
-            .order_by(Blog.created_at.desc())
-            .offset((page - 1) * per_page)
-            .limit(per_page)
-            .all()
-        )
+        page, per_page, rows, total = self._paginated(db, q, page, per_page, published_only=False)
         return BlogList(
             items=[self._summary(blog) for blog in rows],
             page=page,
             per_page=per_page,
             total=total,
         )
+
+    def list_published(
+        self, db: Session, q: str | None, page: int, per_page: int
+    ) -> PublicBlogList:
+        page, per_page, rows, total = self._paginated(db, q, page, per_page, published_only=True)
+        return PublicBlogList(
+            items=[self._public_summary(blog) for blog in rows],
+            page=page,
+            per_page=per_page,
+            total=total,
+        )
+
+    def get_published_by_slug(self, db: Session, slug: str) -> PublicBlogDetail:
+        blog = (
+            db.query(Blog)
+            .options(
+                joinedload(Blog.author_links).joinedload(BlogAuthor.author),
+                joinedload(Blog.category_links).joinedload(BlogCategory.category),
+            )
+            .filter(
+                func.lower(Blog.slug) == slug.strip().lower(),
+                Blog.status == BlogStatus.publish,
+            )
+            .first()
+        )
+        if blog is None:
+            raise CatalogError(
+                404, EntityNotFound(message_key="public.blogs.not_found").model_dump()
+            )
+        return self._public_detail(blog)
 
     def get(self, db: Session, blog_id: UUID) -> BlogDetail:
         blog = self._load(db, blog_id)
@@ -90,6 +101,49 @@ class BlogService:
         blog = self._load(db, blog_id)
         db.delete(blog)
         db.commit()
+
+    def _paginated(
+        self,
+        db: Session,
+        q: str | None,
+        page: int,
+        per_page: int,
+        *,
+        published_only: bool,
+    ) -> tuple[int, int, list[Blog], int]:
+        page = max(page, 1)
+        per_page = min(max(per_page, 1), PER_PAGE)
+        query = db.query(Blog)
+        if published_only:
+            query = query.filter(Blog.status == BlogStatus.publish)
+        if q and q.strip():
+            term = f"%{q.strip()}%"
+            matching = (
+                db.query(Blog.id)
+                .outerjoin(BlogAuthor, BlogAuthor.blog_id == Blog.id)
+                .outerjoin(Author, Author.id == BlogAuthor.author_id)
+                .filter(
+                    or_(
+                        Blog.title.ilike(term),
+                        Blog.slug.ilike(term),
+                        Author.name.ilike(term),
+                    )
+                )
+                .distinct()
+            )
+            query = query.filter(Blog.id.in_(matching))
+        total = query.count()
+        rows = (
+            query.options(
+                joinedload(Blog.author_links).joinedload(BlogAuthor.author),
+                joinedload(Blog.category_links).joinedload(BlogCategory.category),
+            )
+            .order_by(Blog.created_at.desc())
+            .offset((page - 1) * per_page)
+            .limit(per_page)
+            .all()
+        )
+        return page, per_page, rows, total
 
     def _load(self, db: Session, blog_id: UUID) -> Blog:
         blog = (
@@ -226,4 +280,53 @@ class BlogService:
             category_ids=[item.id for item in categories],
             authors=authors,
             categories=categories,
+        )
+
+    def _public_authors(self, blog: Blog) -> list[PublicAuthor]:
+        return [
+            PublicAuthor(
+                name=link.author.name,
+                designation=link.author.designation or "",
+                writer_image_keys=list(link.author.writer_image_keys or []),
+            )
+            for link in blog.author_links
+            if link.author
+        ]
+
+    def _public_categories(self, blog: Blog) -> list[PublicCategory]:
+        return [
+            PublicCategory(name=link.category.name)
+            for link in blog.category_links
+            if link.category
+        ]
+
+    def _public_summary(self, blog: Blog) -> PublicBlogSummary:
+        return PublicBlogSummary(
+            title=blog.title,
+            slug=blog.slug,
+            description=blog.description,
+            reading_time=blog.reading_time,
+            image_key=blog.image_key,
+            image_alt=blog.image_alt,
+            authors=self._public_authors(blog),
+            categories=self._public_categories(blog),
+        )
+
+    def _public_detail(self, blog: Blog) -> PublicBlogDetail:
+        return PublicBlogDetail(
+            title=blog.title,
+            slug=blog.slug,
+            description=blog.description,
+            body=blog.body,
+            reading_time=blog.reading_time,
+            image_key=blog.image_key,
+            image_alt=blog.image_alt,
+            canonical_url=blog.canonical_url,
+            facebook=blog.facebook,
+            linkedin=blog.linkedin,
+            twitter=blog.twitter,
+            instagram=blog.instagram,
+            content_available_in=list(blog.content_available_in or [DEFAULT_LOCALE]),
+            authors=self._public_authors(blog),
+            categories=self._public_categories(blog),
         )
