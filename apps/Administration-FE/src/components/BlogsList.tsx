@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import {
-  AdminApiError,
-  deleteRole,
-  listRoles,
-  type RoleList,
+  apiErrorMessage,
+  deleteBlog,
+  listBlogs,
+  type BlogList,
 } from '../lib/admin-api';
 import { t } from '../lib/i18n';
 
@@ -13,11 +13,11 @@ interface Props {
   notice: string | null;
 }
 
-export default function RolesList({ onAdd, onEdit, notice }: Props) {
+export default function BlogsList({ onAdd, onEdit, notice }: Props) {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [page, setPage] = useState(1);
-  const [data, setData] = useState<RoleList | null>(null);
+  const [data, setData] = useState<BlogList | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -25,10 +25,10 @@ export default function RolesList({ onAdd, onEdit, notice }: Props) {
   async function load(nextQuery: string, nextPage: number) {
     setError(null);
     try {
-      const result = await listRoles(nextQuery, nextPage);
+      const result = await listBlogs(nextQuery, nextPage);
       setData(result);
     } catch {
-      setError(t('admin.workspace.load_failed'));
+      setError(t('admin.workspace.request_failed'));
     }
   }
 
@@ -55,17 +55,12 @@ export default function RolesList({ onAdd, onEdit, notice }: Props) {
   async function confirmDelete() {
     if (!pendingId) return;
     try {
-      await deleteRole(pendingId);
+      await deleteBlog(pendingId);
       closeDelete();
       await load(appliedQuery, page);
     } catch (caught) {
       closeDelete();
-      if (caught instanceof AdminApiError) {
-        const detail = caught.detail as { message_key?: string };
-        setError(t(detail.message_key || 'admin.action.forbidden'));
-        return;
-      }
-      setError(t('admin.action.forbidden'));
+      setError(apiErrorMessage(caught));
     }
   }
 
@@ -75,9 +70,9 @@ export default function RolesList({ onAdd, onEdit, notice }: Props) {
   return (
     <section className="roles-page">
       <div className="roles-toolbar">
-        <h2>{t('admin.roles.title')}</h2>
+        <h2>{t('admin.blogs.title')}</h2>
         <button type="button" className="primary" onClick={onAdd}>
-          {t('admin.roles.add')}
+          {t('admin.blogs.add')}
         </button>
       </div>
       {notice && (
@@ -87,7 +82,7 @@ export default function RolesList({ onAdd, onEdit, notice }: Props) {
       )}
       <form className="roles-search" onSubmit={search} role="search">
         <label>
-          {t('admin.roles.search')}
+          {t('admin.blogs.search')}
           <input
             type="search"
             value={query}
@@ -95,7 +90,7 @@ export default function RolesList({ onAdd, onEdit, notice }: Props) {
             autoComplete="off"
           />
         </label>
-        <button type="submit">{t('admin.roles.search.submit')}</button>
+        <button type="submit">{t('admin.blogs.search.submit')}</button>
       </form>
       {error && (
         <p className="alert alert-error error" role="alert">
@@ -106,37 +101,34 @@ export default function RolesList({ onAdd, onEdit, notice }: Props) {
         <table className="roles-table">
           <thead>
             <tr>
-              <th scope="col">{t('admin.roles.name')}</th>
-              <th scope="col">{t('admin.roles.description')}</th>
-              <th scope="col">{t('admin.roles.users')}</th>
-              <th scope="col">{t('admin.roles.actions')}</th>
+              <th scope="col">{t('admin.blogs.id')}</th>
+              <th scope="col">{t('admin.blogs.title.column')}</th>
+              <th scope="col">{t('admin.blogs.slug')}</th>
+              <th scope="col">{t('admin.blogs.author')}</th>
+              <th scope="col">{t('admin.blogs.content_available_in')}</th>
+              <th scope="col">{t('admin.blogs.state')}</th>
+              <th scope="col">{t('admin.blogs.actions')}</th>
             </tr>
           </thead>
           <tbody>
-            {data?.items.map((role) => (
-              <tr key={role.id}>
-                <td data-label={t('admin.roles.name')}>{role.name}</td>
-                <td data-label={t('admin.roles.description')}>{role.description || '—'}</td>
-                <td data-label={t('admin.roles.users')}>{role.user_count}</td>
-                <td data-label={t('admin.roles.actions')} className="roles-row-actions">
-                  <button type="button" onClick={() => onEdit(role.id)}>
-                    {t('admin.roles.edit_action')}
+            {data?.items.map((blog) => (
+              <tr key={blog.id}>
+                <td data-label={t('admin.blogs.id')}>{blog.id}</td>
+                <td data-label={t('admin.blogs.title.column')}>{blog.title}</td>
+                <td data-label={t('admin.blogs.slug')}>{blog.slug}</td>
+                <td data-label={t('admin.blogs.author')}>{blog.author || '—'}</td>
+                <td data-label={t('admin.blogs.content_available_in')}>
+                  {blog.content_available_in}
+                </td>
+                <td data-label={t('admin.blogs.state')}>
+                  {blog.state === 'publish' ? t('admin.blogs.status.publish') : t('admin.blogs.status.draft')}
+                </td>
+                <td data-label={t('admin.blogs.actions')} className="roles-row-actions">
+                  <button type="button" onClick={() => onEdit(blog.id)}>
+                    {t('admin.blogs.edit_action')}
                   </button>
-                  <button
-                    type="button"
-                    className="danger"
-                    disabled={role.is_system || role.user_count > 0}
-                    aria-disabled={role.is_system || role.user_count > 0}
-                    title={
-                      role.is_system
-                        ? t('admin.roles.system_protected')
-                        : role.user_count > 0
-                          ? t('admin.roles.in_use')
-                          : undefined
-                    }
-                    onClick={() => openDelete(role.id)}
-                  >
-                    {t('admin.roles.delete_action')}
+                  <button type="button" className="danger" onClick={() => openDelete(blog.id)}>
+                    {t('admin.blogs.delete_action')}
                   </button>
                 </td>
               </tr>
@@ -150,27 +142,27 @@ export default function RolesList({ onAdd, onEdit, notice }: Props) {
           </p>
         )}
         {data && data.items.length === 0 && (
-          <p className="roles-empty empty-state">{t('admin.roles.empty')}</p>
+          <p className="roles-empty empty-state">{t('admin.blogs.empty')}</p>
         )}
       </div>
       {data && data.total > data.per_page && (
-        <nav className="roles-pagination" aria-label={t('admin.roles.title')}>
+        <nav className="roles-pagination" aria-label={t('admin.blogs.title')}>
           <button
             type="button"
             disabled={page <= 1}
             onClick={() => setPage((current) => Math.max(1, current - 1))}
           >
-            {t('admin.roles.previous')}
+            {t('admin.blogs.previous')}
           </button>
           <p>
-            {t('admin.roles.page')} {data.page} / {totalPages}
+            {t('admin.blogs.page')} {data.page} / {totalPages}
           </p>
           <button
             type="button"
             disabled={page >= totalPages}
             onClick={() => setPage((current) => current + 1)}
           >
-            {t('admin.roles.next')}
+            {t('admin.blogs.next')}
           </button>
         </nav>
       )}
@@ -182,14 +174,14 @@ export default function RolesList({ onAdd, onEdit, notice }: Props) {
             confirmDelete().catch(() => undefined);
           }}
         >
-          <h3>{t('admin.roles.delete.confirm')}</h3>
-          <p>{t('admin.roles.delete.confirm_body')}</p>
+          <h3>{t('admin.blogs.delete.confirm')}</h3>
+          <p>{t('admin.blogs.delete.confirm_body')}</p>
           <div className="actions">
             <button type="button" onClick={closeDelete}>
-              {t('admin.roles.delete.cancel')}
+              {t('admin.blogs.delete.cancel')}
             </button>
             <button type="submit" className="danger">
-              {t('admin.roles.delete_action')}
+              {t('admin.blogs.delete_action')}
             </button>
           </div>
         </form>

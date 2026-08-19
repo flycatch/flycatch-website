@@ -7,26 +7,38 @@ import { execFileSync } from 'node:child_process';
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, '../../..');
 const outDir = join(here, '../src/generated');
-const contractsDir =
+const authContractsDir =
   process.env.CONTRACTS_DIR || join(repoRoot, 'specs/002-auth-rbac/contracts');
+const blogsContractsDir = join(repoRoot, 'specs/004-admin-blogs/contracts');
 
-const contracts = [
-  'admin-auth.v2.yaml',
-  'admin-rbac.v1.yaml',
-  'admin-management.v2.yaml',
-  'admin-roles.v1.yaml',
-  'publish.v2.yaml',
+const contractSets = [
+  {
+    dir: authContractsDir,
+    files: [
+      'admin-auth.v2.yaml',
+      'admin-rbac.v1.yaml',
+      'admin-management.v2.yaml',
+      'admin-roles.v1.yaml',
+      'publish.v2.yaml',
+    ],
+  },
+  {
+    dir: blogsContractsDir,
+    files: ['admin-blogs.v1.yaml'],
+  },
 ];
 
 mkdirSync(outDir, { recursive: true });
 
-for (const file of contracts) {
-  const src = join(contractsDir, file);
-  const dest = join(outDir, file.replace(/\.yaml$/, '.ts'));
-  execFileSync('npx', ['openapi-typescript', src, '-o', dest], {
-    stdio: 'inherit',
-    cwd: join(here, '..'),
-  });
+for (const set of contractSets) {
+  for (const file of set.files) {
+    const src = join(set.dir, file);
+    const dest = join(outDir, file.replace(/\.yaml$/, '.ts'));
+    execFileSync('npx', ['openapi-typescript', src, '-o', dest], {
+      stdio: 'inherit',
+      cwd: join(here, '..'),
+    });
+  }
 }
 
-console.log('Generated Administration FE types from specs/002-auth-rbac/contracts/');
+console.log('Generated Administration FE types from OpenAPI contracts');

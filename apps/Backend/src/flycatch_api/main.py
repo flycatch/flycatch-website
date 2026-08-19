@@ -1,8 +1,20 @@
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy.exc import SQLAlchemyError
 
-from flycatch_api.api import admin_auth, admin_management, admin_roles, publish, stubs
+from flycatch_api.api import (
+    admin_auth,
+    admin_authors,
+    admin_blogs,
+    admin_categories,
+    admin_management,
+    admin_media,
+    admin_roles,
+    public_blogs,
+    publish,
+    stubs,
+)
 
 app = FastAPI(title="Flycatch API", version="2.0.0", docs_url="/api/docs", openapi_url="/openapi.json")
 
@@ -12,6 +24,17 @@ async def http_exception_handler(request: Request, exc: HTTPException):
     if isinstance(exc.detail, dict) and "code" in exc.detail:
         return JSONResponse(status_code=exc.status_code, content=exc.detail)
     return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+
+
+@app.exception_handler(SQLAlchemyError)
+async def sqlalchemy_exception_handler(request: Request, _exc: SQLAlchemyError):
+    return JSONResponse(
+        status_code=503,
+        content={
+            "code": "unavailable",
+            "message_key": "admin.workspace.request_failed",
+        },
+    )
 
 
 @app.middleware("http")
@@ -36,7 +59,12 @@ app.add_middleware(
 app.include_router(admin_auth.router, prefix="/api/v1")
 app.include_router(admin_management.router, prefix="/api/v1")
 app.include_router(admin_roles.router, prefix="/api/v1")
+app.include_router(admin_blogs.router, prefix="/api/v1")
+app.include_router(admin_authors.router, prefix="/api/v1")
+app.include_router(admin_categories.router, prefix="/api/v1")
+app.include_router(admin_media.router, prefix="/api/v1")
 app.include_router(publish.router, prefix="/api/v1")
+app.include_router(public_blogs.router, prefix="/api/v1")
 app.include_router(stubs.router, prefix="/api/v1")
 
 

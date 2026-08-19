@@ -19,22 +19,39 @@ export default function SiteSettingsEditor({
   const draft = (record.draft || {}) as Record<string, unknown>;
   const [siteName, setSiteName] = useState(String(draft.site_name || ''));
   const [canonicalOrigin, setCanonicalOrigin] = useState(String(draft.canonical_origin || ''));
+  const [busy, setBusy] = useState<'draft' | 'publish' | null>(null);
 
   async function saveDraft() {
-    await onSaveDraft({
-      ...draft,
-      site_name: siteName,
-      canonical_origin: canonicalOrigin,
-      default_locale: 'en',
-      locale_url_strategy: 'unprefixed_default',
-      robots_policy: 'index_public',
-      default_social_image_key: draft.default_social_image_key ?? null,
-    });
+    setBusy('draft');
+    try {
+      await onSaveDraft({
+        ...draft,
+        site_name: siteName,
+        canonical_origin: canonicalOrigin,
+        default_locale: 'en',
+        locale_url_strategy: 'unprefixed_default',
+        robots_policy: 'index_public',
+        default_social_image_key: draft.default_social_image_key ?? null,
+      });
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function publish() {
+    setBusy('publish');
+    try {
+      await onPublish();
+    } finally {
+      setBusy(null);
+    }
   }
 
   return (
     <section>
-      <h2>{t('admin.workspace.site_settings')}</h2>
+      <div className="panel-header">
+        <h2>{t('admin.workspace.site_settings')}</h2>
+      </div>
       <label>
         Site name
         <input value={siteName} onChange={(e) => setSiteName(e.target.value)} required />
@@ -43,14 +60,25 @@ export default function SiteSettingsEditor({
         Canonical origin
         <input value={canonicalOrigin} onChange={(e) => setCanonicalOrigin(e.target.value)} required />
       </label>
-      <div className="actions">
+      <div className="actions panel-footer">
         {canDraft && (
-          <button type="button" onClick={saveDraft}>
+          <button
+            type="button"
+            onClick={saveDraft}
+            disabled={busy !== null}
+            aria-busy={busy === 'draft'}
+          >
             {t('admin.save_draft')}
           </button>
         )}
         {canPublish ? (
-          <button type="button" className="primary" onClick={onPublish}>
+          <button
+            type="button"
+            className="primary"
+            onClick={publish}
+            disabled={busy !== null}
+            aria-busy={busy === 'publish'}
+          >
             {t('admin.publish')}
           </button>
         ) : (
@@ -66,7 +94,7 @@ export default function SiteSettingsEditor({
         )}
       </div>
       {!canPublish && (
-        <p className="error" role="status">
+        <p className="alert alert-warning error" role="status">
           {t('admin.action.forbidden')}
         </p>
       )}
