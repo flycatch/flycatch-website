@@ -15,6 +15,10 @@ export type AdminView =
   | 'author_form'
   | 'categories'
   | 'category_form'
+  | 'client_logos'
+  | 'client_logo_form'
+  | 'client_testimonials'
+  | 'client_testimonial_form'
   | 'roles'
   | 'role_form';
 
@@ -39,6 +43,8 @@ const SECTIONS: SectionConfig[] = [
   { segment: 'technologies', list: 'technologies', form: 'technology_form' },
   { segment: 'authors', list: 'authors', form: 'author_form' },
   { segment: 'categories', list: 'categories', form: 'category_form' },
+  { segment: 'client-logos', list: 'client_logos', form: 'client_logo_form' },
+  { segment: 'client-testimonials', list: 'client_testimonials', form: 'client_testimonial_form' },
   { segment: 'roles', list: 'roles', form: 'role_form' },
   { segment: 'settings', list: 'roles', form: 'role_form' },
 ];
@@ -53,6 +59,8 @@ const LIST_HREF: Record<string, string> = {
   technologies: '/admin/technologies/',
   authors: '/admin/authors/',
   categories: '/admin/categories/',
+  client_logos: '/admin/client-logos/',
+  client_testimonials: '/admin/client-testimonials/',
   roles: '/admin/roles/',
 };
 

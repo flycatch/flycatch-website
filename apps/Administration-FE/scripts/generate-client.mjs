@@ -11,6 +11,11 @@ const authContractsDir =
   process.env.CONTRACTS_DIR || join(repoRoot, 'specs/002-auth-rbac/contracts');
 const blogsContractsDir = join(repoRoot, 'specs/004-admin-blogs/contracts');
 const caseStudiesContractsDir = join(repoRoot, 'specs/005-admin-case-studies/contracts');
+const clientLogosContractsDir = join(repoRoot, 'specs/006-admin-client-logos/contracts');
+const clientTestimonialsContractsDir = join(
+  repoRoot,
+  'specs/007-admin-client-testimonials/contracts',
+);
 
 const contractSets = [
   {
@@ -30,6 +35,14 @@ const contractSets = [
   {
     dir: caseStudiesContractsDir,
     files: ['admin-case-studies.v1.yaml'],
+  },
+  {
+    dir: clientLogosContractsDir,
+    files: ['admin-client-logos.v1.yaml'],
+  },
+  {
+    dir: clientTestimonialsContractsDir,
+    files: ['admin-client-testimonials.v1.yaml'],
   },
 ];
 

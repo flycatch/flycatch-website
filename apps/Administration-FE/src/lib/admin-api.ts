@@ -3,6 +3,8 @@ import type { components as RbacComponents } from '../generated/admin-rbac.v1';
 import type { components as RolesComponents } from '../generated/admin-roles.v1';
 import type { components as BlogsComponents } from '../generated/admin-blogs.v1';
 import type { components as CaseStudiesComponents } from '../generated/admin-case-studies.v1';
+import type { components as ClientLogosComponents } from '../generated/admin-client-logos.v1';
+import type { components as ClientTestimonialsComponents } from '../generated/admin-client-testimonials.v1';
 import {
   clearTokens,
   getAccessToken,
@@ -44,6 +46,12 @@ export type CaseStudyCategoryWrite = CaseStudiesComponents['schemas']['CaseStudy
 export type Technology = CaseStudiesComponents['schemas']['Technology'];
 export type TechnologyList = CaseStudiesComponents['schemas']['TechnologyList'];
 export type TechnologyWrite = CaseStudiesComponents['schemas']['TechnologyWrite'];
+export type ClientLogo = ClientLogosComponents['schemas']['ClientLogo'];
+export type ClientLogoList = ClientLogosComponents['schemas']['ClientLogoList'];
+export type ClientLogoWrite = ClientLogosComponents['schemas']['ClientLogoWrite'];
+export type ClientTestimonial = ClientTestimonialsComponents['schemas']['ClientTestimonial'];
+export type ClientTestimonialList = ClientTestimonialsComponents['schemas']['ClientTestimonialList'];
+export type ClientTestimonialWrite = ClientTestimonialsComponents['schemas']['ClientTestimonialWrite'];
 
 export class AdminApiError extends Error {
   status: number;
@@ -481,6 +489,70 @@ export async function updateTechnology(id: string, payload: TechnologyWrite): Pr
 
 export async function deleteTechnology(id: string): Promise<void> {
   await api<void>(`/admin/technologies/${id}`, { method: 'DELETE' });
+}
+
+export async function listClientLogos(q: string, page: number): Promise<ClientLogoList> {
+  return api<ClientLogoList>(
+    `/admin/client-logos${queryString({ q: q.trim() || undefined, page, per_page: 10 })}`,
+  );
+}
+
+export async function getClientLogo(id: string): Promise<ClientLogo> {
+  return api<ClientLogo>(`/admin/client-logos/${id}`);
+}
+
+export async function createClientLogo(payload: ClientLogoWrite): Promise<ClientLogo> {
+  return api<ClientLogo>('/admin/client-logos', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateClientLogo(id: string, payload: ClientLogoWrite): Promise<ClientLogo> {
+  return api<ClientLogo>(`/admin/client-logos/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteClientLogo(id: string): Promise<void> {
+  await api<void>(`/admin/client-logos/${id}`, { method: 'DELETE' });
+}
+
+export async function listClientTestimonials(
+  q: string,
+  page: number,
+): Promise<ClientTestimonialList> {
+  return api<ClientTestimonialList>(
+    `/admin/client-testimonials${queryString({ q: q.trim() || undefined, page, per_page: 10 })}`,
+  );
+}
+
+export async function getClientTestimonial(id: string): Promise<ClientTestimonial> {
+  return api<ClientTestimonial>(`/admin/client-testimonials/${id}`);
+}
+
+export async function createClientTestimonial(
+  payload: ClientTestimonialWrite,
+): Promise<ClientTestimonial> {
+  return api<ClientTestimonial>('/admin/client-testimonials', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateClientTestimonial(
+  id: string,
+  payload: ClientTestimonialWrite,
+): Promise<ClientTestimonial> {
+  return api<ClientTestimonial>(`/admin/client-testimonials/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteClientTestimonial(id: string): Promise<void> {
+  await api<void>(`/admin/client-testimonials/${id}`, { method: 'DELETE' });
 }
 
 export function apiErrorMessage(caught: unknown, fallback = 'admin.workspace.request_failed'): string {

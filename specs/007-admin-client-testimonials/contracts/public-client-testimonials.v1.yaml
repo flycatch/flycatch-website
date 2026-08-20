@@ -1,0 +1,81 @@
+openapi: 3.1.0
+info:
+  title: Public Client Testimonials
+  version: 1.0.0
+  summary: Read-only published client testimonials for the website frontend.
+  description: |
+    Unauthenticated list of client testimonials with status publish.
+    Drafts MUST NOT appear. This contract is separate from
+    admin-client-testimonials.v1.yaml.
+servers:
+  - url: /api/v1
+security: []
+paths:
+  /public/client-testimonials:
+    get:
+      operationId: listPublicClientTestimonials
+      summary: List published client testimonials
+      tags: [public-client-testimonials]
+      responses:
+        '200':
+          description: Published client testimonial catalog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicClientTestimonialList'
+components:
+  schemas:
+    PublicClientTestimonial:
+      type: object
+      additionalProperties: false
+      required:
+        - client_name
+        - title
+        - review
+        - client_designation
+        - client_company
+        - country
+        - image_key
+        - alt_text
+        - is_clutch_review
+        - order
+        - review_link
+        - content_available_in
+      properties:
+        client_name:
+          type: string
+        title:
+          type: string
+        review:
+          type: string
+        client_designation:
+          type: string
+        client_company:
+          type: string
+        country:
+          type: string
+        image_key:
+          type: string
+          nullable: true
+        alt_text:
+          type: string
+        is_clutch_review:
+          type: boolean
+        order:
+          type: integer
+          minimum: 0
+        review_link:
+          type: string
+        content_available_in:
+          type: array
+          items:
+            type: string
+    PublicClientTestimonialList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicClientTestimonial'

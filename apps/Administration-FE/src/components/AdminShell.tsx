@@ -30,6 +30,10 @@ import BlogsList from './BlogsList';
 import BlogForm from './BlogForm';
 import CategoriesList from './CategoriesList';
 import CategoryForm from './CategoryForm';
+import ClientLogosList from './ClientLogosList';
+import ClientLogoForm from './ClientLogoForm';
+import ClientTestimonialsList from './ClientTestimonialsList';
+import ClientTestimonialForm from './ClientTestimonialForm';
 import CaseStudiesList from './CaseStudiesList';
 import CaseStudyForm from './CaseStudyForm';
 import IndustriesList from './IndustriesList';
@@ -59,6 +63,8 @@ function applyRoute(
     setEditingTechnologyId: (id: string | null) => void;
     setEditingAuthorId: (id: string | null) => void;
     setEditingCategoryId: (id: string | null) => void;
+    setEditingClientLogoId: (id: string | null) => void;
+    setEditingClientTestimonialId: (id: string | null) => void;
   },
 ) {
   setters.setView(route.view);
@@ -72,6 +78,10 @@ function applyRoute(
   setters.setEditingTechnologyId(route.view === 'technology_form' ? route.editingId : null);
   setters.setEditingAuthorId(route.view === 'author_form' ? route.editingId : null);
   setters.setEditingCategoryId(route.view === 'category_form' ? route.editingId : null);
+  setters.setEditingClientLogoId(route.view === 'client_logo_form' ? route.editingId : null);
+  setters.setEditingClientTestimonialId(
+    route.view === 'client_testimonial_form' ? route.editingId : null,
+  );
 }
 
 export default function AdminShell() {
@@ -112,6 +122,16 @@ export default function AdminShell() {
     const route = readAdminLocation();
     return route.view === 'category_form' ? route.editingId : null;
   });
+  const [editingClientLogoId, setEditingClientLogoId] = useState<string | null>(() => {
+    const route = readAdminLocation();
+    return route.view === 'client_logo_form' ? route.editingId : null;
+  });
+  const [editingClientTestimonialId, setEditingClientTestimonialId] = useState<string | null>(
+    () => {
+      const route = readAdminLocation();
+      return route.view === 'client_testimonial_form' ? route.editingId : null;
+    },
+  );
   const [session, setSession] = useState<SessionContext | null>(null);
   const [siteSettings, setSiteSettings] = useState<Record<string, unknown> | null>(null);
   const [homePage, setHomePage] = useState<Record<string, unknown> | null>(null);
@@ -132,6 +152,8 @@ export default function AdminShell() {
       setEditingTechnologyId,
       setEditingAuthorId,
       setEditingCategoryId,
+      setEditingClientLogoId,
+      setEditingClientTestimonialId,
     });
   }, []);
 
@@ -226,6 +248,14 @@ export default function AdminShell() {
     }
     if (view === 'categories' || view === 'category_form') {
       document.title = t('admin.workspace.categories');
+      return;
+    }
+    if (view === 'client_logos' || view === 'client_logo_form') {
+      document.title = t('admin.workspace.client_logos');
+      return;
+    }
+    if (view === 'client_testimonials' || view === 'client_testimonial_form') {
+      document.title = t('admin.workspace.client_testimonials');
       return;
     }
     if (view === 'roles') {
@@ -325,6 +355,14 @@ export default function AdminShell() {
 
   function openCategories() {
     openList('categories');
+  }
+
+  function openClientLogos() {
+    openList('client_logos');
+  }
+
+  function openClientTestimonials() {
+    openList('client_testimonials');
   }
 
   function onNavClick(event: MouseEvent<HTMLAnchorElement>, href: string) {
@@ -494,6 +532,36 @@ export default function AdminShell() {
                 onClick={(event) => onNavClick(event, adminListHref('categories'))}
               >
                 {t('admin.workspace.categories')}
+              </a>
+            </li>
+            <li>
+              <a
+                href={adminListHref('client_logos')}
+                className={view === 'client_logos' || view === 'client_logo_form' ? 'active' : ''}
+                aria-current={
+                  view === 'client_logos' || view === 'client_logo_form' ? 'page' : undefined
+                }
+                onClick={(event) => onNavClick(event, adminListHref('client_logos'))}
+              >
+                {t('admin.workspace.client_logos')}
+              </a>
+            </li>
+            <li>
+              <a
+                href={adminListHref('client_testimonials')}
+                className={
+                  view === 'client_testimonials' || view === 'client_testimonial_form'
+                    ? 'active'
+                    : ''
+                }
+                aria-current={
+                  view === 'client_testimonials' || view === 'client_testimonial_form'
+                    ? 'page'
+                    : undefined
+                }
+                onClick={(event) => onNavClick(event, adminListHref('client_testimonials'))}
+              >
+                {t('admin.workspace.client_testimonials')}
               </a>
             </li>
             {canManageRoles && (
@@ -705,6 +773,40 @@ export default function AdminShell() {
               onSaved={() => {
                 setMessage(t('admin.categories.saved'));
                 openCategories();
+              }}
+            />
+          )}
+          {view === 'client_logos' && (
+            <ClientLogosList
+              notice={message}
+              onAdd={() => openForm('client_logos', null)}
+              onEdit={(id) => openForm('client_logos', id)}
+            />
+          )}
+          {view === 'client_logo_form' && (
+            <ClientLogoForm
+              logoId={editingClientLogoId}
+              onCancel={openClientLogos}
+              onSaved={() => {
+                setMessage(t('admin.client_logos.saved'));
+                openClientLogos();
+              }}
+            />
+          )}
+          {view === 'client_testimonials' && (
+            <ClientTestimonialsList
+              notice={message}
+              onAdd={() => openForm('client_testimonials', null)}
+              onEdit={(id) => openForm('client_testimonials', id)}
+            />
+          )}
+          {view === 'client_testimonial_form' && (
+            <ClientTestimonialForm
+              testimonialId={editingClientTestimonialId}
+              onCancel={openClientTestimonials}
+              onSaved={() => {
+                setMessage(t('admin.client_testimonials.saved'));
+                openClientTestimonials();
               }}
             />
           )}
