@@ -7,9 +7,11 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from flycatch_api.models import Author, BlogAuthor
+from flycatch_api.models.case_study import ContentStatus
 from flycatch_api.schemas.admin_auth import FieldErrorDetail, FieldErrors
 from flycatch_api.schemas.admin_blogs import Author as AuthorSchema
 from flycatch_api.schemas.admin_blogs import AuthorList, AuthorWrite, EntityInUse, EntityNotFound
+from flycatch_api.schemas.public_blogs import PublicAuthorList, PublicAuthorProfile
 
 
 class CatalogError(Exception):
@@ -19,10 +21,23 @@ class CatalogError(Exception):
         super().__init__(payload.get("message_key", "catalog_error"))
 
 
+def coerce_status(value: ContentStatus | str) -> ContentStatus:
+    return value if isinstance(value, ContentStatus) else ContentStatus(value)
+
+
 class AuthorService:
     def list_authors(self, db: Session) -> AuthorList:
         rows = db.query(Author).order_by(Author.name.asc()).all()
         return AuthorList(items=[self._to_schema(row) for row in rows])
+
+    def list_published(self, db: Session) -> PublicAuthorList:
+        rows = (
+            db.query(Author)
+            .filter(Author.status == ContentStatus.publish)
+            .order_by(Author.name.asc())
+            .all()
+        )
+        return PublicAuthorList(items=[self._to_public(row) for row in rows])
 
     def get(self, db: Session, author_id: UUID) -> AuthorSchema:
         author = db.get(Author, author_id)
@@ -34,7 +49,11 @@ class AuthorService:
 
     def create(self, db: Session, payload: AuthorWrite) -> AuthorSchema:
         name = self._validate_name(db, payload.name, None)
-        author = Author(name=name, created_at=datetime.now(UTC))
+        author = Author(
+            name=name,
+            status=coerce_status(payload.status),
+            created_at=datetime.now(UTC),
+        )
         self._apply_profile(author, payload)
         db.add(author)
         db.commit()
@@ -48,6 +67,7 @@ class AuthorService:
                 404, EntityNotFound(message_key="admin.authors.not_found").model_dump()
             )
         author.name = self._validate_name(db, payload.name, author.id)
+        author.status = coerce_status(payload.status)
         self._apply_profile(author, payload)
         db.commit()
         db.refresh(author)
@@ -95,6 +115,14 @@ class AuthorService:
     def _to_schema(self, author: Author) -> AuthorSchema:
         return author_schema(author)
 
+    def _to_public(self, author: Author) -> PublicAuthorProfile:
+        return PublicAuthorProfile(
+            name=author.name,
+            bio=author.bio or "",
+            designation=author.designation or "",
+            writer_image_keys=list(author.writer_image_keys or []),
+        )
+
 
 def author_schema(author: Author) -> AuthorSchema:
     return AuthorSchema(
@@ -103,4 +131,5 @@ def author_schema(author: Author) -> AuthorSchema:
         bio=author.bio or "",
         designation=author.designation or "",
         writer_image_keys=list(author.writer_image_keys or []),
+        status=coerce_status(author.status),
     )

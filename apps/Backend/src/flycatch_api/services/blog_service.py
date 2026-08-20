@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session, joinedload
 
 from flycatch_api.models import Author, Blog, BlogAuthor, BlogCategory, Category
 from flycatch_api.models.blog import BlogStatus
+from flycatch_api.models.case_study import ContentStatus
 from flycatch_api.schemas.admin_auth import FieldErrorDetail, FieldErrors
 from flycatch_api.schemas.admin_blogs import (
     BlogDetail,
@@ -15,9 +16,6 @@ from flycatch_api.schemas.admin_blogs import (
     BlogSummary,
     BlogWrite,
     EntityNotFound,
-)
-from flycatch_api.schemas.admin_blogs import (
-    Category as CategorySchema,
 )
 from flycatch_api.schemas.public_blogs import (
     PublicAuthor,
@@ -27,6 +25,7 @@ from flycatch_api.schemas.public_blogs import (
     PublicCategory,
 )
 from flycatch_api.services.author_service import CatalogError, author_schema
+from flycatch_api.services.category_service import category_schema
 from flycatch_api.services.text import is_valid_slug, sanitize_html, slugify
 
 PER_PAGE = 10
@@ -257,10 +256,7 @@ class BlogService:
 
     def _detail(self, blog: Blog) -> BlogDetail:
         authors = [author_schema(link.author) for link in blog.author_links]
-        categories = [
-            CategorySchema(id=link.category.id, name=link.category.name)
-            for link in blog.category_links
-        ]
+        categories = [category_schema(link.category) for link in blog.category_links]
         return BlogDetail(
             id=blog.id,
             title=blog.title,
@@ -291,14 +287,14 @@ class BlogService:
                 writer_image_keys=list(link.author.writer_image_keys or []),
             )
             for link in blog.author_links
-            if link.author
+            if link.author and link.author.status == ContentStatus.publish
         ]
 
     def _public_categories(self, blog: Blog) -> list[PublicCategory]:
         return [
             PublicCategory(name=link.category.name)
             for link in blog.category_links
-            if link.category
+            if link.category and link.category.status == ContentStatus.publish
         ]
 
     def _public_summary(self, blog: Blog) -> PublicBlogSummary:

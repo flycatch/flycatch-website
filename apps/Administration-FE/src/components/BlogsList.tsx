@@ -123,7 +123,9 @@ export default function BlogsList({ onAdd, onEdit, notice }: Props) {
                   {blog.content_available_in}
                 </td>
                 <td data-label={t('admin.blogs.state')}>
-                  {blog.state === 'publish' ? t('admin.blogs.status.publish') : t('admin.blogs.status.draft')}
+                  {blog.state === 'publish'
+                    ? t('admin.blogs.status.publish')
+                    : t('admin.blogs.status.draft')}
                 </td>
                 <td data-label={t('admin.blogs.actions')} className="roles-row-actions">
                   <button type="button" onClick={() => onEdit(blog.id)}>

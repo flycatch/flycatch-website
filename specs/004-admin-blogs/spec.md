@@ -111,10 +111,11 @@ The website frontend requests one blog by its public slug. A published blog retu
 - **FR-006**: The backend MUST expose unauthenticated `GET /api/v1/public/blogs` (query `q`, `page`, `per_page`, maximum 10) returning only blogs with status `publish`.
 - **FR-007**: The backend MUST expose unauthenticated `GET /api/v1/public/blogs/{slug}` returning one published blog. Draft or unknown slugs MUST return 404 with `code` `not_found` and `message_key` `public.blogs.not_found`.
 - **FR-008**: Public list and detail MUST use separate schemas and routes from `/admin/blogs`. Public detail is identified by slug, not by staff UUID.
-- **FR-009**: Public list items MUST include title, slug, description, reading_time, image_key, image_alt, authors (name, designation, writer_image_keys), and categories (name). They MUST NOT include admin `state`.
-- **FR-010**: Public detail MUST include title, slug, description, body, reading_time, hero image fields, canonical and social URLs, `content_available_in`, and nested authors and categories. It MUST NOT include `status`, `author_ids`, or `category_ids`.
+- **FR-009**: Public list items MUST include title, slug, description, reading_time, image_key, image_alt, authors (name, designation, writer_image_keys), and categories (name). Nested authors and categories MUST be published. They MUST NOT include admin `state`.
+- **FR-010**: Public detail MUST include title, slug, description, body, reading_time, hero image fields, canonical and social URLs, `content_available_in`, and nested published authors and categories. It MUST NOT include `status`, `author_ids`, or `category_ids`.
 - **FR-011**: Versioned public contract `contracts/public-blogs.v1.yaml` MUST be published before public consumers change (constitution III). It MUST NOT be generated into the Administration FE client.
 - **FR-012**: Public blog endpoints MUST NOT require a staff session and MUST NOT expose draft content.
+- **FR-015**: The backend MUST expose unauthenticated `GET /api/v1/public/authors` and `GET /api/v1/public/categories` returning only published authors and categories. Admin list and detail MUST still return both draft and published records.
 
 #### Non-functional (constitution)
 
@@ -134,7 +135,7 @@ The website frontend requests one blog by its public slug. A published blog retu
 | Surface | File | Auth | Paths |
 |---------|------|------|-------|
 | Administration | [contracts/admin-blogs.v1.yaml](./contracts/admin-blogs.v1.yaml) | Bearer | `/admin/blogs`, `/admin/authors`, `/admin/categories`, `/admin/media` |
-| Public | [contracts/public-blogs.v1.yaml](./contracts/public-blogs.v1.yaml) | None | `GET /public/blogs`, `GET /public/blogs/{slug}` |
+| Public | [contracts/public-blogs.v1.yaml](./contracts/public-blogs.v1.yaml) | None | `GET /public/blogs`, `GET /public/blogs/{slug}`, `GET /public/authors`, `GET /public/categories` |
 
 ## Success Criteria *(mandatory)*
 

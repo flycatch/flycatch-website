@@ -1,5 +1,11 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { apiErrorMessage, createCategory, getCategory, updateCategory } from '../lib/admin-api';
+import {
+  apiErrorMessage,
+  createCategory,
+  getCategory,
+  updateCategory,
+  type CategoryWrite,
+} from '../lib/admin-api';
 import { t } from '../lib/i18n';
 
 interface Props {
@@ -8,8 +14,11 @@ interface Props {
   onSaved: () => void;
 }
 
+type Status = 'draft' | 'publish';
+
 export default function CategoryForm({ categoryId, onCancel, onSaved }: Props) {
   const [name, setName] = useState('');
+  const [status, setStatus] = useState<Status>('draft');
   const [error, setError] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [ready, setReady] = useState(!categoryId);
@@ -18,12 +27,14 @@ export default function CategoryForm({ categoryId, onCancel, onSaved }: Props) {
   useEffect(() => {
     if (!categoryId) {
       setName('');
+      setStatus('draft');
       setReady(true);
       return;
     }
     getCategory(categoryId)
       .then((category) => {
         setName(category.name);
+        setStatus(category.status);
         setReady(true);
       })
       .catch(() => {
@@ -32,8 +43,7 @@ export default function CategoryForm({ categoryId, onCancel, onSaved }: Props) {
       });
   }, [categoryId]);
 
-  async function save(event: FormEvent) {
-    event.preventDefault();
+  async function persist(nextStatus: Status) {
     setError(null);
     setFieldError(null);
     if (!name.trim()) {
@@ -42,14 +52,20 @@ export default function CategoryForm({ categoryId, onCancel, onSaved }: Props) {
     }
     setSaving(true);
     try {
-      if (categoryId) await updateCategory(categoryId, { name: name.trim() });
-      else await createCategory({ name: name.trim() });
+      const payload: CategoryWrite = { name: name.trim(), status: nextStatus };
+      if (categoryId) await updateCategory(categoryId, payload);
+      else await createCategory(payload);
       onSaved();
     } catch (caught) {
       setError(apiErrorMessage(caught));
     } finally {
       setSaving(false);
     }
+  }
+
+  async function save(event: FormEvent) {
+    event.preventDefault();
+    await persist(status);
   }
 
   if (!ready) {
@@ -97,6 +113,23 @@ export default function CategoryForm({ categoryId, onCancel, onSaved }: Props) {
           <button type="submit" className="primary" disabled={saving} aria-busy={saving}>
             {t('admin.categories.save')}
           </button>
+          {status === 'publish' ? (
+            <button
+              type="button"
+              disabled={saving}
+              onClick={() => persist('draft').catch(() => undefined)}
+            >
+              {t('admin.categories.unpublish')}
+            </button>
+          ) : (
+            <button
+              type="button"
+              disabled={saving}
+              onClick={() => persist('publish').catch(() => undefined)}
+            >
+              {t('admin.categories.publish')}
+            </button>
+          )}
         </div>
       </form>
     </section>

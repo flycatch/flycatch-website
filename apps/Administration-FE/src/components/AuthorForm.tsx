@@ -1,5 +1,12 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { apiErrorMessage, createAuthor, getAuthor, updateAuthor, uploadMedia } from '../lib/admin-api';
+import {
+  apiErrorMessage,
+  createAuthor,
+  getAuthor,
+  updateAuthor,
+  uploadMedia,
+  type AuthorWrite,
+} from '../lib/admin-api';
 import { t } from '../lib/i18n';
 import MediaPreview from './MediaPreview';
 
@@ -9,12 +16,15 @@ interface Props {
   onSaved: () => void;
 }
 
+type Status = 'draft' | 'publish';
+
 export default function AuthorForm({ authorId, onCancel, onSaved }: Props) {
   const [name, setName] = useState('');
   const [bio, setBio] = useState('');
   const [designation, setDesignation] = useState('');
   const [writerImageKeys, setWriterImageKeys] = useState<string[]>([]);
   const [writerFiles, setWriterFiles] = useState<File[]>([]);
+  const [status, setStatus] = useState<Status>('draft');
   const [error, setError] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [ready, setReady] = useState(!authorId);
@@ -27,6 +37,7 @@ export default function AuthorForm({ authorId, onCancel, onSaved }: Props) {
       setDesignation('');
       setWriterImageKeys([]);
       setWriterFiles([]);
+      setStatus('draft');
       setReady(true);
       return;
     }
@@ -36,6 +47,7 @@ export default function AuthorForm({ authorId, onCancel, onSaved }: Props) {
         setBio(author.bio);
         setDesignation(author.designation);
         setWriterImageKeys(author.writer_image_keys);
+        setStatus(author.status);
         setReady(true);
       })
       .catch(() => {
@@ -44,8 +56,7 @@ export default function AuthorForm({ authorId, onCancel, onSaved }: Props) {
       });
   }, [authorId]);
 
-  async function save(event: FormEvent) {
-    event.preventDefault();
+  async function persist(nextStatus: Status) {
     setError(null);
     setFieldError(null);
     if (!name.trim()) {
@@ -58,11 +69,12 @@ export default function AuthorForm({ authorId, onCancel, onSaved }: Props) {
       for (const file of writerFiles) {
         extraWriterKeys.push((await uploadMedia(file)).key);
       }
-      const payload = {
+      const payload: AuthorWrite = {
         name: name.trim(),
         bio: bio.trim(),
         designation: designation.trim(),
         writer_image_keys: [...writerImageKeys, ...extraWriterKeys],
+        status: nextStatus,
       };
       if (authorId) await updateAuthor(authorId, payload);
       else await createAuthor(payload);
@@ -72,6 +84,11 @@ export default function AuthorForm({ authorId, onCancel, onSaved }: Props) {
     } finally {
       setSaving(false);
     }
+  }
+
+  async function save(event: FormEvent) {
+    event.preventDefault();
+    await persist(status);
   }
 
   if (!ready) {
@@ -146,6 +163,23 @@ export default function AuthorForm({ authorId, onCancel, onSaved }: Props) {
           <button type="submit" className="primary" disabled={saving} aria-busy={saving}>
             {t('admin.authors.save')}
           </button>
+          {status === 'publish' ? (
+            <button
+              type="button"
+              disabled={saving}
+              onClick={() => persist('draft').catch(() => undefined)}
+            >
+              {t('admin.authors.unpublish')}
+            </button>
+          ) : (
+            <button
+              type="button"
+              disabled={saving}
+              onClick={() => persist('publish').catch(() => undefined)}
+            >
+              {t('admin.authors.publish')}
+            </button>
+          )}
         </div>
       </form>
     </section>
