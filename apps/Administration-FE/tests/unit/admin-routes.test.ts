@@ -18,6 +18,8 @@ describe('parseAdminLocation', () => {
     expect(parseAdminLocation('/admin/technologies/').view).toBe('technologies');
     expect(parseAdminLocation('/admin/authors/').view).toBe('authors');
     expect(parseAdminLocation('/admin/categories/').view).toBe('categories');
+    expect(parseAdminLocation('/admin/client-logos/').view).toBe('client_logos');
+    expect(parseAdminLocation('/admin/client-testimonials/').view).toBe('client_testimonials');
     expect(parseAdminLocation('/admin/home/').view).toBe('home');
     expect(parseAdminLocation('/admin/roles/').view).toBe('roles');
   });
@@ -48,6 +50,8 @@ describe('admin href helpers', () => {
     expect(adminListHref('industries')).toBe('/admin/industries/');
     expect(adminListHref('case_study_categories')).toBe('/admin/case-study-categories/');
     expect(adminListHref('technologies')).toBe('/admin/technologies/');
+    expect(adminListHref('client_logos')).toBe('/admin/client-logos/');
+    expect(adminListHref('client_testimonials')).toBe('/admin/client-testimonials/');
     expect(adminFormHref('blogs', null)).toBe('/admin/blogs/?new=1');
     expect(adminFormHref('blogs', 'post-1')).toBe('/admin/blogs/?id=post-1');
   });

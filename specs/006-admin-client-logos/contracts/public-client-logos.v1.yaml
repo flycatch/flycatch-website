@@ -1,0 +1,49 @@
+openapi: 3.1.0
+info:
+  title: Public Client Logos
+  version: 1.0.0
+  summary: Read-only published client logos for the website frontend.
+  description: |
+    Unauthenticated list of client logos with status publish.
+    Drafts MUST NOT appear. This contract is separate from
+    admin-client-logos.v1.yaml.
+servers:
+  - url: /api/v1
+security: []
+paths:
+  /public/client-logos:
+    get:
+      operationId: listPublicClientLogos
+      summary: List published client logos
+      tags: [public-client-logos]
+      responses:
+        '200':
+          description: Published client logo catalog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicClientLogoList'
+components:
+  schemas:
+    PublicClientLogo:
+      type: object
+      additionalProperties: false
+      required: [colour_logo_key, white_logo_key, alt_text]
+      properties:
+        colour_logo_key:
+          type: string
+          nullable: true
+        white_logo_key:
+          type: string
+          nullable: true
+        alt_text:
+          type: string
+    PublicClientLogoList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicClientLogo'

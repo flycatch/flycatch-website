@@ -13,6 +13,8 @@ const required = [
   'publish.v2.ts',
   'admin-blogs.v1.ts',
   'admin-case-studies.v1.ts',
+  'admin-client-logos.v1.ts',
+  'admin-client-testimonials.v1.ts',
 ];
 
 let failed = false;

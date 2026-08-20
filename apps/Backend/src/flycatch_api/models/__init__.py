@@ -6,6 +6,8 @@ from flycatch_api.models.blog import Blog, BlogStatus
 from flycatch_api.models.case_study import CaseStudy, ContentStatus
 from flycatch_api.models.case_study_category import CaseStudyCategory, CaseStudyCategoryLink
 from flycatch_api.models.category import BlogCategory, Category
+from flycatch_api.models.client_logo import ClientLogo
+from flycatch_api.models.client_testimonial import ClientTestimonial
 from flycatch_api.models.industry import CaseStudyIndustry, Industry
 from flycatch_api.models.managed_record import ManagedRecord, RecordType
 from flycatch_api.models.role import Role
@@ -27,6 +29,8 @@ __all__ = [
     "CaseStudyIndustry",
     "CaseStudyTechnology",
     "Category",
+    "ClientLogo",
+    "ClientTestimonial",
     "ContentStatus",
     "Industry",
     "ManagedRecord",
