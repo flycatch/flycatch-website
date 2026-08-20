@@ -11,7 +11,8 @@ test('administrator can save a draft and publish with Bearer session', async ({ 
   await page.getByLabel(/password/i).fill(adminPassword);
   await page.getByRole('button', { name: /^sign in$/i }).click();
   await expect(page.getByRole('heading', { name: /administration/i })).toBeVisible();
-  await page.getByRole('button', { name: /home page/i }).click();
+  await page.getByRole('link', { name: /home page/i }).click();
+  await expect(page).toHaveURL(/\/admin\/home\/?$/);
   await page.getByRole('button', { name: /save draft/i }).click();
   await expect(page.getByRole('status')).toBeVisible();
   await page.getByRole('button', { name: /^publish$/i }).click();
