@@ -24,6 +24,7 @@ def _create_case_study(client, headers, **fields):
         "image_alt": "Hero",
         "industry_ids": [],
         "category_ids": [],
+        "technology_ids": [],
     }
     payload.update(fields)
     return client.post("/api/v1/admin/case-studies", headers=headers, json=payload)
@@ -46,11 +47,22 @@ def test_public_list_and_detail_are_unauthenticated(client, bootstrapped):
         headers=headers,
         json={"name": "Migration", "status": "publish"},
     )
+    published_tech = client.post(
+        "/api/v1/admin/technologies",
+        headers=headers,
+        json={"name": "React", "status": "publish", "logo_key": "media/react.svg"},
+    )
+    client.post(
+        "/api/v1/admin/technologies",
+        headers=headers,
+        json={"name": "Hidden Tech", "status": "draft", "logo_key": "media/hidden.svg"},
+    )
     created = _create_case_study(
         client,
         headers,
         industry_ids=[industry.json()["id"], draft_industry.json()["id"]],
         category_ids=[category.json()["id"]],
+        technology_ids=[published_tech.json()["id"]],
     )
     assert created.status_code == 201
 
@@ -66,6 +78,7 @@ def test_public_list_and_detail_are_unauthenticated(client, bootstrapped):
     assert item["date"] == "2026-02-01"
     assert [row["name"] for row in item["industries"]] == ["Finance"]
     assert item["categories"][0]["name"] == "Migration"
+    assert item["technologies"] == [{"name": "React", "logo_key": "media/react.svg"}]
     assert "state" not in item
     assert "status" not in item
 
@@ -77,6 +90,14 @@ def test_public_list_and_detail_are_unauthenticated(client, bootstrapped):
     assert "status" not in study
     assert "industry_ids" not in study
     assert "category_ids" not in study
+    assert study["technologies"][0]["name"] == "React"
+    assert study["technologies"][0]["logo_key"] == "media/react.svg"
+
+    catalog = client.get("/api/v1/public/technologies")
+    assert catalog.status_code == 200
+    names = [row["name"] for row in catalog.json()["items"]]
+    assert "React" in names
+    assert "Hidden Tech" not in names
 
 
 def test_drafts_are_hidden_from_public_list_and_detail(client, bootstrapped):

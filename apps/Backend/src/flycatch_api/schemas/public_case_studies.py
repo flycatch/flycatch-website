@@ -9,6 +9,19 @@ class PublicNamedItem(BaseModel):
     name: str
 
 
+class PublicTechnology(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str
+    logo_key: str | None
+
+
+class PublicTechnologyList(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    items: list[PublicTechnology]
+
+
 class PublicCaseStudySummary(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -22,6 +35,7 @@ class PublicCaseStudySummary(BaseModel):
     image_alt: str
     industries: list[PublicNamedItem]
     categories: list[PublicNamedItem]
+    technologies: list[PublicTechnology]
 
 
 class PublicCaseStudyList(BaseModel):
@@ -48,3 +62,4 @@ class PublicCaseStudyDetail(BaseModel):
     content_available_in: list[str]
     industries: list[PublicNamedItem]
     categories: list[PublicNamedItem]
+    technologies: list[PublicTechnology]

@@ -7,6 +7,8 @@ info:
     Unauthenticated list and detail of case studies with status publish.
     Drafts MUST NOT appear in the list and MUST return 404 by slug.
     Nested industries and categories include only published related names.
+    Nested technologies include only published related name and logo_key.
+    Published technologies are listed separately at /public/technologies.
     This contract is separate from admin-case-studies.v1.yaml.
 servers:
   - url: /api/v1
@@ -61,6 +63,18 @@ paths:
                 $ref: '#/components/schemas/PublicCaseStudyDetail'
         '404':
           $ref: '#/components/responses/CaseStudyNotFound'
+  /public/technologies:
+    get:
+      operationId: listPublicTechnologies
+      summary: List published technologies
+      tags: [public-technologies]
+      responses:
+        '200':
+          description: Published technology catalog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicTechnologyList'
 components:
   parameters:
     CaseStudySlug:
@@ -79,6 +93,25 @@ components:
       properties:
         name:
           type: string
+    PublicTechnology:
+      type: object
+      additionalProperties: false
+      required: [name, logo_key]
+      properties:
+        name:
+          type: string
+        logo_key:
+          type: string
+          nullable: true
+    PublicTechnologyList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicTechnology'
     PublicCaseStudySummary:
       type: object
       additionalProperties: false
@@ -93,6 +126,7 @@ components:
         - image_alt
         - industries
         - categories
+        - technologies
       properties:
         heading:
           type: string
@@ -121,6 +155,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PublicNamedItem'
+        technologies:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicTechnology'
     PublicCaseStudyList:
       type: object
       additionalProperties: false
@@ -155,6 +193,7 @@ components:
         - content_available_in
         - industries
         - categories
+        - technologies
       properties:
         heading:
           type: string
@@ -189,6 +228,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PublicNamedItem'
+        technologies:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicTechnology'
   responses:
     CaseStudyNotFound:
       description: Unknown or unpublished case study

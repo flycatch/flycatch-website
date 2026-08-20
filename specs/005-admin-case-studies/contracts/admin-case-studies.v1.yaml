@@ -1,11 +1,11 @@
 openapi: 3.1.0
 info:
-  title: Administration Case Studies Industries and Categories
+  title: Administration Case Studies Industries Categories and Technologies
   version: 1.0.0
-  summary: CRUD for case studies, industries, and case study categories.
+  summary: CRUD for case studies, industries, case study categories, and technologies.
   description: |
-    Staff with records.view may list and read case studies, industries, and
-    case study categories. Staff with drafts.save may create, update, and delete
+    Staff with records.view may list and read case studies, industries, case
+    study categories, and technologies. Staff with drafts.save may create, update, and delete
     them. Status draft/publish is stored on each row and does not use the
     site-settings/page publish snapshot pipeline. Media uploads remain on
     /admin/media from admin-blogs.v1.yaml.
@@ -359,6 +359,121 @@ paths:
           $ref: '#/components/responses/CaseStudyCategoryNotFound'
         '409':
           $ref: '#/components/responses/CaseStudyCategoryInUse'
+  /admin/technologies:
+    get:
+      operationId: listTechnologies
+      summary: List technologies with search and pagination of 10
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 10
+      responses:
+        '200':
+          description: Paginated technology list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TechnologyList'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+    post:
+      operationId: createTechnology
+      summary: Create a technology
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TechnologyWrite'
+      responses:
+        '201':
+          description: Created technology
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Technology'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+  /admin/technologies/{technology_id}:
+    parameters:
+      - $ref: '#/components/parameters/TechnologyId'
+    get:
+      operationId: getTechnology
+      summary: Return one technology
+      responses:
+        '200':
+          description: Technology
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Technology'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/TechnologyNotFound'
+    patch:
+      operationId: updateTechnology
+      summary: Update a technology
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TechnologyWrite'
+      responses:
+        '200':
+          description: Updated technology
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Technology'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/TechnologyNotFound'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+    delete:
+      operationId: deleteTechnology
+      summary: Delete a technology
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/TechnologyNotFound'
+        '409':
+          $ref: '#/components/responses/TechnologyInUse'
 components:
   securitySchemes:
     bearerAuth:
@@ -382,6 +497,13 @@ components:
         format: uuid
     CaseStudyCategoryId:
       name: category_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    TechnologyId:
+      name: technology_id
       in: path
       required: true
       schema:
@@ -517,6 +639,75 @@ components:
         status:
           $ref: '#/components/schemas/ContentStatus'
           default: draft
+    Technology:
+      type: object
+      additionalProperties: false
+      required: [id, name, logo_key, status, created_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        logo_key:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+        created_at:
+          type: string
+          format: date-time
+    TechnologySummary:
+      type: object
+      additionalProperties: false
+      required: [id, name, logo_key, created_at, state]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        logo_key:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        state:
+          $ref: '#/components/schemas/ContentStatus'
+    TechnologyList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TechnologySummary'
+        page:
+          type: integer
+          minimum: 1
+        per_page:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+    TechnologyWrite:
+      type: object
+      additionalProperties: false
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        logo_key:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+          default: draft
     CaseStudySummary:
       type: object
       additionalProperties: false
@@ -573,8 +764,10 @@ components:
         - content_available_in
         - industry_ids
         - category_ids
+        - technology_ids
         - industries
         - categories
+        - technologies
       properties:
         id:
           type: string
@@ -616,6 +809,11 @@ components:
           items:
             type: string
             format: uuid
+        technology_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
         industries:
           type: array
           items:
@@ -624,6 +822,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CaseStudyCategory'
+        technologies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Technology'
     CaseStudyWrite:
       type: object
       additionalProperties: false
@@ -669,6 +871,12 @@ components:
             format: uuid
           default: []
         category_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          default: []
+        technology_ids:
           type: array
           items:
             type: string
@@ -760,6 +968,27 @@ components:
             $ref: '#/components/schemas/EntityInUse'
     CaseStudyCategoryInUse:
       description: Category is assigned to one or more case studies
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EntityInUse'
+    TechnologyNotFound:
+      description: Unknown technology
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [code, message_key]
+            properties:
+              code:
+                type: string
+                const: not_found
+              message_key:
+                type: string
+                const: admin.technologies.not_found
+    TechnologyInUse:
+      description: Technology is assigned to one or more case studies
       content:
         application/json:
           schema:

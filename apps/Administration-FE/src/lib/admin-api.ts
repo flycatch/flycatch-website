@@ -41,6 +41,9 @@ export type IndustryWrite = CaseStudiesComponents['schemas']['IndustryWrite'];
 export type CaseStudyCategory = CaseStudiesComponents['schemas']['CaseStudyCategory'];
 export type CaseStudyCategoryList = CaseStudiesComponents['schemas']['CaseStudyCategoryList'];
 export type CaseStudyCategoryWrite = CaseStudiesComponents['schemas']['CaseStudyCategoryWrite'];
+export type Technology = CaseStudiesComponents['schemas']['Technology'];
+export type TechnologyList = CaseStudiesComponents['schemas']['TechnologyList'];
+export type TechnologyWrite = CaseStudiesComponents['schemas']['TechnologyWrite'];
 
 export class AdminApiError extends Error {
   status: number;
@@ -429,6 +432,55 @@ export async function updateCaseStudyCategory(
 
 export async function deleteCaseStudyCategory(id: string): Promise<void> {
   await api<void>(`/admin/case-study-categories/${id}`, { method: 'DELETE' });
+}
+
+export async function listTechnologies(q: string, page: number): Promise<TechnologyList> {
+  return api<TechnologyList>(
+    `/admin/technologies${queryString({ q: q.trim() || undefined, page, per_page: 10 })}`,
+  );
+}
+
+export async function listPublishedTechnologies(): Promise<Technology[]> {
+  const items: Technology[] = [];
+  let page = 1;
+  while (true) {
+    const result = await listTechnologies('', page);
+    for (const row of result.items) {
+      if (row.state !== 'publish') continue;
+      items.push({
+        id: row.id,
+        name: row.name,
+        logo_key: row.logo_key,
+        status: row.state,
+        created_at: row.created_at,
+      });
+    }
+    if (page * result.per_page >= result.total) break;
+    page += 1;
+  }
+  return items;
+}
+
+export async function getTechnology(id: string): Promise<Technology> {
+  return api<Technology>(`/admin/technologies/${id}`);
+}
+
+export async function createTechnology(payload: TechnologyWrite): Promise<Technology> {
+  return api<Technology>('/admin/technologies', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateTechnology(id: string, payload: TechnologyWrite): Promise<Technology> {
+  return api<Technology>(`/admin/technologies/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteTechnology(id: string): Promise<void> {
+  await api<void>(`/admin/technologies/${id}`, { method: 'DELETE' });
 }
 
 export function apiErrorMessage(caught: unknown, fallback = 'admin.workspace.request_failed'): string {

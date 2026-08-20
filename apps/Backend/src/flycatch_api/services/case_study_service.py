@@ -11,7 +11,9 @@ from flycatch_api.models import (
     CaseStudyCategory,
     CaseStudyCategoryLink,
     CaseStudyIndustry,
+    CaseStudyTechnology,
     Industry,
+    Technology,
 )
 from flycatch_api.models.case_study import ContentStatus
 from flycatch_api.schemas.admin_auth import FieldErrorDetail, FieldErrors
@@ -27,10 +29,12 @@ from flycatch_api.schemas.public_case_studies import (
     PublicCaseStudyList,
     PublicCaseStudySummary,
     PublicNamedItem,
+    PublicTechnology,
 )
 from flycatch_api.services.author_service import CatalogError
 from flycatch_api.services.case_study_category_service import category_schema
 from flycatch_api.services.industry_service import PER_PAGE, coerce_status, industry_schema
+from flycatch_api.services.technology_service import public_technology, technology_schema
 from flycatch_api.services.text import is_valid_slug, sanitize_html, slugify
 
 DEFAULT_LOCALE = "en"
@@ -108,6 +112,7 @@ class CaseStudyService:
         return (
             joinedload(CaseStudy.industry_links).joinedload(CaseStudyIndustry.industry),
             joinedload(CaseStudy.category_links).joinedload(CaseStudyCategoryLink.category),
+            joinedload(CaseStudy.technology_links).joinedload(CaseStudyTechnology.technology),
         )
 
     def _paginated(
@@ -204,6 +209,7 @@ class CaseStudyService:
             )
         industries = self._industries(db, payload.industry_ids)
         categories = self._categories(db, payload.category_ids)
+        technologies = self._technologies(db, payload.technology_ids)
         row.heading = heading
         row.slug = slug
         row.short_heading = payload.short_heading.strip()
@@ -217,6 +223,7 @@ class CaseStudyService:
         row.content_available_in = [DEFAULT_LOCALE]
         row.industry_links = [CaseStudyIndustry(industry=item) for item in industries]
         row.category_links = [CaseStudyCategoryLink(category=item) for item in categories]
+        row.technology_links = [CaseStudyTechnology(technology=item) for item in technologies]
 
     def _industries(self, db: Session, ids: list[UUID]) -> list[Industry]:
         if not ids:
@@ -256,6 +263,29 @@ class CaseStudyService:
         by_id = {row.id: row for row in rows}
         return [by_id[item] for item in unique]
 
+    def _technologies(self, db: Session, ids: list[UUID]) -> list[Technology]:
+        if not ids:
+            return []
+        unique = list(dict.fromkeys(ids))
+        rows = (
+            db.query(Technology)
+            .filter(Technology.id.in_(unique), Technology.status == ContentStatus.publish)
+            .all()
+        )
+        if len(rows) != len(unique):
+            raise CatalogError(
+                422,
+                FieldErrors(
+                    fields={
+                        "technology_ids": FieldErrorDetail(
+                            message_key="admin.case_studies.technologies.invalid"
+                        )
+                    }
+                ).model_dump(),
+            )
+        by_id = {row.id: row for row in rows}
+        return [by_id[item] for item in unique]
+
     def _summary(self, row: CaseStudy) -> CaseStudySummary:
         names = [link.industry.name for link in row.industry_links if link.industry]
         return CaseStudySummary(
@@ -271,6 +301,7 @@ class CaseStudyService:
     def _detail(self, db: Session, row: CaseStudy) -> CaseStudyDetail:
         industries = [industry_schema(link.industry) for link in row.industry_links]
         categories = [category_schema(db, link.category) for link in row.category_links]
+        technologies = [technology_schema(link.technology) for link in row.technology_links]
         return CaseStudyDetail(
             id=row.id,
             heading=row.heading,
@@ -286,8 +317,10 @@ class CaseStudyService:
             content_available_in=list(row.content_available_in or [DEFAULT_LOCALE]),
             industry_ids=[item.id for item in industries],
             category_ids=[item.id for item in categories],
+            technology_ids=[item.id for item in technologies],
             industries=industries,
             categories=categories,
+            technologies=technologies,
         )
 
     def _public_industries(self, row: CaseStudy) -> list[PublicNamedItem]:
@@ -304,6 +337,13 @@ class CaseStudyService:
             if link.category and link.category.status == ContentStatus.publish
         ]
 
+    def _public_technologies(self, row: CaseStudy) -> list[PublicTechnology]:
+        return [
+            public_technology(link.technology)
+            for link in row.technology_links
+            if link.technology and link.technology.status == ContentStatus.publish
+        ]
+
     def _public_summary(self, row: CaseStudy) -> PublicCaseStudySummary:
         return PublicCaseStudySummary(
             heading=row.heading,
@@ -316,6 +356,7 @@ class CaseStudyService:
             image_alt=row.image_alt,
             industries=self._public_industries(row),
             categories=self._public_categories(row),
+            technologies=self._public_technologies(row),
         )
 
     def _public_detail(self, row: CaseStudy) -> PublicCaseStudyDetail:
@@ -332,4 +373,5 @@ class CaseStudyService:
             content_available_in=list(row.content_available_in or [DEFAULT_LOCALE]),
             industries=self._public_industries(row),
             categories=self._public_categories(row),
+            technologies=self._public_technologies(row),
         )

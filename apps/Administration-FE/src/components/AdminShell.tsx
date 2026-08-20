@@ -36,6 +36,8 @@ import IndustriesList from './IndustriesList';
 import IndustryForm from './IndustryForm';
 import CaseStudyCategoriesList from './CaseStudyCategoriesList';
 import CaseStudyCategoryForm from './CaseStudyCategoryForm';
+import TechnologiesList from './TechnologiesList';
+import TechnologyForm from './TechnologyForm';
 
 type View = AdminView;
 
@@ -54,6 +56,7 @@ function applyRoute(
     setEditingCaseStudyId: (id: string | null) => void;
     setEditingIndustryId: (id: string | null) => void;
     setEditingCaseStudyCategoryId: (id: string | null) => void;
+    setEditingTechnologyId: (id: string | null) => void;
     setEditingAuthorId: (id: string | null) => void;
     setEditingCategoryId: (id: string | null) => void;
   },
@@ -66,6 +69,7 @@ function applyRoute(
   setters.setEditingCaseStudyCategoryId(
     route.view === 'case_study_category_form' ? route.editingId : null,
   );
+  setters.setEditingTechnologyId(route.view === 'technology_form' ? route.editingId : null);
   setters.setEditingAuthorId(route.view === 'author_form' ? route.editingId : null);
   setters.setEditingCategoryId(route.view === 'category_form' ? route.editingId : null);
 }
@@ -96,6 +100,10 @@ export default function AdminShell() {
       return route.view === 'case_study_category_form' ? route.editingId : null;
     },
   );
+  const [editingTechnologyId, setEditingTechnologyId] = useState<string | null>(() => {
+    const route = readAdminLocation();
+    return route.view === 'technology_form' ? route.editingId : null;
+  });
   const [editingAuthorId, setEditingAuthorId] = useState<string | null>(() => {
     const route = readAdminLocation();
     return route.view === 'author_form' ? route.editingId : null;
@@ -121,6 +129,7 @@ export default function AdminShell() {
       setEditingCaseStudyId,
       setEditingIndustryId,
       setEditingCaseStudyCategoryId,
+      setEditingTechnologyId,
       setEditingAuthorId,
       setEditingCategoryId,
     });
@@ -205,6 +214,10 @@ export default function AdminShell() {
     }
     if (view === 'case_study_categories' || view === 'case_study_category_form') {
       document.title = t('admin.workspace.case_study_categories');
+      return;
+    }
+    if (view === 'technologies' || view === 'technology_form') {
+      document.title = t('admin.workspace.technologies');
       return;
     }
     if (view === 'authors' || view === 'author_form') {
@@ -300,6 +313,10 @@ export default function AdminShell() {
 
   function openCaseStudyCategories() {
     openList('case_study_categories');
+  }
+
+  function openTechnologies() {
+    openList('technologies');
   }
 
   function openAuthors() {
@@ -445,6 +462,18 @@ export default function AdminShell() {
                 onClick={(event) => onNavClick(event, adminListHref('case_study_categories'))}
               >
                 {t('admin.workspace.case_study_categories')}
+              </a>
+            </li>
+            <li>
+              <a
+                href={adminListHref('technologies')}
+                className={view === 'technologies' || view === 'technology_form' ? 'active' : ''}
+                aria-current={
+                  view === 'technologies' || view === 'technology_form' ? 'page' : undefined
+                }
+                onClick={(event) => onNavClick(event, adminListHref('technologies'))}
+              >
+                {t('admin.workspace.technologies')}
               </a>
             </li>
             <li>
@@ -625,6 +654,23 @@ export default function AdminShell() {
               onSaved={() => {
                 setMessage(t('admin.case_study_categories.saved'));
                 openCaseStudyCategories();
+              }}
+            />
+          )}
+          {view === 'technologies' && (
+            <TechnologiesList
+              notice={message}
+              onAdd={() => openForm('technologies', null)}
+              onEdit={(id) => openForm('technologies', id)}
+            />
+          )}
+          {view === 'technology_form' && (
+            <TechnologyForm
+              technologyId={editingTechnologyId}
+              onCancel={openTechnologies}
+              onSaved={() => {
+                setMessage(t('admin.technologies.saved'));
+                openTechnologies();
               }}
             />
           )}

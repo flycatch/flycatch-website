@@ -15,6 +15,7 @@ from flycatch_api.db import Base
 if TYPE_CHECKING:
     from flycatch_api.models.case_study_category import CaseStudyCategoryLink
     from flycatch_api.models.industry import CaseStudyIndustry
+    from flycatch_api.models.technology import CaseStudyTechnology
 
 
 class ContentStatus(enum.StrEnum):
@@ -48,5 +49,8 @@ class CaseStudy(Base):
         back_populates="case_study", cascade="all, delete-orphan"
     )
     category_links: Mapped[list[CaseStudyCategoryLink]] = relationship(
+        back_populates="case_study", cascade="all, delete-orphan"
+    )
+    technology_links: Mapped[list[CaseStudyTechnology]] = relationship(
         back_populates="case_study", cascade="all, delete-orphan"
     )

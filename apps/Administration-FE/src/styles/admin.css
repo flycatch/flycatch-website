@@ -907,6 +907,19 @@ select[multiple] {
   background: var(--color-surface);
 }
 
+.table-logo {
+  width: 2.5rem;
+  height: 2.5rem;
+  object-fit: contain;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.table-logo-empty {
+  color: var(--color-muted, inherit);
+}
+
 /* -------------------------------------------------------------------------- */
 /* Responsive                                                                 */
 /* -------------------------------------------------------------------------- */

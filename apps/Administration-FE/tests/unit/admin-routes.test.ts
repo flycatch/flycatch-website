@@ -15,6 +15,7 @@ describe('parseAdminLocation', () => {
     expect(parseAdminLocation('/admin/case-studies/').view).toBe('case_studies');
     expect(parseAdminLocation('/admin/industries/').view).toBe('industries');
     expect(parseAdminLocation('/admin/case-study-categories/').view).toBe('case_study_categories');
+    expect(parseAdminLocation('/admin/technologies/').view).toBe('technologies');
     expect(parseAdminLocation('/admin/authors/').view).toBe('authors');
     expect(parseAdminLocation('/admin/categories/').view).toBe('categories');
     expect(parseAdminLocation('/admin/home/').view).toBe('home');

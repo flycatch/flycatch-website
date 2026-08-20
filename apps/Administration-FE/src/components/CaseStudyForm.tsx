@@ -5,12 +5,14 @@ import {
   getCaseStudy,
   listAllCaseStudyCategories,
   listAllIndustries,
+  listPublishedTechnologies,
   slugify,
   updateCaseStudy,
   uploadMedia,
   type CaseStudyCategory,
   type CaseStudyWrite,
   type Industry,
+  type Technology,
 } from '../lib/admin-api';
 import { hydrateRichText, persistRichText } from '../lib/rich-text';
 import MultiSelect from './MultiSelect';
@@ -29,6 +31,7 @@ type Status = 'draft' | 'publish';
 export default function CaseStudyForm({ caseStudyId, onCancel, onSaved }: Props) {
   const [industries, setIndustries] = useState<Industry[]>([]);
   const [categories, setCategories] = useState<CaseStudyCategory[]>([]);
+  const [technologies, setTechnologies] = useState<Technology[]>([]);
   const [heading, setHeading] = useState('');
   const [slug, setSlug] = useState('');
   const [slugManual, setSlugManual] = useState(false);
@@ -43,6 +46,7 @@ export default function CaseStudyForm({ caseStudyId, onCancel, onSaved }: Props)
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [industryIds, setIndustryIds] = useState<string[]>([]);
   const [categoryIds, setCategoryIds] = useState<string[]>([]);
+  const [technologyIds, setTechnologyIds] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
@@ -50,12 +54,14 @@ export default function CaseStudyForm({ caseStudyId, onCancel, onSaved }: Props)
 
   useEffect(() => {
     async function load() {
-      const [nextIndustries, nextCategories] = await Promise.all([
+      const [nextIndustries, nextCategories, nextTechnologies] = await Promise.all([
         listAllIndustries(),
         listAllCaseStudyCategories(),
+        listPublishedTechnologies(),
       ]);
       setIndustries(nextIndustries);
       setCategories(nextCategories);
+      setTechnologies(nextTechnologies);
       if (caseStudyId) {
         const item = await getCaseStudy(caseStudyId);
         setHeading(item.heading);
@@ -71,6 +77,8 @@ export default function CaseStudyForm({ caseStudyId, onCancel, onSaved }: Props)
         setImageAlt(item.image_alt);
         setIndustryIds(item.industry_ids);
         setCategoryIds(item.category_ids);
+        const publishedIds = new Set(nextTechnologies.map((row) => row.id));
+        setTechnologyIds(item.technology_ids.filter((id) => publishedIds.has(id)));
       }
       setReady(true);
     }
@@ -116,6 +124,7 @@ export default function CaseStudyForm({ caseStudyId, onCancel, onSaved }: Props)
         image_alt: imageAlt.trim(),
         industry_ids: industryIds,
         category_ids: categoryIds,
+        technology_ids: technologyIds,
       };
       if (caseStudyId) await updateCaseStudy(caseStudyId, payload);
       else await createCaseStudy(payload);
@@ -210,6 +219,13 @@ export default function CaseStudyForm({ caseStudyId, onCancel, onSaved }: Props)
           options={categories}
           selectedIds={categoryIds}
           onChange={setCategoryIds}
+        />
+        <MultiSelect
+          id="case-study-technologies"
+          label={t('admin.case_studies.field.technology')}
+          options={technologies}
+          selectedIds={technologyIds}
+          onChange={setTechnologyIds}
         />
         <label>
           {t('admin.case_studies.field.image')}

@@ -77,6 +77,43 @@ class CaseStudyCategoryWrite(BaseModel):
     status: ContentStatus = ContentStatus.draft
 
 
+class Technology(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: UUID
+    name: str
+    logo_key: str | None
+    status: ContentStatus
+    created_at: datetime
+
+
+class TechnologySummary(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: UUID
+    name: str
+    logo_key: str | None
+    created_at: datetime
+    state: ContentStatus
+
+
+class TechnologyList(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    items: list[TechnologySummary]
+    page: int = Field(ge=1)
+    per_page: int = Field(ge=1)
+    total: int = Field(ge=0)
+
+
+class TechnologyWrite(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(min_length=1, max_length=120)
+    logo_key: str | None = None
+    status: ContentStatus = ContentStatus.draft
+
+
 class CaseStudySummary(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -115,8 +152,10 @@ class CaseStudyDetail(BaseModel):
     content_available_in: list[str]
     industry_ids: list[UUID]
     category_ids: list[UUID]
+    technology_ids: list[UUID]
     industries: list[Industry]
     categories: list[CaseStudyCategory]
+    technologies: list[Technology]
 
 
 class CaseStudyWrite(BaseModel):
@@ -134,6 +173,7 @@ class CaseStudyWrite(BaseModel):
     image_alt: str = ""
     industry_ids: list[UUID] = Field(default_factory=list)
     category_ids: list[UUID] = Field(default_factory=list)
+    technology_ids: list[UUID] = Field(default_factory=list)
 
 
 class EntityInUse(BaseModel):

@@ -9,6 +9,8 @@ export type AdminView =
   | 'industry_form'
   | 'case_study_categories'
   | 'case_study_category_form'
+  | 'technologies'
+  | 'technology_form'
   | 'authors'
   | 'author_form'
   | 'categories'
@@ -34,6 +36,7 @@ const SECTIONS: SectionConfig[] = [
   { segment: 'case-studies', list: 'case_studies', form: 'case_study_form' },
   { segment: 'industries', list: 'industries', form: 'industry_form' },
   { segment: 'case-study-categories', list: 'case_study_categories', form: 'case_study_category_form' },
+  { segment: 'technologies', list: 'technologies', form: 'technology_form' },
   { segment: 'authors', list: 'authors', form: 'author_form' },
   { segment: 'categories', list: 'categories', form: 'category_form' },
   { segment: 'roles', list: 'roles', form: 'role_form' },
@@ -47,6 +50,7 @@ const LIST_HREF: Record<string, string> = {
   case_studies: '/admin/case-studies/',
   industries: '/admin/industries/',
   case_study_categories: '/admin/case-study-categories/',
+  technologies: '/admin/technologies/',
   authors: '/admin/authors/',
   categories: '/admin/categories/',
   roles: '/admin/roles/',

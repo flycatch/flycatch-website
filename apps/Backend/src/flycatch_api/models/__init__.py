@@ -10,6 +10,7 @@ from flycatch_api.models.industry import CaseStudyIndustry, Industry
 from flycatch_api.models.managed_record import ManagedRecord, RecordType
 from flycatch_api.models.role import Role
 from flycatch_api.models.role_permission import PermissionName, RolePermission
+from flycatch_api.models.technology import CaseStudyTechnology, Technology
 
 __all__ = [
     "Administrator",
@@ -24,6 +25,7 @@ __all__ = [
     "CaseStudyCategory",
     "CaseStudyCategoryLink",
     "CaseStudyIndustry",
+    "CaseStudyTechnology",
     "Category",
     "ContentStatus",
     "Industry",
@@ -32,4 +34,5 @@ __all__ = [
     "RecordType",
     "Role",
     "RolePermission",
+    "Technology",
 ]
