@@ -15,6 +15,8 @@ info:
 
       GET /public/blogs              list published blogs (q, page, per_page)
       GET /public/blogs/{slug}       one published blog by slug
+      GET /public/authors            list published authors
+      GET /public/categories         list published categories
 
     Drafts MUST NOT appear on those public endpoints. See also spec.md.
 servers:
@@ -410,7 +412,7 @@ components:
     Author:
       type: object
       additionalProperties: false
-      required: [id, name, bio, designation, writer_image_keys]
+      required: [id, name, bio, designation, writer_image_keys, status]
       properties:
         id:
           type: string
@@ -425,6 +427,8 @@ components:
           type: array
           items:
             type: string
+        status:
+          $ref: '#/components/schemas/BlogStatus'
     AuthorList:
       type: object
       additionalProperties: false
@@ -454,16 +458,21 @@ components:
           items:
             type: string
           default: []
+        status:
+          $ref: '#/components/schemas/BlogStatus'
+          default: draft
     Category:
       type: object
       additionalProperties: false
-      required: [id, name]
+      required: [id, name, status]
       properties:
         id:
           type: string
           format: uuid
         name:
           type: string
+        status:
+          $ref: '#/components/schemas/BlogStatus'
     CategoryList:
       type: object
       additionalProperties: false
@@ -482,6 +491,9 @@ components:
           type: string
           minLength: 1
           maxLength: 120
+        status:
+          $ref: '#/components/schemas/BlogStatus'
+          default: draft
     BlogSummary:
       type: object
       additionalProperties: false

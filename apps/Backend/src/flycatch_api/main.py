@@ -7,11 +7,19 @@ from flycatch_api.api import (
     admin_auth,
     admin_authors,
     admin_blogs,
+    admin_case_studies,
+    admin_case_study_categories,
     admin_categories,
+    admin_industries,
     admin_management,
     admin_media,
     admin_roles,
+    admin_technologies,
+    public_authors,
     public_blogs,
+    public_case_studies,
+    public_categories,
+    public_technologies,
     publish,
     stubs,
 )
@@ -62,9 +70,17 @@ app.include_router(admin_roles.router, prefix="/api/v1")
 app.include_router(admin_blogs.router, prefix="/api/v1")
 app.include_router(admin_authors.router, prefix="/api/v1")
 app.include_router(admin_categories.router, prefix="/api/v1")
+app.include_router(admin_case_studies.router, prefix="/api/v1")
+app.include_router(admin_industries.router, prefix="/api/v1")
+app.include_router(admin_case_study_categories.router, prefix="/api/v1")
+app.include_router(admin_technologies.router, prefix="/api/v1")
 app.include_router(admin_media.router, prefix="/api/v1")
 app.include_router(publish.router, prefix="/api/v1")
 app.include_router(public_blogs.router, prefix="/api/v1")
+app.include_router(public_authors.router, prefix="/api/v1")
+app.include_router(public_categories.router, prefix="/api/v1")
+app.include_router(public_case_studies.router, prefix="/api/v1")
+app.include_router(public_technologies.router, prefix="/api/v1")
 app.include_router(stubs.router, prefix="/api/v1")
 
 

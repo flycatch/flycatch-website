@@ -55,12 +55,14 @@ def test_author_category_and_blog_crud(client, bootstrapped):
     assert author.json()["name"] == "Ada Lovelace"
     assert author.json()["bio"] == "Mathematician"
     assert author.json()["designation"] == "Writer"
+    assert author.json()["status"] == "draft"
     category = client.post(
         "/api/v1/admin/categories",
         headers=headers,
         json={"name": "Engineering"},
     )
     assert category.status_code == 201
+    assert category.json()["status"] == "draft"
     category_id = category.json()["id"]
 
     created = client.post(
@@ -108,6 +110,36 @@ def test_author_category_and_blog_crud(client, bootstrapped):
     )
     assert updated.status_code == 200
     assert updated.json()["status"] == "publish"
+
+    published_author = client.patch(
+        f"/api/v1/admin/authors/{author_id}",
+        headers=headers,
+        json={
+            "name": "Ada Lovelace",
+            "bio": "Mathematician",
+            "designation": "Writer",
+            "status": "publish",
+        },
+    )
+    assert published_author.status_code == 200
+    assert published_author.json()["status"] == "publish"
+    unpublished_author = client.patch(
+        f"/api/v1/admin/authors/{author_id}",
+        headers=headers,
+        json={
+            "name": "Ada Lovelace",
+            "bio": "Mathematician",
+            "designation": "Writer",
+            "status": "draft",
+        },
+    )
+    assert unpublished_author.json()["status"] == "draft"
+    published_category = client.patch(
+        f"/api/v1/admin/categories/{category_id}",
+        headers=headers,
+        json={"name": "Engineering", "status": "publish"},
+    )
+    assert published_category.json()["status"] == "publish"
 
     authors = client.get("/api/v1/admin/authors", headers=headers)
     assert any(item["name"] == "Ada Lovelace" for item in authors.json()["items"])

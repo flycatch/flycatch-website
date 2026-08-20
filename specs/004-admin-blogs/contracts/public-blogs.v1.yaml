@@ -6,6 +6,8 @@ info:
   description: |
     Unauthenticated list and detail of blogs with status publish.
     Drafts MUST NOT appear in the list and MUST return 404 by slug.
+    Nested authors and categories include only published related records.
+    Published author and category catalogs are listed separately.
     This contract is separate from admin-blogs.v1.yaml. Staff CRUD remains
     on /admin/blogs and requires a session.
 servers:
@@ -61,6 +63,30 @@ paths:
                 $ref: '#/components/schemas/PublicBlogDetail'
         '404':
           $ref: '#/components/responses/BlogNotFound'
+  /public/authors:
+    get:
+      operationId: listPublicAuthors
+      summary: List published authors
+      tags: [public-authors]
+      responses:
+        '200':
+          description: Published author catalog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicAuthorList'
+  /public/categories:
+    get:
+      operationId: listPublicCategories
+      summary: List published categories
+      tags: [public-categories]
+      responses:
+        '200':
+          description: Published category catalog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicCategoryList'
 components:
   parameters:
     BlogSlug:
@@ -85,6 +111,30 @@ components:
           type: array
           items:
             type: string
+    PublicAuthorProfile:
+      type: object
+      additionalProperties: false
+      required: [name, bio, designation, writer_image_keys]
+      properties:
+        name:
+          type: string
+        bio:
+          type: string
+        designation:
+          type: string
+        writer_image_keys:
+          type: array
+          items:
+            type: string
+    PublicAuthorList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicAuthorProfile'
     PublicCategory:
       type: object
       additionalProperties: false
@@ -92,6 +142,15 @@ components:
       properties:
         name:
           type: string
+    PublicCategoryList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicCategory'
     PublicBlogSummary:
       type: object
       additionalProperties: false

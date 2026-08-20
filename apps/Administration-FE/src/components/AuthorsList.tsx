@@ -76,6 +76,7 @@ export default function AuthorsList({ onAdd, onEdit, notice }: Props) {
             <tr>
               <th scope="col">{t('admin.authors.name')}</th>
               <th scope="col">{t('admin.authors.designation')}</th>
+              <th scope="col">{t('admin.authors.state')}</th>
               <th scope="col">{t('admin.authors.actions')}</th>
             </tr>
           </thead>
@@ -84,6 +85,11 @@ export default function AuthorsList({ onAdd, onEdit, notice }: Props) {
               <tr key={author.id}>
                 <td data-label={t('admin.authors.name')}>{author.name}</td>
                 <td data-label={t('admin.authors.designation')}>{author.designation}</td>
+                <td data-label={t('admin.authors.state')}>
+                  {author.status === 'publish'
+                    ? t('admin.authors.status.publish')
+                    : t('admin.authors.status.draft')}
+                </td>
                 <td data-label={t('admin.authors.actions')} className="roles-row-actions">
                   <button type="button" onClick={() => onEdit(author.id)}>
                     {t('admin.authors.edit_action')}

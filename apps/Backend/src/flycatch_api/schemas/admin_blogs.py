@@ -4,6 +4,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 from flycatch_api.models.blog import BlogStatus
+from flycatch_api.models.case_study import ContentStatus
 
 
 class Author(BaseModel):
@@ -14,6 +15,7 @@ class Author(BaseModel):
     bio: str
     designation: str
     writer_image_keys: list[str]
+    status: ContentStatus
 
 
 class AuthorList(BaseModel):
@@ -29,6 +31,7 @@ class AuthorWrite(BaseModel):
     bio: str = ""
     designation: str = ""
     writer_image_keys: list[str] = Field(default_factory=list)
+    status: ContentStatus = ContentStatus.draft
 
 
 class Category(BaseModel):
@@ -36,6 +39,7 @@ class Category(BaseModel):
 
     id: UUID
     name: str
+    status: ContentStatus
 
 
 class CategoryList(BaseModel):
@@ -48,6 +52,7 @@ class CategoryWrite(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     name: str = Field(min_length=1, max_length=120)
+    status: ContentStatus = ContentStatus.draft
 
 
 class BlogSummary(BaseModel):

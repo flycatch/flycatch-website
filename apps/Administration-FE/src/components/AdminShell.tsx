@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type MouseEvent } from 'react';
 import {
   getPageRecord,
   getSession,
@@ -12,6 +12,13 @@ import {
 } from '../lib/admin-api';
 import { hasTokens } from '../lib/token-store';
 import { t } from '../lib/i18n';
+import {
+  adminFormHref,
+  adminListHref,
+  parseAdminLocation,
+  readAdminLocation,
+  type AdminView,
+} from '../lib/admin-routes';
 import PageEditor from './PageEditor';
 import RoleForm from './RoleForm';
 import RolesList from './RolesList';
@@ -23,18 +30,16 @@ import BlogsList from './BlogsList';
 import BlogForm from './BlogForm';
 import CategoriesList from './CategoriesList';
 import CategoryForm from './CategoryForm';
+import CaseStudiesList from './CaseStudiesList';
+import CaseStudyForm from './CaseStudyForm';
+import IndustriesList from './IndustriesList';
+import IndustryForm from './IndustryForm';
+import CaseStudyCategoriesList from './CaseStudyCategoriesList';
+import CaseStudyCategoryForm from './CaseStudyCategoryForm';
+import TechnologiesList from './TechnologiesList';
+import TechnologyForm from './TechnologyForm';
 
-type View =
-  | 'site_settings'
-  | 'home'
-  | 'blogs'
-  | 'blog_form'
-  | 'authors'
-  | 'author_form'
-  | 'categories'
-  | 'category_form'
-  | 'roles'
-  | 'role_form';
+type View = AdminView;
 
 function canManageRolesFrom(session: SessionContext | null): boolean {
   return (
@@ -42,12 +47,71 @@ function canManageRolesFrom(session: SessionContext | null): boolean {
   );
 }
 
+function applyRoute(
+  route: ReturnType<typeof readAdminLocation>,
+  setters: {
+    setView: (view: View) => void;
+    setEditingRoleId: (id: string | null) => void;
+    setEditingBlogId: (id: string | null) => void;
+    setEditingCaseStudyId: (id: string | null) => void;
+    setEditingIndustryId: (id: string | null) => void;
+    setEditingCaseStudyCategoryId: (id: string | null) => void;
+    setEditingTechnologyId: (id: string | null) => void;
+    setEditingAuthorId: (id: string | null) => void;
+    setEditingCategoryId: (id: string | null) => void;
+  },
+) {
+  setters.setView(route.view);
+  setters.setEditingRoleId(route.view === 'role_form' ? route.editingId : null);
+  setters.setEditingBlogId(route.view === 'blog_form' ? route.editingId : null);
+  setters.setEditingCaseStudyId(route.view === 'case_study_form' ? route.editingId : null);
+  setters.setEditingIndustryId(route.view === 'industry_form' ? route.editingId : null);
+  setters.setEditingCaseStudyCategoryId(
+    route.view === 'case_study_category_form' ? route.editingId : null,
+  );
+  setters.setEditingTechnologyId(route.view === 'technology_form' ? route.editingId : null);
+  setters.setEditingAuthorId(route.view === 'author_form' ? route.editingId : null);
+  setters.setEditingCategoryId(route.view === 'category_form' ? route.editingId : null);
+}
+
 export default function AdminShell() {
-  const [view, setView] = useState<View>('site_settings');
-  const [editingRoleId, setEditingRoleId] = useState<string | null>(null);
-  const [editingBlogId, setEditingBlogId] = useState<string | null>(null);
-  const [editingAuthorId, setEditingAuthorId] = useState<string | null>(null);
-  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
+  const [view, setView] = useState<View>(() => readAdminLocation().view);
+  const [editingRoleId, setEditingRoleId] = useState<string | null>(
+    () => {
+      const route = readAdminLocation();
+      return route.view === 'role_form' ? route.editingId : null;
+    },
+  );
+  const [editingBlogId, setEditingBlogId] = useState<string | null>(() => {
+    const route = readAdminLocation();
+    return route.view === 'blog_form' ? route.editingId : null;
+  });
+  const [editingCaseStudyId, setEditingCaseStudyId] = useState<string | null>(() => {
+    const route = readAdminLocation();
+    return route.view === 'case_study_form' ? route.editingId : null;
+  });
+  const [editingIndustryId, setEditingIndustryId] = useState<string | null>(() => {
+    const route = readAdminLocation();
+    return route.view === 'industry_form' ? route.editingId : null;
+  });
+  const [editingCaseStudyCategoryId, setEditingCaseStudyCategoryId] = useState<string | null>(
+    () => {
+      const route = readAdminLocation();
+      return route.view === 'case_study_category_form' ? route.editingId : null;
+    },
+  );
+  const [editingTechnologyId, setEditingTechnologyId] = useState<string | null>(() => {
+    const route = readAdminLocation();
+    return route.view === 'technology_form' ? route.editingId : null;
+  });
+  const [editingAuthorId, setEditingAuthorId] = useState<string | null>(() => {
+    const route = readAdminLocation();
+    return route.view === 'author_form' ? route.editingId : null;
+  });
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(() => {
+    const route = readAdminLocation();
+    return route.view === 'category_form' ? route.editingId : null;
+  });
   const [session, setSession] = useState<SessionContext | null>(null);
   const [siteSettings, setSiteSettings] = useState<Record<string, unknown> | null>(null);
   const [homePage, setHomePage] = useState<Record<string, unknown> | null>(null);
@@ -56,6 +120,36 @@ export default function AdminShell() {
   const [workspaceError, setWorkspaceError] = useState<string | null>(null);
   const [ready, setReady] = useState(!hasTokens());
   const [navOpen, setNavOpen] = useState(false);
+
+  const applyLocation = useCallback((route: ReturnType<typeof readAdminLocation>) => {
+    applyRoute(route, {
+      setView,
+      setEditingRoleId,
+      setEditingBlogId,
+      setEditingCaseStudyId,
+      setEditingIndustryId,
+      setEditingCaseStudyCategoryId,
+      setEditingTechnologyId,
+      setEditingAuthorId,
+      setEditingCategoryId,
+    });
+  }, []);
+
+  const navigate = useCallback(
+    (href: string, replace = false) => {
+      const url = new URL(href, window.location.origin);
+      const next = parseAdminLocation(url.pathname, url.search);
+      const current = `${window.location.pathname}${window.location.search}`;
+      const target = `${url.pathname}${url.search}`;
+      if (replace) {
+        window.history.replaceState(null, '', target);
+      } else if (current !== target) {
+        window.history.pushState(null, '', target);
+      }
+      applyLocation(next);
+    },
+    [applyLocation],
+  );
 
   const loadWorkspace = useCallback(async () => {
     setWorkspaceError(null);
@@ -71,12 +165,12 @@ export default function AdminShell() {
       setHomePage(null);
       setWorkspaceError(t('admin.workspace.load_failed'));
       if (canManageRolesFrom(nextSession)) {
-        setView('roles');
+        navigate(adminListHref('roles'), true);
       }
     } finally {
       setReady(true);
     }
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     if (!hasTokens()) {
@@ -90,6 +184,14 @@ export default function AdminShell() {
   }, [loadWorkspace]);
 
   useEffect(() => {
+    function onPopState() {
+      applyLocation(readAdminLocation());
+    }
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, [applyLocation]);
+
+  useEffect(() => {
     if (!session) {
       document.title = t('admin.sign_in.title');
       return;
@@ -100,6 +202,22 @@ export default function AdminShell() {
     }
     if (view === 'blogs' || view === 'blog_form') {
       document.title = t('admin.workspace.blogs');
+      return;
+    }
+    if (view === 'case_studies' || view === 'case_study_form') {
+      document.title = t('admin.workspace.case_studies');
+      return;
+    }
+    if (view === 'industries' || view === 'industry_form') {
+      document.title = t('admin.workspace.industries');
+      return;
+    }
+    if (view === 'case_study_categories' || view === 'case_study_category_form') {
+      document.title = t('admin.workspace.case_study_categories');
+      return;
+    }
+    if (view === 'technologies' || view === 'technology_form') {
+      document.title = t('admin.workspace.technologies');
       return;
     }
     if (view === 'authors' || view === 'author_form') {
@@ -146,6 +264,9 @@ export default function AdminShell() {
     setWorkspaceError(null);
     try {
       await loadWorkspace();
+      if (window.location.pathname.includes('sign-in')) {
+        navigate(adminListHref('site_settings'), true);
+      }
     } catch {
       // loadWorkspace sets workspaceError when records are missing
     }
@@ -159,40 +280,59 @@ export default function AdminShell() {
     setMessage(null);
     setError(null);
     setWorkspaceError(null);
-    setView('site_settings');
-    setEditingRoleId(null);
-    setEditingBlogId(null);
-    setEditingAuthorId(null);
-    setEditingCategoryId(null);
     setNavOpen(false);
+  }
+
+  function openList(listView: View) {
+    setError(null);
+    setNavOpen(false);
+    navigate(adminListHref(listView));
+  }
+
+  function openForm(listView: View, id: string | null) {
+    setMessage(null);
+    setError(null);
+    navigate(adminFormHref(listView, id));
   }
 
   function openRoles() {
-    setView('roles');
-    setEditingRoleId(null);
-    setError(null);
-    setNavOpen(false);
+    openList('roles');
   }
 
   function openBlogs() {
-    setView('blogs');
-    setEditingBlogId(null);
-    setError(null);
-    setNavOpen(false);
+    openList('blogs');
+  }
+
+  function openCaseStudies() {
+    openList('case_studies');
+  }
+
+  function openIndustries() {
+    openList('industries');
+  }
+
+  function openCaseStudyCategories() {
+    openList('case_study_categories');
+  }
+
+  function openTechnologies() {
+    openList('technologies');
   }
 
   function openAuthors() {
-    setView('authors');
-    setEditingAuthorId(null);
-    setError(null);
-    setNavOpen(false);
+    openList('authors');
   }
 
   function openCategories() {
-    setView('categories');
-    setEditingCategoryId(null);
-    setError(null);
-    setNavOpen(false);
+    openList('categories');
+  }
+
+  function onNavClick(event: MouseEvent<HTMLAnchorElement>, href: string) {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
+      return;
+    }
+    event.preventDefault();
+    openList(parseAdminLocation(href).view);
   }
 
   if (!ready) {
@@ -255,71 +395,117 @@ export default function AdminShell() {
         <nav className="admin-nav" aria-label="Administration">
           <ul>
             <li>
-              <button
-                type="button"
+              <a
+                href={adminListHref('site_settings')}
                 className={view === 'site_settings' ? 'active' : ''}
                 aria-current={view === 'site_settings' ? 'page' : undefined}
-                onClick={() => {
-                  setView('site_settings');
-                  setNavOpen(false);
-                }}
+                onClick={(event) => onNavClick(event, adminListHref('site_settings'))}
               >
                 {t('admin.workspace.site_settings')}
-              </button>
+              </a>
             </li>
             <li>
-              <button
-                type="button"
+              <a
+                href={adminListHref('home')}
                 className={view === 'home' ? 'active' : ''}
                 aria-current={view === 'home' ? 'page' : undefined}
-                onClick={() => {
-                  setView('home');
-                  setNavOpen(false);
-                }}
+                onClick={(event) => onNavClick(event, adminListHref('home'))}
               >
                 {t('admin.workspace.home_page')}
-              </button>
+              </a>
             </li>
             <li>
-              <button
-                type="button"
+              <a
+                href={adminListHref('blogs')}
                 className={view === 'blogs' || view === 'blog_form' ? 'active' : ''}
                 aria-current={view === 'blogs' || view === 'blog_form' ? 'page' : undefined}
-                onClick={openBlogs}
+                onClick={(event) => onNavClick(event, adminListHref('blogs'))}
               >
                 {t('admin.workspace.blogs')}
-              </button>
+              </a>
             </li>
             <li>
-              <button
-                type="button"
+              <a
+                href={adminListHref('case_studies')}
+                className={view === 'case_studies' || view === 'case_study_form' ? 'active' : ''}
+                aria-current={
+                  view === 'case_studies' || view === 'case_study_form' ? 'page' : undefined
+                }
+                onClick={(event) => onNavClick(event, adminListHref('case_studies'))}
+              >
+                {t('admin.workspace.case_studies')}
+              </a>
+            </li>
+            <li>
+              <a
+                href={adminListHref('industries')}
+                className={view === 'industries' || view === 'industry_form' ? 'active' : ''}
+                aria-current={view === 'industries' || view === 'industry_form' ? 'page' : undefined}
+                onClick={(event) => onNavClick(event, adminListHref('industries'))}
+              >
+                {t('admin.workspace.industries')}
+              </a>
+            </li>
+            <li>
+              <a
+                href={adminListHref('case_study_categories')}
+                className={
+                  view === 'case_study_categories' || view === 'case_study_category_form'
+                    ? 'active'
+                    : ''
+                }
+                aria-current={
+                  view === 'case_study_categories' || view === 'case_study_category_form'
+                    ? 'page'
+                    : undefined
+                }
+                onClick={(event) => onNavClick(event, adminListHref('case_study_categories'))}
+              >
+                {t('admin.workspace.case_study_categories')}
+              </a>
+            </li>
+            <li>
+              <a
+                href={adminListHref('technologies')}
+                className={view === 'technologies' || view === 'technology_form' ? 'active' : ''}
+                aria-current={
+                  view === 'technologies' || view === 'technology_form' ? 'page' : undefined
+                }
+                onClick={(event) => onNavClick(event, adminListHref('technologies'))}
+              >
+                {t('admin.workspace.technologies')}
+              </a>
+            </li>
+            <li>
+              <a
+                href={adminListHref('authors')}
                 className={view === 'authors' || view === 'author_form' ? 'active' : ''}
                 aria-current={view === 'authors' || view === 'author_form' ? 'page' : undefined}
-                onClick={openAuthors}
+                onClick={(event) => onNavClick(event, adminListHref('authors'))}
               >
                 {t('admin.workspace.authors')}
-              </button>
+              </a>
             </li>
             <li>
-              <button
-                type="button"
+              <a
+                href={adminListHref('categories')}
                 className={view === 'categories' || view === 'category_form' ? 'active' : ''}
                 aria-current={view === 'categories' || view === 'category_form' ? 'page' : undefined}
-                onClick={openCategories}
+                onClick={(event) => onNavClick(event, adminListHref('categories'))}
               >
                 {t('admin.workspace.categories')}
-              </button>
+              </a>
             </li>
             {canManageRoles && (
               <li>
-                <button
-                  type="button"
+                <a
+                  href={adminListHref('roles')}
                   className={settingsCurrent ? 'active' : ''}
                   aria-current={settingsCurrent ? 'page' : undefined}
-                  onClick={openRoles}
+                  onClick={(event) => onNavClick(event, adminListHref('roles'))}
                 >
                   {t('admin.workspace.settings')}
-                </button>
+                </a>
               </li>
             )}
           </ul>
@@ -406,16 +592,8 @@ export default function AdminShell() {
           {view === 'blogs' && (
             <BlogsList
               notice={message}
-              onAdd={() => {
-                setEditingBlogId(null);
-                setMessage(null);
-                setView('blog_form');
-              }}
-              onEdit={(id) => {
-                setEditingBlogId(id);
-                setMessage(null);
-                setView('blog_form');
-              }}
+              onAdd={() => openForm('blogs', null)}
+              onEdit={(id) => openForm('blogs', id)}
             />
           )}
           {view === 'blog_form' && (
@@ -428,19 +606,79 @@ export default function AdminShell() {
               }}
             />
           )}
+          {view === 'case_studies' && (
+            <CaseStudiesList
+              notice={message}
+              onAdd={() => openForm('case_studies', null)}
+              onEdit={(id) => openForm('case_studies', id)}
+            />
+          )}
+          {view === 'case_study_form' && (
+            <CaseStudyForm
+              caseStudyId={editingCaseStudyId}
+              onCancel={openCaseStudies}
+              onSaved={() => {
+                setMessage(t('admin.case_studies.saved'));
+                openCaseStudies();
+              }}
+            />
+          )}
+          {view === 'industries' && (
+            <IndustriesList
+              notice={message}
+              onAdd={() => openForm('industries', null)}
+              onEdit={(id) => openForm('industries', id)}
+            />
+          )}
+          {view === 'industry_form' && (
+            <IndustryForm
+              industryId={editingIndustryId}
+              onCancel={openIndustries}
+              onSaved={() => {
+                setMessage(t('admin.industries.saved'));
+                openIndustries();
+              }}
+            />
+          )}
+          {view === 'case_study_categories' && (
+            <CaseStudyCategoriesList
+              notice={message}
+              onAdd={() => openForm('case_study_categories', null)}
+              onEdit={(id) => openForm('case_study_categories', id)}
+            />
+          )}
+          {view === 'case_study_category_form' && (
+            <CaseStudyCategoryForm
+              categoryId={editingCaseStudyCategoryId}
+              onCancel={openCaseStudyCategories}
+              onSaved={() => {
+                setMessage(t('admin.case_study_categories.saved'));
+                openCaseStudyCategories();
+              }}
+            />
+          )}
+          {view === 'technologies' && (
+            <TechnologiesList
+              notice={message}
+              onAdd={() => openForm('technologies', null)}
+              onEdit={(id) => openForm('technologies', id)}
+            />
+          )}
+          {view === 'technology_form' && (
+            <TechnologyForm
+              technologyId={editingTechnologyId}
+              onCancel={openTechnologies}
+              onSaved={() => {
+                setMessage(t('admin.technologies.saved'));
+                openTechnologies();
+              }}
+            />
+          )}
           {view === 'authors' && (
             <AuthorsList
               notice={message}
-              onAdd={() => {
-                setEditingAuthorId(null);
-                setMessage(null);
-                setView('author_form');
-              }}
-              onEdit={(id) => {
-                setEditingAuthorId(id);
-                setMessage(null);
-                setView('author_form');
-              }}
+              onAdd={() => openForm('authors', null)}
+              onEdit={(id) => openForm('authors', id)}
             />
           )}
           {view === 'author_form' && (
@@ -456,16 +694,8 @@ export default function AdminShell() {
           {view === 'categories' && (
             <CategoriesList
               notice={message}
-              onAdd={() => {
-                setEditingCategoryId(null);
-                setMessage(null);
-                setView('category_form');
-              }}
-              onEdit={(id) => {
-                setEditingCategoryId(id);
-                setMessage(null);
-                setView('category_form');
-              }}
+              onAdd={() => openForm('categories', null)}
+              onEdit={(id) => openForm('categories', id)}
             />
           )}
           {view === 'category_form' && (
@@ -481,16 +711,8 @@ export default function AdminShell() {
           {view === 'roles' && (
             <RolesList
               notice={message}
-              onAdd={() => {
-                setEditingRoleId(null);
-                setMessage(null);
-                setView('role_form');
-              }}
-              onEdit={(id) => {
-                setEditingRoleId(id);
-                setMessage(null);
-                setView('role_form');
-              }}
+              onAdd={() => openForm('roles', null)}
+              onEdit={(id) => openForm('roles', id)}
             />
           )}
           {view === 'role_form' && (

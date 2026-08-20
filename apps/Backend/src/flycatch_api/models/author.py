@@ -4,12 +4,13 @@ import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, ForeignKey, String, Text, UniqueConstraint
+from sqlalchemy import DateTime, Enum, ForeignKey, String, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import JSON
 
 from flycatch_api.db import Base
+from flycatch_api.models.case_study import ContentStatus
 
 if TYPE_CHECKING:
     from flycatch_api.models.blog import Blog
@@ -23,6 +24,11 @@ class Author(Base):
     bio: Mapped[str] = mapped_column(Text, nullable=False, default="")
     designation: Mapped[str] = mapped_column(String(200), nullable=False, default="")
     writer_image_keys: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    status: Mapped[ContentStatus] = mapped_column(
+        Enum(ContentStatus, name="content_status", create_type=False),
+        nullable=False,
+        default=ContentStatus.draft,
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
     blogs: Mapped[list[BlogAuthor]] = relationship(back_populates="author")

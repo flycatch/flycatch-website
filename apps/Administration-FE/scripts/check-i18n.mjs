@@ -18,6 +18,12 @@ const files = [
   'components/MediaPreview.tsx',
   'components/CategoriesList.tsx',
   'components/CategoryForm.tsx',
+  'components/CaseStudiesList.tsx',
+  'components/CaseStudyForm.tsx',
+  'components/IndustriesList.tsx',
+  'components/IndustryForm.tsx',
+  'components/CaseStudyCategoriesList.tsx',
+  'components/CaseStudyCategoryForm.tsx',
   'components/MultiSelect.tsx',
 ];
 const allowedLiteral = new Set(['Title', 'Description', 'Primary heading', 'Summary', 'Body']);

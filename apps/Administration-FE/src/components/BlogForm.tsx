@@ -16,6 +16,7 @@ import { hydrateRichText, persistRichText } from '../lib/rich-text';
 import MultiSelect from './MultiSelect';
 import MediaPreview from './MediaPreview';
 import RichTextEditor from './RichTextEditor';
+import { adminListHref } from '../lib/admin-routes';
 import { t } from '../lib/i18n';
 
 interface Props {
@@ -86,8 +87,7 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
     if (!slugManual) setSlug(slugify(value));
   }
 
-  async function save(event: FormEvent) {
-    event.preventDefault();
+  async function persist(nextStatus: 'draft' | 'publish') {
     setError(null);
     setFieldError(null);
     if (!title.trim()) {
@@ -110,7 +110,7 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
         slug: nextSlug,
         description: description.trim(),
         body: persistRichText(body),
-        status,
+        status: nextStatus,
         reading_time: Number.isFinite(readingTime) ? Math.max(0, Math.trunc(readingTime)) : 0,
         image_key: nextImageKey,
         image_alt: imageAlt.trim(),
@@ -130,6 +130,11 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
     } finally {
       setSaving(false);
     }
+  }
+
+  async function save(event: FormEvent) {
+    event.preventDefault();
+    await persist(status);
   }
 
   if (!ready) {
@@ -187,13 +192,6 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
           onChange={setBody}
         />
         <label>
-          {t('admin.blogs.field.status')}
-          <select value={status} onChange={(event) => setStatus(event.target.value as 'draft' | 'publish')}>
-            <option value="draft">{t('admin.blogs.status.draft')}</option>
-            <option value="publish">{t('admin.blogs.status.publish')}</option>
-          </select>
-        </label>
-        <label>
           {t('admin.blogs.field.reading_time')}
           <input
             type="number"
@@ -223,6 +221,7 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
         <MultiSelect
           id="blog-authors"
           label={t('admin.blogs.field.authors')}
+          manageHref={adminListHref('authors')}
           options={authors}
           selectedIds={authorIds}
           onChange={setAuthorIds}
@@ -230,6 +229,7 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
         <MultiSelect
           id="blog-categories"
           label={t('admin.blogs.field.categories')}
+          manageHref={adminListHref('categories')}
           options={categories}
           selectedIds={categoryIds}
           onChange={setCategoryIds}
@@ -271,6 +271,23 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
           <button type="submit" className="primary" disabled={saving} aria-busy={saving}>
             {t('admin.blogs.save')}
           </button>
+          {status === 'publish' ? (
+            <button
+              type="button"
+              disabled={saving}
+              onClick={() => persist('draft').catch(() => undefined)}
+            >
+              {t('admin.blogs.unpublish')}
+            </button>
+          ) : (
+            <button
+              type="button"
+              disabled={saving}
+              onClick={() => persist('publish').catch(() => undefined)}
+            >
+              {t('admin.blogs.publish')}
+            </button>
+          )}
         </div>
       </form>
     </section>

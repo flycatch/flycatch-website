@@ -12,7 +12,8 @@ test('settings opens roles list for an administrator', async ({ page }) => {
   await page.getByRole('button', { name: /^sign in$/i }).click();
   await expect(page.getByRole('heading', { name: /administration/i })).toBeVisible();
 
-  await page.getByRole('button', { name: /^settings$/i }).click();
+  await page.getByRole('link', { name: /^settings$/i }).click();
+  await expect(page).toHaveURL(/\/admin\/roles\/?$/);
   await expect(page).toHaveTitle(/settings/i);
   await expect(page.getByRole('heading', { name: /roles/i })).toBeVisible();
   await expect(page.getByRole('button', { name: /add new role/i })).toBeVisible();

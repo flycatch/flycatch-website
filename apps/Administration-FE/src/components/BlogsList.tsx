@@ -111,9 +111,11 @@ export default function BlogsList({ onAdd, onEdit, notice }: Props) {
             </tr>
           </thead>
           <tbody>
-            {data?.items.map((blog) => (
+            {data?.items.map((blog, index) => (
               <tr key={blog.id}>
-                <td data-label={t('admin.blogs.id')}>{blog.id}</td>
+                <td data-label={t('admin.blogs.id')}>
+                  {(data.page - 1) * data.per_page + index + 1}
+                </td>
                 <td data-label={t('admin.blogs.title.column')}>{blog.title}</td>
                 <td data-label={t('admin.blogs.slug')}>{blog.slug}</td>
                 <td data-label={t('admin.blogs.author')}>{blog.author || '—'}</td>
@@ -121,7 +123,9 @@ export default function BlogsList({ onAdd, onEdit, notice }: Props) {
                   {blog.content_available_in}
                 </td>
                 <td data-label={t('admin.blogs.state')}>
-                  {blog.state === 'publish' ? t('admin.blogs.status.publish') : t('admin.blogs.status.draft')}
+                  {blog.state === 'publish'
+                    ? t('admin.blogs.status.publish')
+                    : t('admin.blogs.status.draft')}
                 </td>
                 <td data-label={t('admin.blogs.actions')} className="roles-row-actions">
                   <button type="button" onClick={() => onEdit(blog.id)}>

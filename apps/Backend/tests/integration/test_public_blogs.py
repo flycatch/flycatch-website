@@ -42,18 +42,33 @@ def test_public_list_and_detail_are_unauthenticated(client, bootstrapped):
     author = client.post(
         "/api/v1/admin/authors",
         headers=headers,
-        json={"name": "Ada Lovelace", "designation": "Writer", "writer_image_keys": ["ada.png"]},
+        json={
+            "name": "Ada Lovelace",
+            "designation": "Writer",
+            "writer_image_keys": ["ada.png"],
+            "status": "publish",
+        },
+    )
+    draft_author = client.post(
+        "/api/v1/admin/authors",
+        headers=headers,
+        json={"name": "Hidden Author", "status": "draft"},
     )
     category = client.post(
         "/api/v1/admin/categories",
         headers=headers,
-        json={"name": "Engineering"},
+        json={"name": "Engineering", "status": "publish"},
+    )
+    draft_category = client.post(
+        "/api/v1/admin/categories",
+        headers=headers,
+        json={"name": "Hidden Category", "status": "draft"},
     )
     created = _create_blog(
         client,
         headers,
-        author_ids=[author.json()["id"]],
-        category_ids=[category.json()["id"]],
+        author_ids=[author.json()["id"], draft_author.json()["id"]],
+        category_ids=[category.json()["id"], draft_category.json()["id"]],
     )
     assert created.status_code == 201
 
@@ -70,7 +85,9 @@ def test_public_list_and_detail_are_unauthenticated(client, bootstrapped):
     assert item["authors"][0]["name"] == "Ada Lovelace"
     assert item["authors"][0]["designation"] == "Writer"
     assert item["authors"][0]["writer_image_keys"] == ["ada.png"]
+    assert [entry["name"] for entry in item["authors"]] == ["Ada Lovelace"]
     assert item["categories"][0]["name"] == "Engineering"
+    assert [entry["name"] for entry in item["categories"]] == ["Engineering"]
     assert "state" not in item
     assert "status" not in item
 
@@ -109,7 +126,7 @@ def test_public_search_matches_published_only(client, bootstrapped):
     author = client.post(
         "/api/v1/admin/authors",
         headers=headers,
-        json={"name": "Search Author"},
+        json={"name": "Search Author", "status": "publish"},
     )
     author_id = author.json()["id"]
     draft = _create_blog(
@@ -144,3 +161,55 @@ def test_public_search_matches_published_only(client, bootstrapped):
     body = search.json()
     assert body["total"] == 1
     assert body["items"][0]["slug"] == "published-match"
+
+
+def test_public_authors_and_categories_are_published_only(client, bootstrapped):
+    headers = _admin(client, bootstrapped)
+    live_author = client.post(
+        "/api/v1/admin/authors",
+        headers=headers,
+        json={"name": "Live Author", "bio": "Visible", "status": "publish"},
+    )
+    draft_author = client.post(
+        "/api/v1/admin/authors",
+        headers=headers,
+        json={"name": "Draft Author", "status": "draft"},
+    )
+    live_category = client.post(
+        "/api/v1/admin/categories",
+        headers=headers,
+        json={"name": "Live Category", "status": "publish"},
+    )
+    draft_category = client.post(
+        "/api/v1/admin/categories",
+        headers=headers,
+        json={"name": "Draft Category", "status": "draft"},
+    )
+    assert live_author.status_code == 201
+    assert draft_author.status_code == 201
+    assert live_category.status_code == 201
+    assert draft_category.status_code == 201
+
+    admin_authors = client.get("/api/v1/admin/authors", headers=headers)
+    admin_names = {item["name"] for item in admin_authors.json()["items"]}
+    assert {"Live Author", "Draft Author"} <= admin_names
+
+    public_authors = client.get("/api/v1/public/authors")
+    assert public_authors.status_code == 200
+    names = [item["name"] for item in public_authors.json()["items"]]
+    assert "Live Author" in names
+    assert "Draft Author" not in names
+    assert "id" not in public_authors.json()["items"][0]
+    assert "status" not in public_authors.json()["items"][0]
+
+    admin_categories = client.get("/api/v1/admin/categories", headers=headers)
+    admin_category_names = {item["name"] for item in admin_categories.json()["items"]}
+    assert {"Live Category", "Draft Category"} <= admin_category_names
+
+    public_categories = client.get("/api/v1/public/categories")
+    assert public_categories.status_code == 200
+    category_names = [item["name"] for item in public_categories.json()["items"]]
+    assert "Live Category" in category_names
+    assert "Draft Category" not in category_names
+    assert "id" not in public_categories.json()["items"][0]
+    assert "status" not in public_categories.json()["items"][0]

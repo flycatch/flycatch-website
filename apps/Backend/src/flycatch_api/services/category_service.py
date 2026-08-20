@@ -7,6 +7,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from flycatch_api.models import BlogCategory, Category
+from flycatch_api.models.case_study import ContentStatus
 from flycatch_api.schemas.admin_auth import FieldErrorDetail, FieldErrors
 from flycatch_api.schemas.admin_blogs import Category as CategorySchema
 from flycatch_api.schemas.admin_blogs import (
@@ -15,13 +16,23 @@ from flycatch_api.schemas.admin_blogs import (
     EntityInUse,
     EntityNotFound,
 )
-from flycatch_api.services.author_service import CatalogError
+from flycatch_api.schemas.public_blogs import PublicCategory, PublicCategoryList
+from flycatch_api.services.author_service import CatalogError, coerce_status
 
 
 class CategoryService:
     def list_categories(self, db: Session) -> CategoryList:
         rows = db.query(Category).order_by(Category.name.asc()).all()
         return CategoryList(items=[self._to_schema(row) for row in rows])
+
+    def list_published(self, db: Session) -> PublicCategoryList:
+        rows = (
+            db.query(Category)
+            .filter(Category.status == ContentStatus.publish)
+            .order_by(Category.name.asc())
+            .all()
+        )
+        return PublicCategoryList(items=[PublicCategory(name=row.name) for row in rows])
 
     def get(self, db: Session, category_id: UUID) -> CategorySchema:
         category = db.get(Category, category_id)
@@ -33,7 +44,11 @@ class CategoryService:
 
     def create(self, db: Session, payload: CategoryWrite) -> CategorySchema:
         name = self._validate_name(db, payload.name, None)
-        category = Category(name=name, created_at=datetime.now(UTC))
+        category = Category(
+            name=name,
+            status=coerce_status(payload.status),
+            created_at=datetime.now(UTC),
+        )
         db.add(category)
         db.commit()
         db.refresh(category)
@@ -46,6 +61,7 @@ class CategoryService:
                 404, EntityNotFound(message_key="admin.categories.not_found").model_dump()
             )
         category.name = self._validate_name(db, payload.name, category.id)
+        category.status = coerce_status(payload.status)
         db.commit()
         db.refresh(category)
         return self._to_schema(category)
@@ -87,4 +103,12 @@ class CategoryService:
         return trimmed
 
     def _to_schema(self, category: Category) -> CategorySchema:
-        return CategorySchema(id=category.id, name=category.name)
+        return category_schema(category)
+
+
+def category_schema(category: Category) -> CategorySchema:
+    return CategorySchema(
+        id=category.id,
+        name=category.name,
+        status=coerce_status(category.status),
+    )

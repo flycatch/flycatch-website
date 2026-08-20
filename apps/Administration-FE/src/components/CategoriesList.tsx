@@ -75,6 +75,7 @@ export default function CategoriesList({ onAdd, onEdit, notice }: Props) {
           <thead>
             <tr>
               <th scope="col">{t('admin.categories.name')}</th>
+              <th scope="col">{t('admin.categories.state')}</th>
               <th scope="col">{t('admin.categories.actions')}</th>
             </tr>
           </thead>
@@ -82,6 +83,11 @@ export default function CategoriesList({ onAdd, onEdit, notice }: Props) {
             {items?.map((category) => (
               <tr key={category.id}>
                 <td data-label={t('admin.categories.name')}>{category.name}</td>
+                <td data-label={t('admin.categories.state')}>
+                  {category.status === 'publish'
+                    ? t('admin.categories.status.publish')
+                    : t('admin.categories.status.draft')}
+                </td>
                 <td data-label={t('admin.categories.actions')} className="roles-row-actions">
                   <button type="button" onClick={() => onEdit(category.id)}>
                     {t('admin.categories.edit_action')}

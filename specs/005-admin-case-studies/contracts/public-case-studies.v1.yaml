@@ -1,0 +1,250 @@
+openapi: 3.1.0
+info:
+  title: Public Case Studies
+  version: 1.0.0
+  summary: Read-only published case studies for the website frontend.
+  description: |
+    Unauthenticated list and detail of case studies with status publish.
+    Drafts MUST NOT appear in the list and MUST return 404 by slug.
+    Nested industries and categories include only published related names.
+    Nested technologies include only published related name and logo_key.
+    Published technologies are listed separately at /public/technologies.
+    This contract is separate from admin-case-studies.v1.yaml.
+servers:
+  - url: /api/v1
+security: []
+paths:
+  /public/case-studies:
+    get:
+      operationId: listPublicCaseStudies
+      summary: List published case studies with search and pagination of 10
+      tags: [public-case-studies]
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 10
+      responses:
+        '200':
+          description: Paginated published case study list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicCaseStudyList'
+  /public/case-studies/{slug}:
+    get:
+      operationId: getPublicCaseStudy
+      summary: Return one published case study by slug
+      tags: [public-case-studies]
+      parameters:
+        - $ref: '#/components/parameters/CaseStudySlug'
+      responses:
+        '200':
+          description: Published case study detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicCaseStudyDetail'
+        '404':
+          $ref: '#/components/responses/CaseStudyNotFound'
+  /public/technologies:
+    get:
+      operationId: listPublicTechnologies
+      summary: List published technologies
+      tags: [public-technologies]
+      responses:
+        '200':
+          description: Published technology catalog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicTechnologyList'
+components:
+  parameters:
+    CaseStudySlug:
+      name: slug
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 128
+  schemas:
+    PublicNamedItem:
+      type: object
+      additionalProperties: false
+      required: [name]
+      properties:
+        name:
+          type: string
+    PublicTechnology:
+      type: object
+      additionalProperties: false
+      required: [name, logo_key]
+      properties:
+        name:
+          type: string
+        logo_key:
+          type: string
+          nullable: true
+    PublicTechnologyList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicTechnology'
+    PublicCaseStudySummary:
+      type: object
+      additionalProperties: false
+      required:
+        - heading
+        - slug
+        - short_heading
+        - description
+        - order
+        - date
+        - image_key
+        - image_alt
+        - industries
+        - categories
+        - technologies
+      properties:
+        heading:
+          type: string
+        slug:
+          type: string
+        short_heading:
+          type: string
+        description:
+          type: string
+        order:
+          type: integer
+        date:
+          type: string
+          format: date
+          nullable: true
+        image_key:
+          type: string
+          nullable: true
+        image_alt:
+          type: string
+        industries:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicNamedItem'
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicNamedItem'
+        technologies:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicTechnology'
+    PublicCaseStudyList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicCaseStudySummary'
+        page:
+          type: integer
+          minimum: 1
+        per_page:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+    PublicCaseStudyDetail:
+      type: object
+      additionalProperties: false
+      required:
+        - heading
+        - slug
+        - short_heading
+        - description
+        - body
+        - order
+        - date
+        - image_key
+        - image_alt
+        - content_available_in
+        - industries
+        - categories
+        - technologies
+      properties:
+        heading:
+          type: string
+        slug:
+          type: string
+        short_heading:
+          type: string
+        description:
+          type: string
+        body:
+          type: string
+        order:
+          type: integer
+        date:
+          type: string
+          format: date
+          nullable: true
+        image_key:
+          type: string
+          nullable: true
+        image_alt:
+          type: string
+        content_available_in:
+          type: array
+          items:
+            type: string
+        industries:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicNamedItem'
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicNamedItem'
+        technologies:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicTechnology'
+  responses:
+    CaseStudyNotFound:
+      description: Unknown or unpublished case study
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [code, message_key]
+            properties:
+              code:
+                type: string
+                const: not_found
+              message_key:
+                type: string
+                const: public.case_studies.not_found

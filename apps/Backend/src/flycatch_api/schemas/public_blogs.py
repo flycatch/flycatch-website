@@ -9,10 +9,31 @@ class PublicAuthor(BaseModel):
     writer_image_keys: list[str]
 
 
+class PublicAuthorProfile(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str
+    bio: str
+    designation: str
+    writer_image_keys: list[str]
+
+
 class PublicCategory(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     name: str
+
+
+class PublicAuthorList(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    items: list[PublicAuthorProfile]
+
+
+class PublicCategoryList(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    items: list[PublicCategory]
 
 
 class PublicBlogSummary(BaseModel):

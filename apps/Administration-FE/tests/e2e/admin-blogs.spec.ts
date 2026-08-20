@@ -12,8 +12,15 @@ test('blogs list is reachable from administration navigation', async ({ page }) 
   await page.getByRole('button', { name: /^sign in$/i }).click();
   await expect(page.getByRole('heading', { name: /administration/i })).toBeVisible();
 
-  await page.getByRole('button', { name: /^blogs$/i }).click();
+  await page.getByRole('link', { name: /^blogs$/i }).click();
+  await expect(page).toHaveURL(/\/admin\/blogs\/?$/);
   await expect(page).toHaveTitle(/blogs/i);
   await expect(page.getByRole('heading', { name: /^blogs$/i })).toBeVisible();
   await expect(page.getByRole('button', { name: /create new entry/i })).toBeVisible();
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\/admin\/?$/);
+  await page.goForward();
+  await expect(page).toHaveURL(/\/admin\/blogs\/?$/);
+  await expect(page.getByRole('heading', { name: /^blogs$/i })).toBeVisible();
 });

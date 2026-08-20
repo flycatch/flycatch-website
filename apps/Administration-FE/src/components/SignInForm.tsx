@@ -22,17 +22,24 @@ export default function SignInForm({ onSignedIn }: Props) {
       await signIn(email, password);
       onSignedIn();
     } catch (err: unknown) {
-      const apiErr = err as AdminApiError;
-      if (apiErr.detail && 'fields' in apiErr.detail && apiErr.detail.fields) {
+      if (!(err instanceof AdminApiError)) {
+        setError(t('admin.workspace.request_failed'));
+        return;
+      }
+      if (err.detail && 'fields' in err.detail && err.detail.fields) {
         const mapped: Record<string, string> = {};
-        for (const [field, value] of Object.entries(apiErr.detail.fields)) {
+        for (const [field, value] of Object.entries(err.detail.fields)) {
           mapped[field] = t(value.message_key);
         }
         setFieldErrors(mapped);
+      } else if (err.status === 401) {
+        const messageKey =
+          ('message_key' in err.detail && err.detail.message_key) || 'admin.sign_in.error';
+        setError(t(messageKey));
       } else {
         const messageKey =
-          (apiErr.detail && 'message_key' in apiErr.detail && apiErr.detail.message_key) ||
-          'admin.sign_in.error';
+          ('message_key' in err.detail && err.detail.message_key) ||
+          'admin.workspace.request_failed';
         setError(t(messageKey));
       }
     } finally {
