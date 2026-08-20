@@ -18,6 +18,7 @@ import { hydrateRichText, persistRichText } from '../lib/rich-text';
 import MultiSelect from './MultiSelect';
 import MediaPreview from './MediaPreview';
 import RichTextEditor from './RichTextEditor';
+import { adminListHref } from '../lib/admin-routes';
 import { t } from '../lib/i18n';
 
 interface Props {
@@ -209,6 +210,7 @@ export default function CaseStudyForm({ caseStudyId, onCancel, onSaved }: Props)
         <MultiSelect
           id="case-study-industries"
           label={t('admin.case_studies.field.industry')}
+          manageHref={adminListHref('industries')}
           options={industries}
           selectedIds={industryIds}
           onChange={setIndustryIds}
@@ -216,6 +218,7 @@ export default function CaseStudyForm({ caseStudyId, onCancel, onSaved }: Props)
         <MultiSelect
           id="case-study-categories"
           label={t('admin.case_studies.field.category')}
+          manageHref={adminListHref('case_study_categories')}
           options={categories}
           selectedIds={categoryIds}
           onChange={setCategoryIds}
@@ -223,6 +226,7 @@ export default function CaseStudyForm({ caseStudyId, onCancel, onSaved }: Props)
         <MultiSelect
           id="case-study-technologies"
           label={t('admin.case_studies.field.technology')}
+          manageHref={adminListHref('technologies')}
           options={technologies}
           selectedIds={technologyIds}
           onChange={setTechnologyIds}

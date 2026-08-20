@@ -16,6 +16,7 @@ import { hydrateRichText, persistRichText } from '../lib/rich-text';
 import MultiSelect from './MultiSelect';
 import MediaPreview from './MediaPreview';
 import RichTextEditor from './RichTextEditor';
+import { adminListHref } from '../lib/admin-routes';
 import { t } from '../lib/i18n';
 
 interface Props {
@@ -220,6 +221,7 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
         <MultiSelect
           id="blog-authors"
           label={t('admin.blogs.field.authors')}
+          manageHref={adminListHref('authors')}
           options={authors}
           selectedIds={authorIds}
           onChange={setAuthorIds}
@@ -227,6 +229,7 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
         <MultiSelect
           id="blog-categories"
           label={t('admin.blogs.field.categories')}
+          manageHref={adminListHref('categories')}
           options={categories}
           selectedIds={categoryIds}
           onChange={setCategoryIds}

@@ -43,6 +43,11 @@ describe('parseAdminLocation', () => {
 describe('admin href helpers', () => {
   it('builds list and form hrefs', () => {
     expect(adminListHref('blogs')).toBe('/admin/blogs/');
+    expect(adminListHref('authors')).toBe('/admin/authors/');
+    expect(adminListHref('categories')).toBe('/admin/categories/');
+    expect(adminListHref('industries')).toBe('/admin/industries/');
+    expect(adminListHref('case_study_categories')).toBe('/admin/case-study-categories/');
+    expect(adminListHref('technologies')).toBe('/admin/technologies/');
     expect(adminFormHref('blogs', null)).toBe('/admin/blogs/?new=1');
     expect(adminFormHref('blogs', 'post-1')).toBe('/admin/blogs/?id=post-1');
   });

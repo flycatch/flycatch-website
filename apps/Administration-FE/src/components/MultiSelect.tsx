@@ -1,3 +1,4 @@
+import type { MouseEvent } from 'react';
 import { t } from '../lib/i18n';
 
 interface Option {
@@ -8,14 +9,37 @@ interface Option {
 interface Props {
   id: string;
   label: string;
+  manageHref: string;
   options: Option[];
   selectedIds: string[];
   onChange: (ids: string[]) => void;
 }
 
-export default function MultiSelect({ id, label, options, selectedIds, onChange }: Props) {
+function onManageClick(event: MouseEvent<HTMLAnchorElement>) {
+  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
+    return;
+  }
+  event.preventDefault();
+  const url = new URL(event.currentTarget.href);
+  const current = `${window.location.pathname}${window.location.search}`;
+  const target = `${url.pathname}${url.search}`;
+  if (current !== target) {
+    window.history.pushState(null, '', target);
+  }
+  window.dispatchEvent(new PopStateEvent('popstate'));
+}
+
+export default function MultiSelect({
+  id,
+  label,
+  manageHref,
+  options,
+  selectedIds,
+  onChange,
+}: Props) {
   const selected = options.filter((option) => selectedIds.includes(option.id));
   const available = options.filter((option) => !selectedIds.includes(option.id));
+  const labelId = `${id}-label`;
 
   function add(value: string) {
     if (!value || selectedIds.includes(value)) return;
@@ -28,7 +52,14 @@ export default function MultiSelect({ id, label, options, selectedIds, onChange 
 
   return (
     <div className="multi-select">
-      <label htmlFor={id}>{label}</label>
+      <a
+        id={labelId}
+        className="multi-select-label"
+        href={manageHref}
+        onClick={onManageClick}
+      >
+        {label}
+      </a>
       {selected.length > 0 ? (
         <ul className="multi-select-chips">
           {selected.map((option) => (
@@ -50,6 +81,7 @@ export default function MultiSelect({ id, label, options, selectedIds, onChange 
       )}
       <select
         id={id}
+        aria-labelledby={labelId}
         value=""
         disabled={available.length === 0}
         onChange={(event) => {
