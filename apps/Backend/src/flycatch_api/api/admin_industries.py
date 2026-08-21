@@ -5,12 +5,17 @@ from sqlalchemy.orm import Session
 
 from flycatch_api.db import get_db
 from flycatch_api.schemas.admin_case_studies import Industry, IndustryList, IndustryWrite
-from flycatch_api.security.dependencies import RequireDraft, RequireView
+from flycatch_api.security.dependencies import (
+    CurrentSession,
+    assert_resource_action,
+    assert_write_permissions,
+)
 from flycatch_api.services.author_service import CatalogError
 from flycatch_api.services.industry_service import PER_PAGE, IndustryService
 
 router = APIRouter(prefix="/admin/industries", tags=["admin-industries"])
 _industries = IndustryService()
+RESOURCE = "industries"
 
 
 def _raise(error: CatalogError) -> None:
@@ -19,19 +24,23 @@ def _raise(error: CatalogError) -> None:
 
 @router.get("", response_model=IndustryList)
 def list_industries(
-    _session: RequireView,
+    session: CurrentSession,
     db: Session = Depends(get_db),
     q: str | None = Query(default=None),
     page: int = Query(default=1, ge=1),
     per_page: int = Query(default=PER_PAGE, ge=1, le=PER_PAGE),
 ):
+    assert_resource_action(db, session.administrator_id, RESOURCE, "read")
     return _industries.list_industries(db, q, page, per_page)
 
 
 @router.post("", response_model=Industry, status_code=status.HTTP_201_CREATED)
 def create_industry(
-    payload: IndustryWrite, _session: RequireDraft, db: Session = Depends(get_db)
+    payload: IndustryWrite, session: CurrentSession, db: Session = Depends(get_db)
 ):
+    assert_write_permissions(
+        db, session.administrator_id, RESOURCE, action="create", status_value=payload.status
+    )
     try:
         return _industries.create(db, payload)
     except CatalogError as error:
@@ -39,7 +48,8 @@ def create_industry(
 
 
 @router.get("/{industry_id}", response_model=Industry)
-def get_industry(industry_id: UUID, _session: RequireView, db: Session = Depends(get_db)):
+def get_industry(industry_id: UUID, session: CurrentSession, db: Session = Depends(get_db)):
+    assert_resource_action(db, session.administrator_id, RESOURCE, "read")
     try:
         return _industries.get(db, industry_id)
     except CatalogError as error:
@@ -50,9 +60,12 @@ def get_industry(industry_id: UUID, _session: RequireView, db: Session = Depends
 def update_industry(
     industry_id: UUID,
     payload: IndustryWrite,
-    _session: RequireDraft,
+    session: CurrentSession,
     db: Session = Depends(get_db),
 ):
+    assert_write_permissions(
+        db, session.administrator_id, RESOURCE, action="update", status_value=payload.status
+    )
     try:
         return _industries.update(db, industry_id, payload)
     except CatalogError as error:
@@ -60,7 +73,8 @@ def update_industry(
 
 
 @router.delete("/{industry_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_industry(industry_id: UUID, _session: RequireDraft, db: Session = Depends(get_db)):
+def delete_industry(industry_id: UUID, session: CurrentSession, db: Session = Depends(get_db)):
+    assert_resource_action(db, session.administrator_id, RESOURCE, "delete")
     try:
         _industries.delete(db, industry_id)
     except CatalogError as error:

@@ -5,13 +5,18 @@ from sqlalchemy.orm import Session
 
 from flycatch_api.db import get_db
 from flycatch_api.schemas.admin_case_studies import CaseStudyDetail, CaseStudyList, CaseStudyWrite
-from flycatch_api.security.dependencies import RequireDraft, RequireView
+from flycatch_api.security.dependencies import (
+    CurrentSession,
+    assert_resource_action,
+    assert_write_permissions,
+)
 from flycatch_api.services.author_service import CatalogError
 from flycatch_api.services.case_study_service import CaseStudyService
 from flycatch_api.services.industry_service import PER_PAGE
 
 router = APIRouter(prefix="/admin/case-studies", tags=["admin-case-studies"])
 _case_studies = CaseStudyService()
+RESOURCE = "case_studies"
 
 
 def _raise(error: CatalogError) -> None:
@@ -20,19 +25,23 @@ def _raise(error: CatalogError) -> None:
 
 @router.get("", response_model=CaseStudyList)
 def list_case_studies(
-    _session: RequireView,
+    session: CurrentSession,
     db: Session = Depends(get_db),
     q: str | None = Query(default=None),
     page: int = Query(default=1, ge=1),
     per_page: int = Query(default=PER_PAGE, ge=1, le=PER_PAGE),
 ):
+    assert_resource_action(db, session.administrator_id, RESOURCE, "read")
     return _case_studies.list_case_studies(db, q, page, per_page)
 
 
 @router.post("", response_model=CaseStudyDetail, status_code=status.HTTP_201_CREATED)
 def create_case_study(
-    payload: CaseStudyWrite, _session: RequireDraft, db: Session = Depends(get_db)
+    payload: CaseStudyWrite, session: CurrentSession, db: Session = Depends(get_db)
 ):
+    assert_write_permissions(
+        db, session.administrator_id, RESOURCE, action="create", status_value=payload.status
+    )
     try:
         return _case_studies.create(db, payload)
     except CatalogError as error:
@@ -40,7 +49,8 @@ def create_case_study(
 
 
 @router.get("/{case_study_id}", response_model=CaseStudyDetail)
-def get_case_study(case_study_id: UUID, _session: RequireView, db: Session = Depends(get_db)):
+def get_case_study(case_study_id: UUID, session: CurrentSession, db: Session = Depends(get_db)):
+    assert_resource_action(db, session.administrator_id, RESOURCE, "read")
     try:
         return _case_studies.get(db, case_study_id)
     except CatalogError as error:
@@ -51,9 +61,12 @@ def get_case_study(case_study_id: UUID, _session: RequireView, db: Session = Dep
 def update_case_study(
     case_study_id: UUID,
     payload: CaseStudyWrite,
-    _session: RequireDraft,
+    session: CurrentSession,
     db: Session = Depends(get_db),
 ):
+    assert_write_permissions(
+        db, session.administrator_id, RESOURCE, action="update", status_value=payload.status
+    )
     try:
         return _case_studies.update(db, case_study_id, payload)
     except CatalogError as error:
@@ -62,8 +75,9 @@ def update_case_study(
 
 @router.delete("/{case_study_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_case_study(
-    case_study_id: UUID, _session: RequireDraft, db: Session = Depends(get_db)
+    case_study_id: UUID, session: CurrentSession, db: Session = Depends(get_db)
 ):
+    assert_resource_action(db, session.administrator_id, RESOURCE, "delete")
     try:
         _case_studies.delete(db, case_study_id)
     except CatalogError as error:

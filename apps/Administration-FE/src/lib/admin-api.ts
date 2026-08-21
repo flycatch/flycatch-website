@@ -197,7 +197,10 @@ export async function publishRecord(type: string, slug: string) {
   });
 }
 
-export function hasPermission(session: SessionContext | null, permission: PermissionName): boolean {
+export function hasPermission(
+  session: SessionContext | null,
+  permission: PermissionName | string,
+): boolean {
   return Boolean(session?.permissions?.includes(permission));
 }
 

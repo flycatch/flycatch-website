@@ -5,13 +5,18 @@ from sqlalchemy.orm import Session
 
 from flycatch_api.db import get_db
 from flycatch_api.schemas.admin_case_studies import Technology, TechnologyList, TechnologyWrite
-from flycatch_api.security.dependencies import RequireDraft, RequireView
+from flycatch_api.security.dependencies import (
+    CurrentSession,
+    assert_resource_action,
+    assert_write_permissions,
+)
 from flycatch_api.services.author_service import CatalogError
 from flycatch_api.services.industry_service import PER_PAGE
 from flycatch_api.services.technology_service import TechnologyService
 
 router = APIRouter(prefix="/admin/technologies", tags=["admin-technologies"])
 _technologies = TechnologyService()
+RESOURCE = "technologies"
 
 
 def _raise(error: CatalogError) -> None:
@@ -20,19 +25,23 @@ def _raise(error: CatalogError) -> None:
 
 @router.get("", response_model=TechnologyList)
 def list_technologies(
-    _session: RequireView,
+    session: CurrentSession,
     db: Session = Depends(get_db),
     q: str | None = Query(default=None),
     page: int = Query(default=1, ge=1),
     per_page: int = Query(default=PER_PAGE, ge=1, le=PER_PAGE),
 ):
+    assert_resource_action(db, session.administrator_id, RESOURCE, "read")
     return _technologies.list_technologies(db, q, page, per_page)
 
 
 @router.post("", response_model=Technology, status_code=status.HTTP_201_CREATED)
 def create_technology(
-    payload: TechnologyWrite, _session: RequireDraft, db: Session = Depends(get_db)
+    payload: TechnologyWrite, session: CurrentSession, db: Session = Depends(get_db)
 ):
+    assert_write_permissions(
+        db, session.administrator_id, RESOURCE, action="create", status_value=payload.status
+    )
     try:
         return _technologies.create(db, payload)
     except CatalogError as error:
@@ -40,7 +49,8 @@ def create_technology(
 
 
 @router.get("/{technology_id}", response_model=Technology)
-def get_technology(technology_id: UUID, _session: RequireView, db: Session = Depends(get_db)):
+def get_technology(technology_id: UUID, session: CurrentSession, db: Session = Depends(get_db)):
+    assert_resource_action(db, session.administrator_id, RESOURCE, "read")
     try:
         return _technologies.get(db, technology_id)
     except CatalogError as error:
@@ -51,9 +61,12 @@ def get_technology(technology_id: UUID, _session: RequireView, db: Session = Dep
 def update_technology(
     technology_id: UUID,
     payload: TechnologyWrite,
-    _session: RequireDraft,
+    session: CurrentSession,
     db: Session = Depends(get_db),
 ):
+    assert_write_permissions(
+        db, session.administrator_id, RESOURCE, action="update", status_value=payload.status
+    )
     try:
         return _technologies.update(db, technology_id, payload)
     except CatalogError as error:
@@ -62,8 +75,9 @@ def update_technology(
 
 @router.delete("/{technology_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_technology(
-    technology_id: UUID, _session: RequireDraft, db: Session = Depends(get_db)
+    technology_id: UUID, session: CurrentSession, db: Session = Depends(get_db)
 ):
+    assert_resource_action(db, session.administrator_id, RESOURCE, "delete")
     try:
         _technologies.delete(db, technology_id)
     except CatalogError as error:

@@ -31,7 +31,7 @@ def test_editor_can_draft_but_direct_publish_is_403(client, bootstrapped, seeded
     body = denied.json()
     assert body["code"] == "permission_denied"
     assert body["message_key"] == "admin.action.forbidden"
-    assert body["permission"] == "records.publish"
+    assert body["permission"] == "page.home.publish"
     after = (
         db.query(ManagedRecord)
         .filter(ManagedRecord.type == RecordType.page, ManagedRecord.slug == "home")

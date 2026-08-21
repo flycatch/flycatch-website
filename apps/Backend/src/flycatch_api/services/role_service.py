@@ -25,8 +25,22 @@ SYSTEM_ROLES = frozenset({"administrator", "editor"})
 ROLE_ADMINISTRATOR = "administrator"
 ROLE_EDITOR = "editor"
 ROLES_MANAGE = PermissionName.roles_manage.value
+# Matrix rows for Administration sections (order matches Roles UI / nav).
+CONTENT_RESOURCES: tuple[RoleResource, ...] = (
+    RoleResource(id="home", type="home", slug="default"),
+    RoleResource(id="blogs", type="blogs", slug="default"),
+    RoleResource(id="case_studies", type="case_studies", slug="default"),
+    RoleResource(id="industries", type="industries", slug="default"),
+    RoleResource(id="case_study_categories", type="case_study_categories", slug="default"),
+    RoleResource(id="technologies", type="technologies", slug="default"),
+    RoleResource(id="authors", type="authors", slug="default"),
+    RoleResource(id="categories", type="categories", slug="default"),
+    RoleResource(id="client_logos", type="client_logos", slug="default"),
+    RoleResource(id="client_testimonials", type="client_testimonials", slug="default"),
+)
 DEFAULT_RESOURCES: tuple[RoleResource, ...] = (
     RoleResource(id="site_settings", type="site_settings", slug="default"),
+    *CONTENT_RESOURCES,
     RoleResource(id="page.home", type="page", slug="home"),
 )
 PER_PAGE = 5
@@ -65,7 +79,7 @@ def default_grants(role_name: str) -> list[str]:
     grants = [
         f"{resource.id}.{action}"
         for resource in DEFAULT_RESOURCES
-        for action in ("read", "update")
+        for action in ("create", "read", "update", "delete")
     ]
     grants.extend([PermissionName.records_view.value, PermissionName.drafts_save.value])
     return grants
@@ -75,7 +89,11 @@ def sync_legacy(permissions: set[str]) -> set[str]:
     synced = set(permissions)
     if any(item.endswith(".read") for item in synced):
         synced.add(PermissionName.records_view.value)
-    if any(item.endswith(".update") for item in synced):
+    if any(
+        item.endswith(suffix)
+        for item in synced
+        for suffix in (".create", ".update", ".delete")
+    ):
         synced.add(PermissionName.drafts_save.value)
     if any(item.endswith(".publish") for item in synced):
         synced.add(PermissionName.records_publish.value)
@@ -84,9 +102,9 @@ def sync_legacy(permissions: set[str]) -> set[str]:
 
 class RoleService:
     def catalogue(self, db: Session) -> RoleCatalogue:
+        resources: list[RoleResource] = list(DEFAULT_RESOURCES)
+        seen = {resource.id for resource in resources}
         records = db.query(ManagedRecord).order_by(ManagedRecord.type, ManagedRecord.slug).all()
-        resources: list[RoleResource] = []
-        seen: set[str] = set()
         for record in records:
             identifier = resource_id_for(record)
             if identifier in seen:
@@ -96,8 +114,6 @@ class RoleService:
                 record.type.value if isinstance(record.type, RecordType) else str(record.type)
             )
             resources.append(RoleResource(id=identifier, type=record_type, slug=record.slug))
-        if not resources:
-            resources = list(DEFAULT_RESOURCES)
         return RoleCatalogue(actions=list(ACTIONS), resources=resources)
 
     def list_roles(self, db: Session, q: str | None, page: int, per_page: int) -> RoleList:

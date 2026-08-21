@@ -6,8 +6,9 @@ info:
   description: |
     Staff with roles.manage may list and persist roles. Permissions are stored as
     {resource}.{action} strings. System roles administrator and editor cannot be
-    renamed or deleted. Content APIs continue to enforce records.view, drafts.save,
-    and records.publish; those grants are synced from the matrix on save.
+    renamed or deleted. Content APIs enforce matrix grants per section; coarse
+    records.view, drafts.save, and records.publish grants are still synced from
+    the matrix on save for media and compatibility.
 servers:
   - url: /api/v1
 security:

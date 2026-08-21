@@ -36,7 +36,12 @@ components:
           type: string
           const: admin.action.forbidden
         permission:
-          $ref: '#/components/schemas/PermissionName'
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: >
+            Coarse permission (records.view, drafts.save, records.publish, roles.manage)
+            or matrix grant ({resource}.{action}).
     RoleGrant:
       type: object
       additionalProperties: false
