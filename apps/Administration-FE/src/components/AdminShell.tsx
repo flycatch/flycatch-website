@@ -1,11 +1,9 @@
 import { useCallback, useEffect, useState, type MouseEvent } from 'react';
 import {
-  getPageRecord,
   getSession,
   getSiteSettingsRecord,
   hasPermission,
   publishRecord,
-  savePageDraft,
   saveSiteSettingsDraft,
   signOut,
   type SessionContext,
@@ -19,7 +17,6 @@ import {
   readAdminLocation,
   type AdminView,
 } from '../lib/admin-routes';
-import PageEditor from './PageEditor';
 import RoleForm from './RoleForm';
 import RolesList from './RolesList';
 import SignInForm from './SignInForm';
@@ -42,6 +39,8 @@ import CaseStudyCategoriesList from './CaseStudyCategoriesList';
 import CaseStudyCategoryForm from './CaseStudyCategoryForm';
 import TechnologiesList from './TechnologiesList';
 import TechnologyForm from './TechnologyForm';
+import HomesList from './HomesList';
+import HomeForm from './HomeForm';
 
 type View = AdminView;
 
@@ -65,6 +64,7 @@ function applyRoute(
     setEditingCategoryId: (id: string | null) => void;
     setEditingClientLogoId: (id: string | null) => void;
     setEditingClientTestimonialId: (id: string | null) => void;
+    setEditingHomeId: (id: string | null) => void;
   },
 ) {
   setters.setView(route.view);
@@ -82,6 +82,7 @@ function applyRoute(
   setters.setEditingClientTestimonialId(
     route.view === 'client_testimonial_form' ? route.editingId : null,
   );
+  setters.setEditingHomeId(route.view === 'home_form' ? route.editingId : null);
 }
 
 export default function AdminShell() {
@@ -132,9 +133,12 @@ export default function AdminShell() {
       return route.view === 'client_testimonial_form' ? route.editingId : null;
     },
   );
+  const [editingHomeId, setEditingHomeId] = useState<string | null>(() => {
+    const route = readAdminLocation();
+    return route.view === 'home_form' ? route.editingId : null;
+  });
   const [session, setSession] = useState<SessionContext | null>(null);
   const [siteSettings, setSiteSettings] = useState<Record<string, unknown> | null>(null);
-  const [homePage, setHomePage] = useState<Record<string, unknown> | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [workspaceError, setWorkspaceError] = useState<string | null>(null);
@@ -154,6 +158,7 @@ export default function AdminShell() {
       setEditingCategoryId,
       setEditingClientLogoId,
       setEditingClientTestimonialId,
+      setEditingHomeId,
     });
   }, []);
 
@@ -180,11 +185,8 @@ export default function AdminShell() {
     try {
       const settings = await getSiteSettingsRecord();
       setSiteSettings(settings as Record<string, unknown>);
-      const page = await getPageRecord('home');
-      setHomePage(page as Record<string, unknown>);
     } catch {
       setSiteSettings(null);
-      setHomePage(null);
       setWorkspaceError(t('admin.workspace.load_failed'));
       if (canManageRolesFrom(nextSession)) {
         navigate(adminListHref('roles'), true);
@@ -218,7 +220,7 @@ export default function AdminShell() {
       document.title = t('admin.sign_in.title');
       return;
     }
-    if (view === 'home') {
+    if (view === 'home' || view === 'home_form') {
       document.title = t('admin.workspace.home_page');
       return;
     }
@@ -285,8 +287,6 @@ export default function AdminShell() {
   async function refreshData() {
     const settings = await getSiteSettingsRecord();
     setSiteSettings(settings as Record<string, unknown>);
-    const page = await getPageRecord('home');
-    setHomePage(page as Record<string, unknown>);
   }
 
   async function handleSignedIn() {
@@ -306,7 +306,6 @@ export default function AdminShell() {
     await signOut();
     setSession(null);
     setSiteSettings(null);
-    setHomePage(null);
     setMessage(null);
     setError(null);
     setWorkspaceError(null);
@@ -365,6 +364,10 @@ export default function AdminShell() {
     openList('client_testimonials');
   }
 
+  function openHomes() {
+    openList('home');
+  }
+
   function onNavClick(event: MouseEvent<HTMLAnchorElement>, href: string) {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
       return;
@@ -398,7 +401,7 @@ export default function AdminShell() {
   const settingsCurrent = view === 'roles' || view === 'role_form';
   const initial = session.email.slice(0, 1).toUpperCase();
 
-  if (!siteSettings || !homePage) {
+  if (!siteSettings) {
     if (!canManageRoles) {
       return (
         <main id="main" className="auth-layout">
@@ -445,8 +448,8 @@ export default function AdminShell() {
             <li>
               <a
                 href={adminListHref('home')}
-                className={view === 'home' ? 'active' : ''}
-                aria-current={view === 'home' ? 'page' : undefined}
+                className={view === 'home' || view === 'home_form' ? 'active' : ''}
+                aria-current={view === 'home' || view === 'home_form' ? 'page' : undefined}
                 onClick={(event) => onNavClick(event, adminListHref('home'))}
               >
                 {t('admin.workspace.home_page')}
@@ -605,7 +608,7 @@ export default function AdminShell() {
           </div>
         </header>
         <main id="main" className="admin-main">
-          {message && (view === 'site_settings' || view === 'home') && (
+          {message && view === 'site_settings' && (
             <p className="alert alert-success" role="status">
               {message}
             </p>
@@ -636,24 +639,21 @@ export default function AdminShell() {
               }}
             />
           )}
-          {view === 'home' && homePage && (
-            <PageEditor
-              record={homePage}
-              canDraft={canDraft}
+          {view === 'home' && (
+            <HomesList
+              notice={message}
+              onAdd={() => openForm('home', null)}
+              onEdit={(id) => openForm('home', id)}
+            />
+          )}
+          {view === 'home_form' && (
+            <HomeForm
+              homeId={editingHomeId}
               canPublish={canPublish}
-              onSaveDraft={async (draft) => {
-                await savePageDraft('home', draft);
-                setMessage(t('admin.draft.saved'));
-                await refreshData();
-              }}
-              onPublish={async () => {
-                if (!canPublish) {
-                  setError(t('admin.action.forbidden'));
-                  return;
-                }
-                await publishRecord('page', 'home');
-                setMessage(t('admin.publish.success'));
-                await refreshData();
+              onCancel={openHomes}
+              onSaved={() => {
+                setMessage(t('admin.homes.saved'));
+                openHomes();
               }}
             />
           )}

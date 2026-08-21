@@ -15,6 +15,7 @@ const required = [
   'admin-case-studies.v1.ts',
   'admin-client-logos.v1.ts',
   'admin-client-testimonials.v1.ts',
+  'admin-homes.v1.ts',
 ];
 
 let failed = false;

@@ -1,0 +1,169 @@
+openapi: 3.1.0
+info:
+  title: Public Homes
+  version: 1.0.0
+  summary: Read-only published Home content for the website frontend.
+  description: |
+    Unauthenticated list of Home entries with status publish.
+    Drafts MUST NOT appear. This contract is separate from admin-homes.v1.yaml.
+    Selected case studies are returned as full published PublicCaseStudyDetail
+    objects (industry, category, technology, media, and other visitor fields),
+    never as identifiers alone. Repeatable services and FAQ items are returned
+    in saved order. Public media GET streams object-storage keys referenced by
+    published content.
+servers:
+  - url: /api/v1
+security: []
+paths:
+  /public/homes:
+    get:
+      operationId: listPublicHomes
+      summary: List published Home entries
+      tags: [public-homes]
+      responses:
+        '200':
+          description: Published Home catalog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicHomeList'
+  /public/media/{media_key}:
+    get:
+      operationId: getPublicMedia
+      summary: Stream a stored media object by key
+      tags: [public-media]
+      parameters:
+        - name: media_key
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Media bytes
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Unknown media key
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [code, message_key]
+                properties:
+                  code:
+                    type: string
+                    const: not_found
+                  message_key:
+                    type: string
+                    const: public.media.not_found
+components:
+  schemas:
+    ContentSeo:
+      type: object
+      additionalProperties: false
+      required:
+        - title
+        - description
+        - canonical_url
+        - meta_title
+        - image_key
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        canonical_url:
+          type: string
+        meta_title:
+          type: string
+        image_key:
+          type: string
+          nullable: true
+    HomeService:
+      type: object
+      additionalProperties: false
+      required:
+        - services_types_title
+        - services_image_key
+        - services_contents
+        - our_services_links
+      properties:
+        services_types_title:
+          type: string
+        services_image_key:
+          type: string
+          nullable: true
+        services_contents:
+          type: string
+        our_services_links:
+          type: string
+    HomeFaq:
+      type: object
+      additionalProperties: false
+      required: [title, contents]
+      properties:
+        title:
+          type: string
+        contents:
+          type: string
+    PublicHome:
+      type: object
+      additionalProperties: false
+      required:
+        - title
+        - video_key
+        - banner_title
+        - seo
+        - case_studies
+        - services
+        - banner_explore_text
+        - faq_title
+        - faq_description
+        - faqs
+        - content_available_in
+      properties:
+        title:
+          type: string
+        video_key:
+          type: string
+          nullable: true
+        banner_title:
+          type: string
+        seo:
+          $ref: '#/components/schemas/ContentSeo'
+        case_studies:
+          type: array
+          items:
+            $ref: '../../005-admin-case-studies/contracts/public-case-studies.v1.yaml#/components/schemas/PublicCaseStudyDetail'
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/HomeService'
+        banner_explore_text:
+          type: string
+        faq_title:
+          type: string
+        faq_description:
+          type: string
+        faqs:
+          type: array
+          items:
+            $ref: '#/components/schemas/HomeFaq'
+        content_available_in:
+          type: array
+          items:
+            type: string
+    PublicHomeList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicHome'

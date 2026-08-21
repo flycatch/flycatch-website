@@ -1,0 +1,59 @@
+---
+import { publicMediaUrl, type PublicHome } from '../lib/public-homes';
+
+interface Props {
+  homes: PublicHome[];
+}
+
+const { homes } = Astro.props;
+const entries = homes.map((home, index) => ({
+  home,
+  isFirst: index === 0,
+  video: publicMediaUrl(home.video_key) || '',
+}));
+---
+{entries.map((entry) => (
+  <article class="home-entry">
+    {entry.isFirst ? (
+      <h1>{entry.home.banner_title || entry.home.title}</h1>
+    ) : (
+      <h2>{entry.home.banner_title || entry.home.title}</h2>
+    )}
+    <section class="summary-region" aria-label="Summary">
+      <p>{entry.home.banner_explore_text}</p>
+    </section>
+    <section class="body-region" aria-label="Content">
+      <video class="home-video" src={entry.video} controls hidden={!entry.video}>
+        <track kind="captions" />
+      </video>
+      {entry.home.services.map((service) => (
+        <section>
+          <h2>{service.services_types_title}</h2>
+          <img
+            src={publicMediaUrl(service.services_image_key) || ''}
+            alt={service.services_types_title || entry.home.title}
+            hidden={!service.services_image_key}
+          />
+          <p>{service.services_contents}</p>
+          <p>{service.our_services_links}</p>
+        </section>
+      ))}
+      <ul>
+        {entry.home.case_studies.map((study) => (
+          <li>
+            <p>{study.heading}</p>
+            <p>{study.description}</p>
+          </li>
+        ))}
+      </ul>
+      <h2>{entry.home.faq_title}</h2>
+      <div class="home-richtext" set:html={entry.home.faq_description} />
+      {entry.home.faqs.map((faq) => (
+        <details>
+          <summary>{faq.title}</summary>
+          <p>{faq.contents}</p>
+        </details>
+      ))}
+    </section>
+  </article>
+))}

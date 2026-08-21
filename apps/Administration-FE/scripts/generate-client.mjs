@@ -16,6 +16,7 @@ const clientTestimonialsContractsDir = join(
   repoRoot,
   'specs/007-admin-client-testimonials/contracts',
 );
+const homesContractsDir = join(repoRoot, 'specs/008-admin-home/contracts');
 
 const contractSets = [
   {
@@ -43,6 +44,10 @@ const contractSets = [
   {
     dir: clientTestimonialsContractsDir,
     files: ['admin-client-testimonials.v1.yaml'],
+  },
+  {
+    dir: homesContractsDir,
+    files: ['admin-homes.v1.yaml'],
   },
 ];
 

@@ -11,8 +11,12 @@ test('editor can draft but cannot publish', async ({ page }) => {
   await page.getByLabel(/password/i).fill(editorPassword);
   await page.getByRole('button', { name: /^sign in$/i }).click();
   await expect(page.getByRole('heading', { name: /administration/i })).toBeVisible();
-  await page.getByRole('link', { name: /home page/i }).click();
-  await page.getByRole('button', { name: /save draft/i }).click();
+  await page.getByRole('link', { name: /^home$/i }).click();
+  await page.getByRole('button', { name: /create new entry/i }).click();
+  await page.getByLabel(/^title$/i).first().fill(`Editor home ${Date.now()}`);
+  await page.getByRole('button', { name: /^save$/i }).click();
+  await expect(page.getByRole('status')).toBeVisible();
+  await page.getByRole('button', { name: /^edit$/i }).first().click();
   const publish = page.getByRole('button', { name: /^publish$/i });
   await expect(publish).toBeDisabled();
   await expect(publish).toHaveAttribute('aria-disabled', 'true');
