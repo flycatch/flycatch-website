@@ -23,7 +23,8 @@ test('permission-denied state has no critical WCAG 2.2 AA violations', async ({ 
   await page.getByLabel(/password/i).fill(editorPassword);
   await page.getByRole('button', { name: /^sign in$/i }).click();
   await expect(page.getByRole('heading', { name: /administration/i })).toBeVisible();
-  await page.getByRole('link', { name: /home page/i }).click();
+  await page.getByRole('link', { name: /^home$/i }).click();
+  await page.getByRole('button', { name: /create new entry/i }).click();
   await expect(page.getByText(/you do not have permission/i)).toBeVisible();
   const results = await new AxeBuilder({ page }).analyze();
   const critical = results.violations.filter((v) => v.impact === 'critical');

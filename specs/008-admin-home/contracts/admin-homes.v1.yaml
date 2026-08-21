@@ -1,0 +1,399 @@
+openapi: 3.1.0
+info:
+  title: Administration Homes
+  version: 1.0.0
+  summary: CRUD for Home content entries.
+  description: |
+    Staff with records.view may list and read Home entries. Staff with
+    drafts.save may create, update, and delete them. Status draft/publish
+    is stored on each row and does not use the site-settings/page publish
+    snapshot pipeline. Media uploads remain on /admin/media from
+    admin-blogs.v1.yaml.
+
+    Public published reads are defined in public-homes.v1.yaml.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+  /admin/homes:
+    get:
+      operationId: listHomes
+      summary: List Home entries with search and pagination of 10
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 10
+      responses:
+        '200':
+          description: Paginated Home list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HomeList'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+    post:
+      operationId: createHome
+      summary: Create a Home entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HomeWrite'
+      responses:
+        '201':
+          description: Created Home entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Home'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+  /admin/homes/{home_id}:
+    parameters:
+      - $ref: '#/components/parameters/HomeId'
+    get:
+      operationId: getHome
+      summary: Return one Home entry
+      responses:
+        '200':
+          description: Home entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Home'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/HomeNotFound'
+    patch:
+      operationId: updateHome
+      summary: Update a Home entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HomeWrite'
+      responses:
+        '200':
+          description: Updated Home entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Home'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/HomeNotFound'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+    delete:
+      operationId: deleteHome
+      summary: Delete a Home entry
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/HomeNotFound'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    HomeId:
+      name: home_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    ContentStatus:
+      type: string
+      enum: [draft, publish]
+    ContentSeo:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          default: ''
+          maxLength: 200
+        description:
+          type: string
+          default: ''
+          maxLength: 500
+        canonical_url:
+          type: string
+          default: ''
+          maxLength: 500
+        meta_title:
+          type: string
+          default: ''
+          maxLength: 200
+        image_key:
+          type: string
+          nullable: true
+    HomeService:
+      type: object
+      additionalProperties: false
+      required:
+        - services_types_title
+        - services_image_key
+        - services_contents
+        - our_services_links
+      properties:
+        services_types_title:
+          type: string
+          maxLength: 200
+        services_image_key:
+          type: string
+          nullable: true
+        services_contents:
+          type: string
+        our_services_links:
+          type: string
+    HomeFaq:
+      type: object
+      additionalProperties: false
+      required:
+        - title
+        - contents
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        contents:
+          type: string
+    Home:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - title
+        - video_key
+        - video_content_type
+        - banner_title
+        - seo
+        - case_study_ids
+        - services
+        - banner_explore_text
+        - faq_title
+        - faq_description
+        - faqs
+        - content_available_in
+        - status
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        video_key:
+          type: string
+          nullable: true
+        video_content_type:
+          type: string
+          nullable: true
+        banner_title:
+          type: string
+        seo:
+          $ref: '#/components/schemas/ContentSeo'
+        case_study_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/HomeService'
+        banner_explore_text:
+          type: string
+        faq_title:
+          type: string
+        faq_description:
+          type: string
+        faqs:
+          type: array
+          items:
+            $ref: '#/components/schemas/HomeFaq'
+        content_available_in:
+          type: array
+          items:
+            type: string
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+        created_at:
+          type: string
+          format: date-time
+    HomeSummary:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - title
+        - video_format
+        - created_at
+        - content_available_in
+        - state
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        video_format:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        content_available_in:
+          type: string
+        state:
+          $ref: '#/components/schemas/ContentStatus'
+    HomeList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/HomeSummary'
+        page:
+          type: integer
+          minimum: 1
+        per_page:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+    HomeWrite:
+      type: object
+      additionalProperties: false
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        video_key:
+          type: string
+          nullable: true
+        video_content_type:
+          type: string
+          nullable: true
+          maxLength: 100
+        banner_title:
+          type: string
+          default: ''
+          maxLength: 200
+        seo:
+          $ref: '#/components/schemas/ContentSeo'
+        case_study_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          default: []
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/HomeService'
+          default: []
+        banner_explore_text:
+          type: string
+          default: ''
+          maxLength: 200
+        faq_title:
+          type: string
+          default: ''
+          maxLength: 200
+        faq_description:
+          type: string
+          default: ''
+        faqs:
+          type: array
+          items:
+            $ref: '#/components/schemas/HomeFaq'
+          default: []
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+          default: draft
+    FieldErrorDetail:
+      type: object
+      additionalProperties: false
+      required: [message_key]
+      properties:
+        message_key:
+          type: string
+    FieldErrors:
+      type: object
+      additionalProperties: false
+      required: [fields]
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldErrorDetail'
+  responses:
+    FieldErrors:
+      description: Field-level validation errors
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FieldErrors'
+    HomeNotFound:
+      description: Unknown Home entry
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [code, message_key]
+            properties:
+              code:
+                type: string
+                const: not_found
+              message_key:
+                type: string
+                const: admin.homes.not_found

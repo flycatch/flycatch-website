@@ -1,6 +1,7 @@
 export type AdminView =
   | 'site_settings'
   | 'home'
+  | 'home_form'
   | 'blogs'
   | 'blog_form'
   | 'case_studies'
@@ -35,7 +36,7 @@ type SectionConfig = {
 };
 
 const SECTIONS: SectionConfig[] = [
-  { segment: 'home', list: 'home', form: 'home' },
+  { segment: 'home', list: 'home', form: 'home_form' },
   { segment: 'blogs', list: 'blogs', form: 'blog_form' },
   { segment: 'case-studies', list: 'case_studies', form: 'case_study_form' },
   { segment: 'industries', list: 'industries', form: 'industry_form' },

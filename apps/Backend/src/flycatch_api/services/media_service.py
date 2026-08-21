@@ -9,13 +9,20 @@ from flycatch_api.services.author_service import CatalogError
 from flycatch_api.services.object_storage import ObjectStorageService
 from flycatch_api.services.text import is_valid_media_key
 
-ALLOWED_TYPES = {
+IMAGE_TYPES = {
     "image/jpeg": ".jpg",
     "image/png": ".png",
     "image/gif": ".gif",
     "image/webp": ".webp",
 }
-MAX_BYTES = 5 * 1024 * 1024
+VIDEO_TYPES = {
+    "video/mp4": ".mp4",
+    "video/webm": ".webm",
+    "video/quicktime": ".mov",
+}
+ALLOWED_TYPES = {**IMAGE_TYPES, **VIDEO_TYPES}
+IMAGE_MAX_BYTES = 5 * 1024 * 1024
+VIDEO_MAX_BYTES = 50 * 1024 * 1024
 
 
 class MediaService:
@@ -36,19 +43,21 @@ class MediaService:
                     fields={"file": FieldErrorDetail(message_key="admin.field.required")}
                 ).model_dump(),
             )
-        if len(data) > MAX_BYTES:
-            raise CatalogError(
-                422,
-                FieldErrors(
-                    fields={"file": FieldErrorDetail(message_key="admin.media.too_large")}
-                ).model_dump(),
-            )
-        extension = ALLOWED_TYPES.get((content_type or "").lower())
+        normalized = (content_type or "").lower()
+        extension = ALLOWED_TYPES.get(normalized)
         if extension is None:
             raise CatalogError(
                 422,
                 FieldErrors(
                     fields={"file": FieldErrorDetail(message_key="admin.media.type.invalid")}
+                ).model_dump(),
+            )
+        limit = VIDEO_MAX_BYTES if normalized in VIDEO_TYPES else IMAGE_MAX_BYTES
+        if len(data) > limit:
+            raise CatalogError(
+                422,
+                FieldErrors(
+                    fields={"file": FieldErrorDetail(message_key="admin.media.too_large")}
                 ).model_dump(),
             )
         key = f"{uuid.uuid4().hex}{extension}"

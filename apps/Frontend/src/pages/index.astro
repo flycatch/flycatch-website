@@ -1,8 +1,51 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
 import PageTemplate from '../layouts/PageTemplate.astro';
-import { getPageBySlug } from '../lib/published-snapshot';
+import HomeEntries from '../components/HomeEntries.astro';
+import { getPageBySlug, getSiteSettings } from '../lib/published-snapshot';
+import { loadPublishedHomes } from '../lib/public-homes';
+import { buildPageMetadata, homeStructuredData, metadataFromContentSeo } from '../lib/metadata';
+import { buildStructuredData } from '../lib/json-ld';
+import { t } from '../lib/i18n';
 
+const homes = await loadPublishedHomes();
 const page = getPageBySlug('home');
 if (!page) throw new Error('Home page missing from published snapshot');
+const siteSettings = getSiteSettings();
+const useCms = homes.length > 0;
+const first = homes[0];
+const metadata = useCms && first
+  ? metadataFromContentSeo(first.seo, siteSettings)
+  : buildPageMetadata(page.seo, siteSettings);
+const structuredData =
+  useCms && first
+    ? homeStructuredData(first, metadata, siteSettings)
+    : buildStructuredData(page.seo.structured_data_templates, metadata, page.seo, siteSettings);
 ---
-<PageTemplate page={page} />
+{useCms ? (
+  <BaseLayout title={metadata.title} metadata={metadata} structuredData={structuredData}>
+    <header class="site-header">
+      <div class="container">
+        <p class="site-name">{siteSettings.site_name}</p>
+        <nav aria-label="Primary">
+          <ul class="nav-list">
+            <li><a href="/">{t('nav.home')}</a></li>
+            <li><a href="/about">{t('nav.about')}</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main id="main" class="site-main">
+      <div class="container">
+        <HomeEntries homes={homes} />
+      </div>
+    </main>
+    <footer class="site-footer">
+      <div class="container">
+        <p>{t('site.footer.copyright')}</p>
+      </div>
+    </footer>
+  </BaseLayout>
+) : (
+  <PageTemplate page={page} />
+)}

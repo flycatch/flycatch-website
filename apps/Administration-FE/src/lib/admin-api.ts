@@ -5,6 +5,7 @@ import type { components as BlogsComponents } from '../generated/admin-blogs.v1'
 import type { components as CaseStudiesComponents } from '../generated/admin-case-studies.v1';
 import type { components as ClientLogosComponents } from '../generated/admin-client-logos.v1';
 import type { components as ClientTestimonialsComponents } from '../generated/admin-client-testimonials.v1';
+import type { components as HomesComponents } from '../generated/admin-homes.v1';
 import {
   clearTokens,
   getAccessToken,
@@ -35,6 +36,7 @@ export type CategoryList = BlogsComponents['schemas']['CategoryList'];
 export type CategoryWrite = BlogsComponents['schemas']['CategoryWrite'];
 export type MediaObject = BlogsComponents['schemas']['MediaObject'];
 export type CaseStudyList = CaseStudiesComponents['schemas']['CaseStudyList'];
+export type CaseStudySummary = CaseStudiesComponents['schemas']['CaseStudySummary'];
 export type CaseStudyDetail = CaseStudiesComponents['schemas']['CaseStudyDetail'];
 export type CaseStudyWrite = CaseStudiesComponents['schemas']['CaseStudyWrite'];
 export type Industry = CaseStudiesComponents['schemas']['Industry'];
@@ -52,6 +54,12 @@ export type ClientLogoWrite = ClientLogosComponents['schemas']['ClientLogoWrite'
 export type ClientTestimonial = ClientTestimonialsComponents['schemas']['ClientTestimonial'];
 export type ClientTestimonialList = ClientTestimonialsComponents['schemas']['ClientTestimonialList'];
 export type ClientTestimonialWrite = ClientTestimonialsComponents['schemas']['ClientTestimonialWrite'];
+export type Home = HomesComponents['schemas']['Home'];
+export type HomeList = HomesComponents['schemas']['HomeList'];
+export type HomeWrite = HomesComponents['schemas']['HomeWrite'];
+export type ContentSeo = HomesComponents['schemas']['ContentSeo'];
+export type HomeServiceItem = HomesComponents['schemas']['HomeService'];
+export type HomeFaqItem = HomesComponents['schemas']['HomeFaq'];
 
 export class AdminApiError extends Error {
   status: number;
@@ -553,6 +561,32 @@ export async function updateClientTestimonial(
 
 export async function deleteClientTestimonial(id: string): Promise<void> {
   await api<void>(`/admin/client-testimonials/${id}`, { method: 'DELETE' });
+}
+
+export async function listHomes(q: string, page: number): Promise<HomeList> {
+  return api<HomeList>(`/admin/homes${queryString({ q: q.trim() || undefined, page, per_page: 10 })}`);
+}
+
+export async function getHome(id: string): Promise<Home> {
+  return api<Home>(`/admin/homes/${id}`);
+}
+
+export async function createHome(payload: HomeWrite): Promise<Home> {
+  return api<Home>('/admin/homes', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateHome(id: string, payload: HomeWrite): Promise<Home> {
+  return api<Home>(`/admin/homes/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteHome(id: string): Promise<void> {
+  await api<void>(`/admin/homes/${id}`, { method: 'DELETE' });
 }
 
 export function apiErrorMessage(caught: unknown, fallback = 'admin.workspace.request_failed'): string {

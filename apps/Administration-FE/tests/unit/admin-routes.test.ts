@@ -21,6 +21,12 @@ describe('parseAdminLocation', () => {
     expect(parseAdminLocation('/admin/client-logos/').view).toBe('client_logos');
     expect(parseAdminLocation('/admin/client-testimonials/').view).toBe('client_testimonials');
     expect(parseAdminLocation('/admin/home/').view).toBe('home');
+    expect(parseAdminLocation('/admin/home/', '?new=1').view).toBe('home_form');
+    expect(parseAdminLocation('/admin/home/', '?id=abc')).toEqual({
+      view: 'home_form',
+      editingId: 'abc',
+      href: '/admin/home/?id=abc',
+    });
     expect(parseAdminLocation('/admin/roles/').view).toBe('roles');
   });
 

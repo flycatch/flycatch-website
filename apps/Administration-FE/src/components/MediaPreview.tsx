@@ -7,6 +7,12 @@ interface Props {
   alt: string;
 }
 
+function isVideoSource(file?: File, key?: string): boolean {
+  if (file) return file.type.startsWith('video/');
+  if (key) return /\.(mp4|webm|mov)$/i.test(key);
+  return false;
+}
+
 export default function MediaPreview({ mediaKeys = [], files = [], alt }: Props) {
   const [urls, setUrls] = useState<string[]>([]);
 
@@ -41,11 +47,25 @@ export default function MediaPreview({ mediaKeys = [], files = [], alt }: Props)
 
   if (urls.length === 0) return null;
 
+  const sources = [
+    ...mediaKeys.map((key) => ({ key, file: undefined as File | undefined })),
+    ...files.map((file) => ({ key: undefined as string | undefined, file })),
+  ];
+
   return (
     <div className="media-preview-row">
-      {urls.map((url) => (
-        <img key={url} className="media-preview" src={url} alt={alt} />
-      ))}
+      {urls.map((url, index) => {
+        const source = sources[index];
+        const video = isVideoSource(source?.file, source?.key);
+        if (video) {
+          return (
+            <video key={url} className="media-preview media-preview-video" src={url} controls>
+              <track kind="captions" />
+            </video>
+          );
+        }
+        return <img key={url} className="media-preview" src={url} alt={alt} />;
+      })}
     </div>
   );
 }

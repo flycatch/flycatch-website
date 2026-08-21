@@ -16,6 +16,8 @@ CONTRACT_FILES = [
     SPECS / "004-admin-blogs" / "contracts" / "public-blogs.v1.yaml",
     SPECS / "005-admin-case-studies" / "contracts" / "admin-case-studies.v1.yaml",
     SPECS / "005-admin-case-studies" / "contracts" / "public-case-studies.v1.yaml",
+    SPECS / "008-admin-home" / "contracts" / "admin-homes.v1.yaml",
+    SPECS / "008-admin-home" / "contracts" / "public-homes.v1.yaml",
 ]
 
 

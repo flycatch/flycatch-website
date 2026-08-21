@@ -9,6 +9,7 @@ from flycatch_api.models import (  # noqa: F401
     Administrator,
     AdministratorRole,
     AdminSession,
+    Home,
     ManagedRecord,
     Role,
     RolePermission,

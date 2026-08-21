@@ -12,6 +12,7 @@ from flycatch_api.api import (
     admin_categories,
     admin_client_logos,
     admin_client_testimonials,
+    admin_homes,
     admin_industries,
     admin_management,
     admin_media,
@@ -23,6 +24,8 @@ from flycatch_api.api import (
     public_categories,
     public_client_logos,
     public_client_testimonials,
+    public_homes,
+    public_media,
     public_technologies,
     publish,
     stubs,
@@ -80,6 +83,7 @@ app.include_router(admin_case_study_categories.router, prefix="/api/v1")
 app.include_router(admin_technologies.router, prefix="/api/v1")
 app.include_router(admin_client_logos.router, prefix="/api/v1")
 app.include_router(admin_client_testimonials.router, prefix="/api/v1")
+app.include_router(admin_homes.router, prefix="/api/v1")
 app.include_router(admin_media.router, prefix="/api/v1")
 app.include_router(publish.router, prefix="/api/v1")
 app.include_router(public_blogs.router, prefix="/api/v1")
@@ -89,6 +93,8 @@ app.include_router(public_case_studies.router, prefix="/api/v1")
 app.include_router(public_technologies.router, prefix="/api/v1")
 app.include_router(public_client_logos.router, prefix="/api/v1")
 app.include_router(public_client_testimonials.router, prefix="/api/v1")
+app.include_router(public_homes.router, prefix="/api/v1")
+app.include_router(public_media.router, prefix="/api/v1")
 app.include_router(stubs.router, prefix="/api/v1")
 
 
