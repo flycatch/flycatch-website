@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type MouseEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type MouseEvent } from 'react';
 import {
   getSession,
   getSiteSettingsRecord,
@@ -44,10 +44,16 @@ import HomeForm from './HomeForm';
 
 type View = AdminView;
 
+const SUCCESS_NOTICE_MS = 4000;
+
 function canManageRolesFrom(session: SessionContext | null): boolean {
   return (
     hasPermission(session, 'roles.manage') || Boolean(session?.roles?.includes('administrator'))
   );
+}
+
+function canReadResource(session: SessionContext | null, resource: string): boolean {
+  return hasPermission(session, `${resource}.read`);
 }
 
 function applyRoute(
@@ -144,6 +150,33 @@ export default function AdminShell() {
   const [workspaceError, setWorkspaceError] = useState<string | null>(null);
   const [ready, setReady] = useState(!hasTokens());
   const [navOpen, setNavOpen] = useState(false);
+  const [listEpoch, setListEpoch] = useState(0);
+  const messageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearSuccess = useCallback(() => {
+    if (messageTimerRef.current) {
+      clearTimeout(messageTimerRef.current);
+      messageTimerRef.current = null;
+    }
+    setMessage(null);
+  }, []);
+
+  const showSuccess = useCallback((text: string) => {
+    if (messageTimerRef.current) {
+      clearTimeout(messageTimerRef.current);
+    }
+    setMessage(text);
+    messageTimerRef.current = setTimeout(() => {
+      setMessage(null);
+      messageTimerRef.current = null;
+    }, SUCCESS_NOTICE_MS);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (messageTimerRef.current) clearTimeout(messageTimerRef.current);
+    };
+  }, []);
 
   const applyLocation = useCallback((route: ReturnType<typeof readAdminLocation>) => {
     applyRoute(route, {
@@ -183,8 +216,12 @@ export default function AdminShell() {
     const nextSession = await getSession();
     setSession(nextSession);
     try {
-      const settings = await getSiteSettingsRecord();
-      setSiteSettings(settings as Record<string, unknown>);
+      if (hasPermission(nextSession, 'site_settings.read')) {
+        const settings = await getSiteSettingsRecord();
+        setSiteSettings(settings as Record<string, unknown>);
+      } else {
+        setSiteSettings(null);
+      }
     } catch {
       setSiteSettings(null);
       setWorkspaceError(t('admin.workspace.load_failed'));
@@ -306,22 +343,29 @@ export default function AdminShell() {
     await signOut();
     setSession(null);
     setSiteSettings(null);
-    setMessage(null);
+    clearSuccess();
     setError(null);
     setWorkspaceError(null);
     setNavOpen(false);
   }
 
   function openList(listView: View) {
+    clearSuccess();
     setError(null);
     setNavOpen(false);
     navigate(adminListHref(listView));
   }
 
   function openForm(listView: View, id: string | null) {
-    setMessage(null);
+    clearSuccess();
     setError(null);
     navigate(adminFormHref(listView, id));
+  }
+
+  function afterListSave(openSection: () => void, successMessage: string) {
+    openSection();
+    setListEpoch((value) => value + 1);
+    showSuccess(successMessage);
   }
 
   function openRoles() {
@@ -395,14 +439,38 @@ export default function AdminShell() {
     );
   }
 
-  const canDraft = hasPermission(session, 'drafts.save');
-  const canPublish = hasPermission(session, 'records.publish');
+  const canDraft = hasPermission(session, 'site_settings.update');
+  const canPublish = hasPermission(session, 'site_settings.publish');
+  const canPublishHome = hasPermission(session, 'home.publish');
   const canManageRoles = canManageRolesFrom(session);
   const settingsCurrent = view === 'roles' || view === 'role_form';
   const initial = session.email.slice(0, 1).toUpperCase();
+  const canReadSiteSettings = canReadResource(session, 'site_settings');
+  const canReadHome = canReadResource(session, 'home');
+  const canReadBlogs = canReadResource(session, 'blogs');
+  const canReadCaseStudies = canReadResource(session, 'case_studies');
+  const canReadIndustries = canReadResource(session, 'industries');
+  const canReadCaseStudyCategories = canReadResource(session, 'case_study_categories');
+  const canReadTechnologies = canReadResource(session, 'technologies');
+  const canReadAuthors = canReadResource(session, 'authors');
+  const canReadCategories = canReadResource(session, 'categories');
+  const canReadClientLogos = canReadResource(session, 'client_logos');
+  const canReadClientTestimonials = canReadResource(session, 'client_testimonials');
 
   if (!siteSettings) {
-    if (!canManageRoles) {
+    const hasOtherSection =
+      canManageRoles ||
+      canReadHome ||
+      canReadBlogs ||
+      canReadCaseStudies ||
+      canReadIndustries ||
+      canReadCaseStudyCategories ||
+      canReadTechnologies ||
+      canReadAuthors ||
+      canReadCategories ||
+      canReadClientLogos ||
+      canReadClientTestimonials;
+    if (!hasOtherSection && (workspaceError || !canReadSiteSettings)) {
       return (
         <main id="main" className="auth-layout">
           <div className="auth-card">
@@ -435,6 +503,7 @@ export default function AdminShell() {
         </div>
         <nav className="admin-nav" aria-label="Administration">
           <ul>
+            {canReadSiteSettings && (
             <li>
               <a
                 href={adminListHref('site_settings')}
@@ -445,6 +514,8 @@ export default function AdminShell() {
                 {t('admin.workspace.site_settings')}
               </a>
             </li>
+            )}
+            {canReadHome && (
             <li>
               <a
                 href={adminListHref('home')}
@@ -455,6 +526,8 @@ export default function AdminShell() {
                 {t('admin.workspace.home_page')}
               </a>
             </li>
+            )}
+            {canReadBlogs && (
             <li>
               <a
                 href={adminListHref('blogs')}
@@ -465,6 +538,8 @@ export default function AdminShell() {
                 {t('admin.workspace.blogs')}
               </a>
             </li>
+            )}
+            {canReadCaseStudies && (
             <li>
               <a
                 href={adminListHref('case_studies')}
@@ -477,6 +552,8 @@ export default function AdminShell() {
                 {t('admin.workspace.case_studies')}
               </a>
             </li>
+            )}
+            {canReadIndustries && (
             <li>
               <a
                 href={adminListHref('industries')}
@@ -487,6 +564,8 @@ export default function AdminShell() {
                 {t('admin.workspace.industries')}
               </a>
             </li>
+            )}
+            {canReadCaseStudyCategories && (
             <li>
               <a
                 href={adminListHref('case_study_categories')}
@@ -505,6 +584,8 @@ export default function AdminShell() {
                 {t('admin.workspace.case_study_categories')}
               </a>
             </li>
+            )}
+            {canReadTechnologies && (
             <li>
               <a
                 href={adminListHref('technologies')}
@@ -517,6 +598,8 @@ export default function AdminShell() {
                 {t('admin.workspace.technologies')}
               </a>
             </li>
+            )}
+            {canReadAuthors && (
             <li>
               <a
                 href={adminListHref('authors')}
@@ -527,6 +610,8 @@ export default function AdminShell() {
                 {t('admin.workspace.authors')}
               </a>
             </li>
+            )}
+            {canReadCategories && (
             <li>
               <a
                 href={adminListHref('categories')}
@@ -537,6 +622,8 @@ export default function AdminShell() {
                 {t('admin.workspace.categories')}
               </a>
             </li>
+            )}
+            {canReadClientLogos && (
             <li>
               <a
                 href={adminListHref('client_logos')}
@@ -549,6 +636,8 @@ export default function AdminShell() {
                 {t('admin.workspace.client_logos')}
               </a>
             </li>
+            )}
+            {canReadClientTestimonials && (
             <li>
               <a
                 href={adminListHref('client_testimonials')}
@@ -567,6 +656,7 @@ export default function AdminShell() {
                 {t('admin.workspace.client_testimonials')}
               </a>
             </li>
+            )}
             {canManageRoles && (
               <li>
                 <a
@@ -625,7 +715,7 @@ export default function AdminShell() {
               canPublish={canPublish}
               onSaveDraft={async (draft) => {
                 await saveSiteSettingsDraft(draft);
-                setMessage(t('admin.draft.saved'));
+                showSuccess(t('admin.draft.saved'));
                 await refreshData();
               }}
               onPublish={async () => {
@@ -634,13 +724,14 @@ export default function AdminShell() {
                   return;
                 }
                 await publishRecord('site_settings', 'default');
-                setMessage(t('admin.publish.success'));
+                showSuccess(t('admin.publish.success'));
                 await refreshData();
               }}
             />
           )}
           {view === 'home' && (
             <HomesList
+              key={`home-${listEpoch}`}
               notice={message}
               onAdd={() => openForm('home', null)}
               onEdit={(id) => openForm('home', id)}
@@ -649,16 +740,14 @@ export default function AdminShell() {
           {view === 'home_form' && (
             <HomeForm
               homeId={editingHomeId}
-              canPublish={canPublish}
+              canPublish={canPublishHome}
               onCancel={openHomes}
-              onSaved={() => {
-                setMessage(t('admin.homes.saved'));
-                openHomes();
-              }}
+              onSaved={() => afterListSave(openHomes, t('admin.homes.saved'))}
             />
           )}
           {view === 'blogs' && (
             <BlogsList
+              key={`blogs-${listEpoch}`}
               notice={message}
               onAdd={() => openForm('blogs', null)}
               onEdit={(id) => openForm('blogs', id)}
@@ -668,14 +757,12 @@ export default function AdminShell() {
             <BlogForm
               blogId={editingBlogId}
               onCancel={openBlogs}
-              onSaved={() => {
-                setMessage(t('admin.blogs.saved'));
-                openBlogs();
-              }}
+              onSaved={() => afterListSave(openBlogs, t('admin.blogs.saved'))}
             />
           )}
           {view === 'case_studies' && (
             <CaseStudiesList
+              key={`case-studies-${listEpoch}`}
               notice={message}
               onAdd={() => openForm('case_studies', null)}
               onEdit={(id) => openForm('case_studies', id)}
@@ -685,14 +772,12 @@ export default function AdminShell() {
             <CaseStudyForm
               caseStudyId={editingCaseStudyId}
               onCancel={openCaseStudies}
-              onSaved={() => {
-                setMessage(t('admin.case_studies.saved'));
-                openCaseStudies();
-              }}
+              onSaved={() => afterListSave(openCaseStudies, t('admin.case_studies.saved'))}
             />
           )}
           {view === 'industries' && (
             <IndustriesList
+              key={`industries-${listEpoch}`}
               notice={message}
               onAdd={() => openForm('industries', null)}
               onEdit={(id) => openForm('industries', id)}
@@ -702,14 +787,12 @@ export default function AdminShell() {
             <IndustryForm
               industryId={editingIndustryId}
               onCancel={openIndustries}
-              onSaved={() => {
-                setMessage(t('admin.industries.saved'));
-                openIndustries();
-              }}
+              onSaved={() => afterListSave(openIndustries, t('admin.industries.saved'))}
             />
           )}
           {view === 'case_study_categories' && (
             <CaseStudyCategoriesList
+              key={`case-study-categories-${listEpoch}`}
               notice={message}
               onAdd={() => openForm('case_study_categories', null)}
               onEdit={(id) => openForm('case_study_categories', id)}
@@ -719,14 +802,14 @@ export default function AdminShell() {
             <CaseStudyCategoryForm
               categoryId={editingCaseStudyCategoryId}
               onCancel={openCaseStudyCategories}
-              onSaved={() => {
-                setMessage(t('admin.case_study_categories.saved'));
-                openCaseStudyCategories();
-              }}
+              onSaved={() =>
+                afterListSave(openCaseStudyCategories, t('admin.case_study_categories.saved'))
+              }
             />
           )}
           {view === 'technologies' && (
             <TechnologiesList
+              key={`technologies-${listEpoch}`}
               notice={message}
               onAdd={() => openForm('technologies', null)}
               onEdit={(id) => openForm('technologies', id)}
@@ -736,14 +819,12 @@ export default function AdminShell() {
             <TechnologyForm
               technologyId={editingTechnologyId}
               onCancel={openTechnologies}
-              onSaved={() => {
-                setMessage(t('admin.technologies.saved'));
-                openTechnologies();
-              }}
+              onSaved={() => afterListSave(openTechnologies, t('admin.technologies.saved'))}
             />
           )}
           {view === 'authors' && (
             <AuthorsList
+              key={`authors-${listEpoch}`}
               notice={message}
               onAdd={() => openForm('authors', null)}
               onEdit={(id) => openForm('authors', id)}
@@ -753,14 +834,12 @@ export default function AdminShell() {
             <AuthorForm
               authorId={editingAuthorId}
               onCancel={openAuthors}
-              onSaved={() => {
-                setMessage(t('admin.authors.saved'));
-                openAuthors();
-              }}
+              onSaved={() => afterListSave(openAuthors, t('admin.authors.saved'))}
             />
           )}
           {view === 'categories' && (
             <CategoriesList
+              key={`categories-${listEpoch}`}
               notice={message}
               onAdd={() => openForm('categories', null)}
               onEdit={(id) => openForm('categories', id)}
@@ -770,14 +849,12 @@ export default function AdminShell() {
             <CategoryForm
               categoryId={editingCategoryId}
               onCancel={openCategories}
-              onSaved={() => {
-                setMessage(t('admin.categories.saved'));
-                openCategories();
-              }}
+              onSaved={() => afterListSave(openCategories, t('admin.categories.saved'))}
             />
           )}
           {view === 'client_logos' && (
             <ClientLogosList
+              key={`client-logos-${listEpoch}`}
               notice={message}
               onAdd={() => openForm('client_logos', null)}
               onEdit={(id) => openForm('client_logos', id)}
@@ -787,14 +864,12 @@ export default function AdminShell() {
             <ClientLogoForm
               logoId={editingClientLogoId}
               onCancel={openClientLogos}
-              onSaved={() => {
-                setMessage(t('admin.client_logos.saved'));
-                openClientLogos();
-              }}
+              onSaved={() => afterListSave(openClientLogos, t('admin.client_logos.saved'))}
             />
           )}
           {view === 'client_testimonials' && (
             <ClientTestimonialsList
+              key={`client-testimonials-${listEpoch}`}
               notice={message}
               onAdd={() => openForm('client_testimonials', null)}
               onEdit={(id) => openForm('client_testimonials', id)}
@@ -804,14 +879,14 @@ export default function AdminShell() {
             <ClientTestimonialForm
               testimonialId={editingClientTestimonialId}
               onCancel={openClientTestimonials}
-              onSaved={() => {
-                setMessage(t('admin.client_testimonials.saved'));
-                openClientTestimonials();
-              }}
+              onSaved={() =>
+                afterListSave(openClientTestimonials, t('admin.client_testimonials.saved'))
+              }
             />
           )}
           {view === 'roles' && (
             <RolesList
+              key={`roles-${listEpoch}`}
               notice={message}
               onAdd={() => openForm('roles', null)}
               onEdit={(id) => openForm('roles', id)}
@@ -822,8 +897,10 @@ export default function AdminShell() {
               roleId={editingRoleId}
               onCancel={openRoles}
               onSaved={() => {
-                setMessage(t('admin.roles.saved'));
-                openRoles();
+                afterListSave(openRoles, t('admin.roles.saved'));
+                getSession()
+                  .then((nextSession) => setSession(nextSession))
+                  .catch(() => undefined);
               }}
             />
           )}

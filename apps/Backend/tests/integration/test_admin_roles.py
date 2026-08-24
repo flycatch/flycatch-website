@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from uuid import UUID
 
 from fastapi.testclient import TestClient
@@ -64,6 +65,16 @@ def test_create_edit_and_delete_role(client, bootstrapped, seeded_records):
     resources = {item["id"] for item in catalogue.json()["resources"]}
     assert "site_settings" in resources
     assert "page.home" in resources
+    assert "home" in resources
+    assert "blogs" in resources
+    assert "case_studies" in resources
+    assert "industries" in resources
+    assert "case_study_categories" in resources
+    assert "technologies" in resources
+    assert "authors" in resources
+    assert "categories" in resources
+    assert "client_logos" in resources
+    assert "client_testimonials" in resources
     assert catalogue.json()["actions"] == list(ACTIONS)
 
     created = client.post(
@@ -103,10 +114,70 @@ def test_create_edit_and_delete_role(client, bootstrapped, seeded_records):
     assert "page.home.publish" not in updated.json()["permissions"]
     assert "records.publish" not in updated.json()["permissions"]
 
+    blogs_only = client.post(
+        "/api/v1/admin/roles",
+        headers=headers,
+        json={
+            "name": "Blog Reader",
+            "description": None,
+            "permissions": ["blogs.read"],
+        },
+    )
+    assert blogs_only.status_code == 201
+    assert "blogs.read" in blogs_only.json()["permissions"]
+    assert "records.view" in blogs_only.json()["permissions"]
+
     deleted = client.delete(f"/api/v1/admin/roles/{role['id']}", headers=headers)
     assert deleted.status_code == 204
     missing = client.get(f"/api/v1/admin/roles/{role['id']}", headers=headers)
     assert missing.status_code == 404
+
+
+def test_matrix_permissions_enforced_on_content_apis(client, bootstrapped, db):
+    headers = _admin_headers(client, bootstrapped)
+    custom = client.post(
+        "/api/v1/admin/roles",
+        headers=headers,
+        json={
+            "name": "Limited Blogs",
+            "description": None,
+            "permissions": ["blogs.read"],
+        },
+    )
+    assert custom.status_code == 201
+    limited_id = UUID(custom.json()["id"])
+
+    editor = db.query(Administrator).filter_by(email=bootstrapped["editor_email"]).one()
+    db.query(AdministratorRole).filter(AdministratorRole.administrator_id == editor.id).delete()
+    db.add(
+        AdministratorRole(
+            administrator_id=editor.id,
+            role_id=limited_id,
+            assigned_at=datetime.now(UTC),
+            assigned_by="test",
+        )
+    )
+    db.commit()
+
+    limited_headers = _editor_headers(client, bootstrapped)
+    allowed = client.get("/api/v1/admin/blogs", headers=limited_headers)
+    assert allowed.status_code == 200
+    denied_create = client.post(
+        "/api/v1/admin/blogs",
+        headers=limited_headers,
+        json={
+            "title": "Nope",
+            "slug": "nope",
+            "status": "draft",
+            "author_ids": [],
+            "category_ids": [],
+        },
+    )
+    assert denied_create.status_code == 403
+    assert denied_create.json()["permission"] == "blogs.create"
+    denied_homes = client.get("/api/v1/admin/homes", headers=limited_headers)
+    assert denied_homes.status_code == 403
+    assert denied_homes.json()["permission"] == "home.read"
 
 
 def test_duplicate_name_and_protected_system_roles(client, bootstrapped, db):
@@ -159,7 +230,7 @@ def test_cannot_delete_role_in_use(client, bootstrapped, db):
 
 
 def test_administrator_without_stored_manage_grant_can_list_roles(client, bootstrapped, db):
-    from flycatch_api.models import Role, RolePermission
+    from flycatch_api.models import RolePermission
 
     role = db.query(Role).filter_by(name="administrator").one()
     db.query(RolePermission).filter(

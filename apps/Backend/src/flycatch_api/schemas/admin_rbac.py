@@ -1,8 +1,6 @@
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
-
-from flycatch_api.models.role_permission import PermissionName
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class PermissionDenied(BaseModel):
@@ -10,4 +8,5 @@ class PermissionDenied(BaseModel):
 
     code: Literal["permission_denied"] = "permission_denied"
     message_key: Literal["admin.action.forbidden"] = "admin.action.forbidden"
-    permission: PermissionName
+    # Coarse codes (records.view, …) or matrix grants ({resource}.{action}).
+    permission: str = Field(min_length=1, max_length=64)

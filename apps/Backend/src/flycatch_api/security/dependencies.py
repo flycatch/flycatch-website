@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import Annotated
+from typing import Annotated, Any
 from uuid import UUID
 
 from fastapi import Depends, Header, HTTPException, Request, status
@@ -24,11 +24,48 @@ def _auth_error(code: str, message_key: str) -> HTTPException:
     )
 
 
-def _permission_denied(permission: PermissionName) -> HTTPException:
+def _permission_value(permission: PermissionName | str) -> str:
+    return permission.value if isinstance(permission, PermissionName) else permission
+
+
+def _permission_denied(permission: PermissionName | str) -> HTTPException:
     return HTTPException(
         status_code=status.HTTP_403_FORBIDDEN,
-        detail=PermissionDenied(permission=permission).model_dump(mode="json"),
+        detail=PermissionDenied(permission=_permission_value(permission)).model_dump(mode="json"),
     )
+
+
+def assert_permission(
+    db: Session, administrator_id: UUID, permission: PermissionName | str
+) -> None:
+    if not _rbac.has_permission(db, administrator_id, permission):
+        raise _permission_denied(permission)
+
+
+def is_publish_status(value: Any) -> bool:
+    if value is None:
+        return False
+    raw = getattr(value, "value", value)
+    return str(raw) == "publish"
+
+
+def assert_resource_action(
+    db: Session, administrator_id: UUID, resource: str, action: str
+) -> None:
+    assert_permission(db, administrator_id, f"{resource}.{action}")
+
+
+def assert_write_permissions(
+    db: Session,
+    administrator_id: UUID,
+    resource: str,
+    *,
+    action: str,
+    status_value: Any = None,
+) -> None:
+    assert_resource_action(db, administrator_id, resource, action)
+    if is_publish_status(status_value):
+        assert_resource_action(db, administrator_id, resource, "publish")
 
 
 def _extract_bearer(authorization: str | None) -> str | None:
@@ -80,13 +117,14 @@ def get_current_session(
     return session
 
 
-def require_permission(permission: PermissionName):
+def require_permission(permission: PermissionName | str):
+    required = _permission_value(permission)
+
     def _require(
         session: Annotated[AdminSession, Depends(get_current_session)],
         db: Session = Depends(get_db),
     ) -> AdminSession:
-        if not _rbac.has_permission(db, session.administrator_id, permission):
-            raise _permission_denied(permission)
+        assert_permission(db, session.administrator_id, required)
         return session
 
     return _require
