@@ -6,6 +6,9 @@ import type { components as CaseStudiesComponents } from '../generated/admin-cas
 import type { components as ClientLogosComponents } from '../generated/admin-client-logos.v1';
 import type { components as ClientTestimonialsComponents } from '../generated/admin-client-testimonials.v1';
 import type { components as HomesComponents } from '../generated/admin-homes.v1';
+import type { components as SolutionsComponents } from '../generated/admin-solutions.v1';
+import type { components as SolutionDetailsComponents } from '../generated/admin-solution-details.v1';
+import type { components as SolutionProductsComponents } from '../generated/admin-solution-products.v1';
 import {
   clearTokens,
   getAccessToken,
@@ -60,6 +63,15 @@ export type HomeWrite = HomesComponents['schemas']['HomeWrite'];
 export type ContentSeo = HomesComponents['schemas']['ContentSeo'];
 export type HomeServiceItem = HomesComponents['schemas']['HomeService'];
 export type HomeFaqItem = HomesComponents['schemas']['HomeFaq'];
+export type Solution = SolutionsComponents['schemas']['Solution'];
+export type SolutionList = SolutionsComponents['schemas']['SolutionList'];
+export type SolutionWrite = SolutionsComponents['schemas']['SolutionWrite'];
+export type SolutionDetail = SolutionDetailsComponents['schemas']['SolutionDetail'];
+export type SolutionDetailList = SolutionDetailsComponents['schemas']['SolutionDetailList'];
+export type SolutionDetailWrite = SolutionDetailsComponents['schemas']['SolutionDetailWrite'];
+export type SolutionProduct = SolutionProductsComponents['schemas']['SolutionProduct'];
+export type SolutionProductList = SolutionProductsComponents['schemas']['SolutionProductList'];
+export type SolutionProductWrite = SolutionProductsComponents['schemas']['SolutionProductWrite'];
 
 export class AdminApiError extends Error {
   status: number;
@@ -590,6 +602,92 @@ export async function updateHome(id: string, payload: HomeWrite): Promise<Home> 
 
 export async function deleteHome(id: string): Promise<void> {
   await api<void>(`/admin/homes/${id}`, { method: 'DELETE' });
+}
+
+export async function listSolutions(q: string, page: number): Promise<SolutionList> {
+  return api<SolutionList>(
+    `/admin/solutions${queryString({ q: q.trim() || undefined, page, per_page: 10 })}`,
+  );
+}
+
+export async function getSolution(id: string): Promise<Solution> {
+  return api<Solution>(`/admin/solutions/${id}`);
+}
+
+export async function createSolution(payload: SolutionWrite): Promise<Solution> {
+  return api<Solution>('/admin/solutions', { method: 'POST', body: JSON.stringify(payload) });
+}
+
+export async function updateSolution(id: string, payload: SolutionWrite): Promise<Solution> {
+  return api<Solution>(`/admin/solutions/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
+}
+
+export async function deleteSolution(id: string): Promise<void> {
+  await api<void>(`/admin/solutions/${id}`, { method: 'DELETE' });
+}
+
+export async function listSolutionDetails(q: string, page: number): Promise<SolutionDetailList> {
+  return api<SolutionDetailList>(
+    `/admin/solution-details${queryString({ q: q.trim() || undefined, page, per_page: 10 })}`,
+  );
+}
+
+export async function getSolutionDetail(id: string): Promise<SolutionDetail> {
+  return api<SolutionDetail>(`/admin/solution-details/${id}`);
+}
+
+export async function createSolutionDetail(payload: SolutionDetailWrite): Promise<SolutionDetail> {
+  return api<SolutionDetail>('/admin/solution-details', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateSolutionDetail(
+  id: string,
+  payload: SolutionDetailWrite,
+): Promise<SolutionDetail> {
+  return api<SolutionDetail>(`/admin/solution-details/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteSolutionDetail(id: string): Promise<void> {
+  await api<void>(`/admin/solution-details/${id}`, { method: 'DELETE' });
+}
+
+export async function listSolutionProducts(q: string, page: number): Promise<SolutionProductList> {
+  return api<SolutionProductList>(
+    `/admin/solution-products${queryString({ q: q.trim() || undefined, page, per_page: 10 })}`,
+  );
+}
+
+export async function getSolutionProduct(id: string): Promise<SolutionProduct> {
+  return api<SolutionProduct>(`/admin/solution-products/${id}`);
+}
+
+export async function createSolutionProduct(
+  payload: SolutionProductWrite,
+): Promise<SolutionProduct> {
+  return api<SolutionProduct>('/admin/solution-products', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateSolutionProduct(
+  id: string,
+  payload: SolutionProductWrite,
+): Promise<SolutionProduct> {
+  return api<SolutionProduct>(`/admin/solution-products/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteSolutionProduct(id: string): Promise<void> {
+  await api<void>(`/admin/solution-products/${id}`, { method: 'DELETE' });
 }
 
 export function apiErrorMessage(caught: unknown, fallback = 'admin.workspace.request_failed'): string {

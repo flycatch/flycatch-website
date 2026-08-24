@@ -28,6 +28,9 @@ ROLES_MANAGE = PermissionName.roles_manage.value
 # Matrix rows for Administration sections (order matches Roles UI / nav).
 CONTENT_RESOURCES: tuple[RoleResource, ...] = (
     RoleResource(id="home", type="home", slug="default"),
+    RoleResource(id="solutions", type="solutions", slug="default"),
+    RoleResource(id="solution_details", type="solution_details", slug="default"),
+    RoleResource(id="solution_products", type="solution_products", slug="default"),
     RoleResource(id="blogs", type="blogs", slug="default"),
     RoleResource(id="case_studies", type="case_studies", slug="default"),
     RoleResource(id="industries", type="industries", slug="default"),

@@ -17,6 +17,12 @@ const clientTestimonialsContractsDir = join(
   'specs/007-admin-client-testimonials/contracts',
 );
 const homesContractsDir = join(repoRoot, 'specs/008-admin-home/contracts');
+const solutionsContractsDir = join(repoRoot, 'specs/009-admin-solutions/contracts');
+const solutionDetailsContractsDir = join(repoRoot, 'specs/010-admin-solution-details/contracts');
+const solutionProductsContractsDir = join(
+  repoRoot,
+  'specs/011-admin-solution-products/contracts',
+);
 
 const contractSets = [
   {
@@ -48,6 +54,18 @@ const contractSets = [
   {
     dir: homesContractsDir,
     files: ['admin-homes.v1.yaml'],
+  },
+  {
+    dir: solutionsContractsDir,
+    files: ['admin-solutions.v1.yaml'],
+  },
+  {
+    dir: solutionDetailsContractsDir,
+    files: ['admin-solution-details.v1.yaml'],
+  },
+  {
+    dir: solutionProductsContractsDir,
+    files: ['admin-solution-products.v1.yaml'],
   },
 ];
 

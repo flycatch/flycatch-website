@@ -7,7 +7,6 @@ import {
   updateHome,
   uploadMedia,
   type CaseStudySummary,
-  type ContentSeo,
   type HomeFaqItem,
   type HomeServiceItem,
   type HomeWrite,
@@ -16,7 +15,7 @@ import { hydrateRichText, persistRichText } from '../lib/rich-text';
 import MultiSelect from './MultiSelect';
 import MediaPreview from './MediaPreview';
 import RichTextEditor from './RichTextEditor';
-import SeoFields, { type ContentSeoValue } from './SeoFields';
+import SeoFields, { emptySeo, seoValue, type ContentSeoValue } from './SeoFields';
 import { adminListHref } from '../lib/admin-routes';
 import { t } from '../lib/i18n';
 
@@ -31,14 +30,6 @@ type Status = 'draft' | 'publish';
 
 type ServiceDraft = HomeServiceItem & { key: string; imageFile: File | null };
 type FaqDraft = HomeFaqItem & { key: string };
-
-const emptySeo: ContentSeoValue = {
-  title: '',
-  description: '',
-  canonical_url: '',
-  meta_title: '',
-  image_key: null,
-};
 
 function nextKey(): string {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -57,16 +48,6 @@ function emptyService(): ServiceDraft {
 
 function emptyFaq(): FaqDraft {
   return { key: nextKey(), title: '', contents: '' };
-}
-
-function seoValue(seo: ContentSeo | undefined): ContentSeoValue {
-  return {
-    title: seo?.title || '',
-    description: seo?.description || '',
-    canonical_url: seo?.canonical_url || '',
-    meta_title: seo?.meta_title || '',
-    image_key: seo?.image_key ?? null,
-  };
 }
 
 export default function HomeForm({ homeId, canPublish, onCancel, onSaved }: Props) {

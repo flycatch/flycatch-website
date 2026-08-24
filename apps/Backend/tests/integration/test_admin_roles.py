@@ -75,6 +75,9 @@ def test_create_edit_and_delete_role(client, bootstrapped, seeded_records):
     assert "categories" in resources
     assert "client_logos" in resources
     assert "client_testimonials" in resources
+    assert "solutions" in resources
+    assert "solution_details" in resources
+    assert "solution_products" in resources
     assert catalogue.json()["actions"] == list(ACTIONS)
 
     created = client.post(
@@ -178,6 +181,15 @@ def test_matrix_permissions_enforced_on_content_apis(client, bootstrapped, db):
     denied_homes = client.get("/api/v1/admin/homes", headers=limited_headers)
     assert denied_homes.status_code == 403
     assert denied_homes.json()["permission"] == "home.read"
+    denied_solutions = client.get("/api/v1/admin/solutions", headers=limited_headers)
+    assert denied_solutions.status_code == 403
+    assert denied_solutions.json()["permission"] == "solutions.read"
+    denied_details = client.get("/api/v1/admin/solution-details", headers=limited_headers)
+    assert denied_details.status_code == 403
+    assert denied_details.json()["permission"] == "solution_details.read"
+    denied_products = client.get("/api/v1/admin/solution-products", headers=limited_headers)
+    assert denied_products.status_code == 403
+    assert denied_products.json()["permission"] == "solution_products.read"
 
 
 def test_duplicate_name_and_protected_system_roles(client, bootstrapped, db):

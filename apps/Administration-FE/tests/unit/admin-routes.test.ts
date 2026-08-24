@@ -21,6 +21,9 @@ describe('parseAdminLocation', () => {
     expect(parseAdminLocation('/admin/client-logos/').view).toBe('client_logos');
     expect(parseAdminLocation('/admin/client-testimonials/').view).toBe('client_testimonials');
     expect(parseAdminLocation('/admin/home/').view).toBe('home');
+    expect(parseAdminLocation('/admin/solutions/').view).toBe('solutions');
+    expect(parseAdminLocation('/admin/solution-details/').view).toBe('solution_details');
+    expect(parseAdminLocation('/admin/solution-products/').view).toBe('solution_products');
     expect(parseAdminLocation('/admin/home/', '?new=1').view).toBe('home_form');
     expect(parseAdminLocation('/admin/home/', '?id=abc')).toEqual({
       view: 'home_form',
@@ -58,6 +61,9 @@ describe('admin href helpers', () => {
     expect(adminListHref('technologies')).toBe('/admin/technologies/');
     expect(adminListHref('client_logos')).toBe('/admin/client-logos/');
     expect(adminListHref('client_testimonials')).toBe('/admin/client-testimonials/');
+    expect(adminListHref('solutions')).toBe('/admin/solutions/');
+    expect(adminListHref('solution_details')).toBe('/admin/solution-details/');
+    expect(adminListHref('solution_products')).toBe('/admin/solution-products/');
     expect(adminFormHref('blogs', null)).toBe('/admin/blogs/?new=1');
     expect(adminFormHref('blogs', 'post-1')).toBe('/admin/blogs/?id=post-1');
   });

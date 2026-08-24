@@ -2,6 +2,12 @@ export type AdminView =
   | 'site_settings'
   | 'home'
   | 'home_form'
+  | 'solutions'
+  | 'solution_form'
+  | 'solution_details'
+  | 'solution_detail_form'
+  | 'solution_products'
+  | 'solution_product_form'
   | 'blogs'
   | 'blog_form'
   | 'case_studies'
@@ -37,6 +43,9 @@ type SectionConfig = {
 
 const SECTIONS: SectionConfig[] = [
   { segment: 'home', list: 'home', form: 'home_form' },
+  { segment: 'solutions', list: 'solutions', form: 'solution_form' },
+  { segment: 'solution-details', list: 'solution_details', form: 'solution_detail_form' },
+  { segment: 'solution-products', list: 'solution_products', form: 'solution_product_form' },
   { segment: 'blogs', list: 'blogs', form: 'blog_form' },
   { segment: 'case-studies', list: 'case_studies', form: 'case_study_form' },
   { segment: 'industries', list: 'industries', form: 'industry_form' },
@@ -53,6 +62,9 @@ const SECTIONS: SectionConfig[] = [
 const LIST_HREF: Record<string, string> = {
   site_settings: '/admin/',
   home: '/admin/home/',
+  solutions: '/admin/solutions/',
+  solution_details: '/admin/solution-details/',
+  solution_products: '/admin/solution-products/',
   blogs: '/admin/blogs/',
   case_studies: '/admin/case-studies/',
   industries: '/admin/industries/',

@@ -6,6 +6,8 @@ export type ContentSeoValue = {
   description: string;
   canonical_url: string;
   meta_title: string;
+  h1_tag: string;
+  image_alt: string;
   image_key: string | null;
 };
 
@@ -14,6 +16,28 @@ interface Props {
   imageFile: File | null;
   onChange: (value: ContentSeoValue) => void;
   onImageFile: (file: File | null) => void;
+}
+
+export const emptySeo: ContentSeoValue = {
+  title: '',
+  description: '',
+  canonical_url: '',
+  meta_title: '',
+  h1_tag: '',
+  image_alt: '',
+  image_key: null,
+};
+
+export function seoValue(seo: Partial<ContentSeoValue> | undefined | null): ContentSeoValue {
+  return {
+    title: seo?.title || '',
+    description: seo?.description || '',
+    canonical_url: seo?.canonical_url || '',
+    meta_title: seo?.meta_title || '',
+    h1_tag: seo?.h1_tag || '',
+    image_alt: seo?.image_alt || '',
+    image_key: seo?.image_key ?? null,
+  };
 }
 
 export default function SeoFields({ value, imageFile, onChange, onImageFile }: Props) {
@@ -61,6 +85,15 @@ export default function SeoFields({ value, imageFile, onChange, onImageFile }: P
         />
       </label>
       <label>
+        {t('admin.seo.field.h1_tag')}
+        <input
+          value={value.h1_tag}
+          onChange={(event) => patch({ h1_tag: event.target.value })}
+          maxLength={200}
+          autoComplete="off"
+        />
+      </label>
+      <label>
         {t('admin.seo.field.image')}
         <input
           type="file"
@@ -68,10 +101,19 @@ export default function SeoFields({ value, imageFile, onChange, onImageFile }: P
           onChange={(event) => onImageFile(event.target.files?.[0] || null)}
         />
       </label>
+      <label>
+        {t('admin.seo.field.image_alt')}
+        <input
+          value={value.image_alt}
+          onChange={(event) => patch({ image_alt: event.target.value })}
+          maxLength={200}
+          autoComplete="off"
+        />
+      </label>
       <MediaPreview
         mediaKeys={imageFile ? [] : value.image_key ? [value.image_key] : []}
         files={imageFile ? [imageFile] : []}
-        alt={value.title || t('admin.seo.field.image')}
+        alt={value.image_alt || value.title || t('admin.seo.field.image')}
       />
     </fieldset>
   );

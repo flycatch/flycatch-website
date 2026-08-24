@@ -41,6 +41,12 @@ import TechnologiesList from './TechnologiesList';
 import TechnologyForm from './TechnologyForm';
 import HomesList from './HomesList';
 import HomeForm from './HomeForm';
+import SolutionsList from './SolutionsList';
+import SolutionForm from './SolutionForm';
+import SolutionDetailsList from './SolutionDetailsList';
+import SolutionDetailForm from './SolutionDetailForm';
+import SolutionProductsList from './SolutionProductsList';
+import SolutionProductForm from './SolutionProductForm';
 
 type View = AdminView;
 
@@ -71,6 +77,9 @@ function applyRoute(
     setEditingClientLogoId: (id: string | null) => void;
     setEditingClientTestimonialId: (id: string | null) => void;
     setEditingHomeId: (id: string | null) => void;
+    setEditingSolutionId: (id: string | null) => void;
+    setEditingSolutionDetailId: (id: string | null) => void;
+    setEditingSolutionProductId: (id: string | null) => void;
   },
 ) {
   setters.setView(route.view);
@@ -89,6 +98,11 @@ function applyRoute(
     route.view === 'client_testimonial_form' ? route.editingId : null,
   );
   setters.setEditingHomeId(route.view === 'home_form' ? route.editingId : null);
+  setters.setEditingSolutionId(route.view === 'solution_form' ? route.editingId : null);
+  setters.setEditingSolutionDetailId(route.view === 'solution_detail_form' ? route.editingId : null);
+  setters.setEditingSolutionProductId(
+    route.view === 'solution_product_form' ? route.editingId : null,
+  );
 }
 
 export default function AdminShell() {
@@ -143,6 +157,18 @@ export default function AdminShell() {
     const route = readAdminLocation();
     return route.view === 'home_form' ? route.editingId : null;
   });
+  const [editingSolutionId, setEditingSolutionId] = useState<string | null>(() => {
+    const route = readAdminLocation();
+    return route.view === 'solution_form' ? route.editingId : null;
+  });
+  const [editingSolutionDetailId, setEditingSolutionDetailId] = useState<string | null>(() => {
+    const route = readAdminLocation();
+    return route.view === 'solution_detail_form' ? route.editingId : null;
+  });
+  const [editingSolutionProductId, setEditingSolutionProductId] = useState<string | null>(() => {
+    const route = readAdminLocation();
+    return route.view === 'solution_product_form' ? route.editingId : null;
+  });
   const [session, setSession] = useState<SessionContext | null>(null);
   const [siteSettings, setSiteSettings] = useState<Record<string, unknown> | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -192,6 +218,9 @@ export default function AdminShell() {
       setEditingClientLogoId,
       setEditingClientTestimonialId,
       setEditingHomeId,
+      setEditingSolutionId,
+      setEditingSolutionDetailId,
+      setEditingSolutionProductId,
     });
   }, []);
 
@@ -259,6 +288,18 @@ export default function AdminShell() {
     }
     if (view === 'home' || view === 'home_form') {
       document.title = t('admin.workspace.home_page');
+      return;
+    }
+    if (view === 'solutions' || view === 'solution_form') {
+      document.title = t('admin.workspace.solutions');
+      return;
+    }
+    if (view === 'solution_details' || view === 'solution_detail_form') {
+      document.title = t('admin.workspace.solution_details');
+      return;
+    }
+    if (view === 'solution_products' || view === 'solution_product_form') {
+      document.title = t('admin.workspace.solution_products');
       return;
     }
     if (view === 'blogs' || view === 'blog_form') {
@@ -412,6 +453,18 @@ export default function AdminShell() {
     openList('home');
   }
 
+  function openSolutions() {
+    openList('solutions');
+  }
+
+  function openSolutionDetails() {
+    openList('solution_details');
+  }
+
+  function openSolutionProducts() {
+    openList('solution_products');
+  }
+
   function onNavClick(event: MouseEvent<HTMLAnchorElement>, href: string) {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
       return;
@@ -442,11 +495,17 @@ export default function AdminShell() {
   const canDraft = hasPermission(session, 'site_settings.update');
   const canPublish = hasPermission(session, 'site_settings.publish');
   const canPublishHome = hasPermission(session, 'home.publish');
+  const canPublishSolutions = hasPermission(session, 'solutions.publish');
+  const canPublishSolutionDetails = hasPermission(session, 'solution_details.publish');
+  const canPublishSolutionProducts = hasPermission(session, 'solution_products.publish');
   const canManageRoles = canManageRolesFrom(session);
   const settingsCurrent = view === 'roles' || view === 'role_form';
   const initial = session.email.slice(0, 1).toUpperCase();
   const canReadSiteSettings = canReadResource(session, 'site_settings');
   const canReadHome = canReadResource(session, 'home');
+  const canReadSolutions = canReadResource(session, 'solutions');
+  const canReadSolutionDetails = canReadResource(session, 'solution_details');
+  const canReadSolutionProducts = canReadResource(session, 'solution_products');
   const canReadBlogs = canReadResource(session, 'blogs');
   const canReadCaseStudies = canReadResource(session, 'case_studies');
   const canReadIndustries = canReadResource(session, 'industries');
@@ -461,6 +520,9 @@ export default function AdminShell() {
     const hasOtherSection =
       canManageRoles ||
       canReadHome ||
+      canReadSolutions ||
+      canReadSolutionDetails ||
+      canReadSolutionProducts ||
       canReadBlogs ||
       canReadCaseStudies ||
       canReadIndustries ||
@@ -524,6 +586,54 @@ export default function AdminShell() {
                 onClick={(event) => onNavClick(event, adminListHref('home'))}
               >
                 {t('admin.workspace.home_page')}
+              </a>
+            </li>
+            )}
+            {canReadSolutions && (
+            <li>
+              <a
+                href={adminListHref('solutions')}
+                className={view === 'solutions' || view === 'solution_form' ? 'active' : ''}
+                aria-current={
+                  view === 'solutions' || view === 'solution_form' ? 'page' : undefined
+                }
+                onClick={(event) => onNavClick(event, adminListHref('solutions'))}
+              >
+                {t('admin.workspace.solutions')}
+              </a>
+            </li>
+            )}
+            {canReadSolutionDetails && (
+            <li>
+              <a
+                href={adminListHref('solution_details')}
+                className={
+                  view === 'solution_details' || view === 'solution_detail_form' ? 'active' : ''
+                }
+                aria-current={
+                  view === 'solution_details' || view === 'solution_detail_form' ? 'page' : undefined
+                }
+                onClick={(event) => onNavClick(event, adminListHref('solution_details'))}
+              >
+                {t('admin.workspace.solution_details')}
+              </a>
+            </li>
+            )}
+            {canReadSolutionProducts && (
+            <li>
+              <a
+                href={adminListHref('solution_products')}
+                className={
+                  view === 'solution_products' || view === 'solution_product_form' ? 'active' : ''
+                }
+                aria-current={
+                  view === 'solution_products' || view === 'solution_product_form'
+                    ? 'page'
+                    : undefined
+                }
+                onClick={(event) => onNavClick(event, adminListHref('solution_products'))}
+              >
+                {t('admin.workspace.solution_products')}
               </a>
             </li>
             )}
@@ -743,6 +853,56 @@ export default function AdminShell() {
               canPublish={canPublishHome}
               onCancel={openHomes}
               onSaved={() => afterListSave(openHomes, t('admin.homes.saved'))}
+            />
+          )}
+          {view === 'solutions' && (
+            <SolutionsList
+              key={`solutions-${listEpoch}`}
+              notice={message}
+              onAdd={() => openForm('solutions', null)}
+              onEdit={(id) => openForm('solutions', id)}
+            />
+          )}
+          {view === 'solution_form' && (
+            <SolutionForm
+              solutionId={editingSolutionId}
+              canPublish={canPublishSolutions}
+              onCancel={openSolutions}
+              onSaved={() => afterListSave(openSolutions, t('admin.solutions.saved'))}
+            />
+          )}
+          {view === 'solution_details' && (
+            <SolutionDetailsList
+              key={`solution-details-${listEpoch}`}
+              notice={message}
+              onAdd={() => openForm('solution_details', null)}
+              onEdit={(id) => openForm('solution_details', id)}
+            />
+          )}
+          {view === 'solution_detail_form' && (
+            <SolutionDetailForm
+              detailId={editingSolutionDetailId}
+              canPublish={canPublishSolutionDetails}
+              onCancel={openSolutionDetails}
+              onSaved={() => afterListSave(openSolutionDetails, t('admin.solution_details.saved'))}
+            />
+          )}
+          {view === 'solution_products' && (
+            <SolutionProductsList
+              key={`solution-products-${listEpoch}`}
+              notice={message}
+              onAdd={() => openForm('solution_products', null)}
+              onEdit={(id) => openForm('solution_products', id)}
+            />
+          )}
+          {view === 'solution_product_form' && (
+            <SolutionProductForm
+              productId={editingSolutionProductId}
+              canPublish={canPublishSolutionProducts}
+              onCancel={openSolutionProducts}
+              onSaved={() =>
+                afterListSave(openSolutionProducts, t('admin.solution_products.saved'))
+              }
             />
           )}
           {view === 'blogs' && (

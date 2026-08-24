@@ -13,6 +13,8 @@ class ContentSeo(BaseModel):
     description: str = Field(default="", max_length=500)
     canonical_url: str = Field(default="", max_length=500)
     meta_title: str = Field(default="", max_length=200)
+    h1_tag: str = Field(default="", max_length=200)
+    image_alt: str = Field(default="", max_length=200)
     image_key: str | None = None
 
 
