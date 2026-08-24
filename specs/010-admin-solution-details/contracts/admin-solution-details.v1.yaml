@@ -1,0 +1,316 @@
+openapi: 3.1.0
+info:
+  title: Administration Solution Details
+  version: 1.0.0
+  summary: CRUD for Solution Details entries.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+  /admin/solution-details:
+    get:
+      operationId: listSolutionDetails
+      summary: List Solution Details with search and pagination of 10
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 10
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SolutionDetailList'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+    post:
+      operationId: createSolutionDetail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SolutionDetailWrite'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SolutionDetail'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+  /admin/solution-details/{detail_id}:
+    parameters:
+      - name: detail_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getSolutionDetail
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SolutionDetail'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/SolutionDetailNotFound'
+    patch:
+      operationId: updateSolutionDetail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SolutionDetailWrite'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SolutionDetail'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/SolutionDetailNotFound'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+    delete:
+      operationId: deleteSolutionDetail
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/SolutionDetailNotFound'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ContentStatus:
+      type: string
+      enum: [draft, publish]
+    ContentSeo:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, default: '', maxLength: 200 }
+        description: { type: string, default: '', maxLength: 500 }
+        canonical_url: { type: string, default: '', maxLength: 500 }
+        meta_title: { type: string, default: '', maxLength: 200 }
+        h1_tag: { type: string, default: '', maxLength: 200 }
+        image_alt: { type: string, default: '', maxLength: 200 }
+        image_key: { type: string, nullable: true }
+    SolutionTypeItem:
+      type: object
+      additionalProperties: false
+      properties:
+        image_key: { type: string, nullable: true }
+        description: { type: string, default: '' }
+        order: { type: integer, minimum: 0, default: 0 }
+        title: { type: string, default: '', maxLength: 200 }
+    SolutionBanner:
+      type: object
+      additionalProperties: false
+      properties:
+        image_key: { type: string, nullable: true }
+        title: { type: string, default: '', maxLength: 200 }
+        sub_title: { type: string, default: '', maxLength: 200 }
+        industry_type: { type: string, default: '', maxLength: 120 }
+    IntroductionItem:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, default: '', maxLength: 200 }
+        order: { type: integer, minimum: 0, default: 0 }
+        color: { type: string, default: '', maxLength: 20 }
+    IntroductionBlock:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/IntroductionItem' }
+        description: { type: string, default: '' }
+        icon_keys:
+          type: array
+          items: { type: string }
+        sub_title: { type: string, default: '', maxLength: 200 }
+        sub_description: { type: string, default: '' }
+        image_key: { type: string, nullable: true }
+    ChallengeItem:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, default: '', maxLength: 200 }
+        order: { type: integer, minimum: 0, default: 0 }
+        color: { type: string, default: '', maxLength: 20 }
+    ChallengesBlock:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/ChallengeItem' }
+        description: { type: string, default: '' }
+        image_key: { type: string, nullable: true }
+        name: { type: string, default: '', maxLength: 200 }
+        position: { type: string, default: '', maxLength: 200 }
+        types:
+          type: array
+          items: { $ref: '#/components/schemas/SolutionTypeItem' }
+    BenefitItem:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, default: '', maxLength: 200 }
+        order: { type: integer, minimum: 0, default: 0 }
+        color: { type: string, default: '', maxLength: 20 }
+    BenefitsBlock:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/BenefitItem' }
+        description: { type: string, default: '' }
+        types:
+          type: array
+          items: { $ref: '#/components/schemas/SolutionTypeItem' }
+    SolutionsSection:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, default: '', maxLength: 200 }
+        image_key: { type: string, nullable: true }
+        description: { type: string, default: '' }
+    SolutionCta:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, default: '', maxLength: 200 }
+        description: { type: string, default: '' }
+        button_name: { type: string, default: '', maxLength: 200 }
+    SolutionDetail:
+      type: object
+      additionalProperties: false
+      required: [id, title, slug, banner, introduction, challenges, benefits, solutions_section, cta, seo, status, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string }
+        slug: { type: string }
+        banner: { $ref: '#/components/schemas/SolutionBanner' }
+        introduction: { $ref: '#/components/schemas/IntroductionBlock' }
+        challenges: { $ref: '#/components/schemas/ChallengesBlock' }
+        benefits: { $ref: '#/components/schemas/BenefitsBlock' }
+        solutions_section: { $ref: '#/components/schemas/SolutionsSection' }
+        cta: { $ref: '#/components/schemas/SolutionCta' }
+        seo: { $ref: '#/components/schemas/ContentSeo' }
+        status: { $ref: '#/components/schemas/ContentStatus' }
+        created_at: { type: string, format: date-time }
+    SolutionDetailSummary:
+      type: object
+      additionalProperties: false
+      required: [id, banner_title, introduction_title, challenges_title, state]
+      properties:
+        id: { type: string, format: uuid }
+        banner_title: { type: string }
+        introduction_title: { type: string }
+        challenges_title: { type: string }
+        state: { $ref: '#/components/schemas/ContentStatus' }
+    SolutionDetailList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/SolutionDetailSummary' }
+        page: { type: integer, minimum: 1 }
+        per_page: { type: integer, minimum: 1 }
+        total: { type: integer, minimum: 0 }
+    SolutionDetailWrite:
+      type: object
+      additionalProperties: false
+      required: [title]
+      properties:
+        title: { type: string, minLength: 1, maxLength: 200 }
+        slug: { type: string, maxLength: 128, default: '' }
+        banner: { $ref: '#/components/schemas/SolutionBanner' }
+        introduction: { $ref: '#/components/schemas/IntroductionBlock' }
+        challenges: { $ref: '#/components/schemas/ChallengesBlock' }
+        benefits: { $ref: '#/components/schemas/BenefitsBlock' }
+        solutions_section: { $ref: '#/components/schemas/SolutionsSection' }
+        cta: { $ref: '#/components/schemas/SolutionCta' }
+        seo: { $ref: '#/components/schemas/ContentSeo' }
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+          default: draft
+    FieldErrorDetail:
+      type: object
+      additionalProperties: false
+      required: [message_key]
+      properties:
+        message_key: { type: string }
+    FieldErrors:
+      type: object
+      additionalProperties: false
+      required: [fields]
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldErrorDetail'
+  responses:
+    FieldErrors:
+      description: Field-level validation errors
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FieldErrors'
+    SolutionDetailNotFound:
+      description: Unknown Solution Details entry
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [code, message_key]
+            properties:
+              code: { type: string, const: not_found }
+              message_key: { type: string, const: admin.solution_details.not_found }

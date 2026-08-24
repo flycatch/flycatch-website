@@ -13,6 +13,9 @@ from flycatch_api.models.industry import CaseStudyIndustry, Industry
 from flycatch_api.models.managed_record import ManagedRecord, RecordType
 from flycatch_api.models.role import Role
 from flycatch_api.models.role_permission import PermissionName, RolePermission
+from flycatch_api.models.solution import Solution
+from flycatch_api.models.solution_detail import SolutionDetail
+from flycatch_api.models.solution_product import SolutionProduct
 from flycatch_api.models.technology import CaseStudyTechnology, Technology
 
 __all__ = [
@@ -41,5 +44,8 @@ __all__ = [
     "RecordType",
     "Role",
     "RolePermission",
+    "Solution",
+    "SolutionDetail",
+    "SolutionProduct",
     "Technology",
 ]

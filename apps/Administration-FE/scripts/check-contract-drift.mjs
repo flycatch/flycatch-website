@@ -16,6 +16,9 @@ const required = [
   'admin-client-logos.v1.ts',
   'admin-client-testimonials.v1.ts',
   'admin-homes.v1.ts',
+  'admin-solutions.v1.ts',
+  'admin-solution-details.v1.ts',
+  'admin-solution-products.v1.ts',
 ];
 
 let failed = false;

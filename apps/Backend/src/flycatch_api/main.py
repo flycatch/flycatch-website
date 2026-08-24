@@ -17,6 +17,9 @@ from flycatch_api.api import (
     admin_management,
     admin_media,
     admin_roles,
+    admin_solution_details,
+    admin_solution_products,
+    admin_solutions,
     admin_technologies,
     public_authors,
     public_blogs,
@@ -26,6 +29,9 @@ from flycatch_api.api import (
     public_client_testimonials,
     public_homes,
     public_media,
+    public_solution_details,
+    public_solution_products,
+    public_solutions,
     public_technologies,
     publish,
     stubs,
@@ -84,6 +90,9 @@ app.include_router(admin_technologies.router, prefix="/api/v1")
 app.include_router(admin_client_logos.router, prefix="/api/v1")
 app.include_router(admin_client_testimonials.router, prefix="/api/v1")
 app.include_router(admin_homes.router, prefix="/api/v1")
+app.include_router(admin_solutions.router, prefix="/api/v1")
+app.include_router(admin_solution_details.router, prefix="/api/v1")
+app.include_router(admin_solution_products.router, prefix="/api/v1")
 app.include_router(admin_media.router, prefix="/api/v1")
 app.include_router(publish.router, prefix="/api/v1")
 app.include_router(public_blogs.router, prefix="/api/v1")
@@ -94,6 +103,9 @@ app.include_router(public_technologies.router, prefix="/api/v1")
 app.include_router(public_client_logos.router, prefix="/api/v1")
 app.include_router(public_client_testimonials.router, prefix="/api/v1")
 app.include_router(public_homes.router, prefix="/api/v1")
+app.include_router(public_solutions.router, prefix="/api/v1")
+app.include_router(public_solution_details.router, prefix="/api/v1")
+app.include_router(public_solution_products.router, prefix="/api/v1")
 app.include_router(public_media.router, prefix="/api/v1")
 app.include_router(stubs.router, prefix="/api/v1")
 

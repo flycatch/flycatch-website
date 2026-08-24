@@ -1,0 +1,75 @@
+openapi: 3.1.0
+info:
+  title: Public Solutions
+  version: 1.0.0
+  summary: Read-only published Solutions for the website frontend.
+  description: |
+    Unauthenticated list of Solutions with status publish.
+    Drafts MUST NOT appear. This contract is separate from
+    admin-solutions.v1.yaml. There is no public UUID or slug detail.
+servers:
+  - url: /api/v1
+security: []
+paths:
+  /public/solutions:
+    get:
+      operationId: listPublicSolutions
+      summary: List published Solutions
+      tags: [public-solutions]
+      responses:
+        '200':
+          description: Published Solutions catalog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicSolutionList'
+components:
+  schemas:
+    ContentSeo:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          default: ''
+        description:
+          type: string
+          default: ''
+        canonical_url:
+          type: string
+          default: ''
+        meta_title:
+          type: string
+          default: ''
+        h1_tag:
+          type: string
+          default: ''
+        image_alt:
+          type: string
+          default: ''
+        image_key:
+          type: string
+          nullable: true
+    PublicSolution:
+      type: object
+      additionalProperties: false
+      required: [banner_image_key, banner_title, section_title, seo]
+      properties:
+        banner_image_key:
+          type: string
+          nullable: true
+        banner_title:
+          type: string
+        section_title:
+          type: string
+        seo:
+          $ref: '#/components/schemas/ContentSeo'
+    PublicSolutionList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicSolution'

@@ -66,6 +66,8 @@ def _seo(payload: ContentSeo) -> dict:
         "description": payload.description.strip(),
         "canonical_url": payload.canonical_url.strip(),
         "meta_title": payload.meta_title.strip(),
+        "h1_tag": payload.h1_tag.strip(),
+        "image_alt": payload.image_alt.strip(),
         "image_key": image_key,
     }
 

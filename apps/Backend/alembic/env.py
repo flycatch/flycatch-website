@@ -11,6 +11,9 @@ from flycatch_api.models import (  # noqa: F401
     AdminSession,
     Home,
     ManagedRecord,
+    Solution,
+    SolutionDetail,
+    SolutionProduct,
     Role,
     RolePermission,
 )

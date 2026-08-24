@@ -71,6 +71,8 @@ components:
         - description
         - canonical_url
         - meta_title
+        - h1_tag
+        - image_alt
         - image_key
       properties:
         title:
@@ -80,6 +82,10 @@ components:
         canonical_url:
           type: string
         meta_title:
+          type: string
+        h1_tag:
+          type: string
+        image_alt:
           type: string
         image_key:
           type: string

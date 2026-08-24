@@ -3,6 +3,8 @@ export type ContentSeo = {
   description: string;
   canonical_url: string;
   meta_title: string;
+  h1_tag: string;
+  image_alt: string;
   image_key: string | null;
 };
 

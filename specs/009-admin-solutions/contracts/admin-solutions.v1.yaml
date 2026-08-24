@@ -1,0 +1,301 @@
+openapi: 3.1.0
+info:
+  title: Administration Solutions
+  version: 1.0.0
+  summary: CRUD for Solutions entries.
+  description: |
+    Staff with solutions.read may list and read Solutions. Staff with
+    solutions.create/update/delete may write them. Status draft/publish is
+    stored on each row and does not use the site-settings/page publish
+    snapshot pipeline. Media uploads remain on /admin/media.
+
+    Public published reads are defined in public-solutions.v1.yaml.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+  /admin/solutions:
+    get:
+      operationId: listSolutions
+      summary: List Solutions with search and pagination of 10
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 10
+      responses:
+        '200':
+          description: Paginated Solutions list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SolutionList'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+    post:
+      operationId: createSolution
+      summary: Create a Solutions entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SolutionWrite'
+      responses:
+        '201':
+          description: Created Solutions entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Solution'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+  /admin/solutions/{solution_id}:
+    parameters:
+      - $ref: '#/components/parameters/SolutionId'
+    get:
+      operationId: getSolution
+      summary: Return one Solutions entry
+      responses:
+        '200':
+          description: Solutions entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Solution'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/SolutionNotFound'
+    patch:
+      operationId: updateSolution
+      summary: Update a Solutions entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SolutionWrite'
+      responses:
+        '200':
+          description: Updated Solutions entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Solution'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/SolutionNotFound'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+    delete:
+      operationId: deleteSolution
+      summary: Delete a Solutions entry
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/SolutionNotFound'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    SolutionId:
+      name: solution_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    ContentStatus:
+      type: string
+      enum: [draft, publish]
+    ContentSeo:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          default: ''
+          maxLength: 200
+        description:
+          type: string
+          default: ''
+          maxLength: 500
+        canonical_url:
+          type: string
+          default: ''
+          maxLength: 500
+        meta_title:
+          type: string
+          default: ''
+          maxLength: 200
+        h1_tag:
+          type: string
+          default: ''
+          maxLength: 200
+        image_alt:
+          type: string
+          default: ''
+          maxLength: 200
+        image_key:
+          type: string
+          nullable: true
+    Solution:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - banner_image_key
+        - banner_title
+        - section_title
+        - seo
+        - status
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        banner_image_key:
+          type: string
+          nullable: true
+        banner_title:
+          type: string
+        section_title:
+          type: string
+        seo:
+          $ref: '#/components/schemas/ContentSeo'
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+        created_at:
+          type: string
+          format: date-time
+    SolutionSummary:
+      type: object
+      additionalProperties: false
+      required: [id, banner_image_key, banner_title, section_title, state]
+      properties:
+        id:
+          type: string
+          format: uuid
+        banner_image_key:
+          type: string
+          nullable: true
+        banner_title:
+          type: string
+        section_title:
+          type: string
+        state:
+          $ref: '#/components/schemas/ContentStatus'
+    SolutionList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SolutionSummary'
+        page:
+          type: integer
+          minimum: 1
+        per_page:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+    SolutionWrite:
+      type: object
+      additionalProperties: false
+      properties:
+        banner_image_key:
+          type: string
+          nullable: true
+        banner_title:
+          type: string
+          maxLength: 200
+          default: ''
+        section_title:
+          type: string
+          maxLength: 200
+          default: ''
+        seo:
+          $ref: '#/components/schemas/ContentSeo'
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+          default: draft
+    FieldErrorDetail:
+      type: object
+      additionalProperties: false
+      required: [message_key]
+      properties:
+        message_key:
+          type: string
+    FieldErrors:
+      type: object
+      additionalProperties: false
+      required: [fields]
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldErrorDetail'
+  responses:
+    FieldErrors:
+      description: Field-level validation errors
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FieldErrors'
+    SolutionNotFound:
+      description: Unknown Solutions entry
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [code, message_key]
+            properties:
+              code:
+                type: string
+                const: not_found
+              message_key:
+                type: string
+                const: admin.solutions.not_found

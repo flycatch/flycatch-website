@@ -15,7 +15,7 @@ const entries = homes.map((home, index) => ({
 {entries.map((entry) => (
   <article class="home-entry">
     {entry.isFirst ? (
-      <h1>{entry.home.banner_title || entry.home.title}</h1>
+      <h1>{entry.home.seo.h1_tag?.trim() || entry.home.banner_title || entry.home.title}</h1>
     ) : (
       <h2>{entry.home.banner_title || entry.home.title}</h2>
     )}
@@ -31,7 +31,7 @@ const entries = homes.map((home, index) => ({
           <h2>{service.services_types_title}</h2>
           <img
             src={publicMediaUrl(service.services_image_key) || ''}
-            alt={service.services_types_title || entry.home.title}
+            alt={entry.home.seo.image_alt || service.services_types_title || entry.home.title}
             hidden={!service.services_image_key}
           />
           <p>{service.services_contents}</p>

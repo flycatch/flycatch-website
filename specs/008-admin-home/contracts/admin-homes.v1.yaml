@@ -167,6 +167,14 @@ components:
           type: string
           default: ''
           maxLength: 200
+        h1_tag:
+          type: string
+          default: ''
+          maxLength: 200
+        image_alt:
+          type: string
+          default: ''
+          maxLength: 200
         image_key:
           type: string
           nullable: true

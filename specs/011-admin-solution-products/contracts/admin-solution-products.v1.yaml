@@ -1,0 +1,220 @@
+openapi: 3.1.0
+info:
+  title: Administration Solution Products
+  version: 1.0.0
+  summary: CRUD for Solution Product entries.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+  /admin/solution-products:
+    get:
+      operationId: listSolutionProducts
+      summary: List Solution Products with search and pagination of 10
+      parameters:
+        - name: q
+          in: query
+          schema: { type: string }
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: per_page
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 10, default: 10 }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SolutionProductList'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+    post:
+      operationId: createSolutionProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SolutionProductWrite'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SolutionProduct'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+  /admin/solution-products/{product_id}:
+    parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      operationId: getSolutionProduct
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SolutionProduct'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/SolutionProductNotFound'
+    patch:
+      operationId: updateSolutionProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SolutionProductWrite'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SolutionProduct'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/SolutionProductNotFound'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+    delete:
+      operationId: deleteSolutionProduct
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/SolutionProductNotFound'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ContentStatus:
+      type: string
+      enum: [draft, publish]
+    SolutionProduct:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - product_title
+        - product_description
+        - product_tag
+        - product_logo_key
+        - product_card_image_key
+        - product_banner_image_key
+        - card_image_on_right
+        - banner_image_on_right
+        - slug
+        - order
+        - status
+        - created_at
+      properties:
+        id: { type: string, format: uuid }
+        product_title: { type: string }
+        product_description: { type: string }
+        product_tag: { type: string }
+        product_logo_key: { type: string, nullable: true }
+        product_card_image_key: { type: string, nullable: true }
+        product_banner_image_key: { type: string, nullable: true }
+        card_image_on_right: { type: boolean }
+        banner_image_on_right: { type: boolean }
+        slug: { type: string }
+        order: { type: integer, minimum: 0 }
+        status: { $ref: '#/components/schemas/ContentStatus' }
+        created_at: { type: string, format: date-time }
+    SolutionProductSummary:
+      type: object
+      additionalProperties: false
+      required: [id, product_title, product_description, product_tag, state]
+      properties:
+        id: { type: string, format: uuid }
+        product_title: { type: string }
+        product_description: { type: string }
+        product_tag: { type: string }
+        state: { $ref: '#/components/schemas/ContentStatus' }
+    SolutionProductList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/SolutionProductSummary' }
+        page: { type: integer, minimum: 1 }
+        per_page: { type: integer, minimum: 1 }
+        total: { type: integer, minimum: 0 }
+    SolutionProductWrite:
+      type: object
+      additionalProperties: false
+      required: [product_title]
+      properties:
+        product_title: { type: string, minLength: 1, maxLength: 200 }
+        product_description: { type: string, default: '' }
+        product_tag: { type: string, maxLength: 120, default: '' }
+        product_logo_key: { type: string, nullable: true }
+        product_card_image_key: { type: string, nullable: true }
+        product_banner_image_key: { type: string, nullable: true }
+        card_image_on_right: { type: boolean, default: false }
+        banner_image_on_right: { type: boolean, default: false }
+        slug: { type: string, maxLength: 128, default: '' }
+        order: { type: integer, minimum: 0, default: 0 }
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+          default: draft
+    FieldErrorDetail:
+      type: object
+      additionalProperties: false
+      required: [message_key]
+      properties:
+        message_key: { type: string }
+    FieldErrors:
+      type: object
+      additionalProperties: false
+      required: [fields]
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldErrorDetail'
+  responses:
+    FieldErrors:
+      description: Field-level validation errors
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FieldErrors'
+    SolutionProductNotFound:
+      description: Unknown Solution Product
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [code, message_key]
+            properties:
+              code: { type: string, const: not_found }
+              message_key: { type: string, const: admin.solution_products.not_found }

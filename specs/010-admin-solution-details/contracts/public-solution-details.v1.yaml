@@ -1,0 +1,181 @@
+openapi: 3.1.0
+info:
+  title: Public Solution Details
+  version: 1.0.0
+  summary: Read-only published Solution Details for the website frontend.
+servers:
+  - url: /api/v1
+security: []
+paths:
+  /public/solution-details:
+    get:
+      operationId: listPublicSolutionDetails
+      summary: List published Solution Details
+      parameters:
+        - name: q
+          in: query
+          schema: { type: string }
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: per_page
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 10, default: 10 }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicSolutionDetailList'
+  /public/solution-details/{slug}:
+    get:
+      operationId: getPublicSolutionDetail
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicSolutionDetail'
+        '404':
+          description: Unknown or unpublished slug
+components:
+  schemas:
+    ContentSeo:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, default: '' }
+        description: { type: string, default: '' }
+        canonical_url: { type: string, default: '' }
+        meta_title: { type: string, default: '' }
+        h1_tag: { type: string, default: '' }
+        image_alt: { type: string, default: '' }
+        image_key: { type: string, nullable: true }
+    SolutionTypeItem:
+      type: object
+      additionalProperties: false
+      properties:
+        image_key: { type: string, nullable: true }
+        description: { type: string, default: '' }
+        order: { type: integer, minimum: 0, default: 0 }
+        title: { type: string, default: '' }
+    SolutionBanner:
+      type: object
+      additionalProperties: false
+      properties:
+        image_key: { type: string, nullable: true }
+        title: { type: string, default: '' }
+        sub_title: { type: string, default: '' }
+        industry_type: { type: string, default: '' }
+    IntroductionItem:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, default: '' }
+        order: { type: integer, minimum: 0, default: 0 }
+        color: { type: string, default: '' }
+    IntroductionBlock:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/IntroductionItem' }
+        description: { type: string, default: '' }
+        icon_keys:
+          type: array
+          items: { type: string }
+        sub_title: { type: string, default: '' }
+        sub_description: { type: string, default: '' }
+        image_key: { type: string, nullable: true }
+    ChallengeItem:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, default: '' }
+        order: { type: integer, minimum: 0, default: 0 }
+        color: { type: string, default: '' }
+    ChallengesBlock:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/ChallengeItem' }
+        description: { type: string, default: '' }
+        image_key: { type: string, nullable: true }
+        name: { type: string, default: '' }
+        position: { type: string, default: '' }
+        types:
+          type: array
+          items: { $ref: '#/components/schemas/SolutionTypeItem' }
+    BenefitItem:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, default: '' }
+        order: { type: integer, minimum: 0, default: 0 }
+        color: { type: string, default: '' }
+    BenefitsBlock:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/BenefitItem' }
+        description: { type: string, default: '' }
+        types:
+          type: array
+          items: { $ref: '#/components/schemas/SolutionTypeItem' }
+    SolutionsSection:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, default: '' }
+        image_key: { type: string, nullable: true }
+        description: { type: string, default: '' }
+    SolutionCta:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, default: '' }
+        description: { type: string, default: '' }
+        button_name: { type: string, default: '' }
+    PublicSolutionDetailSummary:
+      type: object
+      additionalProperties: false
+      required: [slug, title, banner]
+      properties:
+        slug: { type: string }
+        title: { type: string }
+        banner: { $ref: '#/components/schemas/SolutionBanner' }
+    PublicSolutionDetailList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/PublicSolutionDetailSummary' }
+        page: { type: integer, minimum: 1 }
+        per_page: { type: integer, minimum: 1 }
+        total: { type: integer, minimum: 0 }
+    PublicSolutionDetail:
+      type: object
+      additionalProperties: false
+      required: [title, slug, banner, introduction, challenges, benefits, solutions_section, cta, seo]
+      properties:
+        title: { type: string }
+        slug: { type: string }
+        banner: { $ref: '#/components/schemas/SolutionBanner' }
+        introduction: { $ref: '#/components/schemas/IntroductionBlock' }
+        challenges: { $ref: '#/components/schemas/ChallengesBlock' }
+        benefits: { $ref: '#/components/schemas/BenefitsBlock' }
+        solutions_section: { $ref: '#/components/schemas/SolutionsSection' }
+        cta: { $ref: '#/components/schemas/SolutionCta' }
+        seo: { $ref: '#/components/schemas/ContentSeo' }

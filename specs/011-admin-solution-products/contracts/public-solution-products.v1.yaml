@@ -1,0 +1,96 @@
+openapi: 3.1.0
+info:
+  title: Public Solution Products
+  version: 1.0.0
+  summary: Read-only published Solution Products for the website frontend.
+servers:
+  - url: /api/v1
+security: []
+paths:
+  /public/solution-products:
+    get:
+      operationId: listPublicSolutionProducts
+      summary: List published Solution Products
+      parameters:
+        - name: q
+          in: query
+          schema: { type: string }
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: per_page
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 10, default: 10 }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicSolutionProductList'
+  /public/solution-products/{slug}:
+    get:
+      operationId: getPublicSolutionProduct
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicSolutionProduct'
+        '404':
+          description: Unknown or unpublished slug
+components:
+  schemas:
+    PublicSolutionProductSummary:
+      type: object
+      additionalProperties: false
+      required: [slug, product_title, product_description, product_tag]
+      properties:
+        slug: { type: string }
+        product_title: { type: string }
+        product_description: { type: string }
+        product_tag: { type: string }
+        product_logo_key: { type: string, nullable: true }
+        product_card_image_key: { type: string, nullable: true }
+        card_image_on_right: { type: boolean }
+        order: { type: integer, minimum: 0 }
+    PublicSolutionProductList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/PublicSolutionProductSummary' }
+        page: { type: integer, minimum: 1 }
+        per_page: { type: integer, minimum: 1 }
+        total: { type: integer, minimum: 0 }
+    PublicSolutionProduct:
+      type: object
+      additionalProperties: false
+      required:
+        - product_title
+        - product_description
+        - product_tag
+        - product_logo_key
+        - product_card_image_key
+        - product_banner_image_key
+        - card_image_on_right
+        - banner_image_on_right
+        - slug
+        - order
+      properties:
+        product_title: { type: string }
+        product_description: { type: string }
+        product_tag: { type: string }
+        product_logo_key: { type: string, nullable: true }
+        product_card_image_key: { type: string, nullable: true }
+        product_banner_image_key: { type: string, nullable: true }
+        card_image_on_right: { type: boolean }
+        banner_image_on_right: { type: boolean }
+        slug: { type: string }
+        order: { type: integer, minimum: 0 }
