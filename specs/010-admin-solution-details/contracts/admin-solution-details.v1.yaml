@@ -246,9 +246,10 @@ components:
     SolutionDetailSummary:
       type: object
       additionalProperties: false
-      required: [id, banner_title, introduction_title, challenges_title, state]
+      required: [id, title, banner_title, introduction_title, challenges_title, state]
       properties:
         id: { type: string, format: uuid }
+        title: { type: string }
         banner_title: { type: string }
         introduction_title: { type: string }
         challenges_title: { type: string }

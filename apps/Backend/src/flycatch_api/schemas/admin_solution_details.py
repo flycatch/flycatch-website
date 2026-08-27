@@ -116,6 +116,7 @@ class SolutionDetailSummary(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     id: UUID
+    title: str
     banner_title: str
     introduction_title: str
     challenges_title: str

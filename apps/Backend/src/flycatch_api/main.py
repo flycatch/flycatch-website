@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 
 from flycatch_api.api import (
+    admin_ai_services,
     admin_auth,
     admin_authors,
     admin_blogs,
@@ -12,6 +13,9 @@ from flycatch_api.api import (
     admin_categories,
     admin_client_logos,
     admin_client_testimonials,
+    admin_cloud_services,
+    admin_data_analytics,
+    admin_digital_transformation,
     admin_homes,
     admin_industries,
     admin_management,
@@ -21,12 +25,16 @@ from flycatch_api.api import (
     admin_solution_products,
     admin_solutions,
     admin_technologies,
+    public_ai_services,
     public_authors,
     public_blogs,
     public_case_studies,
     public_categories,
     public_client_logos,
     public_client_testimonials,
+    public_cloud_services,
+    public_data_analytics,
+    public_digital_transformation,
     public_homes,
     public_media,
     public_solution_details,
@@ -93,6 +101,10 @@ app.include_router(admin_homes.router, prefix="/api/v1")
 app.include_router(admin_solutions.router, prefix="/api/v1")
 app.include_router(admin_solution_details.router, prefix="/api/v1")
 app.include_router(admin_solution_products.router, prefix="/api/v1")
+app.include_router(admin_ai_services.router, prefix="/api/v1")
+app.include_router(admin_cloud_services.router, prefix="/api/v1")
+app.include_router(admin_data_analytics.router, prefix="/api/v1")
+app.include_router(admin_digital_transformation.router, prefix="/api/v1")
 app.include_router(admin_media.router, prefix="/api/v1")
 app.include_router(publish.router, prefix="/api/v1")
 app.include_router(public_blogs.router, prefix="/api/v1")
@@ -106,6 +118,10 @@ app.include_router(public_homes.router, prefix="/api/v1")
 app.include_router(public_solutions.router, prefix="/api/v1")
 app.include_router(public_solution_details.router, prefix="/api/v1")
 app.include_router(public_solution_products.router, prefix="/api/v1")
+app.include_router(public_ai_services.router, prefix="/api/v1")
+app.include_router(public_cloud_services.router, prefix="/api/v1")
+app.include_router(public_data_analytics.router, prefix="/api/v1")
+app.include_router(public_digital_transformation.router, prefix="/api/v1")
 app.include_router(public_media.router, prefix="/api/v1")
 app.include_router(stubs.router, prefix="/api/v1")
 

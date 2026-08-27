@@ -24,6 +24,12 @@ describe('parseAdminLocation', () => {
     expect(parseAdminLocation('/admin/solutions/').view).toBe('solutions');
     expect(parseAdminLocation('/admin/solution-details/').view).toBe('solution_details');
     expect(parseAdminLocation('/admin/solution-products/').view).toBe('solution_products');
+    expect(parseAdminLocation('/admin/ai-services/').view).toBe('ai_services');
+    expect(parseAdminLocation('/admin/cloud-services/').view).toBe('cloud_services');
+    expect(parseAdminLocation('/admin/data-analytics/').view).toBe('data_analytics');
+    expect(parseAdminLocation('/admin/digital-transformation/').view).toBe(
+      'digital_transformation',
+    );
     expect(parseAdminLocation('/admin/home/', '?new=1').view).toBe('home_form');
     expect(parseAdminLocation('/admin/home/', '?id=abc')).toEqual({
       view: 'home_form',
@@ -64,6 +70,10 @@ describe('admin href helpers', () => {
     expect(adminListHref('solutions')).toBe('/admin/solutions/');
     expect(adminListHref('solution_details')).toBe('/admin/solution-details/');
     expect(adminListHref('solution_products')).toBe('/admin/solution-products/');
+    expect(adminListHref('ai_services')).toBe('/admin/ai-services/');
+    expect(adminListHref('cloud_services')).toBe('/admin/cloud-services/');
+    expect(adminListHref('data_analytics')).toBe('/admin/data-analytics/');
+    expect(adminListHref('digital_transformation')).toBe('/admin/digital-transformation/');
     expect(adminFormHref('blogs', null)).toBe('/admin/blogs/?new=1');
     expect(adminFormHref('blogs', 'post-1')).toBe('/admin/blogs/?id=post-1');
   });
