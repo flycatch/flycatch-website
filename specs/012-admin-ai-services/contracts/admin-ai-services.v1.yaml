@@ -1,0 +1,266 @@
+openapi: 3.1.0
+info:
+  title: Administration AI Services
+  version: 1.0.0
+  summary: CRUD for AI Services entries.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+  /admin/ai-services:
+    get:
+      operationId: listAiServices
+      summary: List with search and pagination of 10
+      parameters:
+        - name: q
+          in: query
+          schema: { type: string }
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: per_page
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 10, default: 10 }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiServiceList'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+    post:
+      operationId: createAiServices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AiServiceWrite'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiService'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+  /admin/ai-services/{ai_service_id}:
+    parameters:
+      - name: ai_service_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getAiServices
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiService'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: updateAiServices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AiServiceWrite'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiService'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+    delete:
+      operationId: deleteAiServices
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ContentStatus:
+      type: string
+      enum: [draft, publish]
+    ContentSeo:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, default: '', maxLength: 200 }
+        description: { type: string, default: '', maxLength: 500 }
+        canonical_url: { type: string, default: '', maxLength: 500 }
+        meta_title: { type: string, default: '', maxLength: 200 }
+        h1_tag: { type: string, default: '', maxLength: 200 }
+        image_alt: { type: string, default: '', maxLength: 200 }
+        image_key: { type: string, nullable: true }
+    IndustryItem:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, default: '', maxLength: 200 }
+        image_key: { type: string, nullable: true }
+        order: { type: integer, minimum: 0, default: 0 }
+    AccordionItem:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, default: '', maxLength: 200 }
+        contents: { type: string, default: '' }
+        order: { type: integer, minimum: 0, default: 0 }
+    AiService:
+      type: object
+      additionalProperties: false
+      required: [id, slug, banner_title, banner_image_key, introduction_title, introduction_description, solutions_title, solutions_description, industry_title, industry_description, industry_items, ai_expertise_title, ai_expertise_image_key, ai_expertise_accordion, ai_expertise_accordion_description, solution_ids, faq_title, faq_description, faq_accordion, seo, status, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        slug: { type: string }
+        banner_title: { type: string }
+        banner_image_key: { type: string, nullable: true }
+        introduction_title: { type: string }
+        introduction_description: { type: string }
+        solutions_title: { type: string }
+        solutions_description: { type: string }
+        industry_title: { type: string }
+        industry_description: { type: string }
+        industry_items:
+          type: array
+          items: { $ref: '#/components/schemas/IndustryItem' }
+        ai_expertise_title: { type: string }
+        ai_expertise_image_key: { type: string, nullable: true }
+        ai_expertise_accordion:
+          type: array
+          items: { $ref: '#/components/schemas/AccordionItem' }
+        ai_expertise_accordion_description: { type: string }
+        solution_ids:
+          type: array
+          items: { type: string, format: uuid }
+        faq_title: { type: string }
+        faq_description: { type: string }
+        faq_accordion:
+          type: array
+          items: { $ref: '#/components/schemas/AccordionItem' }
+        seo: { $ref: '#/components/schemas/ContentSeo' }
+        status: { $ref: '#/components/schemas/ContentStatus' }
+        created_at: { type: string, format: date-time }
+    AiServiceSummary:
+      type: object
+      additionalProperties: false
+      required: [id, banner_title, banner_image_key, introduction_title, state]
+      properties:
+        id: { type: string, format: uuid }
+        banner_title: { type: string }
+        banner_image_key: { type: string, nullable: true }
+        introduction_title: { type: string }
+        state: { $ref: '#/components/schemas/ContentStatus' }
+    AiServiceList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/AiServiceSummary' }
+        page: { type: integer, minimum: 1 }
+        per_page: { type: integer, minimum: 1 }
+        total: { type: integer, minimum: 0 }
+    AiServiceWrite:
+      type: object
+      additionalProperties: false
+      properties:
+        banner_title: { type: string, maxLength: 200, default: '' }
+        banner_image_key: { type: string, nullable: true }
+        introduction_title: { type: string, maxLength: 200, default: '' }
+        introduction_description: { type: string, default: '' }
+        solutions_title: { type: string, maxLength: 200, default: '' }
+        solutions_description: { type: string, default: '' }
+        industry_title: { type: string, maxLength: 200, default: '' }
+        industry_description: { type: string, default: '' }
+        industry_items:
+          type: array
+          items: { $ref: '#/components/schemas/IndustryItem' }
+        ai_expertise_title: { type: string, maxLength: 200, default: '' }
+        ai_expertise_image_key: { type: string, nullable: true }
+        ai_expertise_accordion:
+          type: array
+          items: { $ref: '#/components/schemas/AccordionItem' }
+        ai_expertise_accordion_description: { type: string, default: '' }
+        solution_ids:
+          type: array
+          items: { type: string, format: uuid }
+        faq_title: { type: string, maxLength: 200, default: '' }
+        faq_description: { type: string, default: '' }
+        faq_accordion:
+          type: array
+          items: { $ref: '#/components/schemas/AccordionItem' }
+        seo: { $ref: '#/components/schemas/ContentSeo' }
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+          default: draft
+    FieldErrorDetail:
+      type: object
+      additionalProperties: false
+      required: [message_key]
+      properties:
+        message_key: { type: string }
+    FieldErrors:
+      type: object
+      additionalProperties: false
+      required: [fields]
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldErrorDetail'
+  responses:
+    FieldErrors:
+      description: Field-level validation errors
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FieldErrors'
+    NotFound:
+      description: Unknown entry
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [code, message_key]
+            properties:
+              code: { type: string, const: not_found }
+              message_key: { type: string }

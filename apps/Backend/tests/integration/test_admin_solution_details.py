@@ -74,6 +74,7 @@ def test_solution_detail_crud_slug_and_nested(client, bootstrapped):
     assert listed.status_code == 200
     assert listed.json()["total"] == 1
     assert listed.json()["items"][0]["banner_title"] == "Retail"
+    assert listed.json()["items"][0]["title"] == "Retail Ops"
     assert listed.json()["items"][0]["challenges_title"] == "Legacy"
 
     duplicate = client.post(

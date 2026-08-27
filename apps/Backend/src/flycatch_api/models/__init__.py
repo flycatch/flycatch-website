@@ -13,12 +13,18 @@ from flycatch_api.models.industry import CaseStudyIndustry, Industry
 from flycatch_api.models.managed_record import ManagedRecord, RecordType
 from flycatch_api.models.role import Role
 from flycatch_api.models.role_permission import PermissionName, RolePermission
+from flycatch_api.models.ai_service import AiService, AiServiceSolution
+from flycatch_api.models.cloud_service import CloudService
+from flycatch_api.models.data_analytics import DataAnalytics
+from flycatch_api.models.digital_transformation import DigitalTransformation
 from flycatch_api.models.solution import Solution
 from flycatch_api.models.solution_detail import SolutionDetail
 from flycatch_api.models.solution_product import SolutionProduct
 from flycatch_api.models.technology import CaseStudyTechnology, Technology
 
 __all__ = [
+    "AiService",
+    "AiServiceSolution",
     "Administrator",
     "AdministratorRole",
     "AdminSession",
@@ -35,7 +41,10 @@ __all__ = [
     "Category",
     "ClientLogo",
     "ClientTestimonial",
+    "CloudService",
     "ContentStatus",
+    "DataAnalytics",
+    "DigitalTransformation",
     "Home",
     "HomeCaseStudy",
     "Industry",
