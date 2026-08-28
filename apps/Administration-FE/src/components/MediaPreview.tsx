@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { fetchMediaBlob } from '../lib/admin-api';
+import { t } from '../lib/i18n';
 
 interface Props {
   mediaKeys?: string[];
   files?: File[];
   alt: string;
+  onRemoveAt?: (index: number) => void;
 }
 
 function isVideoSource(file?: File, key?: string): boolean {
@@ -13,7 +15,7 @@ function isVideoSource(file?: File, key?: string): boolean {
   return false;
 }
 
-export default function MediaPreview({ mediaKeys = [], files = [], alt }: Props) {
+export default function MediaPreview({ mediaKeys = [], files = [], alt, onRemoveAt }: Props) {
   const [urls, setUrls] = useState<string[]>([]);
 
   useEffect(() => {
@@ -57,14 +59,26 @@ export default function MediaPreview({ mediaKeys = [], files = [], alt }: Props)
       {urls.map((url, index) => {
         const source = sources[index];
         const video = isVideoSource(source?.file, source?.key);
-        if (video) {
-          return (
-            <video key={url} className="media-preview media-preview-video" src={url} controls>
-              <track kind="captions" />
-            </video>
-          );
-        }
-        return <img key={url} className="media-preview" src={url} alt={alt} />;
+        return (
+          <div key={url} className="media-preview-item">
+            {video ? (
+              <video className="media-preview media-preview-video" src={url} controls>
+                <track kind="captions" />
+              </video>
+            ) : (
+              <img className="media-preview" src={url} alt={alt} />
+            )}
+            {onRemoveAt ? (
+              <button
+                type="button"
+                className="danger media-preview-remove"
+                onClick={() => onRemoveAt(index)}
+              >
+                {t('admin.media.remove')}
+              </button>
+            ) : null}
+          </div>
+        );
       })}
     </div>
   );

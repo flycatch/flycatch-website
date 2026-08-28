@@ -10,7 +10,8 @@ import {
 import { hydrateRichText, persistRichText } from '../lib/rich-text';
 import { t } from '../lib/i18n';
 import type { LandingSection } from '../lib/landing-sections';
-import MediaPreview from './MediaPreview';
+import FormPageHeader from './FormPageHeader';
+import MediaField from './MediaField';
 import RepeatableSection from './RepeatableSection';
 import RichTextEditor from './RichTextEditor';
 import SeoFields, { emptySeo, seoValue, type ContentSeoValue } from './SeoFields';
@@ -229,9 +230,11 @@ export default function LandingForm({ section, entryId, canPublish, onCancel, on
 
   return (
     <section className="role-form-page">
-      <div className="panel-header">
-        <h2>{entryId ? t(`${ns}.edit`) : t(`${ns}.add`)}</h2>
-      </div>
+      <FormPageHeader
+        title={entryId ? t(`${ns}.edit`) : t(`${ns}.add`)}
+        onBack={onCancel}
+        disabled={saving}
+      />
       <form
         onSubmit={(event: FormEvent) => {
           event.preventDefault();
@@ -247,18 +250,16 @@ export default function LandingForm({ section, entryId, canPublish, onCancel, on
             autoComplete="off"
           />
         </label>
-        <label>
-          {t(`${ns}.banner_image`)}
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            onChange={(event) => setBannerFile(event.target.files?.[0] || null)}
-          />
-        </label>
-        <MediaPreview
-          mediaKeys={bannerFile ? [] : bannerKey ? [bannerKey] : []}
-          files={bannerFile ? [bannerFile] : []}
+        <MediaField
+          label={t(`${ns}.banner_image`)}
           alt={bannerTitle || t(`${ns}.banner_image`)}
+          storedKey={bannerKey}
+          file={bannerFile}
+          onFile={setBannerFile}
+          onClear={() => {
+            setBannerFile(null);
+            setBannerKey(null);
+          }}
         />
         <label>
           {t(`${ns}.introduction_title`)}
@@ -313,18 +314,16 @@ export default function LandingForm({ section, entryId, canPublish, onCancel, on
               'experience_accordion',
               `${ns}-experience`,
             )}
-            <label>
-              {t(`${ns}.experience_image`)}
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/gif,image/webp"
-                onChange={(event) => setExperienceFile(event.target.files?.[0] || null)}
-              />
-            </label>
-            <MediaPreview
-              mediaKeys={experienceFile ? [] : experienceKey ? [experienceKey] : []}
-              files={experienceFile ? [experienceFile] : []}
+            <MediaField
+              label={t(`${ns}.experience_image`)}
               alt={experienceTitle || t(`${ns}.experience_image`)}
+              storedKey={experienceKey}
+              file={experienceFile}
+              onFile={setExperienceFile}
+              onClear={() => {
+                setExperienceFile(null);
+                setExperienceKey(null);
+              }}
             />
             <RichTextEditor
               id={`${ns}-experience-description`}
@@ -336,18 +335,16 @@ export default function LandingForm({ section, entryId, canPublish, onCancel, on
         )}
         {section.hasOffering && (
           <>
-            <label>
-              {t(`${ns}.offering_image`)}
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/gif,image/webp"
-                onChange={(event) => setOfferingFile(event.target.files?.[0] || null)}
-              />
-            </label>
-            <MediaPreview
-              mediaKeys={offeringFile ? [] : offeringKey ? [offeringKey] : []}
-              files={offeringFile ? [offeringFile] : []}
+            <MediaField
+              label={t(`${ns}.offering_image`)}
               alt={offeringTitle || t(`${ns}.offering_image`)}
+              storedKey={offeringKey}
+              file={offeringFile}
+              onFile={setOfferingFile}
+              onClear={() => {
+                setOfferingFile(null);
+                setOfferingKey(null);
+              }}
             />
             <label>
               {t(`${ns}.offering_title`)}

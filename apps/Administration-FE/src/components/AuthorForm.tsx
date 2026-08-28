@@ -8,7 +8,8 @@ import {
   type AuthorWrite,
 } from '../lib/admin-api';
 import { t } from '../lib/i18n';
-import MediaPreview from './MediaPreview';
+import FormPageHeader from './FormPageHeader';
+import MediaField from './MediaField';
 
 interface Props {
   authorId: string | null;
@@ -104,9 +105,11 @@ export default function AuthorForm({ authorId, onCancel, onSaved }: Props) {
 
   return (
     <section className="role-form-page">
-      <div className="panel-header">
-        <h2>{authorId ? t('admin.authors.edit') : t('admin.authors.add')}</h2>
-      </div>
+      <FormPageHeader
+        title={authorId ? t('admin.authors.edit') : t('admin.authors.add')}
+        onBack={onCancel}
+        disabled={saving}
+      />
       <form onSubmit={save}>
         <label>
           {t('admin.authors.name')}
@@ -123,19 +126,14 @@ export default function AuthorForm({ authorId, onCancel, onSaved }: Props) {
           {t('admin.authors.bio')}
           <textarea value={bio} onChange={(event) => setBio(event.target.value)} rows={3} />
         </label>
-        <label>
-          {t('admin.authors.writer_images')}
-          <input
-            type="file"
-            multiple
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            onChange={(event) => setWriterFiles(Array.from(event.target.files || []))}
-          />
-        </label>
-        <MediaPreview
-          mediaKeys={writerImageKeys}
-          files={writerFiles}
+        <MediaField
+          multiple
+          label={t('admin.authors.writer_images')}
           alt={t('admin.authors.writer_images')}
+          storedKeys={writerImageKeys}
+          files={writerFiles}
+          onFiles={setWriterFiles}
+          onStoredKeys={setWriterImageKeys}
         />
         <label>
           {t('admin.authors.designation')}

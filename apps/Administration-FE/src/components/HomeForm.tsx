@@ -13,7 +13,8 @@ import {
 } from '../lib/admin-api';
 import { hydrateRichText, persistRichText } from '../lib/rich-text';
 import MultiSelect from './MultiSelect';
-import MediaPreview from './MediaPreview';
+import FormPageHeader from './FormPageHeader';
+import MediaField from './MediaField';
 import RichTextEditor from './RichTextEditor';
 import SeoFields, { emptySeo, seoValue, type ContentSeoValue } from './SeoFields';
 import { adminListHref } from '../lib/admin-routes';
@@ -221,9 +222,11 @@ export default function HomeForm({ homeId, canPublish, onCancel, onSaved }: Prop
 
   return (
     <section className="role-form-page">
-      <div className="panel-header">
-        <h2>{homeId ? t('admin.homes.edit') : t('admin.homes.add')}</h2>
-      </div>
+      <FormPageHeader
+        title={homeId ? t('admin.homes.edit') : t('admin.homes.add')}
+        onBack={onCancel}
+        disabled={saving}
+      />
       <form onSubmit={save}>
         <label>
           {t('admin.homes.field.title')}
@@ -235,18 +238,18 @@ export default function HomeForm({ homeId, canPublish, onCancel, onSaved }: Prop
             autoComplete="off"
           />
         </label>
-        <label>
-          {t('admin.homes.field.video')}
-          <input
-            type="file"
-            accept="video/mp4,video/webm,video/quicktime"
-            onChange={(event) => setVideoFile(event.target.files?.[0] || null)}
-          />
-        </label>
-        <MediaPreview
-          mediaKeys={videoFile ? [] : videoKey ? [videoKey] : []}
-          files={videoFile ? [videoFile] : []}
+        <MediaField
+          label={t('admin.homes.field.video')}
+          accept="video/mp4,video/webm,video/quicktime"
           alt={t('admin.homes.field.video')}
+          storedKey={videoKey}
+          file={videoFile}
+          onFile={setVideoFile}
+          onClear={() => {
+            setVideoFile(null);
+            setVideoKey(null);
+            setVideoType(null);
+          }}
         />
         <label>
           {t('admin.homes.field.banner_title')}
@@ -289,22 +292,13 @@ export default function HomeForm({ homeId, canPublish, onCancel, onSaved }: Prop
                   autoComplete="off"
                 />
               </label>
-              <label>
-                {t('admin.homes.field.services_image')}
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/gif,image/webp"
-                  onChange={(event) =>
-                    patchService(service.key, { imageFile: event.target.files?.[0] || null })
-                  }
-                />
-              </label>
-              <MediaPreview
-                mediaKeys={
-                  service.imageFile ? [] : service.services_image_key ? [service.services_image_key] : []
-                }
-                files={service.imageFile ? [service.imageFile] : []}
+              <MediaField
+                label={t('admin.homes.field.services_image')}
                 alt={t('admin.homes.field.services_image')}
+                storedKey={service.services_image_key}
+                file={service.imageFile}
+                onFile={(file) => patchService(service.key, { imageFile: file })}
+                onClear={() => patchService(service.key, { imageFile: null, services_image_key: null })}
               />
               <label>
                 {t('admin.homes.field.services_contents')}

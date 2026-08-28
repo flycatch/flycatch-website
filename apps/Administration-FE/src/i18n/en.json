@@ -32,6 +32,8 @@
   "admin.publish": "Publish",
   "admin.publish.success": "Published. Rebuild the public site to see changes.",
   "admin.field.required": "This field is required.",
+  "admin.form.back": "Back",
+  "admin.media.remove": "Remove",
   "admin.csrf.failed": "Request could not be verified. Refresh and try again.",
   "admin.action.forbidden": "You do not have permission for this action.",
   "admin.roles.title": "Roles & Permissions",
