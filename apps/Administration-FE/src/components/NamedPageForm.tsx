@@ -7,7 +7,8 @@ import {
 import { hydrateRichText, persistRichText } from '../lib/rich-text';
 import { SERVICE_PAGE_NAMES, type NamedPageName } from '../lib/service-page-names';
 import { t } from '../lib/i18n';
-import MediaPreview from './MediaPreview';
+import FormPageHeader from './FormPageHeader';
+import MediaField from './MediaField';
 import RepeatableSection from './RepeatableSection';
 import RichTextEditor from './RichTextEditor';
 import SeoFields, { emptySeo, seoValue, type ContentSeoValue } from './SeoFields';
@@ -216,9 +217,11 @@ export default function NamedPageForm({
 
   return (
     <section className="role-form-page">
-      <div className="panel-header">
-        <h2>{entryId ? t(`${ns}.edit`) : t(`${ns}.add`)}</h2>
-      </div>
+      <FormPageHeader
+        title={entryId ? t(`${ns}.edit`) : t(`${ns}.add`)}
+        onBack={onCancel}
+        disabled={saving}
+      />
       <form
         onSubmit={(event: FormEvent) => {
           event.preventDefault();
@@ -247,18 +250,16 @@ export default function NamedPageForm({
             autoComplete="off"
           />
         </label>
-        <label>
-          {t(`${ns}.banner_image`)}
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            onChange={(event) => setBannerFile(event.target.files?.[0] || null)}
-          />
-        </label>
-        <MediaPreview
-          mediaKeys={bannerFile ? [] : bannerKey ? [bannerKey] : []}
-          files={bannerFile ? [bannerFile] : []}
+        <MediaField
+          label={t(`${ns}.banner_image`)}
           alt={bannerTitle || t(`${ns}.banner_image`)}
+          storedKey={bannerKey}
+          file={bannerFile}
+          onFile={setBannerFile}
+          onClear={() => {
+            setBannerFile(null);
+            setBannerKey(null);
+          }}
         />
         <label>
           {t(`${ns}.introduction_title`)}
@@ -325,18 +326,16 @@ export default function NamedPageForm({
             </>
           )}
         </RepeatableSection>
-        <label>
-          {t(`${ns}.offering_image`)}
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            onChange={(event) => setOfferingFile(event.target.files?.[0] || null)}
-          />
-        </label>
-        <MediaPreview
-          mediaKeys={offeringFile ? [] : offeringKey ? [offeringKey] : []}
-          files={offeringFile ? [offeringFile] : []}
+        <MediaField
+          label={t(`${ns}.offering_image`)}
           alt={offeringTitle || t(`${ns}.offering_image`)}
+          storedKey={offeringKey}
+          file={offeringFile}
+          onFile={setOfferingFile}
+          onClear={() => {
+            setOfferingFile(null);
+            setOfferingKey(null);
+          }}
         />
         <label>
           {t(`${ns}.offering_title`)}

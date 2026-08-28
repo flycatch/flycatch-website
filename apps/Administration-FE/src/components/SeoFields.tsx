@@ -1,4 +1,4 @@
-import MediaPreview from './MediaPreview';
+import MediaField from './MediaField';
 import { t } from '../lib/i18n';
 
 export type ContentSeoValue = {
@@ -93,14 +93,17 @@ export default function SeoFields({ value, imageFile, onChange, onImageFile }: P
           autoComplete="off"
         />
       </label>
-      <label>
-        {t('admin.seo.field.image')}
-        <input
-          type="file"
-          accept="image/jpeg,image/png,image/gif,image/webp"
-          onChange={(event) => onImageFile(event.target.files?.[0] || null)}
-        />
-      </label>
+      <MediaField
+        label={t('admin.seo.field.image')}
+        alt={value.image_alt || value.title || t('admin.seo.field.image')}
+        storedKey={value.image_key}
+        file={imageFile}
+        onFile={onImageFile}
+        onClear={() => {
+          onImageFile(null);
+          patch({ image_key: null });
+        }}
+      />
       <label>
         {t('admin.seo.field.image_alt')}
         <input
@@ -110,11 +113,6 @@ export default function SeoFields({ value, imageFile, onChange, onImageFile }: P
           autoComplete="off"
         />
       </label>
-      <MediaPreview
-        mediaKeys={imageFile ? [] : value.image_key ? [value.image_key] : []}
-        files={imageFile ? [imageFile] : []}
-        alt={value.image_alt || value.title || t('admin.seo.field.image')}
-      />
     </fieldset>
   );
 }

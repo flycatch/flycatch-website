@@ -9,7 +9,8 @@ import {
   type SolutionDetailWrite,
 } from '../lib/admin-api';
 import { hydrateRichText, persistRichText } from '../lib/rich-text';
-import MediaPreview from './MediaPreview';
+import FormPageHeader from './FormPageHeader';
+import MediaField from './MediaField';
 import RepeatableSection from './RepeatableSection';
 import RichTextEditor from './RichTextEditor';
 import SeoFields, { emptySeo, seoValue, type ContentSeoValue } from './SeoFields';
@@ -364,24 +365,21 @@ export default function SolutionDetailForm({ detailId, canPublish, onCancel, onS
                 setTypes(types.map((row) => (row.key === item.key ? { ...row, description: value } : row)))
               }
             />
-            <label>
-              {t('admin.solution_details.field.image')}
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/gif,image/webp"
-                onChange={(event) =>
-                  setTypes(
-                    types.map((row) =>
-                      row.key === item.key ? { ...row, imageFile: event.target.files?.[0] || null } : row,
-                    ),
-                  )
-                }
-              />
-            </label>
-            <MediaPreview
-              mediaKeys={item.imageFile ? [] : item.image_key ? [item.image_key] : []}
-              files={item.imageFile ? [item.imageFile] : []}
+            <MediaField
+              label={t('admin.solution_details.field.image')}
               alt={item.title}
+              storedKey={item.image_key}
+              file={item.imageFile}
+              onFile={(file) =>
+                setTypes(types.map((row) => (row.key === item.key ? { ...row, imageFile: file } : row)))
+              }
+              onClear={() =>
+                setTypes(
+                  types.map((row) =>
+                    row.key === item.key ? { ...row, imageFile: null, image_key: null } : row,
+                  ),
+                )
+              }
             />
           </>
         )}
@@ -402,9 +400,11 @@ export default function SolutionDetailForm({ detailId, canPublish, onCancel, onS
 
   return (
     <section className="role-form-page">
-      <div className="panel-header">
-        <h2>{detailId ? t('admin.solution_details.edit') : t('admin.solution_details.add')}</h2>
-      </div>
+      <FormPageHeader
+        title={detailId ? t('admin.solution_details.edit') : t('admin.solution_details.add')}
+        onBack={onCancel}
+        disabled={saving}
+      />
       <form
         onSubmit={(event: FormEvent) => {
           event.preventDefault();
@@ -438,18 +438,16 @@ export default function SolutionDetailForm({ detailId, canPublish, onCancel, onS
         </label>
         <fieldset>
           <legend>{t('admin.solution_details.banner')}</legend>
-          <label>
-            {t('admin.solution_details.field.image')}
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/gif,image/webp"
-              onChange={(event) => setBannerFile(event.target.files?.[0] || null)}
-            />
-          </label>
-          <MediaPreview
-            mediaKeys={bannerFile ? [] : bannerKey ? [bannerKey] : []}
-            files={bannerFile ? [bannerFile] : []}
+          <MediaField
+            label={t('admin.solution_details.field.image')}
             alt={bannerTitle}
+            storedKey={bannerKey}
+            file={bannerFile}
+            onFile={setBannerFile}
+            onClear={() => {
+              setBannerFile(null);
+              setBannerKey(null);
+            }}
           />
           <label>
             {t('admin.solution_details.field.title')}
@@ -494,24 +492,23 @@ export default function SolutionDetailForm({ detailId, canPublish, onCancel, onS
             <p>{t('admin.solution_details.icons')}</p>
             {introIcons.map((item, index) => (
               <div key={item.key}>
-                <label>
-                  {t('admin.solution_details.icon')} {index + 1}
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/gif,image/webp"
-                    onChange={(event) =>
-                      setIntroIcons((current) =>
-                        current.map((row) =>
-                          row.key === item.key ? { ...row, iconFile: event.target.files?.[0] || null } : row,
-                        ),
-                      )
-                    }
-                  />
-                </label>
-                <MediaPreview
-                  mediaKeys={item.iconFile ? [] : item.icon_key ? [item.icon_key] : []}
-                  files={item.iconFile ? [item.iconFile] : []}
+                <MediaField
+                  label={`${t('admin.solution_details.icon')} ${index + 1}`}
                   alt={t('admin.solution_details.icon')}
+                  storedKey={item.icon_key}
+                  file={item.iconFile}
+                  onFile={(file) =>
+                    setIntroIcons((current) =>
+                      current.map((row) => (row.key === item.key ? { ...row, iconFile: file } : row)),
+                    )
+                  }
+                  onClear={() =>
+                    setIntroIcons((current) =>
+                      current.map((row) =>
+                        row.key === item.key ? { ...row, iconFile: null, icon_key: null } : row,
+                      ),
+                    )
+                  }
                 />
                 {introIcons.length > 1 ? (
                   <button
@@ -538,18 +535,16 @@ export default function SolutionDetailForm({ detailId, canPublish, onCancel, onS
             value={introSubDescription}
             onChange={setIntroSubDescription}
           />
-          <label>
-            {t('admin.solution_details.field.image')}
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/gif,image/webp"
-              onChange={(event) => setIntroImageFile(event.target.files?.[0] || null)}
-            />
-          </label>
-          <MediaPreview
-            mediaKeys={introImageFile ? [] : introImageKey ? [introImageKey] : []}
-            files={introImageFile ? [introImageFile] : []}
+          <MediaField
+            label={t('admin.solution_details.field.image')}
             alt={introSubTitle}
+            storedKey={introImageKey}
+            file={introImageFile}
+            onFile={setIntroImageFile}
+            onClear={() => {
+              setIntroImageFile(null);
+              setIntroImageKey(null);
+            }}
           />
         </fieldset>
         <fieldset>
@@ -577,18 +572,16 @@ export default function SolutionDetailForm({ detailId, canPublish, onCancel, onS
             value={challengesDescription}
             onChange={setChallengesDescription}
           />
-          <label>
-            {t('admin.solution_details.field.image')}
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/gif,image/webp"
-              onChange={(event) => setChallengesImageFile(event.target.files?.[0] || null)}
-            />
-          </label>
-          <MediaPreview
-            mediaKeys={challengesImageFile ? [] : challengesImageKey ? [challengesImageKey] : []}
-            files={challengesImageFile ? [challengesImageFile] : []}
+          <MediaField
+            label={t('admin.solution_details.field.image')}
             alt={challengesName}
+            storedKey={challengesImageKey}
+            file={challengesImageFile}
+            onFile={setChallengesImageFile}
+            onClear={() => {
+              setChallengesImageFile(null);
+              setChallengesImageKey(null);
+            }}
           />
           <label>
             {t('admin.solution_details.name')}
@@ -637,18 +630,16 @@ export default function SolutionDetailForm({ detailId, canPublish, onCancel, onS
             {t('admin.solution_details.solution_title')}
             <input value={solutionsTitle} onChange={(event) => setSolutionsTitle(event.target.value)} maxLength={200} />
           </label>
-          <label>
-            {t('admin.solution_details.solution_image')}
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/gif,image/webp"
-              onChange={(event) => setSolutionsImageFile(event.target.files?.[0] || null)}
-            />
-          </label>
-          <MediaPreview
-            mediaKeys={solutionsImageFile ? [] : solutionsImageKey ? [solutionsImageKey] : []}
-            files={solutionsImageFile ? [solutionsImageFile] : []}
+          <MediaField
+            label={t('admin.solution_details.solution_image')}
             alt={solutionsTitle}
+            storedKey={solutionsImageKey}
+            file={solutionsImageFile}
+            onFile={setSolutionsImageFile}
+            onClear={() => {
+              setSolutionsImageFile(null);
+              setSolutionsImageKey(null);
+            }}
           />
           <label>
             {t('admin.solution_details.solution_description')}

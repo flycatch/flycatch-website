@@ -8,7 +8,8 @@ import {
   type ClientLogoWrite,
 } from '../lib/admin-api';
 import { t } from '../lib/i18n';
-import MediaPreview from './MediaPreview';
+import FormPageHeader from './FormPageHeader';
+import MediaField from './MediaField';
 
 interface Props {
   logoId: string | null;
@@ -106,35 +107,33 @@ export default function ClientLogoForm({ logoId, onCancel, onSaved }: Props) {
 
   return (
     <section className="role-form-page">
-      <div className="panel-header">
-        <h2>{logoId ? t('admin.client_logos.edit') : t('admin.client_logos.add')}</h2>
-      </div>
+      <FormPageHeader
+        title={logoId ? t('admin.client_logos.edit') : t('admin.client_logos.add')}
+        onBack={onCancel}
+        disabled={saving}
+      />
       <form onSubmit={save}>
-        <label>
-          {t('admin.client_logos.colour_logo')}
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            onChange={(event) => setColourFile(event.target.files?.[0] || null)}
-          />
-        </label>
-        <MediaPreview
-          mediaKeys={colourFile ? [] : colourKey ? [colourKey] : []}
-          files={colourFile ? [colourFile] : []}
+        <MediaField
+          label={t('admin.client_logos.colour_logo')}
           alt={altText || t('admin.client_logos.colour_logo')}
+          storedKey={colourKey}
+          file={colourFile}
+          onFile={setColourFile}
+          onClear={() => {
+            setColourFile(null);
+            setColourKey(null);
+          }}
         />
-        <label>
-          {t('admin.client_logos.white_logo')}
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            onChange={(event) => setWhiteFile(event.target.files?.[0] || null)}
-          />
-        </label>
-        <MediaPreview
-          mediaKeys={whiteFile ? [] : whiteKey ? [whiteKey] : []}
-          files={whiteFile ? [whiteFile] : []}
+        <MediaField
+          label={t('admin.client_logos.white_logo')}
           alt={altText || t('admin.client_logos.white_logo')}
+          storedKey={whiteKey}
+          file={whiteFile}
+          onFile={setWhiteFile}
+          onClear={() => {
+            setWhiteFile(null);
+            setWhiteKey(null);
+          }}
         />
         <label>
           {t('admin.client_logos.alt_text')}

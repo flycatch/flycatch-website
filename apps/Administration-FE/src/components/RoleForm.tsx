@@ -9,6 +9,7 @@ import {
   type RoleWrite,
 } from '../lib/admin-api';
 import { resourceLabel, t } from '../lib/i18n';
+import FormPageHeader from './FormPageHeader';
 
 interface Props {
   roleId: string | null;
@@ -118,9 +119,11 @@ export default function RoleForm({ roleId, onCancel, onSaved }: Props) {
 
   return (
     <section className="role-form-page">
-      <div className="panel-header">
-        <h2>{roleId ? t('admin.roles.edit') : t('admin.roles.add')}</h2>
-      </div>
+      <FormPageHeader
+        title={roleId ? t('admin.roles.edit') : t('admin.roles.add')}
+        onBack={onCancel}
+        disabled={saving}
+      />
       <form onSubmit={save}>
         <label>
           {t('admin.roles.name')}

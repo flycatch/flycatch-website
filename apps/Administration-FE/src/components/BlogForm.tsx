@@ -14,7 +14,8 @@ import {
 } from '../lib/admin-api';
 import { hydrateRichText, persistRichText } from '../lib/rich-text';
 import MultiSelect from './MultiSelect';
-import MediaPreview from './MediaPreview';
+import FormPageHeader from './FormPageHeader';
+import MediaField from './MediaField';
 import RichTextEditor from './RichTextEditor';
 import { adminListHref } from '../lib/admin-routes';
 import { t } from '../lib/i18n';
@@ -150,9 +151,11 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
 
   return (
     <section className="role-form-page">
-      <div className="panel-header">
-        <h2>{blogId ? t('admin.blogs.edit') : t('admin.blogs.add')}</h2>
-      </div>
+      <FormPageHeader
+        title={blogId ? t('admin.blogs.edit') : t('admin.blogs.add')}
+        onBack={onCancel}
+        disabled={saving}
+      />
       <form onSubmit={save}>
         <label>
           {t('admin.blogs.field.title')}
@@ -201,18 +204,16 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
             onChange={(event) => setReadingTime(Number(event.target.value))}
           />
         </label>
-        <label>
-          {t('admin.blogs.field.image')}
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            onChange={(event) => setImageFile(event.target.files?.[0] || null)}
-          />
-        </label>
-        <MediaPreview
-          mediaKeys={imageFile ? [] : imageKey ? [imageKey] : []}
-          files={imageFile ? [imageFile] : []}
+        <MediaField
+          label={t('admin.blogs.field.image')}
           alt={imageAlt || t('admin.blogs.field.image')}
+          storedKey={imageKey}
+          file={imageFile}
+          onFile={setImageFile}
+          onClear={() => {
+            setImageFile(null);
+            setImageKey(null);
+          }}
         />
         <label>
           {t('admin.blogs.field.image_alt')}

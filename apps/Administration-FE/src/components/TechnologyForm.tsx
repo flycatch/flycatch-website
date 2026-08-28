@@ -8,7 +8,8 @@ import {
   type TechnologyWrite,
 } from '../lib/admin-api';
 import { t } from '../lib/i18n';
-import MediaPreview from './MediaPreview';
+import FormPageHeader from './FormPageHeader';
+import MediaField from './MediaField';
 
 interface Props {
   technologyId: string | null;
@@ -96,9 +97,11 @@ export default function TechnologyForm({ technologyId, onCancel, onSaved }: Prop
 
   return (
     <section className="role-form-page">
-      <div className="panel-header">
-        <h2>{technologyId ? t('admin.technologies.edit') : t('admin.technologies.add')}</h2>
-      </div>
+      <FormPageHeader
+        title={technologyId ? t('admin.technologies.edit') : t('admin.technologies.add')}
+        onBack={onCancel}
+        disabled={saving}
+      />
       <form onSubmit={save}>
         <label>
           {t('admin.technologies.name')}
@@ -111,18 +114,16 @@ export default function TechnologyForm({ technologyId, onCancel, onSaved }: Prop
             aria-invalid={Boolean(fieldError)}
           />
         </label>
-        <label>
-          {t('admin.technologies.logo')}
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            onChange={(event) => setLogoFile(event.target.files?.[0] || null)}
-          />
-        </label>
-        <MediaPreview
-          mediaKeys={logoFile ? [] : logoKey ? [logoKey] : []}
-          files={logoFile ? [logoFile] : []}
+        <MediaField
+          label={t('admin.technologies.logo')}
           alt={name || t('admin.technologies.logo')}
+          storedKey={logoKey}
+          file={logoFile}
+          onFile={setLogoFile}
+          onClear={() => {
+            setLogoFile(null);
+            setLogoKey(null);
+          }}
         />
         {fieldError && (
           <p className="alert alert-error error" role="alert">

@@ -11,7 +11,8 @@ import {
 import { adminListHref } from '../lib/admin-routes';
 import { hydrateRichText, persistRichText } from '../lib/rich-text';
 import { t } from '../lib/i18n';
-import MediaPreview from './MediaPreview';
+import FormPageHeader from './FormPageHeader';
+import MediaField from './MediaField';
 import MultiSelect from './MultiSelect';
 import RepeatableSection from './RepeatableSection';
 import RichTextEditor from './RichTextEditor';
@@ -220,9 +221,11 @@ export default function AiServiceForm({ entryId, canPublish, onCancel, onSaved }
 
   return (
     <section className="role-form-page">
-      <div className="panel-header">
-        <h2>{entryId ? t('admin.ai_services.edit') : t('admin.ai_services.add')}</h2>
-      </div>
+      <FormPageHeader
+        title={entryId ? t('admin.ai_services.edit') : t('admin.ai_services.add')}
+        onBack={onCancel}
+        disabled={saving}
+      />
       <form
         onSubmit={(event: FormEvent) => {
           event.preventDefault();
@@ -238,18 +241,16 @@ export default function AiServiceForm({ entryId, canPublish, onCancel, onSaved }
             autoComplete="off"
           />
         </label>
-        <label>
-          {t('admin.ai_services.banner_image')}
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            onChange={(event) => setBannerFile(event.target.files?.[0] || null)}
-          />
-        </label>
-        <MediaPreview
-          mediaKeys={bannerFile ? [] : bannerKey ? [bannerKey] : []}
-          files={bannerFile ? [bannerFile] : []}
+        <MediaField
+          label={t('admin.ai_services.banner_image')}
           alt={bannerTitle || t('admin.ai_services.banner_image')}
+          storedKey={bannerKey}
+          file={bannerFile}
+          onFile={setBannerFile}
+          onClear={() => {
+            setBannerFile(null);
+            setBannerKey(null);
+          }}
         />
         <label>
           {t('admin.ai_services.introduction_title')}
@@ -329,26 +330,25 @@ export default function AiServiceForm({ entryId, canPublish, onCancel, onSaved }
                   maxLength={200}
                 />
               </label>
-              <label>
-                {t('admin.ai_services.industry_image')}
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/gif,image/webp"
-                  onChange={(event) =>
-                    setIndustryItems((rows) =>
-                      rows.map((row, rowIndex) =>
-                        rowIndex === index
-                          ? { ...row, imageFile: event.target.files?.[0] || null }
-                          : row,
-                      ),
-                    )
-                  }
-                />
-              </label>
-              <MediaPreview
-                mediaKeys={item.imageFile ? [] : item.image_key ? [item.image_key] : []}
-                files={item.imageFile ? [item.imageFile] : []}
+              <MediaField
+                label={t('admin.ai_services.industry_image')}
                 alt={item.title || t('admin.ai_services.industry_image')}
+                storedKey={item.image_key}
+                file={item.imageFile}
+                onFile={(file) =>
+                  setIndustryItems((rows) =>
+                    rows.map((row, rowIndex) =>
+                      rowIndex === index ? { ...row, imageFile: file } : row,
+                    ),
+                  )
+                }
+                onClear={() =>
+                  setIndustryItems((rows) =>
+                    rows.map((row, rowIndex) =>
+                      rowIndex === index ? { ...row, imageFile: null, image_key: null } : row,
+                    ),
+                  )
+                }
               />
             </>
           )}
@@ -362,18 +362,16 @@ export default function AiServiceForm({ entryId, canPublish, onCancel, onSaved }
             autoComplete="off"
           />
         </label>
-        <label>
-          {t('admin.ai_services.ai_expertise_image')}
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            onChange={(event) => setExpertiseFile(event.target.files?.[0] || null)}
-          />
-        </label>
-        <MediaPreview
-          mediaKeys={expertiseFile ? [] : expertiseKey ? [expertiseKey] : []}
-          files={expertiseFile ? [expertiseFile] : []}
+        <MediaField
+          label={t('admin.ai_services.ai_expertise_image')}
           alt={expertiseTitle || t('admin.ai_services.ai_expertise_image')}
+          storedKey={expertiseKey}
+          file={expertiseFile}
+          onFile={setExpertiseFile}
+          onClear={() => {
+            setExpertiseFile(null);
+            setExpertiseKey(null);
+          }}
         />
         <RepeatableSection
           title={t('admin.ai_services.ai_expertise_accordion')}
