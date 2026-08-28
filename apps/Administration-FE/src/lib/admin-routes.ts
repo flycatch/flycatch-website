@@ -8,6 +8,14 @@ export type AdminView =
   | 'solution_detail_form'
   | 'solution_products'
   | 'solution_product_form'
+  | 'ai_services'
+  | 'ai_service_form'
+  | 'cloud_services'
+  | 'cloud_service_form'
+  | 'data_analytics'
+  | 'data_analytics_form'
+  | 'digital_transformation'
+  | 'digital_transformation_form'
   | 'blogs'
   | 'blog_form'
   | 'case_studies'
@@ -46,6 +54,10 @@ const SECTIONS: SectionConfig[] = [
   { segment: 'solutions', list: 'solutions', form: 'solution_form' },
   { segment: 'solution-details', list: 'solution_details', form: 'solution_detail_form' },
   { segment: 'solution-products', list: 'solution_products', form: 'solution_product_form' },
+  { segment: 'ai-services', list: 'ai_services', form: 'ai_service_form' },
+  { segment: 'cloud-services', list: 'cloud_services', form: 'cloud_service_form' },
+  { segment: 'data-analytics', list: 'data_analytics', form: 'data_analytics_form' },
+  { segment: 'digital-transformation', list: 'digital_transformation', form: 'digital_transformation_form' },
   { segment: 'blogs', list: 'blogs', form: 'blog_form' },
   { segment: 'case-studies', list: 'case_studies', form: 'case_study_form' },
   { segment: 'industries', list: 'industries', form: 'industry_form' },
@@ -65,6 +77,10 @@ const LIST_HREF: Record<string, string> = {
   solutions: '/admin/solutions/',
   solution_details: '/admin/solution-details/',
   solution_products: '/admin/solution-products/',
+  ai_services: '/admin/ai-services/',
+  cloud_services: '/admin/cloud-services/',
+  data_analytics: '/admin/data-analytics/',
+  digital_transformation: '/admin/digital-transformation/',
   blogs: '/admin/blogs/',
   case_studies: '/admin/case-studies/',
   industries: '/admin/industries/',

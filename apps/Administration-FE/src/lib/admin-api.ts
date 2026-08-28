@@ -9,6 +9,10 @@ import type { components as HomesComponents } from '../generated/admin-homes.v1'
 import type { components as SolutionsComponents } from '../generated/admin-solutions.v1';
 import type { components as SolutionDetailsComponents } from '../generated/admin-solution-details.v1';
 import type { components as SolutionProductsComponents } from '../generated/admin-solution-products.v1';
+import type { components as AiServicesComponents } from '../generated/admin-ai-services.v1';
+import type { components as CloudServicesComponents } from '../generated/admin-cloud-services.v1';
+import type { components as DataAnalyticsComponents } from '../generated/admin-data-analytics.v1';
+import type { components as DigitalTransformationComponents } from '../generated/admin-digital-transformation.v1';
 import {
   clearTokens,
   getAccessToken,
@@ -72,6 +76,18 @@ export type SolutionDetailWrite = SolutionDetailsComponents['schemas']['Solution
 export type SolutionProduct = SolutionProductsComponents['schemas']['SolutionProduct'];
 export type SolutionProductList = SolutionProductsComponents['schemas']['SolutionProductList'];
 export type SolutionProductWrite = SolutionProductsComponents['schemas']['SolutionProductWrite'];
+export type AiService = AiServicesComponents['schemas']['AiService'];
+export type AiServiceList = AiServicesComponents['schemas']['AiServiceList'];
+export type AiServiceWrite = AiServicesComponents['schemas']['AiServiceWrite'];
+export type CloudService = CloudServicesComponents['schemas']['CloudService'];
+export type CloudServiceList = CloudServicesComponents['schemas']['CloudServiceList'];
+export type CloudServiceWrite = CloudServicesComponents['schemas']['CloudServiceWrite'];
+export type DataAnalytic = DataAnalyticsComponents['schemas']['DataAnalytic'];
+export type DataAnalyticList = DataAnalyticsComponents['schemas']['DataAnalyticList'];
+export type DataAnalyticWrite = DataAnalyticsComponents['schemas']['DataAnalyticWrite'];
+export type DigitalTransformation = DigitalTransformationComponents['schemas']['DigitalTransformation'];
+export type DigitalTransformationList = DigitalTransformationComponents['schemas']['DigitalTransformationList'];
+export type DigitalTransformationWrite = DigitalTransformationComponents['schemas']['DigitalTransformationWrite'];
 
 export class AdminApiError extends Error {
   status: number;
@@ -688,6 +704,114 @@ export async function updateSolutionProduct(
 
 export async function deleteSolutionProduct(id: string): Promise<void> {
   await api<void>(`/admin/solution-products/${id}`, { method: 'DELETE' });
+}
+
+export async function listAiServices(q: string, page: number): Promise<AiServiceList> {
+  return api<AiServiceList>(
+    `/admin/ai-services${queryString({ q: q.trim() || undefined, page, per_page: 10 })}`,
+  );
+}
+
+export async function getAiService(id: string): Promise<AiService> {
+  return api<AiService>(`/admin/ai-services/${id}`);
+}
+
+export async function createAiService(payload: AiServiceWrite): Promise<AiService> {
+  return api<AiService>('/admin/ai-services', { method: 'POST', body: JSON.stringify(payload) });
+}
+
+export async function updateAiService(id: string, payload: AiServiceWrite): Promise<AiService> {
+  return api<AiService>(`/admin/ai-services/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
+}
+
+export async function deleteAiService(id: string): Promise<void> {
+  await api<void>(`/admin/ai-services/${id}`, { method: 'DELETE' });
+}
+
+export async function listCloudServices(q: string, page: number): Promise<CloudServiceList> {
+  return api<CloudServiceList>(
+    `/admin/cloud-services${queryString({ q: q.trim() || undefined, page, per_page: 10 })}`,
+  );
+}
+
+export async function getCloudService(id: string): Promise<CloudService> {
+  return api<CloudService>(`/admin/cloud-services/${id}`);
+}
+
+export async function createCloudService(payload: CloudServiceWrite): Promise<CloudService> {
+  return api<CloudService>('/admin/cloud-services', { method: 'POST', body: JSON.stringify(payload) });
+}
+
+export async function updateCloudService(id: string, payload: CloudServiceWrite): Promise<CloudService> {
+  return api<CloudService>(`/admin/cloud-services/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteCloudService(id: string): Promise<void> {
+  await api<void>(`/admin/cloud-services/${id}`, { method: 'DELETE' });
+}
+
+export async function listDataAnalytics(q: string, page: number): Promise<DataAnalyticList> {
+  return api<DataAnalyticList>(
+    `/admin/data-analytics${queryString({ q: q.trim() || undefined, page, per_page: 10 })}`,
+  );
+}
+
+export async function getDataAnalytic(id: string): Promise<DataAnalytic> {
+  return api<DataAnalytic>(`/admin/data-analytics/${id}`);
+}
+
+export async function createDataAnalytic(payload: DataAnalyticWrite): Promise<DataAnalytic> {
+  return api<DataAnalytic>('/admin/data-analytics', { method: 'POST', body: JSON.stringify(payload) });
+}
+
+export async function updateDataAnalytic(id: string, payload: DataAnalyticWrite): Promise<DataAnalytic> {
+  return api<DataAnalytic>(`/admin/data-analytics/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteDataAnalytic(id: string): Promise<void> {
+  await api<void>(`/admin/data-analytics/${id}`, { method: 'DELETE' });
+}
+
+export async function listDigitalTransformations(
+  q: string,
+  page: number,
+): Promise<DigitalTransformationList> {
+  return api<DigitalTransformationList>(
+    `/admin/digital-transformation${queryString({ q: q.trim() || undefined, page, per_page: 10 })}`,
+  );
+}
+
+export async function getDigitalTransformation(id: string): Promise<DigitalTransformation> {
+  return api<DigitalTransformation>(`/admin/digital-transformation/${id}`);
+}
+
+export async function createDigitalTransformation(
+  payload: DigitalTransformationWrite,
+): Promise<DigitalTransformation> {
+  return api<DigitalTransformation>('/admin/digital-transformation', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateDigitalTransformation(
+  id: string,
+  payload: DigitalTransformationWrite,
+): Promise<DigitalTransformation> {
+  return api<DigitalTransformation>(`/admin/digital-transformation/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteDigitalTransformation(id: string): Promise<void> {
+  await api<void>(`/admin/digital-transformation/${id}`, { method: 'DELETE' });
 }
 
 export function apiErrorMessage(caught: unknown, fallback = 'admin.workspace.request_failed'): string {

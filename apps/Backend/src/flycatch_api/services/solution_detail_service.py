@@ -325,6 +325,7 @@ class SolutionDetailService:
             items=[
                 SolutionDetailSummary(
                     id=row.id,
+                    title=row.title,
                     banner_title=(row.banner or {}).get("title", "") or "",
                     introduction_title=_first_title((row.introduction or {}).get("items")),
                     challenges_title=_first_title((row.challenges or {}).get("items")),

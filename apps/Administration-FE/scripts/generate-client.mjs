@@ -23,6 +23,13 @@ const solutionProductsContractsDir = join(
   repoRoot,
   'specs/011-admin-solution-products/contracts',
 );
+const aiServicesContractsDir = join(repoRoot, 'specs/012-admin-ai-services/contracts');
+const cloudServicesContractsDir = join(repoRoot, 'specs/013-admin-cloud-services/contracts');
+const dataAnalyticsContractsDir = join(repoRoot, 'specs/014-admin-data-analytics/contracts');
+const digitalTransformationContractsDir = join(
+  repoRoot,
+  'specs/015-admin-digital-transformation/contracts',
+);
 
 const contractSets = [
   {
@@ -66,6 +73,22 @@ const contractSets = [
   {
     dir: solutionProductsContractsDir,
     files: ['admin-solution-products.v1.yaml'],
+  },
+  {
+    dir: aiServicesContractsDir,
+    files: ['admin-ai-services.v1.yaml'],
+  },
+  {
+    dir: cloudServicesContractsDir,
+    files: ['admin-cloud-services.v1.yaml'],
+  },
+  {
+    dir: dataAnalyticsContractsDir,
+    files: ['admin-data-analytics.v1.yaml'],
+  },
+  {
+    dir: digitalTransformationContractsDir,
+    files: ['admin-digital-transformation.v1.yaml'],
   },
 ];
 

@@ -19,6 +19,10 @@ const required = [
   'admin-solutions.v1.ts',
   'admin-solution-details.v1.ts',
   'admin-solution-products.v1.ts',
+  'admin-ai-services.v1.ts',
+  'admin-cloud-services.v1.ts',
+  'admin-data-analytics.v1.ts',
+  'admin-digital-transformation.v1.ts',
 ];
 
 let failed = false;
