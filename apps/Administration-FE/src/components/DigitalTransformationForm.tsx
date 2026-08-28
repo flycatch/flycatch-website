@@ -9,7 +9,8 @@ import {
 } from '../lib/admin-api';
 import { hydrateRichText, persistRichText } from '../lib/rich-text';
 import { t } from '../lib/i18n';
-import MediaPreview from './MediaPreview';
+import FormPageHeader from './FormPageHeader';
+import MediaField from './MediaField';
 import RepeatableSection from './RepeatableSection';
 import RichTextEditor from './RichTextEditor';
 import SeoFields, { emptySeo, seoValue, type ContentSeoValue } from './SeoFields';
@@ -164,9 +165,11 @@ export default function DigitalTransformationForm({
 
   return (
     <section className="role-form-page">
-      <div className="panel-header">
-        <h2>{entryId ? t(`${ns}.edit`) : t(`${ns}.add`)}</h2>
-      </div>
+      <FormPageHeader
+        title={entryId ? t(`${ns}.edit`) : t(`${ns}.add`)}
+        onBack={onCancel}
+        disabled={saving}
+      />
       <form
         onSubmit={(event: FormEvent) => {
           event.preventDefault();
@@ -182,18 +185,16 @@ export default function DigitalTransformationForm({
             autoComplete="off"
           />
         </label>
-        <label>
-          {t(`${ns}.banner_image`)}
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            onChange={(event) => setBannerFile(event.target.files?.[0] || null)}
-          />
-        </label>
-        <MediaPreview
-          mediaKeys={bannerFile ? [] : bannerKey ? [bannerKey] : []}
-          files={bannerFile ? [bannerFile] : []}
+        <MediaField
+          label={t(`${ns}.banner_image`)}
           alt={bannerTitle || t(`${ns}.banner_image`)}
+          storedKey={bannerKey}
+          file={bannerFile}
+          onFile={setBannerFile}
+          onClear={() => {
+            setBannerFile(null);
+            setBannerKey(null);
+          }}
         />
         <label>
           {t(`${ns}.banner_tag_line`)}
@@ -269,18 +270,16 @@ export default function DigitalTransformationForm({
             </>
           )}
         </RepeatableSection>
-        <label>
-          {t(`${ns}.outcomes_image`)}
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            onChange={(event) => setOutcomesFile(event.target.files?.[0] || null)}
-          />
-        </label>
-        <MediaPreview
-          mediaKeys={outcomesFile ? [] : outcomesKey ? [outcomesKey] : []}
-          files={outcomesFile ? [outcomesFile] : []}
+        <MediaField
+          label={t(`${ns}.outcomes_image`)}
           alt={outcomesTitle || t(`${ns}.outcomes_image`)}
+          storedKey={outcomesKey}
+          file={outcomesFile}
+          onFile={setOutcomesFile}
+          onClear={() => {
+            setOutcomesFile(null);
+            setOutcomesKey(null);
+          }}
         />
         <label>
           {t(`${ns}.outcomes_title`)}

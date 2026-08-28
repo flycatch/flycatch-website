@@ -30,6 +30,28 @@ const digitalTransformationContractsDir = join(
   repoRoot,
   'specs/015-admin-digital-transformation/contracts',
 );
+const devopsConsultContractsDir = join(repoRoot, 'specs/016-admin-devops-consult/contracts');
+const infrastructureManagementContractsDir = join(
+  repoRoot,
+  'specs/017-admin-infrastructure-management/contracts',
+);
+const applicationDevelopmentContractsDir = join(
+  repoRoot,
+  'specs/018-admin-application-development/contracts',
+);
+const applicationModernizationContractsDir = join(
+  repoRoot,
+  'specs/019-admin-application-modernization/contracts',
+);
+const mobileApplicationDevelopmentContractsDir = join(
+  repoRoot,
+  'specs/020-admin-mobile-application-development/contracts',
+);
+const userCenteredDesignContractsDir = join(
+  repoRoot,
+  'specs/021-admin-user-centered-design/contracts',
+);
+const overviewContractsDir = join(repoRoot, 'specs/022-admin-overview/contracts');
 
 const contractSets = [
   {
@@ -89,6 +111,34 @@ const contractSets = [
   {
     dir: digitalTransformationContractsDir,
     files: ['admin-digital-transformation.v1.yaml'],
+  },
+  {
+    dir: devopsConsultContractsDir,
+    files: ['admin-devops-consult.v1.yaml'],
+  },
+  {
+    dir: infrastructureManagementContractsDir,
+    files: ['admin-infrastructure-management.v1.yaml'],
+  },
+  {
+    dir: applicationDevelopmentContractsDir,
+    files: ['admin-application-development.v1.yaml'],
+  },
+  {
+    dir: applicationModernizationContractsDir,
+    files: ['admin-application-modernization.v1.yaml'],
+  },
+  {
+    dir: mobileApplicationDevelopmentContractsDir,
+    files: ['admin-mobile-application-development.v1.yaml'],
+  },
+  {
+    dir: userCenteredDesignContractsDir,
+    files: ['admin-user-centered-design.v1.yaml'],
+  },
+  {
+    dir: overviewContractsDir,
+    files: ['admin-overview.v1.yaml'],
   },
 ];
 

@@ -26,6 +26,20 @@ CONTRACT_FILES = [
     SPECS / "014-admin-data-analytics" / "contracts" / "public-data-analytics.v1.yaml",
     SPECS / "015-admin-digital-transformation" / "contracts" / "admin-digital-transformation.v1.yaml",
     SPECS / "015-admin-digital-transformation" / "contracts" / "public-digital-transformation.v1.yaml",
+    SPECS / "016-admin-devops-consult" / "contracts" / "admin-devops-consult.v1.yaml",
+    SPECS / "016-admin-devops-consult" / "contracts" / "public-devops-consult.v1.yaml",
+    SPECS / "017-admin-infrastructure-management" / "contracts" / "admin-infrastructure-management.v1.yaml",
+    SPECS / "017-admin-infrastructure-management" / "contracts" / "public-infrastructure-management.v1.yaml",
+    SPECS / "018-admin-application-development" / "contracts" / "admin-application-development.v1.yaml",
+    SPECS / "018-admin-application-development" / "contracts" / "public-application-development.v1.yaml",
+    SPECS / "019-admin-application-modernization" / "contracts" / "admin-application-modernization.v1.yaml",
+    SPECS / "019-admin-application-modernization" / "contracts" / "public-application-modernization.v1.yaml",
+    SPECS / "020-admin-mobile-application-development" / "contracts" / "admin-mobile-application-development.v1.yaml",
+    SPECS / "020-admin-mobile-application-development" / "contracts" / "public-mobile-application-development.v1.yaml",
+    SPECS / "021-admin-user-centered-design" / "contracts" / "admin-user-centered-design.v1.yaml",
+    SPECS / "021-admin-user-centered-design" / "contracts" / "public-user-centered-design.v1.yaml",
+    SPECS / "022-admin-overview" / "contracts" / "admin-overview.v1.yaml",
+    SPECS / "022-admin-overview" / "contracts" / "public-overview.v1.yaml",
 ]
 
 
