@@ -7,6 +7,7 @@ import {
   type CaseStudyCategoryWrite,
 } from '../lib/admin-api';
 import { t } from '../lib/i18n';
+import FormPageHeader from './FormPageHeader';
 
 interface Props {
   categoryId: string | null;
@@ -81,13 +82,13 @@ export default function CaseStudyCategoryForm({ categoryId, onCancel, onSaved }:
 
   return (
     <section className="role-form-page">
-      <div className="panel-header">
-        <h2>
-          {categoryId
-            ? t('admin.case_study_categories.edit')
-            : t('admin.case_study_categories.add')}
-        </h2>
-      </div>
+      <FormPageHeader
+        title={
+          categoryId ? t('admin.case_study_categories.edit') : t('admin.case_study_categories.add')
+        }
+        onBack={onCancel}
+        disabled={saving}
+      />
       <form onSubmit={save}>
         <label>
           {t('admin.case_study_categories.name')}

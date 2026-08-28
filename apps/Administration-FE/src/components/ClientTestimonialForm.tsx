@@ -8,7 +8,8 @@ import {
   type ClientTestimonialWrite,
 } from '../lib/admin-api';
 import { t } from '../lib/i18n';
-import MediaPreview from './MediaPreview';
+import FormPageHeader from './FormPageHeader';
+import MediaField from './MediaField';
 
 interface Props {
   testimonialId: string | null;
@@ -136,13 +137,15 @@ export default function ClientTestimonialForm({ testimonialId, onCancel, onSaved
 
   return (
     <section className="role-form-page">
-      <div className="panel-header">
-        <h2>
-          {testimonialId
+      <FormPageHeader
+        title={
+          testimonialId
             ? t('admin.client_testimonials.edit')
-            : t('admin.client_testimonials.add')}
-        </h2>
-      </div>
+            : t('admin.client_testimonials.add')
+        }
+        onBack={onCancel}
+        disabled={saving}
+      />
       <form onSubmit={save}>
         <label>
           {t('admin.client_testimonials.client_name')}
@@ -200,18 +203,16 @@ export default function ClientTestimonialForm({ testimonialId, onCancel, onSaved
             autoComplete="off"
           />
         </label>
-        <label>
-          {t('admin.client_testimonials.image')}
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            onChange={(event) => setImageFile(event.target.files?.[0] || null)}
-          />
-        </label>
-        <MediaPreview
-          mediaKeys={imageFile ? [] : imageKey ? [imageKey] : []}
-          files={imageFile ? [imageFile] : []}
+        <MediaField
+          label={t('admin.client_testimonials.image')}
           alt={altText || clientName || t('admin.client_testimonials.image')}
+          storedKey={imageKey}
+          file={imageFile}
+          onFile={setImageFile}
+          onClear={() => {
+            setImageFile(null);
+            setImageKey(null);
+          }}
         />
         <label>
           {t('admin.client_testimonials.alt_text')}

@@ -8,7 +8,8 @@ import {
   uploadMedia,
   type SolutionProductWrite,
 } from '../lib/admin-api';
-import MediaPreview from './MediaPreview';
+import FormPageHeader from './FormPageHeader';
+import MediaField from './MediaField';
 import { t } from '../lib/i18n';
 
 interface Props {
@@ -111,9 +112,11 @@ export default function SolutionProductForm({ productId, canPublish, onCancel, o
 
   return (
     <section className="role-form-page">
-      <div className="panel-header">
-        <h2>{productId ? t('admin.solution_products.edit') : t('admin.solution_products.add')}</h2>
-      </div>
+      <FormPageHeader
+        title={productId ? t('admin.solution_products.edit') : t('admin.solution_products.add')}
+        onBack={onCancel}
+        disabled={saving}
+      />
       <form
         onSubmit={(event: FormEvent) => {
           event.preventDefault();
@@ -145,44 +148,38 @@ export default function SolutionProductForm({ productId, canPublish, onCancel, o
           {t('admin.solution_products.product_tag')}
           <input value={productTag} onChange={(event) => setProductTag(event.target.value)} maxLength={120} />
         </label>
-        <label>
-          {t('admin.solution_products.product_logo')}
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            onChange={(event) => setLogoFile(event.target.files?.[0] || null)}
-          />
-        </label>
-        <MediaPreview
-          mediaKeys={logoFile ? [] : logoKey ? [logoKey] : []}
-          files={logoFile ? [logoFile] : []}
+        <MediaField
+          label={t('admin.solution_products.product_logo')}
           alt={t('admin.solution_products.product_logo')}
+          storedKey={logoKey}
+          file={logoFile}
+          onFile={setLogoFile}
+          onClear={() => {
+            setLogoFile(null);
+            setLogoKey(null);
+          }}
         />
-        <label>
-          {t('admin.solution_products.product_card_image')}
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            onChange={(event) => setCardFile(event.target.files?.[0] || null)}
-          />
-        </label>
-        <MediaPreview
-          mediaKeys={cardFile ? [] : cardKey ? [cardKey] : []}
-          files={cardFile ? [cardFile] : []}
+        <MediaField
+          label={t('admin.solution_products.product_card_image')}
           alt={t('admin.solution_products.product_card_image')}
+          storedKey={cardKey}
+          file={cardFile}
+          onFile={setCardFile}
+          onClear={() => {
+            setCardFile(null);
+            setCardKey(null);
+          }}
         />
-        <label>
-          {t('admin.solution_products.product_banner_image')}
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            onChange={(event) => setBannerFile(event.target.files?.[0] || null)}
-          />
-        </label>
-        <MediaPreview
-          mediaKeys={bannerFile ? [] : bannerKey ? [bannerKey] : []}
-          files={bannerFile ? [bannerFile] : []}
+        <MediaField
+          label={t('admin.solution_products.product_banner_image')}
           alt={t('admin.solution_products.product_banner_image')}
+          storedKey={bannerKey}
+          file={bannerFile}
+          onFile={setBannerFile}
+          onClear={() => {
+            setBannerFile(null);
+            setBannerKey(null);
+          }}
         />
         <label className="checkbox-field">
           <input type="checkbox" checked={cardOnRight} onChange={(event) => setCardOnRight(event.target.checked)} />

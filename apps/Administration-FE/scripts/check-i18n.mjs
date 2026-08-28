@@ -16,6 +16,8 @@ const files = [
   'components/AuthorsList.tsx',
   'components/AuthorForm.tsx',
   'components/MediaPreview.tsx',
+  'components/MediaField.tsx',
+  'components/FormPageHeader.tsx',
   'components/CategoriesList.tsx',
   'components/CategoryForm.tsx',
   'components/ClientLogosList.tsx',
