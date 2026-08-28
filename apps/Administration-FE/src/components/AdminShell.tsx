@@ -47,6 +47,14 @@ import SolutionDetailsList from './SolutionDetailsList';
 import SolutionDetailForm from './SolutionDetailForm';
 import SolutionProductsList from './SolutionProductsList';
 import SolutionProductForm from './SolutionProductForm';
+import AiServicesList from './AiServicesList';
+import AiServiceForm from './AiServiceForm';
+import CloudServicesList from './CloudServicesList';
+import CloudServiceForm from './CloudServiceForm';
+import DataAnalyticsList from './DataAnalyticsList';
+import DataAnalyticsForm from './DataAnalyticsForm';
+import DigitalTransformationList from './DigitalTransformationList';
+import DigitalTransformationForm from './DigitalTransformationForm';
 
 type View = AdminView;
 
@@ -80,6 +88,10 @@ function applyRoute(
     setEditingSolutionId: (id: string | null) => void;
     setEditingSolutionDetailId: (id: string | null) => void;
     setEditingSolutionProductId: (id: string | null) => void;
+    setEditingAiServiceId: (id: string | null) => void;
+    setEditingCloudServiceId: (id: string | null) => void;
+    setEditingDataAnalyticId: (id: string | null) => void;
+    setEditingDigitalTransformationId: (id: string | null) => void;
   },
 ) {
   setters.setView(route.view);
@@ -102,6 +114,12 @@ function applyRoute(
   setters.setEditingSolutionDetailId(route.view === 'solution_detail_form' ? route.editingId : null);
   setters.setEditingSolutionProductId(
     route.view === 'solution_product_form' ? route.editingId : null,
+  );
+  setters.setEditingAiServiceId(route.view === 'ai_service_form' ? route.editingId : null);
+  setters.setEditingCloudServiceId(route.view === 'cloud_service_form' ? route.editingId : null);
+  setters.setEditingDataAnalyticId(route.view === 'data_analytics_form' ? route.editingId : null);
+  setters.setEditingDigitalTransformationId(
+    route.view === 'digital_transformation_form' ? route.editingId : null,
   );
 }
 
@@ -169,6 +187,24 @@ export default function AdminShell() {
     const route = readAdminLocation();
     return route.view === 'solution_product_form' ? route.editingId : null;
   });
+  const [editingAiServiceId, setEditingAiServiceId] = useState<string | null>(() => {
+    const route = readAdminLocation();
+    return route.view === 'ai_service_form' ? route.editingId : null;
+  });
+  const [editingCloudServiceId, setEditingCloudServiceId] = useState<string | null>(() => {
+    const route = readAdminLocation();
+    return route.view === 'cloud_service_form' ? route.editingId : null;
+  });
+  const [editingDataAnalyticId, setEditingDataAnalyticId] = useState<string | null>(() => {
+    const route = readAdminLocation();
+    return route.view === 'data_analytics_form' ? route.editingId : null;
+  });
+  const [editingDigitalTransformationId, setEditingDigitalTransformationId] = useState<
+    string | null
+  >(() => {
+    const route = readAdminLocation();
+    return route.view === 'digital_transformation_form' ? route.editingId : null;
+  });
   const [session, setSession] = useState<SessionContext | null>(null);
   const [siteSettings, setSiteSettings] = useState<Record<string, unknown> | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -221,6 +257,10 @@ export default function AdminShell() {
       setEditingSolutionId,
       setEditingSolutionDetailId,
       setEditingSolutionProductId,
+      setEditingAiServiceId,
+      setEditingCloudServiceId,
+      setEditingDataAnalyticId,
+      setEditingDigitalTransformationId,
     });
   }, []);
 
@@ -300,6 +340,22 @@ export default function AdminShell() {
     }
     if (view === 'solution_products' || view === 'solution_product_form') {
       document.title = t('admin.workspace.solution_products');
+      return;
+    }
+    if (view === 'ai_services' || view === 'ai_service_form') {
+      document.title = t('admin.workspace.ai_services');
+      return;
+    }
+    if (view === 'cloud_services' || view === 'cloud_service_form') {
+      document.title = t('admin.workspace.cloud_services');
+      return;
+    }
+    if (view === 'data_analytics' || view === 'data_analytics_form') {
+      document.title = t('admin.workspace.data_analytics');
+      return;
+    }
+    if (view === 'digital_transformation' || view === 'digital_transformation_form') {
+      document.title = t('admin.workspace.digital_transformation');
       return;
     }
     if (view === 'blogs' || view === 'blog_form') {
@@ -465,6 +521,22 @@ export default function AdminShell() {
     openList('solution_products');
   }
 
+  function openAiServices() {
+    openList('ai_services');
+  }
+
+  function openCloudServices() {
+    openList('cloud_services');
+  }
+
+  function openDataAnalytics() {
+    openList('data_analytics');
+  }
+
+  function openDigitalTransformation() {
+    openList('digital_transformation');
+  }
+
   function onNavClick(event: MouseEvent<HTMLAnchorElement>, href: string) {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
       return;
@@ -498,6 +570,10 @@ export default function AdminShell() {
   const canPublishSolutions = hasPermission(session, 'solutions.publish');
   const canPublishSolutionDetails = hasPermission(session, 'solution_details.publish');
   const canPublishSolutionProducts = hasPermission(session, 'solution_products.publish');
+  const canPublishAiServices = hasPermission(session, 'ai_services.publish');
+  const canPublishCloudServices = hasPermission(session, 'cloud_services.publish');
+  const canPublishDataAnalytics = hasPermission(session, 'data_analytics.publish');
+  const canPublishDigitalTransformation = hasPermission(session, 'digital_transformation.publish');
   const canManageRoles = canManageRolesFrom(session);
   const settingsCurrent = view === 'roles' || view === 'role_form';
   const initial = session.email.slice(0, 1).toUpperCase();
@@ -506,6 +582,10 @@ export default function AdminShell() {
   const canReadSolutions = canReadResource(session, 'solutions');
   const canReadSolutionDetails = canReadResource(session, 'solution_details');
   const canReadSolutionProducts = canReadResource(session, 'solution_products');
+  const canReadAiServices = canReadResource(session, 'ai_services');
+  const canReadCloudServices = canReadResource(session, 'cloud_services');
+  const canReadDataAnalytics = canReadResource(session, 'data_analytics');
+  const canReadDigitalTransformation = canReadResource(session, 'digital_transformation');
   const canReadBlogs = canReadResource(session, 'blogs');
   const canReadCaseStudies = canReadResource(session, 'case_studies');
   const canReadIndustries = canReadResource(session, 'industries');
@@ -523,6 +603,10 @@ export default function AdminShell() {
       canReadSolutions ||
       canReadSolutionDetails ||
       canReadSolutionProducts ||
+      canReadAiServices ||
+      canReadCloudServices ||
+      canReadDataAnalytics ||
+      canReadDigitalTransformation ||
       canReadBlogs ||
       canReadCaseStudies ||
       canReadIndustries ||
@@ -634,6 +718,72 @@ export default function AdminShell() {
                 onClick={(event) => onNavClick(event, adminListHref('solution_products'))}
               >
                 {t('admin.workspace.solution_products')}
+              </a>
+            </li>
+            )}
+            {canReadAiServices && (
+            <li>
+              <a
+                href={adminListHref('ai_services')}
+                className={view === 'ai_services' || view === 'ai_service_form' ? 'active' : ''}
+                aria-current={
+                  view === 'ai_services' || view === 'ai_service_form' ? 'page' : undefined
+                }
+                onClick={(event) => onNavClick(event, adminListHref('ai_services'))}
+              >
+                {t('admin.workspace.ai_services')}
+              </a>
+            </li>
+            )}
+            {canReadCloudServices && (
+            <li>
+              <a
+                href={adminListHref('cloud_services')}
+                className={
+                  view === 'cloud_services' || view === 'cloud_service_form' ? 'active' : ''
+                }
+                aria-current={
+                  view === 'cloud_services' || view === 'cloud_service_form' ? 'page' : undefined
+                }
+                onClick={(event) => onNavClick(event, adminListHref('cloud_services'))}
+              >
+                {t('admin.workspace.cloud_services')}
+              </a>
+            </li>
+            )}
+            {canReadDataAnalytics && (
+            <li>
+              <a
+                href={adminListHref('data_analytics')}
+                className={
+                  view === 'data_analytics' || view === 'data_analytics_form' ? 'active' : ''
+                }
+                aria-current={
+                  view === 'data_analytics' || view === 'data_analytics_form' ? 'page' : undefined
+                }
+                onClick={(event) => onNavClick(event, adminListHref('data_analytics'))}
+              >
+                {t('admin.workspace.data_analytics')}
+              </a>
+            </li>
+            )}
+            {canReadDigitalTransformation && (
+            <li>
+              <a
+                href={adminListHref('digital_transformation')}
+                className={
+                  view === 'digital_transformation' || view === 'digital_transformation_form'
+                    ? 'active'
+                    : ''
+                }
+                aria-current={
+                  view === 'digital_transformation' || view === 'digital_transformation_form'
+                    ? 'page'
+                    : undefined
+                }
+                onClick={(event) => onNavClick(event, adminListHref('digital_transformation'))}
+              >
+                {t('admin.workspace.digital_transformation')}
               </a>
             </li>
             )}
@@ -902,6 +1052,72 @@ export default function AdminShell() {
               onCancel={openSolutionProducts}
               onSaved={() =>
                 afterListSave(openSolutionProducts, t('admin.solution_products.saved'))
+              }
+            />
+          )}
+          {view === 'ai_services' && (
+            <AiServicesList
+              key={`ai-services-${listEpoch}`}
+              notice={message}
+              onAdd={() => openForm('ai_services', null)}
+              onEdit={(id) => openForm('ai_services', id)}
+            />
+          )}
+          {view === 'ai_service_form' && (
+            <AiServiceForm
+              entryId={editingAiServiceId}
+              canPublish={canPublishAiServices}
+              onCancel={openAiServices}
+              onSaved={() => afterListSave(openAiServices, t('admin.ai_services.saved'))}
+            />
+          )}
+          {view === 'cloud_services' && (
+            <CloudServicesList
+              key={`cloud-services-${listEpoch}`}
+              notice={message}
+              onAdd={() => openForm('cloud_services', null)}
+              onEdit={(id) => openForm('cloud_services', id)}
+            />
+          )}
+          {view === 'cloud_service_form' && (
+            <CloudServiceForm
+              entryId={editingCloudServiceId}
+              canPublish={canPublishCloudServices}
+              onCancel={openCloudServices}
+              onSaved={() => afterListSave(openCloudServices, t('admin.cloud_services.saved'))}
+            />
+          )}
+          {view === 'data_analytics' && (
+            <DataAnalyticsList
+              key={`data-analytics-${listEpoch}`}
+              notice={message}
+              onAdd={() => openForm('data_analytics', null)}
+              onEdit={(id) => openForm('data_analytics', id)}
+            />
+          )}
+          {view === 'data_analytics_form' && (
+            <DataAnalyticsForm
+              entryId={editingDataAnalyticId}
+              canPublish={canPublishDataAnalytics}
+              onCancel={openDataAnalytics}
+              onSaved={() => afterListSave(openDataAnalytics, t('admin.data_analytics.saved'))}
+            />
+          )}
+          {view === 'digital_transformation' && (
+            <DigitalTransformationList
+              key={`digital-transformation-${listEpoch}`}
+              notice={message}
+              onAdd={() => openForm('digital_transformation', null)}
+              onEdit={(id) => openForm('digital_transformation', id)}
+            />
+          )}
+          {view === 'digital_transformation_form' && (
+            <DigitalTransformationForm
+              entryId={editingDigitalTransformationId}
+              canPublish={canPublishDigitalTransformation}
+              onCancel={openDigitalTransformation}
+              onSaved={() =>
+                afterListSave(openDigitalTransformation, t('admin.digital_transformation.saved'))
               }
             />
           )}

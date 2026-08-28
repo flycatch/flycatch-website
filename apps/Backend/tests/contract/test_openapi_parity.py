@@ -18,6 +18,14 @@ CONTRACT_FILES = [
     SPECS / "005-admin-case-studies" / "contracts" / "public-case-studies.v1.yaml",
     SPECS / "008-admin-home" / "contracts" / "admin-homes.v1.yaml",
     SPECS / "008-admin-home" / "contracts" / "public-homes.v1.yaml",
+    SPECS / "012-admin-ai-services" / "contracts" / "admin-ai-services.v1.yaml",
+    SPECS / "012-admin-ai-services" / "contracts" / "public-ai-services.v1.yaml",
+    SPECS / "013-admin-cloud-services" / "contracts" / "admin-cloud-services.v1.yaml",
+    SPECS / "013-admin-cloud-services" / "contracts" / "public-cloud-services.v1.yaml",
+    SPECS / "014-admin-data-analytics" / "contracts" / "admin-data-analytics.v1.yaml",
+    SPECS / "014-admin-data-analytics" / "contracts" / "public-data-analytics.v1.yaml",
+    SPECS / "015-admin-digital-transformation" / "contracts" / "admin-digital-transformation.v1.yaml",
+    SPECS / "015-admin-digital-transformation" / "contracts" / "public-digital-transformation.v1.yaml",
 ]
 
 
