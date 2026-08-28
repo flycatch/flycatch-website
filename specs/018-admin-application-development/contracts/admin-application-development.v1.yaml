@@ -1,0 +1,244 @@
+openapi: 3.1.0
+info:
+  title: Administration Application Development Service
+  version: 1.0.0
+  summary: CRUD for Application Development Service entries.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+  /admin/application-development:
+    get:
+      operationId: listApplicationDevelopment
+      summary: List with search and pagination of 10
+      parameters:
+        - name: q
+          in: query
+          schema: { type: string }
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: per_page
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 10, default: 10 }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationDevelopmentList'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+    post:
+      operationId: createApplicationDevelopment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationDevelopmentWrite'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationDevelopment'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+  /admin/application-development/{entry_id}:
+    parameters:
+      - name: entry_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getApplicationDevelopment
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationDevelopment'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: updateApplicationDevelopment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationDevelopmentWrite'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationDevelopment'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+    delete:
+      operationId: deleteApplicationDevelopment
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ContentStatus:
+      type: string
+      enum: [draft, publish]
+    ContentSeo:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, default: '', maxLength: 200 }
+        description: { type: string, default: '', maxLength: 500 }
+        canonical_url: { type: string, default: '', maxLength: 500 }
+        meta_title: { type: string, default: '', maxLength: 200 }
+        h1_tag: { type: string, default: '', maxLength: 200 }
+        image_alt: { type: string, default: '', maxLength: 200 }
+        image_key: { type: string, nullable: true }
+    AccordionItem:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, default: '', maxLength: 200 }
+        contents: { type: string, default: '' }
+        order: { type: integer, minimum: 0, default: 0 }
+    ApplicationDevelopment:
+      type: object
+      additionalProperties: false
+      required: [id, slug, banner_title, banner_image_key, introduction_title, introduction_first_paragraph, introduction_second_paragraph, accordion, offering_image_key, offering_title, offering_description, faq_title, faq_description, faq_accordion, content_available_in, seo, status, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        slug: { type: string }
+        banner_title: { type: string }
+        banner_image_key: { type: string, nullable: true }
+        introduction_title: { type: string }
+        introduction_first_paragraph: { type: string }
+        introduction_second_paragraph: { type: string }
+        accordion:
+          type: array
+          items: { $ref: '#/components/schemas/AccordionItem' }
+        offering_image_key: { type: string, nullable: true }
+        offering_title: { type: string }
+        offering_description: { type: string }
+        faq_title: { type: string }
+        faq_description: { type: string }
+        faq_accordion:
+          type: array
+          items: { $ref: '#/components/schemas/AccordionItem' }
+        content_available_in: { type: array, items: { type: string } }
+        seo: { $ref: '#/components/schemas/ContentSeo' }
+        status: { $ref: '#/components/schemas/ContentStatus' }
+        created_at: { type: string, format: date-time }
+    ApplicationDevelopmentSummary:
+      type: object
+      additionalProperties: false
+      required: [id, banner_title, banner_image_key, introduction_first_paragraph, content_available_in, state]
+      properties:
+        id: { type: string, format: uuid }
+        banner_title: { type: string }
+        banner_image_key: { type: string, nullable: true }
+        introduction_first_paragraph: { type: string }
+        content_available_in: { type: string }
+        state: { $ref: '#/components/schemas/ContentStatus' }
+    ApplicationDevelopmentList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/ApplicationDevelopmentSummary' }
+        page: { type: integer, minimum: 1 }
+        per_page: { type: integer, minimum: 1 }
+        total: { type: integer, minimum: 0 }
+    ApplicationDevelopmentWrite:
+      type: object
+      additionalProperties: false
+      properties:
+        banner_title: { type: string, maxLength: 200, default: '' }
+        banner_image_key: { type: string, nullable: true }
+        introduction_title: { type: string, maxLength: 200, default: '' }
+        introduction_first_paragraph: { type: string, default: '' }
+        introduction_second_paragraph: { type: string, default: '' }
+        accordion:
+          type: array
+          items: { $ref: '#/components/schemas/AccordionItem' }
+        offering_image_key: { type: string, nullable: true }
+        offering_title: { type: string, maxLength: 200, default: '' }
+        offering_description: { type: string, default: '' }
+        faq_title: { type: string, maxLength: 200, default: '' }
+        faq_description: { type: string, default: '' }
+        faq_accordion:
+          type: array
+          items: { $ref: '#/components/schemas/AccordionItem' }
+        seo: { $ref: '#/components/schemas/ContentSeo' }
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+          default: draft
+    FieldErrorDetail:
+      type: object
+      additionalProperties: false
+      required: [message_key]
+      properties:
+        message_key: { type: string }
+    FieldErrors:
+      type: object
+      additionalProperties: false
+      required: [fields]
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldErrorDetail'
+  responses:
+    FieldErrors:
+      description: Field-level validation errors
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FieldErrors'
+    NotFound:
+      description: Unknown entry
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [code, message_key]
+            properties:
+              code: { type: string, const: not_found }
+              message_key: { type: string }

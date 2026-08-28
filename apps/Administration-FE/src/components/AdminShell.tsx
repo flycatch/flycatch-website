@@ -55,6 +55,9 @@ import DataAnalyticsList from './DataAnalyticsList';
 import DataAnalyticsForm from './DataAnalyticsForm';
 import DigitalTransformationList from './DigitalTransformationList';
 import DigitalTransformationForm from './DigitalTransformationForm';
+import LandingList from './LandingList';
+import LandingForm from './LandingForm';
+import { LANDING_SECTIONS, isLandingFormView, landingByView } from '../lib/landing-sections';
 
 type View = AdminView;
 
@@ -92,6 +95,7 @@ function applyRoute(
     setEditingCloudServiceId: (id: string | null) => void;
     setEditingDataAnalyticId: (id: string | null) => void;
     setEditingDigitalTransformationId: (id: string | null) => void;
+    setEditingLandingId: (id: string | null) => void;
   },
 ) {
   setters.setView(route.view);
@@ -121,6 +125,7 @@ function applyRoute(
   setters.setEditingDigitalTransformationId(
     route.view === 'digital_transformation_form' ? route.editingId : null,
   );
+  setters.setEditingLandingId(isLandingFormView(route.view) ? route.editingId : null);
 }
 
 export default function AdminShell() {
@@ -205,6 +210,10 @@ export default function AdminShell() {
     const route = readAdminLocation();
     return route.view === 'digital_transformation_form' ? route.editingId : null;
   });
+  const [editingLandingId, setEditingLandingId] = useState<string | null>(() => {
+    const route = readAdminLocation();
+    return isLandingFormView(route.view) ? route.editingId : null;
+  });
   const [session, setSession] = useState<SessionContext | null>(null);
   const [siteSettings, setSiteSettings] = useState<Record<string, unknown> | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -261,6 +270,7 @@ export default function AdminShell() {
       setEditingCloudServiceId,
       setEditingDataAnalyticId,
       setEditingDigitalTransformationId,
+      setEditingLandingId,
     });
   }, []);
 
@@ -356,6 +366,11 @@ export default function AdminShell() {
     }
     if (view === 'digital_transformation' || view === 'digital_transformation_form') {
       document.title = t('admin.workspace.digital_transformation');
+      return;
+    }
+    const landing = landingByView(view);
+    if (landing) {
+      document.title = t(`admin.workspace.${landing.resource}`);
       return;
     }
     if (view === 'blogs' || view === 'blog_form') {
@@ -574,6 +589,15 @@ export default function AdminShell() {
   const canPublishCloudServices = hasPermission(session, 'cloud_services.publish');
   const canPublishDataAnalytics = hasPermission(session, 'data_analytics.publish');
   const canPublishDigitalTransformation = hasPermission(session, 'digital_transformation.publish');
+  const canReadLandings = Object.fromEntries(
+    LANDING_SECTIONS.map((section) => [section.resource, canReadResource(session, section.resource)]),
+  );
+  const canPublishLandings = Object.fromEntries(
+    LANDING_SECTIONS.map((section) => [
+      section.resource,
+      hasPermission(session, `${section.resource}.publish`),
+    ]),
+  );
   const canManageRoles = canManageRolesFrom(session);
   const settingsCurrent = view === 'roles' || view === 'role_form';
   const initial = session.email.slice(0, 1).toUpperCase();
@@ -607,6 +631,7 @@ export default function AdminShell() {
       canReadCloudServices ||
       canReadDataAnalytics ||
       canReadDigitalTransformation ||
+      LANDING_SECTIONS.some((section) => canReadLandings[section.resource]) ||
       canReadBlogs ||
       canReadCaseStudies ||
       canReadIndustries ||
@@ -786,6 +811,25 @@ export default function AdminShell() {
                 {t('admin.workspace.digital_transformation')}
               </a>
             </li>
+            )}
+            {LANDING_SECTIONS.map(
+              (section) =>
+                canReadLandings[section.resource] && (
+                  <li key={section.resource}>
+                    <a
+                      href={adminListHref(section.listView as AdminView)}
+                      className={view === section.listView || view === section.formView ? 'active' : ''}
+                      aria-current={
+                        view === section.listView || view === section.formView ? 'page' : undefined
+                      }
+                      onClick={(event) =>
+                        onNavClick(event, adminListHref(section.listView as AdminView))
+                      }
+                    >
+                      {t(`admin.workspace.${section.resource}`)}
+                    </a>
+                  </li>
+                ),
             )}
             {canReadBlogs && (
             <li>
@@ -1120,6 +1164,31 @@ export default function AdminShell() {
                 afterListSave(openDigitalTransformation, t('admin.digital_transformation.saved'))
               }
             />
+          )}
+          {LANDING_SECTIONS.map((section) =>
+            view === section.listView ? (
+              <LandingList
+                key={`${section.resource}-${listEpoch}`}
+                section={section}
+                notice={message}
+                onAdd={() => openForm(section.listView as AdminView, null)}
+                onEdit={(id) => openForm(section.listView as AdminView, id)}
+              />
+            ) : view === section.formView ? (
+              <LandingForm
+                key={`${section.resource}-form`}
+                section={section}
+                entryId={editingLandingId}
+                canPublish={Boolean(canPublishLandings[section.resource])}
+                onCancel={() => openList(section.listView as AdminView)}
+                onSaved={() =>
+                  afterListSave(
+                    () => openList(section.listView as AdminView),
+                    t(`${section.ns}.saved`),
+                  )
+                }
+              />
+            ) : null,
           )}
           {view === 'blogs' && (
             <BlogsList
