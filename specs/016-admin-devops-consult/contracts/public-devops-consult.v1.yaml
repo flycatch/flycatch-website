@@ -1,0 +1,106 @@
+openapi: 3.1.0
+info:
+  title: Public DevOps Consult
+  version: 1.0.0
+  summary: Read-only published DevOps Consult for the website frontend.
+servers:
+  - url: /api/v1
+security: []
+paths:
+  /public/devops-consult:
+    get:
+      operationId: listPublicDevOpsConsult
+      parameters:
+        - name: q
+          in: query
+          schema: { type: string }
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: per_page
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 10, default: 10 }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicDevOpsConsultList'
+  /public/devops-consult/{slug}:
+    get:
+      operationId: getPublicDevOpsConsult
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicDevOpsConsult'
+        '404':
+          description: Unknown or unpublished slug
+components:
+  schemas:
+    ContentSeo:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, default: '' }
+        description: { type: string, default: '' }
+        canonical_url: { type: string, default: '' }
+        meta_title: { type: string, default: '' }
+        h1_tag: { type: string, default: '' }
+        image_alt: { type: string, default: '' }
+        image_key: { type: string, nullable: true }
+    AccordionItem:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, default: '' }
+        contents: { type: string, default: '' }
+        order: { type: integer, minimum: 0, default: 0 }
+    PublicDevOpsConsultSummary:
+      type: object
+      additionalProperties: false
+      required: [slug, banner_title, banner_image_key]
+      properties:
+        slug: { type: string }
+        banner_title: { type: string }
+        banner_image_key: { type: string, nullable: true }
+    PublicDevOpsConsultList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/PublicDevOpsConsultSummary' }
+        page: { type: integer, minimum: 1 }
+        per_page: { type: integer, minimum: 1 }
+        total: { type: integer, minimum: 0 }
+    PublicDevOpsConsult:
+      type: object
+      additionalProperties: false
+      required: [slug, banner_title, banner_image_key, introduction_title, introduction_first_paragraph, introduction_second_paragraph, experience_title, experience_accordion, experience_image_key, experience_description, faq_title, faq_description, faq_accordion, seo]
+      properties:
+        slug: { type: string }
+        banner_title: { type: string }
+        banner_image_key: { type: string, nullable: true }
+        introduction_title: { type: string }
+        introduction_first_paragraph: { type: string }
+        introduction_second_paragraph: { type: string }
+        experience_title: { type: string }
+        experience_accordion:
+          type: array
+          items: { $ref: '#/components/schemas/AccordionItem' }
+        experience_image_key: { type: string, nullable: true }
+        experience_description: { type: string }
+        faq_title: { type: string }
+        faq_description: { type: string }
+        faq_accordion:
+          type: array
+          items: { $ref: '#/components/schemas/AccordionItem' }
+        seo: { $ref: '#/components/schemas/ContentSeo' }

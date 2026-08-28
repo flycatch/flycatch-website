@@ -13,6 +13,13 @@ import type { components as AiServicesComponents } from '../generated/admin-ai-s
 import type { components as CloudServicesComponents } from '../generated/admin-cloud-services.v1';
 import type { components as DataAnalyticsComponents } from '../generated/admin-data-analytics.v1';
 import type { components as DigitalTransformationComponents } from '../generated/admin-digital-transformation.v1';
+import type { components as DevOpsConsultComponents } from '../generated/admin-devops-consult.v1';
+import type { components as InfrastructureManagementComponents } from '../generated/admin-infrastructure-management.v1';
+import type { components as ApplicationDevelopmentComponents } from '../generated/admin-application-development.v1';
+import type { components as ApplicationModernizationComponents } from '../generated/admin-application-modernization.v1';
+import type { components as MobileApplicationDevelopmentComponents } from '../generated/admin-mobile-application-development.v1';
+import type { components as UserCenteredDesignComponents } from '../generated/admin-user-centered-design.v1';
+import type { components as OverviewComponents } from '../generated/admin-overview.v1';
 import {
   clearTokens,
   getAccessToken,
@@ -88,6 +95,62 @@ export type DataAnalyticWrite = DataAnalyticsComponents['schemas']['DataAnalytic
 export type DigitalTransformation = DigitalTransformationComponents['schemas']['DigitalTransformation'];
 export type DigitalTransformationList = DigitalTransformationComponents['schemas']['DigitalTransformationList'];
 export type DigitalTransformationWrite = DigitalTransformationComponents['schemas']['DigitalTransformationWrite'];
+export type DevOpsConsult = DevOpsConsultComponents['schemas']['DevOpsConsult'];
+export type InfrastructureManagement = InfrastructureManagementComponents['schemas']['InfrastructureManagement'];
+export type ApplicationDevelopment = ApplicationDevelopmentComponents['schemas']['ApplicationDevelopment'];
+export type ApplicationModernization = ApplicationModernizationComponents['schemas']['ApplicationModernization'];
+export type MobileApplicationDevelopment =
+  MobileApplicationDevelopmentComponents['schemas']['MobileApplicationDevelopment'];
+export type UserCenteredDesign = UserCenteredDesignComponents['schemas']['UserCenteredDesign'];
+export type OverviewEntry = OverviewComponents['schemas']['Overview'];
+
+export type LandingAccordionItem = { title: string; contents: string; order: number };
+
+export type LandingWritePayload = {
+  banner_title: string;
+  banner_image_key: string | null;
+  introduction_title: string;
+  introduction_first_paragraph: string;
+  introduction_second_paragraph: string;
+  introduction_third_paragraph?: string;
+  accordion?: LandingAccordionItem[];
+  experience_title?: string;
+  experience_accordion?: LandingAccordionItem[];
+  experience_image_key?: string | null;
+  experience_description?: string;
+  offering_image_key?: string | null;
+  offering_title?: string;
+  offering_description?: string;
+  faq_title?: string;
+  faq_description?: string;
+  faq_accordion?: LandingAccordionItem[];
+  seo: ContentSeo;
+  status: 'draft' | 'publish';
+};
+
+export type LandingDetail = LandingWritePayload & {
+  id: string;
+  slug: string;
+  content_available_in?: string[];
+};
+
+export type LandingSummary = {
+  id: string;
+  banner_title: string;
+  banner_image_key: string | null;
+  introduction_title?: string;
+  introduction_first_paragraph?: string;
+  content_available_in?: string;
+  seo?: string;
+  state: 'draft' | 'publish';
+};
+
+export type LandingListPayload = {
+  items: LandingSummary[];
+  page: number;
+  per_page: number;
+  total: number;
+};
 
 export class AdminApiError extends Error {
   status: number;
@@ -812,6 +875,36 @@ export async function updateDigitalTransformation(
 
 export async function deleteDigitalTransformation(id: string): Promise<void> {
   await api<void>(`/admin/digital-transformation/${id}`, { method: 'DELETE' });
+}
+
+export async function listLandings(
+  path: string,
+  q: string,
+  page: number,
+): Promise<LandingListPayload> {
+  return api<LandingListPayload>(
+    `${path}${queryString({ q: q.trim() || undefined, page, per_page: 10 })}`,
+  );
+}
+
+export async function getLanding(path: string, id: string): Promise<LandingDetail> {
+  return api<LandingDetail>(`${path}/${id}`);
+}
+
+export async function createLanding(path: string, payload: LandingWritePayload): Promise<LandingDetail> {
+  return api<LandingDetail>(path, { method: 'POST', body: JSON.stringify(payload) });
+}
+
+export async function updateLanding(
+  path: string,
+  id: string,
+  payload: LandingWritePayload,
+): Promise<LandingDetail> {
+  return api<LandingDetail>(`${path}/${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
+}
+
+export async function deleteLanding(path: string, id: string): Promise<void> {
+  await api<void>(`${path}/${id}`, { method: 'DELETE' });
 }
 
 export function apiErrorMessage(caught: unknown, fallback = 'admin.workspace.request_failed'): string {

@@ -30,6 +30,21 @@ describe('parseAdminLocation', () => {
     expect(parseAdminLocation('/admin/digital-transformation/').view).toBe(
       'digital_transformation',
     );
+    expect(parseAdminLocation('/admin/devops-consult/').view).toBe('devops_consult');
+    expect(parseAdminLocation('/admin/infrastructure-management/').view).toBe(
+      'infrastructure_management',
+    );
+    expect(parseAdminLocation('/admin/application-development/').view).toBe(
+      'application_development',
+    );
+    expect(parseAdminLocation('/admin/application-modernization/').view).toBe(
+      'application_modernization',
+    );
+    expect(parseAdminLocation('/admin/mobile-application-development/').view).toBe(
+      'mobile_application_development',
+    );
+    expect(parseAdminLocation('/admin/user-centered-design/').view).toBe('user_centered_design');
+    expect(parseAdminLocation('/admin/overview/').view).toBe('overview');
     expect(parseAdminLocation('/admin/home/', '?new=1').view).toBe('home_form');
     expect(parseAdminLocation('/admin/home/', '?id=abc')).toEqual({
       view: 'home_form',
@@ -74,6 +89,15 @@ describe('admin href helpers', () => {
     expect(adminListHref('cloud_services')).toBe('/admin/cloud-services/');
     expect(adminListHref('data_analytics')).toBe('/admin/data-analytics/');
     expect(adminListHref('digital_transformation')).toBe('/admin/digital-transformation/');
+    expect(adminListHref('devops_consult')).toBe('/admin/devops-consult/');
+    expect(adminListHref('infrastructure_management')).toBe('/admin/infrastructure-management/');
+    expect(adminListHref('application_development')).toBe('/admin/application-development/');
+    expect(adminListHref('application_modernization')).toBe('/admin/application-modernization/');
+    expect(adminListHref('mobile_application_development')).toBe(
+      '/admin/mobile-application-development/',
+    );
+    expect(adminListHref('user_centered_design')).toBe('/admin/user-centered-design/');
+    expect(adminListHref('overview')).toBe('/admin/overview/');
     expect(adminFormHref('blogs', null)).toBe('/admin/blogs/?new=1');
     expect(adminFormHref('blogs', 'post-1')).toBe('/admin/blogs/?id=post-1');
   });

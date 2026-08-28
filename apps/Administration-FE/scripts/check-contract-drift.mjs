@@ -23,6 +23,13 @@ const required = [
   'admin-cloud-services.v1.ts',
   'admin-data-analytics.v1.ts',
   'admin-digital-transformation.v1.ts',
+  'admin-devops-consult.v1.ts',
+  'admin-infrastructure-management.v1.ts',
+  'admin-application-development.v1.ts',
+  'admin-application-modernization.v1.ts',
+  'admin-mobile-application-development.v1.ts',
+  'admin-user-centered-design.v1.ts',
+  'admin-overview.v1.ts',
 ];
 
 let failed = false;

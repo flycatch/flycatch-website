@@ -1,3 +1,5 @@
+import { LANDING_SECTIONS } from './landing-sections';
+
 export type AdminView =
   | 'site_settings'
   | 'home'
@@ -16,6 +18,20 @@ export type AdminView =
   | 'data_analytics_form'
   | 'digital_transformation'
   | 'digital_transformation_form'
+  | 'devops_consult'
+  | 'devops_consult_form'
+  | 'infrastructure_management'
+  | 'infrastructure_management_form'
+  | 'application_development'
+  | 'application_development_form'
+  | 'application_modernization'
+  | 'application_modernization_form'
+  | 'mobile_application_development'
+  | 'mobile_application_development_form'
+  | 'user_centered_design'
+  | 'user_centered_design_form'
+  | 'overview'
+  | 'overview_form'
   | 'blogs'
   | 'blog_form'
   | 'case_studies'
@@ -58,6 +74,11 @@ const SECTIONS: SectionConfig[] = [
   { segment: 'cloud-services', list: 'cloud_services', form: 'cloud_service_form' },
   { segment: 'data-analytics', list: 'data_analytics', form: 'data_analytics_form' },
   { segment: 'digital-transformation', list: 'digital_transformation', form: 'digital_transformation_form' },
+  ...LANDING_SECTIONS.map((section) => ({
+    segment: section.segment,
+    list: section.listView as AdminView,
+    form: section.formView as AdminView,
+  })),
   { segment: 'blogs', list: 'blogs', form: 'blog_form' },
   { segment: 'case-studies', list: 'case_studies', form: 'case_study_form' },
   { segment: 'industries', list: 'industries', form: 'industry_form' },
@@ -81,6 +102,13 @@ const LIST_HREF: Record<string, string> = {
   cloud_services: '/admin/cloud-services/',
   data_analytics: '/admin/data-analytics/',
   digital_transformation: '/admin/digital-transformation/',
+  devops_consult: '/admin/devops-consult/',
+  infrastructure_management: '/admin/infrastructure-management/',
+  application_development: '/admin/application-development/',
+  application_modernization: '/admin/application-modernization/',
+  mobile_application_development: '/admin/mobile-application-development/',
+  user_centered_design: '/admin/user-centered-design/',
+  overview: '/admin/overview/',
   blogs: '/admin/blogs/',
   case_studies: '/admin/case-studies/',
   industries: '/admin/industries/',

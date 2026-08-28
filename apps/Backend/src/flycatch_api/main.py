@@ -25,6 +25,7 @@ from flycatch_api.api import (
     admin_solution_products,
     admin_solutions,
     admin_technologies,
+    landing_pages,
     public_ai_services,
     public_authors,
     public_blogs,
@@ -105,6 +106,13 @@ app.include_router(admin_ai_services.router, prefix="/api/v1")
 app.include_router(admin_cloud_services.router, prefix="/api/v1")
 app.include_router(admin_data_analytics.router, prefix="/api/v1")
 app.include_router(admin_digital_transformation.router, prefix="/api/v1")
+app.include_router(landing_pages.admin_devops_consult, prefix="/api/v1")
+app.include_router(landing_pages.admin_infrastructure_management, prefix="/api/v1")
+app.include_router(landing_pages.admin_application_development, prefix="/api/v1")
+app.include_router(landing_pages.admin_application_modernization, prefix="/api/v1")
+app.include_router(landing_pages.admin_mobile_application_development, prefix="/api/v1")
+app.include_router(landing_pages.admin_user_centered_design, prefix="/api/v1")
+app.include_router(landing_pages.admin_overview, prefix="/api/v1")
 app.include_router(admin_media.router, prefix="/api/v1")
 app.include_router(publish.router, prefix="/api/v1")
 app.include_router(public_blogs.router, prefix="/api/v1")
@@ -122,6 +130,13 @@ app.include_router(public_ai_services.router, prefix="/api/v1")
 app.include_router(public_cloud_services.router, prefix="/api/v1")
 app.include_router(public_data_analytics.router, prefix="/api/v1")
 app.include_router(public_digital_transformation.router, prefix="/api/v1")
+app.include_router(landing_pages.public_devops_consult, prefix="/api/v1")
+app.include_router(landing_pages.public_infrastructure_management, prefix="/api/v1")
+app.include_router(landing_pages.public_application_development, prefix="/api/v1")
+app.include_router(landing_pages.public_application_modernization, prefix="/api/v1")
+app.include_router(landing_pages.public_mobile_application_development, prefix="/api/v1")
+app.include_router(landing_pages.public_user_centered_design, prefix="/api/v1")
+app.include_router(landing_pages.public_overview, prefix="/api/v1")
 app.include_router(public_media.router, prefix="/api/v1")
 app.include_router(stubs.router, prefix="/api/v1")
 
