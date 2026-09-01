@@ -1,2 +1,2 @@
 @Library('shared-lib') _
-cicdPipeline()
+harborImagePipeline()

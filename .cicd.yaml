@@ -3,21 +3,14 @@ app:
 
 registry: registry.k3s.flycatchtech.in
 
-build:
-  techStack: node
+image:
+  name: flycatch-website/flycatch-website
   dockerfile: apps/Frontend/Dockerfile
   context: apps/Frontend
-
-sonar:
-  enabled: true
-  host: https://sonarqube.flycatchtech.in/
-  projectKey: flycatch-website
-
-branches:
-  feat/harbor-test:
-    environment: dev
-    imageTag: harbor-test
-    build: false
-    sonar: true
-    docker: true
-    deploy: false
+  args: {}
+  environments:
+    dev: dev
+    qa: qa
+    uat: uat
+    main: prod
+    feat/harbor-test: dev
