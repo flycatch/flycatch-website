@@ -32,7 +32,7 @@ services:
 
   backend:
     build:
-      context: ../apps/Backend
+      context: ../../apps/Backend
     env_file: .env
     environment:
       DATABASE_URL: ${DATABASE_URL}
@@ -46,6 +46,7 @@ services:
       JWT_ACCESS_MINUTES: ${JWT_ACCESS_MINUTES:-15}
       BUILD_EXPORT_TOKEN: ${BUILD_EXPORT_TOKEN}
       PUBLIC_ORIGIN: ${PUBLIC_ORIGIN}
+      ENVIRONMENT: ${ENVIRONMENT:-development}
     depends_on:
       postgres:
         condition: service_healthy
@@ -54,15 +55,21 @@ services:
 
   frontend:
     build:
-      context: ../apps/Frontend
+      context: ../../apps/Frontend
+      args:
+        PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:-http://localhost:8080}
+        PUBLIC_ENVIRONMENT: ${PUBLIC_ENVIRONMENT:-development}
     depends_on:
       - backend
 
   administration-fe:
     build:
-      context: ../apps/Administration-FE
+      context: ../../apps/Administration-FE
       additional_contexts:
-        specs: ../specs
+        specs: ../../specs
+      args:
+        PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:-http://localhost:8080}
+        PUBLIC_ENVIRONMENT: ${PUBLIC_ENVIRONMENT:-development}
     environment:
       PUBLIC_ORIGIN: ${PUBLIC_ORIGIN}
     depends_on:
@@ -75,7 +82,7 @@ services:
     environment:
       GATEWAY_PORT: "8080"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../k8s/base/Caddyfile:/etc/caddy/Caddyfile:ro
     depends_on:
       - frontend
       - administration-fe

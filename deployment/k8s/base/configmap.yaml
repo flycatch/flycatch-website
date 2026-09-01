@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flycatch-website-config
+  labels:
+    app.kubernetes.io/name: flycatch-website
+data:
+  PUBLIC_ORIGIN: https://flycatch-website-dev.k3s.flycatchtech.in
+  PUBLIC_ENVIRONMENT: development
+  ENVIRONMENT: development
+  S3_ENDPOINT: http://minio.database.svc.cluster.local:9000
+  S3_BUCKET: flycatch-website
+  S3_REGION: us-east-1
+  S3_USE_SSL: "false"
+  JWT_ACCESS_MINUTES: "15"
+  GATEWAY_PORT: "8080"

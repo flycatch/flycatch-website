@@ -15,7 +15,7 @@ Ordinary public browsing does **not** require the Backend at runtime. Administra
 - **Frontend / Administration FE**: Astro 5, React 19 (Administration FE only), TypeScript
 - **Backend**: FastAPI, Python 3.12, PostgreSQL 16
 - **Object storage**: S3-compatible (MinIO locally)
-- **Deployment**: Docker Compose in `deployment/`
+- **Deployment**: Docker Compose + k3s under `deployment/`
 
 ## Repository layout
 
@@ -25,7 +25,9 @@ apps/
 ├── Frontend/
 ├── Administration-FE/
 └── Backend/
-deployment/                       # Docker Compose, environment config, gateway
+deployment/
+├── compose/                      # Docker Compose, .env, Caddy gateway
+└── k8s/                          # Kustomize manifests for Flycatch k3s
 specs/001-website-foundation/     # Feature spec, plan, contracts, quickstart
 specs/002-auth-rbac/              # JWT auth + RBAC spec, plan, contracts, quickstart
 docs/                             # Conventions and onboarding (implementation phase)
@@ -57,25 +59,25 @@ Compose does **not** create staff accounts or apply migrations. There is no defa
 1. Copy environment config and set secrets (`JWT_SECRET` and the other `change-me` values):
 
    ```bash
-   cp deployment/.env.example deployment/.env
+   cp deployment/compose/.env.example deployment/compose/.env
    ```
 
-   Do not commit `deployment/.env`. Variable names are documented in `deployment/.env.example`.
+   Do not commit `deployment/compose/.env`. Variable names are documented in `deployment/compose/.env.example`.
 
 2. Build and start all services from the repository root:
 
    ```bash
-   docker compose -f deployment/docker-compose.yml up -d --build
+   docker compose -f deployment/compose/docker-compose.yml --env-file deployment/compose/.env up -d --build
    ```
 
-   From `deployment/` you can use `docker compose up -d --build` instead.
+   From `deployment/compose/` you can use `docker compose up -d --build` instead.
 
 3. After Postgres and MinIO are healthy, migrate, seed, and bootstrap two staff users:
 
    ```bash
-   docker compose -f deployment/docker-compose.yml exec backend alembic upgrade head
-   docker compose -f deployment/docker-compose.yml exec backend flycatch-seed-records
-   docker compose -f deployment/docker-compose.yml exec backend flycatch-bootstrap \
+   docker compose -f deployment/compose/docker-compose.yml --env-file deployment/compose/.env exec backend alembic upgrade head
+   docker compose -f deployment/compose/docker-compose.yml --env-file deployment/compose/.env exec backend flycatch-seed-records
+   docker compose -f deployment/compose/docker-compose.yml --env-file deployment/compose/.env exec backend flycatch-bootstrap \
      --user-1-email admin1@example.com \
      --user-2-email admin2@example.com \
      --user-2-role editor
@@ -90,10 +92,10 @@ Compose does **not** create staff accounts or apply migrations. There is no defa
 5. Rebuild app images after Frontend or Administration FE changes:
 
    ```bash
-   docker compose -f deployment/docker-compose.yml up -d --build
+   docker compose -f deployment/compose/docker-compose.yml --env-file deployment/compose/.env up -d --build
    ```
 
-   Stop the stack with `docker compose -f deployment/docker-compose.yml down`. Add `-v` only if you intend to wipe Postgres and MinIO volumes.
+   Stop the stack with `docker compose -f deployment/compose/docker-compose.yml --env-file deployment/compose/.env down`. Add `-v` only if you intend to wipe Postgres and MinIO volumes.
 
 Gateway (default `http://localhost:8080`, `GATEWAY_PORT` in `.env`):
 
@@ -107,9 +109,10 @@ Gateway (default `http://localhost:8080`, `GATEWAY_PORT` in `.env`):
 
 | File | Purpose |
 | --- | --- |
-| `deployment/docker-compose.yml` | All foundation services |
-| `deployment/.env.example` | Shared environment configuration |
-| `deployment/Caddyfile` | Path-based gateway routing |
+| `deployment/compose/docker-compose.yml` | All foundation services |
+| `deployment/compose/.env.example` | Shared environment configuration |
+| `deployment/k8s/base/Caddyfile` | Path-based gateway routing (compose + k8s) |
+| `deployment/k8s/` | Kubernetes manifests for the Flycatch k3s cluster |
 
 ## Local Development (Running Individually)
 
