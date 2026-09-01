@@ -15,5 +15,6 @@ COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/package.json ./
+COPY --from=build /app/astro.config.mjs ./
 EXPOSE 4321
 CMD ["npm", "run", "preview"]
