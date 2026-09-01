@@ -218,6 +218,30 @@ curl -s https://flycatch-website-dev.k3s.flycatchtech.in/robots.txt
 
 Expect `X-Robots-Tag: noindex, nofollow` and `Disallow: /` in robots.txt.
 
+## 10. Security headers checks
+
+The shared Caddy gateway ([base/Caddyfile](base/Caddyfile)) sets HSTS, COOP,
+`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, and
+`Permissions-Policy` on every response. CSP is route-scoped: strict on the
+public site, wider on `/admin*` (inline scripts for Astro islands, Google
+Fonts, and `blob:` media previews).
+
+```bash
+curl -sI https://flycatch-website-dev.k3s.flycatchtech.in/ \
+  | grep -iE 'content-security|strict-transport|cross-origin|x-frame|x-content'
+curl -sI https://flycatch-website-dev.k3s.flycatchtech.in/admin/ \
+  | grep -i content-security
+```
+
+Expect `Strict-Transport-Security`, `Cross-Origin-Opener-Policy: same-origin`,
+`X-Frame-Options: DENY`, and a `Content-Security-Policy` on both `/` and
+`/admin/`. The admin policy should include `'unsafe-inline'` in `script-src`
+and the Google Fonts origins. After deploy, load `/admin/` in a browser and
+confirm the console has no CSP violations.
+
+Local Compose (HTTP on `:8080`) returns the same headers; browsers ignore
+HSTS over non-HTTPS.
+
 ## Rollback
 
 Revert the image-tag commit in `overlays/dev/kustomization.yaml` (or re-run
