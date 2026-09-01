@@ -34,5 +34,8 @@ export default function TableLogo({ mediaKey, alt }: Props) {
     return <span className="table-logo-empty">—</span>;
   }
   if (!url) return null;
+  if (/\.(pdf|doc|docx)$/i.test(mediaKey)) {
+    return <span className="table-logo-file">{mediaKey.split('.').pop()?.toUpperCase()}</span>;
+  }
   return <img className="table-logo" src={url} alt={alt} />;
 }

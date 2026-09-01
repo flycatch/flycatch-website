@@ -30,6 +30,22 @@ from flycatch_api.models.solution import Solution
 from flycatch_api.models.solution_detail import SolutionDetail
 from flycatch_api.models.solution_product import SolutionProduct
 from flycatch_api.models.technology import CaseStudyTechnology, Technology
+from flycatch_api.models.catalog import (
+    Application,
+    EmailConfiguration,
+    EmailTemplate,
+    EmployeeTestimonial,
+    Membership,
+    News,
+    NewsAuthorLink,
+    NewsCategory,
+    NewsCategoryLink,
+    Opening,
+    OpeningApplication,
+    Resource,
+    ResourceCategory,
+    ResourceCategoryLink,
+)
 
 __all__ = [
     "AiService",
@@ -73,4 +89,18 @@ __all__ = [
     "SolutionDetail",
     "SolutionProduct",
     "Technology",
+    "Application",
+    "EmailConfiguration",
+    "EmailTemplate",
+    "EmployeeTestimonial",
+    "Membership",
+    "News",
+    "NewsAuthorLink",
+    "NewsCategory",
+    "NewsCategoryLink",
+    "Opening",
+    "OpeningApplication",
+    "Resource",
+    "ResourceCategory",
+    "ResourceCategoryLink",
 ]

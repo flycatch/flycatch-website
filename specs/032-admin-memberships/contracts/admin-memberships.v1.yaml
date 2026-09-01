@@ -1,0 +1,276 @@
+openapi: 3.1.0
+info:
+  title: Administration Memberships
+  version: 1.0.0
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+
+  /admin/memberships:
+    get:
+      operationId: listMembership
+      summary: List with search and pagination of 10
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 10
+      responses:
+        '200':
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MembershipList'
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+    post:
+      operationId: createMembership
+      summary: Create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MembershipWrite'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+  /admin/memberships/{membership_id}:
+    parameters:
+      - name: membership_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getMembership
+      summary: Return one record
+      responses:
+        '200':
+          description: Record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+        '404':
+          $ref: '#/components/responses/MembershipNotFound'
+    patch:
+      operationId: updateMembership
+      summary: Update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MembershipWrite'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+        '404':
+          $ref: '#/components/responses/MembershipNotFound'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+    delete:
+      operationId: deleteMembership
+      summary: Delete
+      responses:
+        '204':
+          description: Deleted
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+        '404':
+          $ref: '#/components/responses/MembershipNotFound'
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ContentStatus:
+      type: string
+      enum: [draft, publish]
+    FieldErrorDetail:
+      type: object
+      additionalProperties: false
+      required: [message_key]
+      properties:
+        message_key:
+          type: string
+    FieldErrors:
+      type: object
+      additionalProperties: false
+      required: [fields]
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldErrorDetail'
+
+
+    ContentSeo:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string }
+        description: { type: string }
+        canonical_url: { type: string }
+        meta_title: { type: string }
+        h1_tag: { type: string }
+        image_alt: { type: string }
+        image_key: { type: string, nullable: true }
+
+    MembershipImage:
+      type: object
+      additionalProperties: false
+      required: [image_key]
+      properties:
+        image_key: { type: string, nullable: true }
+        alt: { type: string, default: '' }
+    Membership:
+      type: object
+      additionalProperties: false
+      required: [id, title, description, images, seo, status, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string }
+        description: { type: string }
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/MembershipImage'
+        seo:
+          $ref: '#/components/schemas/ContentSeo'
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+        created_at: { type: string, format: date-time }
+    MembershipSummary:
+      type: object
+      additionalProperties: false
+      required: [id, title, images, seo_title, state]
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string }
+        images: { type: integer, minimum: 0 }
+        seo_title: { type: string }
+        state:
+          $ref: '#/components/schemas/ContentStatus'
+
+    MembershipList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/MembershipSummary'
+        page:
+          type: integer
+          minimum: 1
+        per_page:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+
+    MembershipWrite:
+      type: object
+      additionalProperties: false
+      required: [title]
+      properties:
+        title: { type: string, minLength: 1, maxLength: 200 }
+        description: { type: string, default: '' }
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/MembershipImage'
+          default: []
+        seo:
+          $ref: '#/components/schemas/ContentSeo'
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+          default: draft
+
+  responses:
+    FieldErrors:
+      description: Field-level validation errors
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FieldErrors'
+    MembershipNotFound:
+      description: Unknown record
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [code, message_key]
+            properties:
+              code:
+                type: string
+                const: not_found
+              message_key:
+                type: string
+                const: admin.memberships.not_found
+

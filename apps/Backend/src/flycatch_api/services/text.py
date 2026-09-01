@@ -23,3 +23,26 @@ def sanitize_html(value: str) -> str:
 
 def is_valid_media_key(value: str) -> bool:
     return bool(_MEDIA_KEY.fullmatch(value))
+
+
+def document_format(key: str | None) -> str:
+    if not key:
+        return ""
+    lower = key.lower()
+    if lower.endswith(".pdf"):
+        return "PDF"
+    if lower.endswith(".docx"):
+        return "DOCX"
+    if lower.endswith(".doc"):
+        return "DOC"
+    if lower.endswith(".jpeg") or lower.endswith(".jpg"):
+        return "JPG"
+    if lower.endswith(".png"):
+        return "PNG"
+    if lower.endswith(".gif"):
+        return "GIF"
+    if lower.endswith(".webp"):
+        return "WEBP"
+    if "." in key:
+        return key.rsplit(".", 1)[-1].upper()
+    return ""

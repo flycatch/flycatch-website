@@ -79,7 +79,12 @@ class AuthorService:
             raise CatalogError(
                 404, EntityNotFound(message_key="admin.authors.not_found").model_dump()
             )
-        in_use = db.query(BlogAuthor).filter(BlogAuthor.author_id == author.id).count()
+        from flycatch_api.models.catalog import NewsAuthorLink
+
+        in_use = (
+            db.query(BlogAuthor).filter(BlogAuthor.author_id == author.id).count()
+            + db.query(NewsAuthorLink).filter(NewsAuthorLink.author_id == author.id).count()
+        )
         if in_use:
             raise CatalogError(
                 409,

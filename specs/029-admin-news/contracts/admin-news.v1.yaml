@@ -1,0 +1,330 @@
+openapi: 3.1.0
+info:
+  title: Administration News
+  version: 1.0.0
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+
+  /admin/news:
+    get:
+      operationId: listNews
+      summary: List with search and pagination of 10
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 10
+      responses:
+        '200':
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsList'
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+    post:
+      operationId: createNews
+      summary: Create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewsWrite'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/News'
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+  /admin/news/{news_id}:
+    parameters:
+      - name: news_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getNews
+      summary: Return one record
+      responses:
+        '200':
+          description: Record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/News'
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+        '404':
+          $ref: '#/components/responses/NewsNotFound'
+    patch:
+      operationId: updateNews
+      summary: Update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewsWrite'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/News'
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+        '404':
+          $ref: '#/components/responses/NewsNotFound'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+    delete:
+      operationId: deleteNews
+      summary: Delete
+      responses:
+        '204':
+          description: Deleted
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+        '404':
+          $ref: '#/components/responses/NewsNotFound'
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ContentStatus:
+      type: string
+      enum: [draft, publish]
+    FieldErrorDetail:
+      type: object
+      additionalProperties: false
+      required: [message_key]
+      properties:
+        message_key:
+          type: string
+    FieldErrors:
+      type: object
+      additionalProperties: false
+      required: [fields]
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldErrorDetail'
+
+
+    ContentSeo:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string }
+        description: { type: string }
+        canonical_url: { type: string }
+        meta_title: { type: string }
+        h1_tag: { type: string }
+        image_alt: { type: string }
+        image_key: { type: string, nullable: true }
+
+
+    NestedAuthor:
+      type: object
+      additionalProperties: false
+      required: [id, name, bio, designation, writer_image_keys, status]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        bio: { type: string }
+        designation: { type: string }
+        writer_image_keys:
+          type: array
+          items: { type: string }
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+    NestedNewsCategory:
+      type: object
+      additionalProperties: false
+      required: [id, name, status]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+
+    News:
+      type: object
+      additionalProperties: false
+      required: [id, title, slug, body, news_category_ids, news_categories, author_ids, authors, image_key, description, button_name, reading_time, facebook, linkedin, twitter, instagram, youtube_url, seo, status, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string }
+        slug: { type: string }
+        body: { type: string }
+        news_category_ids:
+          type: array
+          items: { type: string, format: uuid }
+        news_categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/NestedNewsCategory'
+        author_ids:
+          type: array
+          items: { type: string, format: uuid }
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/NestedAuthor'
+        image_key: { type: string, nullable: true }
+        description: { type: string }
+        button_name: { type: string }
+        reading_time: { type: integer, minimum: 0 }
+        facebook: { type: string }
+        linkedin: { type: string }
+        twitter: { type: string }
+        instagram: { type: string }
+        youtube_url: { type: string }
+        seo:
+          $ref: '#/components/schemas/ContentSeo'
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+        created_at: { type: string, format: date-time }
+    NewsSummary:
+      type: object
+      additionalProperties: false
+      required: [id, seo, slug, news_categories, news_category_names, state]
+      properties:
+        id: { type: string, format: uuid }
+        seo: { type: string }
+        slug: { type: string }
+        news_categories: { type: integer, minimum: 0 }
+        news_category_names:
+          type: array
+          items: { type: string }
+        state:
+          $ref: '#/components/schemas/ContentStatus'
+
+    NewsList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/NewsSummary'
+        page:
+          type: integer
+          minimum: 1
+        per_page:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+
+    NewsWrite:
+      type: object
+      additionalProperties: false
+      required: [title]
+      properties:
+        title: { type: string, minLength: 1, maxLength: 200 }
+        slug: { type: string, maxLength: 128 }
+        body: { type: string, default: '' }
+        news_category_ids:
+          type: array
+          items: { type: string, format: uuid }
+          default: []
+        author_ids:
+          type: array
+          items: { type: string, format: uuid }
+          default: []
+        image_key: { type: string, nullable: true }
+        description: { type: string, default: '' }
+        button_name: { type: string, default: '', maxLength: 120 }
+        reading_time: { type: integer, minimum: 0, default: 0 }
+        facebook: { type: string, default: '' }
+        linkedin: { type: string, default: '' }
+        twitter: { type: string, default: '' }
+        instagram: { type: string, default: '' }
+        youtube_url: { type: string, default: '' }
+        seo:
+          $ref: '#/components/schemas/ContentSeo'
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+          default: draft
+
+  responses:
+    FieldErrors:
+      description: Field-level validation errors
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FieldErrors'
+    NewsNotFound:
+      description: Unknown record
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [code, message_key]
+            properties:
+              code:
+                type: string
+                const: not_found
+              message_key:
+                type: string
+                const: admin.news.not_found
+
