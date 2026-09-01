@@ -11,13 +11,13 @@ Related artifacts: [spec.md](./spec.md), [data-model.md](./data-model.md), [cont
 - Node.js 22 LTS and pnpm
 - Python 3.12
 - Docker and Docker Compose
-- A provisioned administrator (created with the Backend CLI; no self-registration)
+- A provisioned administrator (created with `flycatch-bootstrap`; no self-registration and no default password)
 
 ## Setup
 
 1. Copy environment config: `cp deployment/.env.example deployment/.env` and adjust values.
-2. Start all services: `docker compose -f deployment/docker-compose.yml up -d` (see [README.md](../../README.md#deployment)).
-3. Apply Backend migrations and provision one active administrator.
+2. Start all services: `docker compose -f deployment/docker-compose.yml up -d --build` (see [README.md](../../README.md#quick-start-docker-compose)).
+3. Apply Backend migrations, seed records, and bootstrap two staff users (`flycatch-bootstrap`). Compose does not create a default login. Full commands: [docs/onboarding.md](../../docs/onboarding.md).
 4. Generate OpenAPI consumers for Frontend and Administration FE from `specs/001-website-foundation/contracts/`; confirm Backend served OpenAPI matches the same files.
 5. Export the published snapshot (empty or seed `home` + `site_settings`) into `apps/Frontend/src/data/published.json`.
 6. Build `apps/Frontend` with `astro build` (`output: 'static'`).

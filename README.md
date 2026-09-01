@@ -43,37 +43,65 @@ See [001 contracts](specs/001-website-foundation/contracts/README.md) and [002 c
 
 ## Deployment
 
-Shared local and preview setup for Frontend, Administration FE, Backend, PostgreSQL, and object storage.
+Shared local and preview setup for Frontend, Administration FE, Backend, PostgreSQL, and object storage. Step-by-step first boot (including staff users) is also in [docs/onboarding.md](docs/onboarding.md).
 
 ### Prerequisites
 
 - Docker and Docker Compose
 - Node.js 22 LTS, pnpm, Python 3.12 (for local app development)
 
-### Quick start
+### Quick start (Docker Compose)
 
-```bash
-cp deployment/.env.example deployment/.env
-# Edit deployment/.env as needed
+Compose does **not** create staff accounts or apply migrations. There is no default login and no public sign-up.
 
-docker compose -f deployment/docker-compose.yml up -d
-```
+1. Copy environment config and set secrets (`JWT_SECRET` and the other `change-me` values):
 
-Gateway (default `http://localhost:8080`):
+   ```bash
+   cp deployment/.env.example deployment/.env
+   ```
+
+   Do not commit `deployment/.env`. Variable names are documented in `deployment/.env.example`.
+
+2. Build and start all services from the repository root:
+
+   ```bash
+   docker compose -f deployment/docker-compose.yml up -d --build
+   ```
+
+   From `deployment/` you can use `docker compose up -d --build` instead.
+
+3. After Postgres and MinIO are healthy, migrate, seed, and bootstrap two staff users:
+
+   ```bash
+   docker compose -f deployment/docker-compose.yml exec backend alembic upgrade head
+   docker compose -f deployment/docker-compose.yml exec backend flycatch-seed-records
+   docker compose -f deployment/docker-compose.yml exec backend flycatch-bootstrap \
+     --user-1-email admin1@example.com \
+     --user-2-email admin2@example.com \
+     --user-2-role editor
+   ```
+
+   Passwords are prompted (minimum 12 characters) unless you pass `--user-1-password` and `--user-2-password`. User 1 is always role `administrator`. Re-running bootstrap with the same emails is idempotent and does not reset passwords.
+
+   Example emails above are documentation only — use any addresses you control. Pytest uses different editor email/password fixtures; those are not created by Compose.
+
+4. Sign in at `http://localhost:8080/admin`. Later staff: `flycatch-provision-admin --email someone@example.com --role editor` (`--role` is required: `administrator` or `editor`).
+
+5. Rebuild app images after Frontend or Administration FE changes:
+
+   ```bash
+   docker compose -f deployment/docker-compose.yml up -d --build
+   ```
+
+   Stop the stack with `docker compose -f deployment/docker-compose.yml down`. Add `-v` only if you intend to wipe Postgres and MinIO volumes.
+
+Gateway (default `http://localhost:8080`, `GATEWAY_PORT` in `.env`):
 
 | Path | Service |
 | --- | --- |
 | `/` | Frontend |
 | `/admin` | Administration FE |
 | `/api` | Backend |
-
-After services are healthy:
-
-1. Run Backend migrations and `flycatch-bootstrap` (two staff users + default roles). `--role` is required on later `flycatch-provision-admin` calls.
-2. Export the published snapshot and build `apps/Frontend`.
-3. Rebuild containers when app images change: `docker compose -f deployment/docker-compose.yml up -d --build`
-
-Environment variables are documented in `deployment/.env.example`. Do not commit `deployment/.env`.
 
 ### Deployment files
 

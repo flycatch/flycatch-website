@@ -2,28 +2,35 @@
 
 ## Local setup
 
-1. `cp deployment/.env.example deployment/.env` and set `JWT_SECRET` to a long random value (do not reuse well-known passwords).
+Docker Compose starts Frontend, Administration FE, Backend, PostgreSQL, MinIO, and the gateway. It does **not** create staff users or apply migrations. There is no default login and no sign-up screen.
+
+1. `cp deployment/.env.example deployment/.env` and set `JWT_SECRET` (and other `change-me` values) to long random secrets. Do not commit `deployment/.env`.
 2. `docker compose -f deployment/docker-compose.yml up -d --build`
 3. Backend migrations: `docker compose -f deployment/docker-compose.yml exec backend alembic upgrade head`
 4. Seed records: `docker compose -f deployment/docker-compose.yml exec backend flycatch-seed-records`
 5. Bootstrap default roles and two staff users:
 
-   ```text
+   ```bash
    docker compose -f deployment/docker-compose.yml exec backend flycatch-bootstrap \
      --user-1-email admin1@example.com \
      --user-2-email admin2@example.com \
      --user-2-role editor
    ```
 
-   Passwords are prompted (minimum 12 characters) unless passed as flags. User 1 is always `administrator`. Re-running with the same emails is idempotent.
+   | Example identity | Role |
+   | --- | --- |
+   | `admin1@example.com` | `administrator` (always user 1) |
+   | `admin2@example.com` | `editor` (from `--user-2-role`) |
 
-6. Later staff: `flycatch-provision-admin --email someone@example.com --role editor` (`--role` is required: `administrator` or `editor`).
+   These emails are examples only. Passwords are **not** stored in the repo: they are prompted (minimum 12 characters) unless you pass `--user-1-password` and `--user-2-password`. Re-running with the same emails is idempotent and does not change existing passwords. Pytest fixtures (`editor1@example.com` / test passwords) are not created by this command.
+
+6. Later staff: `docker compose -f deployment/docker-compose.yml exec backend flycatch-provision-admin --email someone@example.com --role editor` (`--role` is required: `administrator` or `editor`).
 7. Generate Administration FE types: `cd apps/Administration-FE && npm run generate:client`
 8. Build Frontend: `cd apps/Frontend && pnpm install && pnpm run build`
 
-Gateway: `http://localhost:8080` (`/` Frontend, `/admin` Administration FE, `/api` Backend)
+Gateway: `http://localhost:8080` (`/` Frontend, `/admin` Administration FE, `/api` Backend). Sign in at `/admin` with the emails and passwords you chose at bootstrap.
 
-There is no sign-up screen. Tokens stay in Administration FE memory and are sent as `Authorization: Bearer`.
+Tokens stay in Administration FE memory and are sent as `Authorization: Bearer`.
 
 ## Publish-and-rebuild workflow
 
