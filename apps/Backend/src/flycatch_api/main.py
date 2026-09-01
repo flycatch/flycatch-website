@@ -47,7 +47,7 @@ from flycatch_api.api import (
     stubs,
 )
 
-app = FastAPI(title="Flycatch API", version="2.0.0", docs_url="/api/docs", openapi_url="/openapi.json")
+app = FastAPI(title="Flycatch API", version="2.0.0", docs_url="/api/docs", openapi_url="/api/openapi.json")
 
 
 @app.exception_handler(HTTPException)
