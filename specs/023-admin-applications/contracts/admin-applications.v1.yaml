@@ -1,0 +1,268 @@
+openapi: 3.1.0
+info:
+  title: Administration Applications
+  version: 1.0.0
+  summary: CRUD for job applications.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+
+  /admin/applications:
+    get:
+      operationId: listApplication
+      summary: List with search and pagination of 10
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 10
+      responses:
+        '200':
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationList'
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+    post:
+      operationId: createApplication
+      summary: Create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationWrite'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+  /admin/applications/{application_id}:
+    parameters:
+      - name: application_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getApplication
+      summary: Return one record
+      responses:
+        '200':
+          description: Record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+        '404':
+          $ref: '#/components/responses/ApplicationNotFound'
+    patch:
+      operationId: updateApplication
+      summary: Update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationWrite'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+        '404':
+          $ref: '#/components/responses/ApplicationNotFound'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+    delete:
+      operationId: deleteApplication
+      summary: Delete
+      responses:
+        '204':
+          description: Deleted
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+        '404':
+          $ref: '#/components/responses/ApplicationNotFound'
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ContentStatus:
+      type: string
+      enum: [draft, publish]
+    FieldErrorDetail:
+      type: object
+      additionalProperties: false
+      required: [message_key]
+      properties:
+        message_key:
+          type: string
+    FieldErrors:
+      type: object
+      additionalProperties: false
+      required: [fields]
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldErrorDetail'
+
+    Application:
+      type: object
+      additionalProperties: false
+      required: [id, resume_key, resume_format, name, last_name, email, phone, opened, current_ctc, expected_ctc, notice_period, experience, additional_info, openings, status, created_at]
+      properties:
+
+        id: { type: string, format: uuid }
+        resume_key: { type: string, nullable: true }
+        resume_format: { type: string }
+        name: { type: string }
+        last_name: { type: string }
+        email: { type: string, format: email }
+        phone: { type: string }
+        opened: { type: boolean }
+        current_ctc: { type: number, minimum: 0 }
+        expected_ctc: { type: number, minimum: 0 }
+        notice_period: { type: number, minimum: 0 }
+        experience: { type: number, minimum: 0 }
+        additional_info: { type: string }
+        openings: { type: string }
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+        created_at: { type: string, format: date-time }
+
+    ApplicationSummary:
+      type: object
+      additionalProperties: false
+      required: [id, openings, resume_format, name, state]
+      properties:
+        id: { type: string, format: uuid }
+        openings: { type: string }
+        resume_format: { type: string }
+        name: { type: string }
+        state:
+          $ref: '#/components/schemas/ContentStatus'
+
+    ApplicationList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationSummary'
+        page:
+          type: integer
+          minimum: 1
+        per_page:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+
+
+    ApplicationWrite:
+      type: object
+      additionalProperties: false
+      required: [name, last_name, email]
+      properties:
+        resume_key: { type: string, nullable: true }
+        name: { type: string, minLength: 1, maxLength: 120 }
+        last_name: { type: string, minLength: 1, maxLength: 120 }
+        email: { type: string, format: email }
+        phone: { type: string, default: '', maxLength: 40 }
+        opened: { type: boolean, default: false }
+        current_ctc: { type: number, minimum: 0, default: 0 }
+        expected_ctc: { type: number, minimum: 0, default: 0 }
+        notice_period: { type: number, minimum: 0, default: 0 }
+        experience: { type: number, minimum: 0, default: 0 }
+        additional_info: { type: string, default: '' }
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+          default: draft
+
+
+  responses:
+    FieldErrors:
+      description: Field-level validation errors
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FieldErrors'
+    ApplicationNotFound:
+      description: Unknown record
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [code, message_key]
+            properties:
+              code:
+                type: string
+                const: not_found
+              message_key:
+                type: string
+                const: admin.applications.not_found
+

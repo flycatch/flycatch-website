@@ -26,6 +26,7 @@ from flycatch_api.api import (
     admin_solutions,
     admin_technologies,
     landing_pages,
+    catalog,
     public_ai_services,
     public_authors,
     public_blogs,
@@ -113,6 +114,16 @@ app.include_router(landing_pages.admin_application_modernization, prefix="/api/v
 app.include_router(landing_pages.admin_mobile_application_development, prefix="/api/v1")
 app.include_router(landing_pages.admin_user_centered_design, prefix="/api/v1")
 app.include_router(landing_pages.admin_overview, prefix="/api/v1")
+app.include_router(catalog.admin_applications, prefix="/api/v1")
+app.include_router(catalog.admin_openings, prefix="/api/v1")
+app.include_router(catalog.admin_employee_testimonials, prefix="/api/v1")
+app.include_router(catalog.admin_email_configuration, prefix="/api/v1")
+app.include_router(catalog.admin_email_templates, prefix="/api/v1")
+app.include_router(catalog.admin_news_categories, prefix="/api/v1")
+app.include_router(catalog.admin_news, prefix="/api/v1")
+app.include_router(catalog.admin_resource_categories, prefix="/api/v1")
+app.include_router(catalog.admin_resources, prefix="/api/v1")
+app.include_router(catalog.admin_memberships, prefix="/api/v1")
 app.include_router(admin_media.router, prefix="/api/v1")
 app.include_router(publish.router, prefix="/api/v1")
 app.include_router(public_blogs.router, prefix="/api/v1")
@@ -137,6 +148,16 @@ app.include_router(landing_pages.public_application_modernization, prefix="/api/
 app.include_router(landing_pages.public_mobile_application_development, prefix="/api/v1")
 app.include_router(landing_pages.public_user_centered_design, prefix="/api/v1")
 app.include_router(landing_pages.public_overview, prefix="/api/v1")
+app.include_router(catalog.public_applications, prefix="/api/v1")
+app.include_router(catalog.public_openings, prefix="/api/v1")
+app.include_router(catalog.public_employee_testimonials, prefix="/api/v1")
+app.include_router(catalog.public_email_configuration, prefix="/api/v1")
+app.include_router(catalog.public_email_templates, prefix="/api/v1")
+app.include_router(catalog.public_news_categories, prefix="/api/v1")
+app.include_router(catalog.public_news, prefix="/api/v1")
+app.include_router(catalog.public_resource_categories, prefix="/api/v1")
+app.include_router(catalog.public_resources, prefix="/api/v1")
+app.include_router(catalog.public_memberships, prefix="/api/v1")
 app.include_router(public_media.router, prefix="/api/v1")
 app.include_router(stubs.router, prefix="/api/v1")
 

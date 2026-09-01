@@ -15,6 +15,19 @@ function isVideoSource(file?: File, key?: string): boolean {
   return false;
 }
 
+function isDocumentSource(file?: File, key?: string): boolean {
+  if (file) {
+    return (
+      file.type === 'application/pdf' ||
+      file.type === 'application/msword' ||
+      file.type.includes('officedocument') ||
+      /\.(pdf|doc|docx)$/i.test(file.name)
+    );
+  }
+  if (key) return /\.(pdf|doc|docx)$/i.test(key);
+  return false;
+}
+
 export default function MediaPreview({ mediaKeys = [], files = [], alt, onRemoveAt }: Props) {
   const [urls, setUrls] = useState<string[]>([]);
 
@@ -65,6 +78,10 @@ export default function MediaPreview({ mediaKeys = [], files = [], alt, onRemove
               <video className="media-preview media-preview-video" src={url} controls>
                 <track kind="captions" />
               </video>
+            ) : isDocumentSource(source?.file, source?.key) ? (
+              <p className="media-preview-file">
+                {source?.file?.name || source?.key || t('admin.media.remove')}
+              </p>
             ) : (
               <img className="media-preview" src={url} alt={alt} />
             )}
