@@ -1,0 +1,134 @@
+openapi: 3.1.0
+info:
+  title: Public Resources
+  version: 1.0.0
+servers:
+  - url: /api/v1
+security: []
+paths:
+
+  /public/resources:
+    get:
+      operationId: listPublicResources
+      summary: List published records
+      tags: [public]
+
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 10
+
+      responses:
+        '200':
+          description: Published list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicResourceList'
+
+
+  /public/resources/{slug}:
+    get:
+      operationId: getPublicResource
+      summary: Return one published record
+      tags: [public]
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Published record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicResource'
+        '404':
+          $ref: '#/components/responses/PublicNotFound'
+
+components:
+  schemas:
+
+    ContentSeo:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string }
+        description: { type: string }
+        canonical_url: { type: string }
+        meta_title: { type: string }
+        h1_tag: { type: string }
+        image_alt: { type: string }
+        image_key: { type: string, nullable: true }
+
+    PublicResourceCategory:
+      type: object
+      additionalProperties: false
+      required: [name]
+      properties:
+        name: { type: string }
+    PublicResource:
+      type: object
+      additionalProperties: false
+      required: [image_key, reading_time, title, button_name, slug, pdf_key, resource_categories, seo]
+      properties:
+        image_key: { type: string, nullable: true }
+        reading_time: { type: integer }
+        title: { type: string }
+        button_name: { type: string }
+        slug: { type: string }
+        pdf_key: { type: string, nullable: true }
+        resource_categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicResourceCategory'
+        seo:
+          $ref: '#/components/schemas/ContentSeo'
+    PublicResourceList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicResource'
+        page: { type: integer }
+        per_page: { type: integer }
+        total: { type: integer }
+  responses:
+
+    PublicNotFound:
+      description: Unknown or unpublished
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [code, message_key]
+            properties:
+              code:
+                type: string
+                const: not_found
+              message_key:
+                type: string
+

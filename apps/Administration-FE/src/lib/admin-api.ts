@@ -907,6 +907,59 @@ export async function deleteLanding(path: string, id: string): Promise<void> {
   await api<void>(`${path}/${id}`, { method: 'DELETE' });
 }
 
+export type CatalogListPayload = {
+  items: Array<Record<string, unknown> & { id: string; status?: string; state?: string }>;
+  page: number;
+  per_page: number;
+  total: number;
+};
+
+export async function listCatalog(path: string, q: string, page: number): Promise<CatalogListPayload> {
+  return api<CatalogListPayload>(
+    `${path}${queryString({ q: q.trim() || undefined, page, per_page: 10 })}`,
+  );
+}
+
+export async function listAllCatalog(path: string): Promise<Array<Record<string, unknown> & { id: string }>> {
+  const items: Array<Record<string, unknown> & { id: string }> = [];
+  let page = 1;
+  let total = Infinity;
+  while (items.length < total) {
+    const data = await listCatalog(path, '', page);
+    items.push(...data.items);
+    total = data.total;
+    if (!data.items.length) break;
+    page += 1;
+  }
+  return items;
+}
+
+export async function getCatalog(path: string, id: string): Promise<Record<string, unknown>> {
+  return api<Record<string, unknown>>(`${path}/${id}`);
+}
+
+export async function createCatalog(
+  path: string,
+  payload: Record<string, unknown>,
+): Promise<Record<string, unknown>> {
+  return api<Record<string, unknown>>(path, { method: 'POST', body: JSON.stringify(payload) });
+}
+
+export async function updateCatalog(
+  path: string,
+  id: string,
+  payload: Record<string, unknown>,
+): Promise<Record<string, unknown>> {
+  return api<Record<string, unknown>>(`${path}/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteCatalog(path: string, id: string): Promise<void> {
+  await api<void>(`${path}/${id}`, { method: 'DELETE' });
+}
+
 export function apiErrorMessage(caught: unknown, fallback = 'admin.workspace.request_failed'): string {
   if (caught instanceof AdminApiError) {
     const detail = caught.detail as {

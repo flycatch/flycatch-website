@@ -58,6 +58,9 @@ import DigitalTransformationForm from './DigitalTransformationForm';
 import LandingList from './LandingList';
 import LandingForm from './LandingForm';
 import { LANDING_SECTIONS, isLandingFormView, landingByView } from '../lib/landing-sections';
+import { CATALOG_SECTIONS, catalogByView, isCatalogFormView } from '../lib/catalog-sections';
+import CatalogList from './CatalogList';
+import CatalogForm from './CatalogForm';
 
 type View = AdminView;
 
@@ -96,6 +99,7 @@ function applyRoute(
     setEditingDataAnalyticId: (id: string | null) => void;
     setEditingDigitalTransformationId: (id: string | null) => void;
     setEditingLandingId: (id: string | null) => void;
+    setEditingCatalogId: (id: string | null) => void;
   },
 ) {
   setters.setView(route.view);
@@ -126,6 +130,7 @@ function applyRoute(
     route.view === 'digital_transformation_form' ? route.editingId : null,
   );
   setters.setEditingLandingId(isLandingFormView(route.view) ? route.editingId : null);
+  setters.setEditingCatalogId(isCatalogFormView(route.view) ? route.editingId : null);
 }
 
 export default function AdminShell() {
@@ -214,6 +219,10 @@ export default function AdminShell() {
     const route = readAdminLocation();
     return isLandingFormView(route.view) ? route.editingId : null;
   });
+  const [editingCatalogId, setEditingCatalogId] = useState<string | null>(() => {
+    const route = readAdminLocation();
+    return isCatalogFormView(route.view) ? route.editingId : null;
+  });
   const [session, setSession] = useState<SessionContext | null>(null);
   const [siteSettings, setSiteSettings] = useState<Record<string, unknown> | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -271,6 +280,7 @@ export default function AdminShell() {
       setEditingDataAnalyticId,
       setEditingDigitalTransformationId,
       setEditingLandingId,
+      setEditingCatalogId,
     });
   }, []);
 
@@ -407,6 +417,11 @@ export default function AdminShell() {
     }
     if (view === 'client_testimonials' || view === 'client_testimonial_form') {
       document.title = t('admin.workspace.client_testimonials');
+      return;
+    }
+    const catalog = catalogByView(view);
+    if (catalog) {
+      document.title = t(`admin.workspace.${catalog.resource}`);
       return;
     }
     if (view === 'roles') {
@@ -619,6 +634,9 @@ export default function AdminShell() {
   const canReadCategories = canReadResource(session, 'categories');
   const canReadClientLogos = canReadResource(session, 'client_logos');
   const canReadClientTestimonials = canReadResource(session, 'client_testimonials');
+  const canReadCatalogs = Object.fromEntries(
+    CATALOG_SECTIONS.map((section) => [section.resource, canReadResource(session, section.resource)]),
+  );
 
   if (!siteSettings) {
     const hasOtherSection =
@@ -640,7 +658,8 @@ export default function AdminShell() {
       canReadAuthors ||
       canReadCategories ||
       canReadClientLogos ||
-      canReadClientTestimonials;
+      canReadClientTestimonials ||
+      CATALOG_SECTIONS.some((section) => canReadCatalogs[section.resource]);
     if (!hasOtherSection && (workspaceError || !canReadSiteSettings)) {
       return (
         <main id="main" className="auth-layout">
@@ -960,6 +979,25 @@ export default function AdminShell() {
                 {t('admin.workspace.client_testimonials')}
               </a>
             </li>
+            )}
+            {CATALOG_SECTIONS.map(
+              (section) =>
+                canReadCatalogs[section.resource] && (
+                  <li key={section.resource}>
+                    <a
+                      href={adminListHref(section.listView as AdminView)}
+                      className={view === section.listView || view === section.formView ? 'active' : ''}
+                      aria-current={
+                        view === section.listView || view === section.formView ? 'page' : undefined
+                      }
+                      onClick={(event) =>
+                        onNavClick(event, adminListHref(section.listView as AdminView))
+                      }
+                    >
+                      {t(`admin.workspace.${section.resource}`)}
+                    </a>
+                  </li>
+                ),
             )}
             {canManageRoles && (
               <li>
@@ -1328,6 +1366,30 @@ export default function AdminShell() {
                 afterListSave(openClientTestimonials, t('admin.client_testimonials.saved'))
               }
             />
+          )}
+          {CATALOG_SECTIONS.map((section) =>
+            view === section.listView ? (
+              <CatalogList
+                key={`${section.resource}-${listEpoch}`}
+                section={section}
+                notice={message}
+                onAdd={() => openForm(section.listView as AdminView, null)}
+                onEdit={(id) => openForm(section.listView as AdminView, id)}
+              />
+            ) : view === section.formView ? (
+              <CatalogForm
+                key={`${section.formView}-${editingCatalogId || 'new'}`}
+                section={section}
+                entryId={editingCatalogId}
+                onCancel={() => openList(section.listView as AdminView)}
+                onSaved={() =>
+                  afterListSave(
+                    () => openList(section.listView as AdminView),
+                    t(`${section.ns}.saved`),
+                  )
+                }
+              />
+            ) : null,
           )}
           {view === 'roles' && (
             <RolesList

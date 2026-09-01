@@ -55,6 +55,16 @@ CONTENT_RESOURCES: tuple[RoleResource, ...] = (
     RoleResource(id="categories", type="categories", slug="default"),
     RoleResource(id="client_logos", type="client_logos", slug="default"),
     RoleResource(id="client_testimonials", type="client_testimonials", slug="default"),
+    RoleResource(id="applications", type="applications", slug="default"),
+    RoleResource(id="openings", type="openings", slug="default"),
+    RoleResource(id="employee_testimonials", type="employee_testimonials", slug="default"),
+    RoleResource(id="email_configuration", type="email_configuration", slug="default"),
+    RoleResource(id="email_templates", type="email_templates", slug="default"),
+    RoleResource(id="news_categories", type="news_categories", slug="default"),
+    RoleResource(id="news", type="news", slug="default"),
+    RoleResource(id="resource_categories", type="resource_categories", slug="default"),
+    RoleResource(id="resources", type="resources", slug="default"),
+    RoleResource(id="memberships", type="memberships", slug="default"),
 )
 DEFAULT_RESOURCES: tuple[RoleResource, ...] = (
     RoleResource(id="site_settings", type="site_settings", slug="default"),

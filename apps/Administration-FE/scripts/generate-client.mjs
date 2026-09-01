@@ -52,6 +52,25 @@ const userCenteredDesignContractsDir = join(
   'specs/021-admin-user-centered-design/contracts',
 );
 const overviewContractsDir = join(repoRoot, 'specs/022-admin-overview/contracts');
+const applicationsContractsDir = join(repoRoot, 'specs/023-admin-applications/contracts');
+const openingsContractsDir = join(repoRoot, 'specs/024-admin-openings/contracts');
+const employeeTestimonialsContractsDir = join(
+  repoRoot,
+  'specs/025-admin-employee-testimonials/contracts',
+);
+const emailConfigurationContractsDir = join(
+  repoRoot,
+  'specs/026-admin-email-configuration/contracts',
+);
+const emailTemplatesContractsDir = join(repoRoot, 'specs/027-admin-email-templates/contracts');
+const newsCategoriesContractsDir = join(repoRoot, 'specs/028-admin-news-categories/contracts');
+const newsContractsDir = join(repoRoot, 'specs/029-admin-news/contracts');
+const resourceCategoriesContractsDir = join(
+  repoRoot,
+  'specs/030-admin-resource-categories/contracts',
+);
+const resourcesContractsDir = join(repoRoot, 'specs/031-admin-resources/contracts');
+const membershipsContractsDir = join(repoRoot, 'specs/032-admin-memberships/contracts');
 
 const contractSets = [
   {
@@ -140,6 +159,16 @@ const contractSets = [
     dir: overviewContractsDir,
     files: ['admin-overview.v1.yaml'],
   },
+  { dir: applicationsContractsDir, files: ['admin-applications.v1.yaml'] },
+  { dir: openingsContractsDir, files: ['admin-openings.v1.yaml'] },
+  { dir: employeeTestimonialsContractsDir, files: ['admin-employee-testimonials.v1.yaml'] },
+  { dir: emailConfigurationContractsDir, files: ['admin-email-configuration.v1.yaml'] },
+  { dir: emailTemplatesContractsDir, files: ['admin-email-templates.v1.yaml'] },
+  { dir: newsCategoriesContractsDir, files: ['admin-news-categories.v1.yaml'] },
+  { dir: newsContractsDir, files: ['admin-news.v1.yaml'] },
+  { dir: resourceCategoriesContractsDir, files: ['admin-resource-categories.v1.yaml'] },
+  { dir: resourcesContractsDir, files: ['admin-resources.v1.yaml'] },
+  { dir: membershipsContractsDir, files: ['admin-memberships.v1.yaml'] },
 ];
 
 mkdirSync(outDir, { recursive: true });

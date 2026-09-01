@@ -40,7 +40,27 @@ CONTRACT_FILES = [
     SPECS / "021-admin-user-centered-design" / "contracts" / "public-user-centered-design.v1.yaml",
     SPECS / "022-admin-overview" / "contracts" / "admin-overview.v1.yaml",
     SPECS / "022-admin-overview" / "contracts" / "public-overview.v1.yaml",
-]
+    SPECS / "023-admin-applications" / "contracts" / "admin-applications.v1.yaml",
+    SPECS / "023-admin-applications" / "contracts" / "public-applications.v1.yaml",
+    SPECS / "024-admin-openings" / "contracts" / "admin-openings.v1.yaml",
+    SPECS / "024-admin-openings" / "contracts" / "public-openings.v1.yaml",
+    SPECS / "025-admin-employee-testimonials" / "contracts" / "admin-employee-testimonials.v1.yaml",
+    SPECS / "025-admin-employee-testimonials" / "contracts" / "public-employee-testimonials.v1.yaml",
+    SPECS / "026-admin-email-configuration" / "contracts" / "admin-email-configuration.v1.yaml",
+    SPECS / "026-admin-email-configuration" / "contracts" / "public-email-configuration.v1.yaml",
+    SPECS / "027-admin-email-templates" / "contracts" / "admin-email-templates.v1.yaml",
+    SPECS / "027-admin-email-templates" / "contracts" / "public-email-templates.v1.yaml",
+    SPECS / "028-admin-news-categories" / "contracts" / "admin-news-categories.v1.yaml",
+    SPECS / "028-admin-news-categories" / "contracts" / "public-news-categories.v1.yaml",
+    SPECS / "029-admin-news" / "contracts" / "admin-news.v1.yaml",
+    SPECS / "029-admin-news" / "contracts" / "public-news.v1.yaml",
+    SPECS / "030-admin-resource-categories" / "contracts" / "admin-resource-categories.v1.yaml",
+    SPECS / "030-admin-resource-categories" / "contracts" / "public-resource-categories.v1.yaml",
+    SPECS / "031-admin-resources" / "contracts" / "admin-resources.v1.yaml",
+    SPECS / "031-admin-resources" / "contracts" / "public-resources.v1.yaml",
+    SPECS / "032-admin-memberships" / "contracts" / "admin-memberships.v1.yaml",
+    SPECS / "032-admin-memberships" / "contracts" / "public-memberships.v1.yaml",
+];
 
 
 def _contract_paths() -> set[str]:

@@ -50,7 +50,10 @@ const files = [
   'components/IndustryForm.tsx',
   'components/CaseStudyCategoriesList.tsx',
   'components/CaseStudyCategoryForm.tsx',
-  'components/MultiSelect.tsx',
+  'components/LandingForm.tsx',
+  'components/CatalogList.tsx',
+  'components/CatalogForm.tsx',
+  'components/RelationCountCell.tsx',
 ];
 const allowedLiteral = new Set(['Title', 'Description', 'Primary heading', 'Summary', 'Body']);
 
