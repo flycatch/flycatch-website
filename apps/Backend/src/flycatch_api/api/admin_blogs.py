@@ -3,7 +3,9 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.orm import Session
 
+from flycatch_api.api.bulk_routes import attach_bulk_routes
 from flycatch_api.db import get_db
+from flycatch_api.models import Blog
 from flycatch_api.schemas.admin_blogs import BlogDetail, BlogList, BlogWrite
 from flycatch_api.security.dependencies import (
     CurrentSession,
@@ -75,3 +77,6 @@ def delete_blog(blog_id: UUID, session: CurrentSession, db: Session = Depends(ge
     except CatalogError as error:
         _raise(error)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+attach_bulk_routes(router, resource=RESOURCE, model=Blog, not_found_key="admin.blogs.not_found")

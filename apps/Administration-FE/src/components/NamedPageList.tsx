@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { apiErrorMessage } from '../lib/admin-api';
+import { applyPagedResult, useBulkTable } from '../lib/use-bulk-table';
 import { t } from '../lib/i18n';
+import {
+  BulkActionsBar,
+  BulkDeleteDialog,
+  RowSelectCell,
+  SelectAllHeader,
+} from './BulkTableControls';
 import TableLogo from './TableLogo';
 
 export type NamedPageSummary = {
@@ -27,6 +34,7 @@ interface Props {
   onEdit: (id: string) => void;
   list: (q: string, page: number) => Promise<NamedPageListData>;
   remove: (id: string) => Promise<void>;
+  bulkPath: string;
 }
 
 export default function NamedPageList({
@@ -37,6 +45,7 @@ export default function NamedPageList({
   onEdit,
   list,
   remove,
+  bulkPath,
 }: Props) {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
@@ -49,11 +58,19 @@ export default function NamedPageList({
   async function load(nextQuery: string, nextPage: number) {
     setError(null);
     try {
-      setData(await list(nextQuery, nextPage));
+      applyPagedResult(await list(nextQuery, nextPage), nextPage, setPage, setData);
     } catch {
       setError(t('admin.workspace.request_failed'));
     }
   }
+
+  const bulk = useBulkTable({
+    ids: data?.items.map((item) => item.id) ?? [],
+    resetKey: `${bulkPath}:${page}:${appliedQuery}`,
+    path: bulkPath,
+    onReload: () => load(appliedQuery, page),
+    onError: setError,
+  });
 
   useEffect(() => {
     load(appliedQuery, page).catch(() => undefined);
@@ -112,10 +129,12 @@ export default function NamedPageList({
           {error}
         </p>
       )}
+      <BulkActionsBar bulk={bulk} />
       <div className="roles-table-wrap" aria-busy={loading}>
         <table className="roles-table">
           <thead>
             <tr>
+              <SelectAllHeader bulk={bulk} />
               <th scope="col">{t(`${ns}.id`)}</th>
               {columnMode === 'cloud' ? (
                 <>
@@ -137,6 +156,7 @@ export default function NamedPageList({
           <tbody>
             {data?.items.map((item, index) => (
               <tr key={item.id}>
+                <RowSelectCell bulk={bulk} id={item.id} />
                 <td data-label={t(`${ns}.id`)}>
                   {(data.page - 1) * data.per_page + index + 1}
                 </td>
@@ -228,6 +248,7 @@ export default function NamedPageList({
           </div>
         </form>
       </dialog>
+      <BulkDeleteDialog bulk={bulk} />
     </section>
   );
 }

@@ -14,6 +14,7 @@ export default function DataAnalyticsList(props: Props) {
       columnMode="data"
       list={listDataAnalytics}
       remove={deleteDataAnalytic}
+      bulkPath="/admin/data-analytics"
       {...props}
     />
   );

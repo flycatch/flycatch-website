@@ -3,6 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.orm import Session
 
+from flycatch_api.api.bulk_routes import attach_bulk_routes
 from flycatch_api.db import get_db
 from flycatch_api.security.dependencies import (
     CurrentSession,
@@ -55,6 +56,13 @@ def admin_landing_router(
             return service.create(db, payload)
         except CatalogError as error:
             _raise(error)
+
+    attach_bulk_routes(
+        router,
+        resource=resource,
+        model=service.model,
+        not_found_key=f"admin.{resource}.not_found",
+    )
 
     @router.get("/{entry_id}", response_model=detail_model, operation_id=f"get_{resource}")
     def get_entry(entry_id: UUID, session: CurrentSession, db: Session = Depends(get_db)):

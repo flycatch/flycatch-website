@@ -5,7 +5,14 @@ import {
   listDigitalTransformations,
   type DigitalTransformationList,
 } from '../lib/admin-api';
+import { applyPagedResult, useBulkTable } from '../lib/use-bulk-table';
 import { t } from '../lib/i18n';
+import {
+  BulkActionsBar,
+  BulkDeleteDialog,
+  RowSelectCell,
+  SelectAllHeader,
+} from './BulkTableControls';
 import TableLogo from './TableLogo';
 
 interface Props {
@@ -26,11 +33,20 @@ export default function SolutionsList({ onAdd, onEdit, notice }: Props) {
   async function load(nextQuery: string, nextPage: number) {
     setError(null);
     try {
-      setData(await listDigitalTransformations(nextQuery, nextPage));
+      applyPagedResult(await listDigitalTransformations(nextQuery, nextPage), nextPage, setPage, setData);
     } catch {
       setError(t('admin.workspace.request_failed'));
     }
   }
+
+
+  const bulk = useBulkTable({
+    ids: data?.items.map((item) => item.id) ?? [],
+    resetKey: `/admin/digital-transformation:${page}:${appliedQuery}`,
+    path: '/admin/digital-transformation',
+    onReload: () => load(appliedQuery, page),
+    onError: setError,
+  });
 
   useEffect(() => {
     load(appliedQuery, page).catch(() => undefined);
@@ -89,10 +105,12 @@ export default function SolutionsList({ onAdd, onEdit, notice }: Props) {
           {error}
         </p>
       )}
+      <BulkActionsBar bulk={bulk} />
       <div className="roles-table-wrap" aria-busy={loading}>
         <table className="roles-table">
           <thead>
             <tr>
+              <SelectAllHeader bulk={bulk} />
               <th scope="col">{t('admin.digital_transformation.id')}</th>
               <th scope="col">{t('admin.digital_transformation.banner_title')}</th>
               <th scope="col">{t('admin.digital_transformation.banner_image')}</th>
@@ -104,6 +122,7 @@ export default function SolutionsList({ onAdd, onEdit, notice }: Props) {
           <tbody>
             {data?.items.map((item, index) => (
               <tr key={item.id}>
+                <RowSelectCell bulk={bulk} id={item.id} />
                 <td data-label={t('admin.digital_transformation.id')}>
                   {(data.page - 1) * data.per_page + index + 1}
                 </td>
@@ -185,6 +204,7 @@ export default function SolutionsList({ onAdd, onEdit, notice }: Props) {
           </div>
         </form>
       </dialog>
+      <BulkDeleteDialog bulk={bulk} />
     </section>
   );
 }

@@ -960,6 +960,23 @@ export async function deleteCatalog(path: string, id: string): Promise<void> {
   await api<void>(`${path}/${id}`, { method: 'DELETE' });
 }
 
+export async function bulkUnpublishRecords(
+  path: string,
+  ids: string[],
+): Promise<{ count: number }> {
+  return api<{ count: number }>(`${path}/bulk-unpublish`, {
+    method: 'POST',
+    body: JSON.stringify({ ids }),
+  });
+}
+
+export async function bulkDeleteRecords(path: string, ids: string[]): Promise<{ count: number }> {
+  return api<{ count: number }>(`${path}/bulk-delete`, {
+    method: 'POST',
+    body: JSON.stringify({ ids }),
+  });
+}
+
 export function apiErrorMessage(caught: unknown, fallback = 'admin.workspace.request_failed'): string {
   if (caught instanceof AdminApiError) {
     const detail = caught.detail as {
