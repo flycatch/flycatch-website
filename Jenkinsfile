@@ -1,3 +1,2 @@
-@Library('flycatch-jenkins-shared-library') _
-
+@Library('shared-lib') _
 cicdPipeline()

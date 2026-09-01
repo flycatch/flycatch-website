@@ -7,6 +7,7 @@ build:
   techStack: node
   dockerfile: apps/Frontend/Dockerfile
   context: apps/Frontend
+  args: {}
 
 sonar:
   enabled: true
@@ -14,16 +15,26 @@ sonar:
   projectKey: flycatch-website
 
 notifications:
-  enabled: false
+  enabled: true
 
 deploy:
   enabled: false
+  strategy: recreate
+  script: deploy.sh
+  paths: {}
 
 branches:
-  dev:
+  "feat/harbor-test":
     environment: dev
-    imageTag: dev-latest
+    imageTag: harbor-test
     build: true
     sonar: true
     docker: true
+    deploy: false
+
+ci:
+  pullRequests:
+    build: true
+    sonar: false
+    docker: false
     deploy: false
