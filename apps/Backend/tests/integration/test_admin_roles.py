@@ -78,6 +78,11 @@ def test_create_edit_and_delete_role(client, bootstrapped, seeded_records):
     assert "solutions" in resources
     assert "solution_details" in resources
     assert "solution_products" in resources
+    assert "memberships" in resources
+    assert "contacts" in resources
+    assert "downloads" in resources
+    assert "flycatch_saudi_arabia" in resources
+    assert "subscriptions" in resources
     assert catalogue.json()["actions"] == list(ACTIONS)
 
     created = client.post(

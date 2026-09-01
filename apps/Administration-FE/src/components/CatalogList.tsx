@@ -137,6 +137,13 @@ export default function CatalogList({ section, onAdd, onEdit, notice }: Props) {
                       </td>
                     );
                   }
+                  if (column.kind === 'bool') {
+                    return (
+                      <td key={column.key} data-label={label}>
+                        {value ? t(`${ns}.active.true`) : t(`${ns}.active.false`)}
+                      </td>
+                    );
+                  }
                   if (column.kind === 'date') {
                     const text = typeof value === 'string' && value ? value.slice(0, 10) : '—';
                     return (

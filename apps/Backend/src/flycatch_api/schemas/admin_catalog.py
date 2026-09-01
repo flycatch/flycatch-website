@@ -505,3 +505,185 @@ class MembershipWrite(BaseModel):
     images: list[MembershipImage] = Field(default_factory=list)
     seo: ContentSeo = Field(default_factory=ContentSeo)
     status: ContentStatus = ContentStatus.draft
+
+
+class Contact(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: UUID
+    name: str
+    last_name: str
+    email: EmailStr
+    country: str
+    phone: str
+    subject: str
+    contact_date: date | None
+    details: str
+    contact_type: str
+    company_name: str
+    status: ContentStatus
+    created_at: datetime
+
+
+class ContactSummary(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: UUID
+    name: str
+    email: str
+    country: str
+    state: ContentStatus
+
+
+class ContactList(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    items: list[ContactSummary]
+    page: int = Field(ge=1)
+    per_page: int = Field(ge=1)
+    total: int = Field(ge=0)
+
+
+class ContactWrite(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(min_length=1, max_length=120)
+    last_name: str = Field(default="", max_length=120)
+    email: EmailStr
+    country: str = Field(default="", max_length=120)
+    phone: str = Field(default="", max_length=40)
+    subject: str = Field(default="", max_length=200)
+    contact_date: date | None = None
+    details: str = ""
+    contact_type: str = Field(default="", max_length=120)
+    company_name: str = Field(default="", max_length=200)
+    status: ContentStatus = ContentStatus.draft
+
+
+class Download(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: UUID
+    name: str
+    company: str
+    file_key: str
+    status: ContentStatus
+    created_at: datetime
+
+
+class DownloadSummary(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: UUID
+    name: str
+    state: ContentStatus
+
+
+class DownloadList(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    items: list[DownloadSummary]
+    page: int = Field(ge=1)
+    per_page: int = Field(ge=1)
+    total: int = Field(ge=0)
+
+
+class DownloadWrite(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(min_length=1, max_length=200)
+    company: str = Field(default="", max_length=200)
+    file_key: str = Field(min_length=1, max_length=255)
+    status: ContentStatus = ContentStatus.draft
+
+
+class ServiceSectionItem(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    image_key: str | None = None
+    types_title: str = ""
+    contents: str = ""
+    links: str = ""
+
+
+class FlycatchSaudiArabia(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: UUID
+    banner_title: str
+    service_section: list[ServiceSectionItem]
+    banner_explore_text: str
+    services_title: str
+    video_key: str | None
+    seo: ContentSeo
+    status: ContentStatus
+    created_at: datetime
+
+
+class FlycatchSaudiArabiaSummary(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: UUID
+    banner_title: str
+    service_section: int
+    service_section_names: list[str]
+    video_format: str
+    state: ContentStatus
+
+
+class FlycatchSaudiArabiaList(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    items: list[FlycatchSaudiArabiaSummary]
+    page: int = Field(ge=1)
+    per_page: int = Field(ge=1)
+    total: int = Field(ge=0)
+
+
+class FlycatchSaudiArabiaWrite(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    banner_title: str = Field(min_length=1, max_length=200)
+    service_section: list[ServiceSectionItem] = Field(default_factory=list)
+    banner_explore_text: str = Field(default="", max_length=200)
+    services_title: str = Field(default="", max_length=200)
+    video_key: str | None = None
+    seo: ContentSeo = Field(default_factory=ContentSeo)
+    status: ContentStatus = ContentStatus.draft
+
+
+class Subscription(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: UUID
+    email: EmailStr
+    active: bool
+    status: ContentStatus
+    created_at: datetime
+
+
+class SubscriptionSummary(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: UUID
+    email: str
+    active: bool
+    created_at: datetime
+    state: ContentStatus
+
+
+class SubscriptionList(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    items: list[SubscriptionSummary]
+    page: int = Field(ge=1)
+    per_page: int = Field(ge=1)
+    total: int = Field(ge=0)
+
+
+class SubscriptionWrite(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    email: EmailStr
+    active: bool = False
+    status: ContentStatus = ContentStatus.draft
