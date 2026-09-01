@@ -3,7 +3,9 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.orm import Session
 
+from flycatch_api.api.bulk_routes import attach_bulk_routes, role_delete_guard
 from flycatch_api.db import get_db
+from flycatch_api.models import Role
 from flycatch_api.schemas.admin_roles import RoleCatalogue, RoleDetail, RoleList, RoleWrite
 from flycatch_api.security.dependencies import RequireRoles
 from flycatch_api.services.role_service import PER_PAGE, RoleError, RoleService
@@ -65,3 +67,14 @@ def delete_role(role_id: UUID, _session: RequireRoles, db: Session = Depends(get
     except RoleError as error:
         _raise_role_error(error)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+attach_bulk_routes(
+    router,
+    resource="roles",
+    model=Role,
+    not_found_key="admin.roles.not_found",
+    supports_unpublish=False,
+    auth="roles",
+    validate_delete=role_delete_guard,
+)

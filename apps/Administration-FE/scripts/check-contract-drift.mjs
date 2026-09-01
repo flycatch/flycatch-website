@@ -40,6 +40,10 @@ const required = [
   'admin-resource-categories.v1.ts',
   'admin-resources.v1.ts',
   'admin-memberships.v1.ts',
+  'admin-contacts.v1.ts',
+  'admin-downloads.v1.ts',
+  'admin-flycatch-saudi-arabia.v1.ts',
+  'admin-subscriptions.v1.ts',
 ];
 
 let failed = false;

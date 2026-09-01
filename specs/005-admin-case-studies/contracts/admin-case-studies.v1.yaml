@@ -74,6 +74,65 @@ paths:
           $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
         '422':
           $ref: '#/components/responses/FieldErrors'
+  /admin/case-studies/bulk-unpublish:
+    post:
+      operationId: bulkUnpublishCaseStudies
+      summary: Set selected published entries to draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ids]
+              properties:
+                ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 100
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: Bulk action result
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          description: One or more records were not found
+
+  /admin/case-studies/bulk-delete:
+    post:
+      operationId: bulkDeleteCaseStudies
+      summary: Delete selected entries
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ids]
+              properties:
+                ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 100
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: Bulk action result
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          description: One or more records were not found
+
+
   /admin/case-studies/{case_study_id}:
     parameters:
       - $ref: '#/components/parameters/CaseStudyId'
@@ -187,6 +246,65 @@ paths:
           $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
         '422':
           $ref: '#/components/responses/FieldErrors'
+  /admin/industries/bulk-unpublish:
+    post:
+      operationId: bulkUnpublishIndustries
+      summary: Set selected published entries to draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ids]
+              properties:
+                ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 100
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: Bulk action result
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          description: One or more records were not found
+
+  /admin/industries/bulk-delete:
+    post:
+      operationId: bulkDeleteIndustries
+      summary: Delete selected entries
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ids]
+              properties:
+                ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 100
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: Bulk action result
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          description: One or more records were not found
+
+
   /admin/industries/{industry_id}:
     parameters:
       - $ref: '#/components/parameters/IndustryId'
@@ -302,6 +420,65 @@ paths:
           $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
         '422':
           $ref: '#/components/responses/FieldErrors'
+  /admin/case-study-categories/bulk-unpublish:
+    post:
+      operationId: bulkUnpublishCaseStudyCategories
+      summary: Set selected published entries to draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ids]
+              properties:
+                ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 100
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: Bulk action result
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          description: One or more records were not found
+
+  /admin/case-study-categories/bulk-delete:
+    post:
+      operationId: bulkDeleteCaseStudyCategories
+      summary: Delete selected entries
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ids]
+              properties:
+                ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 100
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: Bulk action result
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          description: One or more records were not found
+
+
   /admin/case-study-categories/{category_id}:
     parameters:
       - $ref: '#/components/parameters/CaseStudyCategoryId'
@@ -417,6 +594,65 @@ paths:
           $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
         '422':
           $ref: '#/components/responses/FieldErrors'
+  /admin/technologies/bulk-unpublish:
+    post:
+      operationId: bulkUnpublishTechnologies
+      summary: Set selected published entries to draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ids]
+              properties:
+                ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 100
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: Bulk action result
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          description: One or more records were not found
+
+  /admin/technologies/bulk-delete:
+    post:
+      operationId: bulkDeleteTechnologies
+      summary: Delete selected entries
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ids]
+              properties:
+                ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 100
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: Bulk action result
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          description: One or more records were not found
+
+
   /admin/technologies/{technology_id}:
     parameters:
       - $ref: '#/components/parameters/TechnologyId'

@@ -3,7 +3,9 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.orm import Session
 
+from flycatch_api.api.bulk_routes import attach_bulk_routes
 from flycatch_api.db import get_db
+from flycatch_api.models import AiService as BulkModel
 from flycatch_api.schemas.admin_ai_services import AiService, AiServiceList, AiServiceWrite
 from flycatch_api.security.dependencies import (
     CurrentSession,
@@ -81,3 +83,5 @@ def delete_ai_service(ai_service_id: UUID, session: CurrentSession, db: Session 
     except CatalogError as error:
         _raise(error)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+attach_bulk_routes(router, resource=RESOURCE, model=BulkModel, not_found_key='admin.ai_services.not_found')

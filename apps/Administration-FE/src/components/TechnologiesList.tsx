@@ -5,7 +5,14 @@ import {
   listTechnologies,
   type TechnologyList,
 } from '../lib/admin-api';
+import { applyPagedResult, useBulkTable } from '../lib/use-bulk-table';
 import { t } from '../lib/i18n';
+import {
+  BulkActionsBar,
+  BulkDeleteDialog,
+  RowSelectCell,
+  SelectAllHeader,
+} from './BulkTableControls';
 import TableLogo from './TableLogo';
 
 interface Props {
@@ -26,12 +33,20 @@ export default function TechnologiesList({ onAdd, onEdit, notice }: Props) {
   async function load(nextQuery: string, nextPage: number) {
     setError(null);
     try {
-      const result = await listTechnologies(nextQuery, nextPage);
-      setData(result);
+      applyPagedResult(await listTechnologies(nextQuery, nextPage), nextPage, setPage, setData);
     } catch {
       setError(t('admin.workspace.request_failed'));
     }
   }
+
+
+  const bulk = useBulkTable({
+    ids: data?.items.map((item) => item.id) ?? [],
+    resetKey: `/admin/technologies:${page}:${appliedQuery}`,
+    path: '/admin/technologies',
+    onReload: () => load(appliedQuery, page),
+    onError: setError,
+  });
 
   useEffect(() => {
     load(appliedQuery, page).catch(() => undefined);
@@ -98,10 +113,12 @@ export default function TechnologiesList({ onAdd, onEdit, notice }: Props) {
           {error}
         </p>
       )}
+      <BulkActionsBar bulk={bulk} />
       <div className="roles-table-wrap" aria-busy={loading}>
         <table className="roles-table">
           <thead>
             <tr>
+              <SelectAllHeader bulk={bulk} />
               <th scope="col">{t('admin.technologies.id')}</th>
               <th scope="col">{t('admin.technologies.name')}</th>
               <th scope="col">{t('admin.technologies.logo')}</th>
@@ -112,6 +129,7 @@ export default function TechnologiesList({ onAdd, onEdit, notice }: Props) {
           <tbody>
             {data?.items.map((item, index) => (
               <tr key={item.id}>
+                <RowSelectCell bulk={bulk} id={item.id} />
                 <td data-label={t('admin.technologies.id')}>
                   {(data.page - 1) * data.per_page + index + 1}
                 </td>
@@ -187,6 +205,7 @@ export default function TechnologiesList({ onAdd, onEdit, notice }: Props) {
           </div>
         </form>
       </dialog>
+      <BulkDeleteDialog bulk={bulk} />
     </section>
   );
 }

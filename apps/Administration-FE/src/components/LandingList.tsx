@@ -5,8 +5,15 @@ import {
   listLandings,
   type LandingListPayload,
 } from '../lib/admin-api';
+import { applyPagedResult, useBulkTable } from '../lib/use-bulk-table';
 import { t } from '../lib/i18n';
 import type { LandingSection } from '../lib/landing-sections';
+import {
+  BulkActionsBar,
+  BulkDeleteDialog,
+  RowSelectCell,
+  SelectAllHeader,
+} from './BulkTableControls';
 import TableLogo from './TableLogo';
 
 interface Props {
@@ -34,11 +41,19 @@ export default function LandingList({ section, onAdd, onEdit, notice }: Props) {
   async function load(nextQuery: string, nextPage: number) {
     setError(null);
     try {
-      setData(await listLandings(section.path, nextQuery, nextPage));
+      applyPagedResult(await listLandings(section.path, nextQuery, nextPage), nextPage, setPage, setData);
     } catch {
       setError(t('admin.workspace.request_failed'));
     }
   }
+
+  const bulk = useBulkTable({
+    ids: data?.items.map((item) => item.id) ?? [],
+    resetKey: `${section.path}:${page}:${appliedQuery}`,
+    path: section.path,
+    onReload: () => load(appliedQuery, page),
+    onError: setError,
+  });
 
   useEffect(() => {
     load(appliedQuery, page).catch(() => undefined);
@@ -97,6 +112,7 @@ export default function LandingList({ section, onAdd, onEdit, notice }: Props) {
           {error}
         </p>
       )}
+      <BulkActionsBar bulk={bulk} />
       {loading ? (
         <p className="loading-state" role="status">
           <span className="spinner" aria-hidden="true" />
@@ -107,6 +123,7 @@ export default function LandingList({ section, onAdd, onEdit, notice }: Props) {
           <table className="roles-table">
             <thead>
               <tr>
+                <SelectAllHeader bulk={bulk} />
                 <th scope="col">{t(`${ns}.id`)}</th>
                 <th scope="col">{t(`${ns}.banner_title`)}</th>
                 <th scope="col">{t(`${ns}.banner_image`)}</th>
@@ -127,6 +144,7 @@ export default function LandingList({ section, onAdd, onEdit, notice }: Props) {
             <tbody>
               {data?.items.map((item, index) => (
                 <tr key={item.id}>
+                  <RowSelectCell bulk={bulk} id={item.id} />
                   <td data-label={t(`${ns}.id`)}>{(data.page - 1) * data.per_page + index + 1}</td>
                   <td data-label={t(`${ns}.banner_title`)}>{item.banner_title}</td>
                   <td data-label={t(`${ns}.banner_image`)}>
@@ -206,6 +224,7 @@ export default function LandingList({ section, onAdd, onEdit, notice }: Props) {
           </button>
         </div>
       </dialog>
+      <BulkDeleteDialog bulk={bulk} />
     </section>
   );
 }
