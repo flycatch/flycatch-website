@@ -1,0 +1,29 @@
+app:
+  name: flycatch-website
+
+registry: registry.k3s.flycatchtech.in
+
+build:
+  techStack: node
+  dockerfile: apps/Frontend/Dockerfile
+  context: apps/Frontend
+
+sonar:
+  enabled: true
+  host: https://sonarqube.flycatchtech.in/
+  projectKey: flycatch-website
+
+notifications:
+  enabled: false
+
+deploy:
+  enabled: false
+
+branches:
+  dev:
+    environment: dev
+    imageTag: dev-latest
+    build: true
+    sonar: true
+    docker: true
+    deploy: false
