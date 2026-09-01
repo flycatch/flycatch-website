@@ -5,9 +5,9 @@
   "private": true,
   "scripts": {
     "dev": "astro dev --host",
-    "build": "astro build",
+    "build": "node scripts/ensure-published-snapshot.mjs && astro build",
     "preview": "astro preview --host 0.0.0.0 --port 4321",
-    "check": "astro check",
+    "check": "node scripts/ensure-published-snapshot.mjs && astro check",
     "generate:types": "node scripts/generate-types.mjs",
     "check:contracts": "node scripts/check-contract-drift.mjs",
     "check:seo": "node scripts/check-seo.mjs",

@@ -1,0 +1,54 @@
+{
+  "revision": "seed",
+  "written_at": "2026-01-01T00:00:00Z",
+  "site_settings": {
+    "site_name": "Flycatch",
+    "default_locale": "en",
+    "locale_url_strategy": "unprefixed_default",
+    "robots_policy": "index_public",
+    "default_social_image_key": null,
+    "canonical_origin": "http://localhost:8080"
+  },
+  "pages": [
+    {
+      "slug": "home",
+      "seo": {
+        "title": "Flycatch — Foundation",
+        "description": "Production-ready SEO-first website foundation placeholder.",
+        "canonical_path": "/",
+        "indexable": true,
+        "social_title": "Flycatch — Foundation",
+        "social_description": "Production-ready SEO-first website foundation placeholder.",
+        "social_image_key": null,
+        "primary_heading": "Flycatch Foundation",
+        "summary": "Foundation placeholder for the public website.",
+        "structured_data_templates": ["organization", "web_page"]
+      },
+      "body": "This is the foundation home page. Content is bound at build time from the published snapshot.",
+      "message_keys": {
+        "summary": "page.home.summary",
+        "body": "page.home.body"
+      }
+    },
+    {
+      "slug": "about",
+      "seo": {
+        "title": "About Flycatch",
+        "description": "About this foundation site.",
+        "canonical_path": "/about",
+        "indexable": true,
+        "social_title": "About Flycatch",
+        "social_description": "About this foundation site.",
+        "social_image_key": null,
+        "primary_heading": "About",
+        "summary": "About this foundation site.",
+        "structured_data_templates": ["organization", "web_page"]
+      },
+      "body": "This placeholder route demonstrates repeatable scaffolding conventions.",
+      "message_keys": {
+        "summary": "page.about.summary",
+        "body": "page.about.body"
+      }
+    }
+  ]
+}

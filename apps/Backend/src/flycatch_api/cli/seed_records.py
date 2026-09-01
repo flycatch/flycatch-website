@@ -33,6 +33,24 @@ HOME_PAGE = {
     "message_keys": {"summary": "page.home.summary", "body": "page.home.body"},
 }
 
+ABOUT_PAGE = {
+    "slug": "about",
+    "seo": {
+        "title": "About Flycatch",
+        "description": "About this foundation site.",
+        "canonical_path": "/about",
+        "indexable": True,
+        "social_title": "About Flycatch",
+        "social_description": "About this foundation site.",
+        "social_image_key": None,
+        "primary_heading": "About",
+        "summary": "About this foundation site.",
+        "structured_data_templates": ["organization", "web_page"],
+    },
+    "body": "This placeholder route demonstrates repeatable scaffolding conventions.",
+    "message_keys": {"summary": "page.about.summary", "body": "page.about.body"},
+}
+
 
 def _attribution_actor(db) -> uuid.UUID:
     admin = db.query(Administrator).order_by(Administrator.created_at).first()
@@ -49,6 +67,7 @@ def main() -> None:
         for record_type, slug, payload in [
             (RecordType.site_settings, "default", SITE_SETTINGS),
             (RecordType.page, "home", HOME_PAGE),
+            (RecordType.page, "about", ABOUT_PAGE),
         ]:
             existing = (
                 db.query(ManagedRecord)
