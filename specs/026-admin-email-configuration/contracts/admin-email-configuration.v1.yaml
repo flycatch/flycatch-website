@@ -70,6 +70,65 @@ paths:
 
         '422':
           $ref: '#/components/responses/FieldErrors'
+  /admin/email-configuration/bulk-unpublish:
+    post:
+      operationId: bulkUnpublishEmailConfiguration
+      summary: Set selected published entries to draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ids]
+              properties:
+                ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 100
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: Bulk action result
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          description: One or more records were not found
+
+  /admin/email-configuration/bulk-delete:
+    post:
+      operationId: bulkDeleteEmailConfiguration
+      summary: Delete selected entries
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ids]
+              properties:
+                ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 100
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: Bulk action result
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          description: One or more records were not found
+
+
   /admin/email-configuration/{config_id}:
     parameters:
       - name: config_id

@@ -5,7 +5,14 @@ import {
   listSolutionProducts,
   type SolutionProductList,
 } from '../lib/admin-api';
+import { applyPagedResult, useBulkTable } from '../lib/use-bulk-table';
 import { t } from '../lib/i18n';
+import {
+  BulkActionsBar,
+  BulkDeleteDialog,
+  RowSelectCell,
+  SelectAllHeader,
+} from './BulkTableControls';
 
 interface Props {
   onAdd: () => void;
@@ -30,11 +37,20 @@ export default function SolutionProductsList({ onAdd, onEdit, notice }: Props) {
   async function load(nextQuery: string, nextPage: number) {
     setError(null);
     try {
-      setData(await listSolutionProducts(nextQuery, nextPage));
+      applyPagedResult(await listSolutionProducts(nextQuery, nextPage), nextPage, setPage, setData);
     } catch {
       setError(t('admin.workspace.request_failed'));
     }
   }
+
+
+  const bulk = useBulkTable({
+    ids: data?.items.map((item) => item.id) ?? [],
+    resetKey: `/admin/solution-products:${page}:${appliedQuery}`,
+    path: '/admin/solution-products',
+    onReload: () => load(appliedQuery, page),
+    onError: setError,
+  });
 
   useEffect(() => {
     load(appliedQuery, page).catch(() => undefined);
@@ -76,10 +92,12 @@ export default function SolutionProductsList({ onAdd, onEdit, notice }: Props) {
           {error}
         </p>
       )}
+      <BulkActionsBar bulk={bulk} />
       <div className="roles-table-wrap" aria-busy={loading}>
         <table className="roles-table">
           <thead>
             <tr>
+              <SelectAllHeader bulk={bulk} />
               <th scope="col">{t('admin.solution_products.id')}</th>
               <th scope="col">{t('admin.solution_products.product_title')}</th>
               <th scope="col">{t('admin.solution_products.product_description')}</th>
@@ -91,6 +109,7 @@ export default function SolutionProductsList({ onAdd, onEdit, notice }: Props) {
           <tbody>
             {data?.items.map((item, index) => (
               <tr key={item.id}>
+                <RowSelectCell bulk={bulk} id={item.id} />
                 <td data-label={t('admin.solution_products.id')}>
                   {(data.page - 1) * data.per_page + index + 1}
                 </td>
@@ -183,6 +202,7 @@ export default function SolutionProductsList({ onAdd, onEdit, notice }: Props) {
           </div>
         </form>
       </dialog>
+      <BulkDeleteDialog bulk={bulk} />
     </section>
   );
 }

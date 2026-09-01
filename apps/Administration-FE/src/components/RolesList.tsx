@@ -5,7 +5,14 @@ import {
   listRoles,
   type RoleList,
 } from '../lib/admin-api';
+import { applyPagedResult, useBulkTable } from '../lib/use-bulk-table';
 import { t } from '../lib/i18n';
+import {
+  BulkActionsBar,
+  BulkDeleteDialog,
+  RowSelectCell,
+  SelectAllHeader,
+} from './BulkTableControls';
 
 interface Props {
   onAdd: () => void;
@@ -25,12 +32,24 @@ export default function RolesList({ onAdd, onEdit, notice }: Props) {
   async function load(nextQuery: string, nextPage: number) {
     setError(null);
     try {
-      const result = await listRoles(nextQuery, nextPage);
-      setData(result);
+      applyPagedResult(await listRoles(nextQuery, nextPage), nextPage, setPage, setData);
     } catch {
       setError(t('admin.workspace.load_failed'));
     }
   }
+
+  const bulk = useBulkTable({
+    ids: data?.items.map((item) => item.id) ?? [],
+    resetKey: `/admin/roles:${page}:${appliedQuery}`,
+    path: '/admin/roles',
+    supportsUnpublish: false,
+    canSelect: (id) => {
+      const role = data?.items.find((item) => item.id === id);
+      return Boolean(role) && !role?.is_system && (role?.user_count ?? 0) === 0;
+    },
+    onReload: () => load(appliedQuery, page),
+    onError: setError,
+  });
 
   useEffect(() => {
     load(appliedQuery, page).catch(() => undefined);
@@ -102,10 +121,12 @@ export default function RolesList({ onAdd, onEdit, notice }: Props) {
           {error}
         </p>
       )}
+      <BulkActionsBar bulk={bulk} />
       <div className="roles-table-wrap" aria-busy={loading}>
         <table className="roles-table">
           <thead>
             <tr>
+              <SelectAllHeader bulk={bulk} />
               <th scope="col">{t('admin.roles.name')}</th>
               <th scope="col">{t('admin.roles.description')}</th>
               <th scope="col">{t('admin.roles.users')}</th>
@@ -115,6 +136,7 @@ export default function RolesList({ onAdd, onEdit, notice }: Props) {
           <tbody>
             {data?.items.map((role) => (
               <tr key={role.id}>
+                <RowSelectCell bulk={bulk} id={role.id} />
                 <td data-label={t('admin.roles.name')}>{role.name}</td>
                 <td data-label={t('admin.roles.description')}>{role.description || '—'}</td>
                 <td data-label={t('admin.roles.users')}>{role.user_count}</td>
@@ -194,6 +216,7 @@ export default function RolesList({ onAdd, onEdit, notice }: Props) {
           </div>
         </form>
       </dialog>
+      <BulkDeleteDialog bulk={bulk} />
     </section>
   );
 }

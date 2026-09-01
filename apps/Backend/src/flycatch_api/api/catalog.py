@@ -3,6 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.orm import Session
 
+from flycatch_api.api.bulk_routes import attach_bulk_routes
 from flycatch_api.db import get_db
 from flycatch_api.schemas import admin_catalog as admin
 from flycatch_api.schemas import public_catalog as public
@@ -54,6 +55,13 @@ def admin_crud(*, prefix: str, tags: str, resource: str, list_model, detail_mode
             return svc.create(db, payload)
         except CatalogError as error:
             _raise(error)
+
+    attach_bulk_routes(
+        router,
+        resource=resource,
+        model=svc.model,
+        not_found_key=f"admin.{resource}.not_found",
+    )
 
     path = "/{" + id_name + "}"
     ns = {

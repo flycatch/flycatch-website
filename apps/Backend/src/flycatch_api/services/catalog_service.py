@@ -235,6 +235,8 @@ def public_application(row: ApplicationRow) -> PublicApplication:
 
 
 class ApplicationService:
+    model = ApplicationRow
+
     def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> ApplicationList:
         query = db.query(ApplicationRow)
         if q and q.strip():
@@ -332,6 +334,7 @@ class ApplicationService:
 
 
 class OpeningService:
+    model = OpeningRow
     def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> OpeningList:
         query = db.query(OpeningRow)
         if q and q.strip():
@@ -596,6 +599,7 @@ resource_category_service = NamedCatalogService(
 
 
 class EmployeeTestimonialService:
+    model = EmployeeTestimonialRow
     def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> EmployeeTestimonialList:
         query = db.query(EmployeeTestimonialRow)
         if q and q.strip():
@@ -711,6 +715,7 @@ class EmployeeTestimonialService:
 
 
 class EmailConfigurationService:
+    model = EmailConfigurationRow
     def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> EmailConfigurationList:
         query = db.query(EmailConfigurationRow)
         if q and q.strip():
@@ -810,6 +815,7 @@ class EmailConfigurationService:
 
 
 class EmailTemplateService:
+    model = EmailTemplateRow
     def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> EmailTemplateList:
         query = db.query(EmailTemplateRow)
         if q and q.strip():
@@ -913,6 +919,7 @@ class EmailTemplateService:
 
 
 class NewsService:
+    model = NewsRow
     def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> NewsList:
         query = db.query(NewsRow).options(joinedload(NewsRow.category_links).joinedload(NewsCategoryLink.category))
         if q and q.strip():
@@ -1094,6 +1101,7 @@ class NewsService:
 
 
 class ResourceService:
+    model = ResourceRow
     def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> ResourceList:
         query = db.query(ResourceRow)
         if q and q.strip():
@@ -1236,6 +1244,7 @@ class ResourceService:
 
 
 class MembershipService:
+    model = MembershipRow
     def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> MembershipList:
         query = db.query(MembershipRow)
         if q and q.strip():
@@ -1355,6 +1364,7 @@ def _unique_email(db: Session, email: str, current_id: UUID | None) -> str:
 
 
 class ContactService:
+    model = ContactRow
     def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> ContactList:
         query = db.query(ContactRow)
         if q and q.strip():
@@ -1470,6 +1480,7 @@ class ContactService:
 
 
 class DownloadService:
+    model = DownloadRow
     def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> DownloadList:
         query = db.query(DownloadRow)
         if q and q.strip():
@@ -1545,6 +1556,7 @@ class DownloadService:
 
 
 class FlycatchSaudiArabiaService:
+    model = FlycatchSaudiArabiaRow
     def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> FlycatchSaudiArabiaList:
         query = db.query(FlycatchSaudiArabiaRow)
         if q and q.strip():
@@ -1668,6 +1680,7 @@ class FlycatchSaudiArabiaService:
 
 
 class SubscriptionService:
+    model = SubscriptionRow
     def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> SubscriptionList:
         query = db.query(SubscriptionRow)
         if q and q.strip():

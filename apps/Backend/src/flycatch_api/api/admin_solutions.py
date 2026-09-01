@@ -3,7 +3,9 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.orm import Session
 
+from flycatch_api.api.bulk_routes import attach_bulk_routes
 from flycatch_api.db import get_db
+from flycatch_api.models import Solution as BulkModel
 from flycatch_api.schemas.admin_solutions import Solution, SolutionList, SolutionWrite
 from flycatch_api.security.dependencies import (
     CurrentSession,
@@ -79,3 +81,5 @@ def delete_solution(solution_id: UUID, session: CurrentSession, db: Session = De
     except CatalogError as error:
         _raise(error)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+attach_bulk_routes(router, resource=RESOURCE, model=BulkModel, not_found_key='admin.solutions.not_found')

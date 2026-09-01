@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { apiErrorMessage, deleteAuthor, listAuthors, type Author } from '../lib/admin-api';
+import { useBulkTable } from '../lib/use-bulk-table';
 import { t } from '../lib/i18n';
+import {
+  BulkActionsBar,
+  BulkDeleteDialog,
+  RowSelectCell,
+  SelectAllHeader,
+} from './BulkTableControls';
 
 interface Props {
   onAdd: () => void;
@@ -23,6 +30,14 @@ export default function AuthorsList({ onAdd, onEdit, notice }: Props) {
       setError(t('admin.workspace.request_failed'));
     }
   }
+
+  const bulk = useBulkTable({
+    ids: items?.map((item) => item.id) ?? [],
+    resetKey: 'authors',
+    path: '/admin/authors',
+    onReload: () => load(),
+    onError: setError,
+  });
 
   useEffect(() => {
     load().catch(() => undefined);
@@ -70,10 +85,12 @@ export default function AuthorsList({ onAdd, onEdit, notice }: Props) {
           {error}
         </p>
       )}
+      <BulkActionsBar bulk={bulk} />
       <div className="roles-table-wrap" aria-busy={loading}>
         <table className="roles-table">
           <thead>
             <tr>
+              <SelectAllHeader bulk={bulk} />
               <th scope="col">{t('admin.authors.name')}</th>
               <th scope="col">{t('admin.authors.designation')}</th>
               <th scope="col">{t('admin.authors.state')}</th>
@@ -83,6 +100,7 @@ export default function AuthorsList({ onAdd, onEdit, notice }: Props) {
           <tbody>
             {items?.map((author) => (
               <tr key={author.id}>
+                <RowSelectCell bulk={bulk} id={author.id} />
                 <td data-label={t('admin.authors.name')}>{author.name}</td>
                 <td data-label={t('admin.authors.designation')}>{author.designation}</td>
                 <td data-label={t('admin.authors.state')}>
@@ -132,6 +150,7 @@ export default function AuthorsList({ onAdd, onEdit, notice }: Props) {
           </div>
         </form>
       </dialog>
+      <BulkDeleteDialog bulk={bulk} />
     </section>
   );
 }

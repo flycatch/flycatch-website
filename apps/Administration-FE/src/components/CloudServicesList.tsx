@@ -17,6 +17,7 @@ export default function CloudServicesList(props: Props) {
       columnMode="cloud"
       list={listCloudServices}
       remove={deleteCloudService}
+      bulkPath="/admin/cloud-services"
       {...props}
     />
   );

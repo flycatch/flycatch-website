@@ -5,8 +5,15 @@ import {
   listCatalog,
   type CatalogListPayload,
 } from '../lib/admin-api';
+import { applyPagedResult, useBulkTable } from '../lib/use-bulk-table';
 import { t } from '../lib/i18n';
 import type { CatalogSection } from '../lib/catalog-sections';
+import {
+  BulkActionsBar,
+  BulkDeleteDialog,
+  RowSelectCell,
+  SelectAllHeader,
+} from './BulkTableControls';
 import RelationCountCell from './RelationCountCell';
 import TableLogo from './TableLogo';
 
@@ -30,11 +37,19 @@ export default function CatalogList({ section, onAdd, onEdit, notice }: Props) {
   async function load(nextQuery: string, nextPage: number) {
     setError(null);
     try {
-      setData(await listCatalog(section.path, nextQuery, nextPage));
+      applyPagedResult(await listCatalog(section.path, nextQuery, nextPage), nextPage, setPage, setData);
     } catch {
       setError(t('admin.workspace.request_failed'));
     }
   }
+
+  const bulk = useBulkTable({
+    ids: data?.items.map((item) => item.id) ?? [],
+    resetKey: `${section.path}:${page}:${appliedQuery}`,
+    path: section.path,
+    onReload: () => load(appliedQuery, page),
+    onError: setError,
+  });
 
   useEffect(() => {
     load(appliedQuery, page).catch(() => undefined);
@@ -93,10 +108,12 @@ export default function CatalogList({ section, onAdd, onEdit, notice }: Props) {
           {error}
         </p>
       )}
+      <BulkActionsBar bulk={bulk} />
       <div className="roles-table-wrap" aria-busy={loading}>
         <table className="roles-table">
           <thead>
             <tr>
+              <SelectAllHeader bulk={bulk} />
               <th scope="col">{t(`${ns}.id`)}</th>
               {section.columns.map((column) => (
                 <th key={column.key} scope="col">
@@ -109,6 +126,7 @@ export default function CatalogList({ section, onAdd, onEdit, notice }: Props) {
           <tbody>
             {data?.items.map((item, index) => (
               <tr key={item.id}>
+                <RowSelectCell bulk={bulk} id={item.id} />
                 <td data-label={t(`${ns}.id`)}>{(data.page - 1) * data.per_page + index + 1}</td>
                 {section.columns.map((column) => {
                   const label = t(`${ns}.${column.labelKey}`);
@@ -232,6 +250,7 @@ export default function CatalogList({ section, onAdd, onEdit, notice }: Props) {
           </div>
         </form>
       </dialog>
+      <BulkDeleteDialog bulk={bulk} />
     </section>
   );
 }
