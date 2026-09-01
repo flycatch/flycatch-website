@@ -31,4 +31,23 @@ test('catalog sections are reachable from administration navigation', async ({ p
   await page.getByRole('link', { name: /^memberships$/i }).click();
   await expect(page).toHaveURL(/\/admin\/memberships\/?$/);
   await expect(page.getByRole('heading', { name: /^memberships$/i })).toBeVisible();
+
+  await page.getByRole('link', { name: /^contact$/i }).click();
+  await expect(page).toHaveURL(/\/admin\/contacts\/?$/);
+  await expect(page.getByRole('heading', { name: /^contact$/i })).toBeVisible();
+  await page.getByRole('button', { name: /create new entry/i }).click();
+  await expect(page.getByLabel(/^email$/i)).toBeVisible();
+  await page.getByRole('button', { name: /^cancel$/i }).click();
+
+  await page.getByRole('link', { name: /^download$/i }).click();
+  await expect(page).toHaveURL(/\/admin\/downloads\/?$/);
+  await expect(page.getByRole('heading', { name: /^download$/i })).toBeVisible();
+
+  await page.getByRole('link', { name: /^flycatch saudi arabia$/i }).click();
+  await expect(page).toHaveURL(/\/admin\/flycatch-saudi-arabia\/?$/);
+  await expect(page.getByRole('heading', { name: /^flycatch saudi arabia$/i })).toBeVisible();
+
+  await page.getByRole('link', { name: /^subscription$/i }).click();
+  await expect(page).toHaveURL(/\/admin\/subscriptions\/?$/);
+  await expect(page.getByRole('heading', { name: /^subscription$/i })).toBeVisible();
 });

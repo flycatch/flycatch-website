@@ -32,9 +32,12 @@ from flycatch_api.models.solution_product import SolutionProduct
 from flycatch_api.models.technology import CaseStudyTechnology, Technology
 from flycatch_api.models.catalog import (
     Application,
+    Contact,
+    Download,
     EmailConfiguration,
     EmailTemplate,
     EmployeeTestimonial,
+    FlycatchSaudiArabia,
     Membership,
     News,
     NewsAuthorLink,
@@ -45,6 +48,7 @@ from flycatch_api.models.catalog import (
     Resource,
     ResourceCategory,
     ResourceCategoryLink,
+    Subscription,
 )
 
 __all__ = [
@@ -90,9 +94,12 @@ __all__ = [
     "SolutionProduct",
     "Technology",
     "Application",
+    "Contact",
+    "Download",
     "EmailConfiguration",
     "EmailTemplate",
     "EmployeeTestimonial",
+    "FlycatchSaudiArabia",
     "Membership",
     "News",
     "NewsAuthorLink",
@@ -103,4 +110,5 @@ __all__ = [
     "Resource",
     "ResourceCategory",
     "ResourceCategoryLink",
+    "Subscription",
 ]

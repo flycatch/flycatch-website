@@ -1,0 +1,320 @@
+openapi: 3.1.0
+info:
+  title: Administration FlycatchSaudiArabia
+  version: 1.0.0
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+  /admin/flycatch-saudi-arabia:
+    get:
+      operationId: listFlycatchSaudiArabia
+      summary: List with search and pagination of 10
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 10
+      responses:
+        '200':
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlycatchSaudiArabiaList'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+    post:
+      operationId: createFlycatchSaudiArabia
+      summary: Create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlycatchSaudiArabiaWrite'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlycatchSaudiArabia'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+  /admin/flycatch-saudi-arabia/bulk-unpublish:
+    post:
+      operationId: bulkUnpublishFlycatchSaudiArabia
+      summary: Set selected published entries to draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ids]
+              properties:
+                ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 100
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: Bulk action result
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          description: One or more records were not found
+
+  /admin/flycatch-saudi-arabia/bulk-delete:
+    post:
+      operationId: bulkDeleteFlycatchSaudiArabia
+      summary: Delete selected entries
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ids]
+              properties:
+                ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 100
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: Bulk action result
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          description: One or more records were not found
+
+
+  /admin/flycatch-saudi-arabia/{item_id}:
+    parameters:
+      - name: item_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getFlycatchSaudiArabia
+      summary: Return one record
+      responses:
+        '200':
+          description: Record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlycatchSaudiArabia'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/RecordNotFound'
+    patch:
+      operationId: updateFlycatchSaudiArabia
+      summary: Update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlycatchSaudiArabiaWrite'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlycatchSaudiArabia'
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/RecordNotFound'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+    delete:
+      operationId: deleteFlycatchSaudiArabia
+      summary: Delete
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+        '404':
+          $ref: '#/components/responses/RecordNotFound'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+
+    ContentSeo:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string }
+        description: { type: string }
+        canonical_url: { type: string }
+        meta_title: { type: string }
+        h1_tag: { type: string }
+        image_alt: { type: string }
+        image_key: { type: string, nullable: true }
+
+    ServiceSectionItem:
+      type: object
+      additionalProperties: false
+      properties:
+        image_key: { type: string, nullable: true }
+        types_title: { type: string, default: '' }
+        contents: { type: string, default: '' }
+        links: { type: string, default: '' }
+
+    FlycatchSaudiArabia:
+      type: object
+      additionalProperties: false
+      required: [id, banner_title, service_section, banner_explore_text, services_title, seo, status, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        banner_title: { type: string }
+        service_section:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceSectionItem'
+        banner_explore_text: { type: string }
+        services_title: { type: string }
+        video_key: { type: string, nullable: true }
+        seo:
+          $ref: '#/components/schemas/ContentSeo'
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+        created_at: { type: string, format: date-time }
+    FlycatchSaudiArabiaSummary:
+      type: object
+      additionalProperties: false
+      required: [id, banner_title, service_section, service_section_names, video_format, state]
+      properties:
+        id: { type: string, format: uuid }
+        banner_title: { type: string }
+        service_section: { type: integer, minimum: 0 }
+        service_section_names:
+          type: array
+          items: { type: string }
+        video_format: { type: string }
+        state:
+          $ref: '#/components/schemas/ContentStatus'
+    FlycatchSaudiArabiaList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlycatchSaudiArabiaSummary'
+        page: { type: integer, minimum: 1 }
+        per_page: { type: integer, minimum: 1 }
+        total: { type: integer, minimum: 0 }
+    FlycatchSaudiArabiaWrite:
+      type: object
+      additionalProperties: false
+      required: [banner_title]
+      properties:
+        banner_title: { type: string, minLength: 1, maxLength: 200 }
+        service_section:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceSectionItem'
+          default: []
+        banner_explore_text: { type: string, default: '', maxLength: 200 }
+        services_title: { type: string, default: '', maxLength: 200 }
+        video_key: { type: string, nullable: true }
+        seo:
+          $ref: '#/components/schemas/ContentSeo'
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+          default: draft
+
+    FieldErrorDetail:
+      type: object
+      additionalProperties: false
+      required: [message_key]
+      properties:
+        message_key:
+          type: string
+    FieldErrors:
+      type: object
+      additionalProperties: false
+      required: [fields]
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldErrorDetail'
+    ContentStatus:
+      type: string
+      enum: [draft, publish]
+  responses:
+    FieldErrors:
+      description: Field-level validation errors
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FieldErrors'
+    RecordNotFound:
+      description: Unknown record
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [code, message_key]
+            properties:
+              code:
+                type: string
+                const: not_found
+              message_key:
+                type: string

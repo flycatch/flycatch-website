@@ -6,7 +6,14 @@ import {
   type CaseStudyCategoryList,
 } from '../lib/admin-api';
 import { formatDateTime } from '../lib/format-date';
+import { applyPagedResult, useBulkTable } from '../lib/use-bulk-table';
 import { t } from '../lib/i18n';
+import {
+  BulkActionsBar,
+  BulkDeleteDialog,
+  RowSelectCell,
+  SelectAllHeader,
+} from './BulkTableControls';
 
 interface Props {
   onAdd: () => void;
@@ -26,12 +33,20 @@ export default function CaseStudyCategoriesList({ onAdd, onEdit, notice }: Props
   async function load(nextQuery: string, nextPage: number) {
     setError(null);
     try {
-      const result = await listCaseStudyCategories(nextQuery, nextPage);
-      setData(result);
+      applyPagedResult(await listCaseStudyCategories(nextQuery, nextPage), nextPage, setPage, setData);
     } catch {
       setError(t('admin.workspace.request_failed'));
     }
   }
+
+
+  const bulk = useBulkTable({
+    ids: data?.items.map((item) => item.id) ?? [],
+    resetKey: `/admin/case-study-categories:${page}:${appliedQuery}`,
+    path: '/admin/case-study-categories',
+    onReload: () => load(appliedQuery, page),
+    onError: setError,
+  });
 
   useEffect(() => {
     load(appliedQuery, page).catch(() => undefined);
@@ -98,10 +113,12 @@ export default function CaseStudyCategoriesList({ onAdd, onEdit, notice }: Props
           {error}
         </p>
       )}
+      <BulkActionsBar bulk={bulk} />
       <div className="roles-table-wrap" aria-busy={loading}>
         <table className="roles-table">
           <thead>
             <tr>
+              <SelectAllHeader bulk={bulk} />
               <th scope="col">{t('admin.case_study_categories.id')}</th>
               <th scope="col">{t('admin.case_study_categories.name')}</th>
               <th scope="col">{t('admin.case_study_categories.case_studies')}</th>
@@ -113,6 +130,7 @@ export default function CaseStudyCategoriesList({ onAdd, onEdit, notice }: Props
           <tbody>
             {data?.items.map((item, index) => (
               <tr key={item.id}>
+                <RowSelectCell bulk={bulk} id={item.id} />
                 <td data-label={t('admin.case_study_categories.id')}>
                   {(data.page - 1) * data.per_page + index + 1}
                 </td>
@@ -194,6 +212,7 @@ export default function CaseStudyCategoriesList({ onAdd, onEdit, notice }: Props
           </div>
         </form>
       </dialog>
+      <BulkDeleteDialog bulk={bulk} />
     </section>
   );
 }

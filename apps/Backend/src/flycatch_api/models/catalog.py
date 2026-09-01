@@ -297,3 +297,72 @@ class Membership(Base):
         default=ContentStatus.draft,
     )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class Contact(Base):
+    __tablename__ = "contacts"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name: Mapped[str] = mapped_column(String(120), nullable=False)
+    last_name: Mapped[str] = mapped_column(String(120), nullable=False, default="")
+    email: Mapped[str] = mapped_column(String(200), nullable=False)
+    country: Mapped[str] = mapped_column(String(120), nullable=False, default="")
+    phone: Mapped[str] = mapped_column(String(40), nullable=False, default="")
+    subject: Mapped[str] = mapped_column(String(200), nullable=False, default="")
+    contact_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    details: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    contact_type: Mapped[str] = mapped_column(String(120), nullable=False, default="")
+    company_name: Mapped[str] = mapped_column(String(200), nullable=False, default="")
+    status: Mapped[ContentStatus] = mapped_column(
+        Enum(ContentStatus, name="content_status", create_type=False),
+        nullable=False,
+        default=ContentStatus.draft,
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class Download(Base):
+    __tablename__ = "downloads"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    company: Mapped[str] = mapped_column(String(200), nullable=False, default="")
+    file_key: Mapped[str] = mapped_column(String(255), nullable=False)
+    status: Mapped[ContentStatus] = mapped_column(
+        Enum(ContentStatus, name="content_status", create_type=False),
+        nullable=False,
+        default=ContentStatus.draft,
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class FlycatchSaudiArabia(Base):
+    __tablename__ = "flycatch_saudi_arabia"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    banner_title: Mapped[str] = mapped_column(String(200), nullable=False)
+    service_section: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    banner_explore_text: Mapped[str] = mapped_column(String(200), nullable=False, default="")
+    services_title: Mapped[str] = mapped_column(String(200), nullable=False, default="")
+    video_key: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    seo: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    status: Mapped[ContentStatus] = mapped_column(
+        Enum(ContentStatus, name="content_status", create_type=False),
+        nullable=False,
+        default=ContentStatus.draft,
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class Subscription(Base):
+    __tablename__ = "subscriptions"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    email: Mapped[str] = mapped_column(String(200), nullable=False, unique=True, index=True)
+    active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    status: Mapped[ContentStatus] = mapped_column(
+        Enum(ContentStatus, name="content_status", create_type=False),
+        nullable=False,
+        default=ContentStatus.draft,
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)

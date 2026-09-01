@@ -3,7 +3,9 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.orm import Session
 
+from flycatch_api.api.bulk_routes import attach_bulk_routes
 from flycatch_api.db import get_db
+from flycatch_api.models import DigitalTransformation as BulkModel
 from flycatch_api.schemas.admin_digital_transformation import (
     DigitalTransformation,
     DigitalTransformationList,
@@ -89,3 +91,5 @@ def delete_digital_transformation(
     except CatalogError as error:
         _raise(error)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+attach_bulk_routes(router, resource=RESOURCE, model=BulkModel, not_found_key='admin.digital_transformation.not_found')

@@ -3,6 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.orm import Session
 
+from flycatch_api.api.bulk_routes import attach_bulk_routes
 from flycatch_api.db import get_db
 from flycatch_api.schemas import admin_catalog as admin
 from flycatch_api.schemas import public_catalog as public
@@ -10,15 +11,19 @@ from flycatch_api.security.dependencies import CurrentSession, assert_resource_a
 from flycatch_api.services.author_service import CatalogError
 from flycatch_api.services.catalog_service import (
     application_service,
+    contact_service,
+    download_service,
     email_configuration_service,
     email_template_service,
     employee_testimonial_service,
+    flycatch_saudi_arabia_service,
     membership_service,
     news_category_service,
     news_service,
     opening_service,
     resource_category_service,
     resource_service,
+    subscription_service,
 )
 from flycatch_api.services.industry_service import PER_PAGE
 
@@ -50,6 +55,13 @@ def admin_crud(*, prefix: str, tags: str, resource: str, list_model, detail_mode
             return svc.create(db, payload)
         except CatalogError as error:
             _raise(error)
+
+    attach_bulk_routes(
+        router,
+        resource=resource,
+        model=svc.model,
+        not_found_key=f"admin.{resource}.not_found",
+    )
 
     path = "/{" + id_name + "}"
     ns = {
@@ -265,6 +277,46 @@ admin_memberships = admin_crud(
     svc=membership_service,
     id_name="membership_id",
 )
+admin_contacts = admin_crud(
+    prefix="/admin/contacts",
+    tags="admin-contacts",
+    resource="contacts",
+    list_model=admin.ContactList,
+    detail_model=admin.Contact,
+    write_model=admin.ContactWrite,
+    svc=contact_service,
+    id_name="contact_id",
+)
+admin_downloads = admin_crud(
+    prefix="/admin/downloads",
+    tags="admin-downloads",
+    resource="downloads",
+    list_model=admin.DownloadList,
+    detail_model=admin.Download,
+    write_model=admin.DownloadWrite,
+    svc=download_service,
+    id_name="download_id",
+)
+admin_flycatch_saudi_arabia = admin_crud(
+    prefix="/admin/flycatch-saudi-arabia",
+    tags="admin-flycatch-saudi-arabia",
+    resource="flycatch_saudi_arabia",
+    list_model=admin.FlycatchSaudiArabiaList,
+    detail_model=admin.FlycatchSaudiArabia,
+    write_model=admin.FlycatchSaudiArabiaWrite,
+    svc=flycatch_saudi_arabia_service,
+    id_name="item_id",
+)
+admin_subscriptions = admin_crud(
+    prefix="/admin/subscriptions",
+    tags="admin-subscriptions",
+    resource="subscriptions",
+    list_model=admin.SubscriptionList,
+    detail_model=admin.Subscription,
+    write_model=admin.SubscriptionWrite,
+    svc=subscription_service,
+    id_name="subscription_id",
+)
 
 public_applications = public_uuid(
     prefix="/public/applications",
@@ -341,4 +393,36 @@ public_memberships = public_uuid(
     detail_model=public.PublicMembership,
     svc=membership_service,
     id_name="membership_id",
+)
+public_contacts = public_uuid(
+    prefix="/public/contacts",
+    tags="public-contacts",
+    list_model=public.PublicContactList,
+    detail_model=public.PublicContact,
+    svc=contact_service,
+    id_name="contact_id",
+)
+public_downloads = public_uuid(
+    prefix="/public/downloads",
+    tags="public-downloads",
+    list_model=public.PublicDownloadList,
+    detail_model=public.PublicDownload,
+    svc=download_service,
+    id_name="download_id",
+)
+public_flycatch_saudi_arabia = public_uuid(
+    prefix="/public/flycatch-saudi-arabia",
+    tags="public-flycatch-saudi-arabia",
+    list_model=public.PublicFlycatchSaudiArabiaList,
+    detail_model=public.PublicFlycatchSaudiArabia,
+    svc=flycatch_saudi_arabia_service,
+    id_name="item_id",
+)
+public_subscriptions = public_uuid(
+    prefix="/public/subscriptions",
+    tags="public-subscriptions",
+    list_model=public.PublicSubscriptionList,
+    detail_model=public.PublicSubscription,
+    svc=subscription_service,
+    id_name="subscription_id",
 )

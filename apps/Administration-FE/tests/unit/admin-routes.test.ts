@@ -55,6 +55,10 @@ describe('parseAdminLocation', () => {
     expect(parseAdminLocation('/admin/resource-categories/').view).toBe('resource_categories');
     expect(parseAdminLocation('/admin/resources/').view).toBe('resources');
     expect(parseAdminLocation('/admin/memberships/').view).toBe('memberships');
+    expect(parseAdminLocation('/admin/contacts/').view).toBe('contacts');
+    expect(parseAdminLocation('/admin/downloads/').view).toBe('downloads');
+    expect(parseAdminLocation('/admin/flycatch-saudi-arabia/').view).toBe('flycatch_saudi_arabia');
+    expect(parseAdminLocation('/admin/subscriptions/').view).toBe('subscriptions');
     expect(parseAdminLocation('/admin/home/', '?new=1').view).toBe('home_form');
     expect(parseAdminLocation('/admin/home/', '?id=abc')).toEqual({
       view: 'home_form',
@@ -112,6 +116,10 @@ describe('admin href helpers', () => {
     expect(adminListHref('openings')).toBe('/admin/openings/');
     expect(adminListHref('news')).toBe('/admin/news/');
     expect(adminListHref('memberships')).toBe('/admin/memberships/');
+    expect(adminListHref('contacts')).toBe('/admin/contacts/');
+    expect(adminListHref('downloads')).toBe('/admin/downloads/');
+    expect(adminListHref('flycatch_saudi_arabia')).toBe('/admin/flycatch-saudi-arabia/');
+    expect(adminListHref('subscriptions')).toBe('/admin/subscriptions/');
     expect(adminFormHref('blogs', null)).toBe('/admin/blogs/?new=1');
     expect(adminFormHref('blogs', 'post-1')).toBe('/admin/blogs/?id=post-1');
   });

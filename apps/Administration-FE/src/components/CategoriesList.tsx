@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { apiErrorMessage, deleteCategory, listCategories, type Category } from '../lib/admin-api';
+import { useBulkTable } from '../lib/use-bulk-table';
 import { t } from '../lib/i18n';
+import {
+  BulkActionsBar,
+  BulkDeleteDialog,
+  RowSelectCell,
+  SelectAllHeader,
+} from './BulkTableControls';
 
 interface Props {
   onAdd: () => void;
@@ -23,6 +30,14 @@ export default function CategoriesList({ onAdd, onEdit, notice }: Props) {
       setError(t('admin.workspace.request_failed'));
     }
   }
+
+  const bulk = useBulkTable({
+    ids: items?.map((item) => item.id) ?? [],
+    resetKey: 'categories',
+    path: '/admin/categories',
+    onReload: () => load(),
+    onError: setError,
+  });
 
   useEffect(() => {
     load().catch(() => undefined);
@@ -70,10 +85,12 @@ export default function CategoriesList({ onAdd, onEdit, notice }: Props) {
           {error}
         </p>
       )}
+      <BulkActionsBar bulk={bulk} />
       <div className="roles-table-wrap" aria-busy={loading}>
         <table className="roles-table">
           <thead>
             <tr>
+              <SelectAllHeader bulk={bulk} />
               <th scope="col">{t('admin.categories.name')}</th>
               <th scope="col">{t('admin.categories.state')}</th>
               <th scope="col">{t('admin.categories.actions')}</th>
@@ -82,6 +99,7 @@ export default function CategoriesList({ onAdd, onEdit, notice }: Props) {
           <tbody>
             {items?.map((category) => (
               <tr key={category.id}>
+                <RowSelectCell bulk={bulk} id={category.id} />
                 <td data-label={t('admin.categories.name')}>{category.name}</td>
                 <td data-label={t('admin.categories.state')}>
                   {category.status === 'publish'
@@ -130,6 +148,7 @@ export default function CategoriesList({ onAdd, onEdit, notice }: Props) {
           </div>
         </form>
       </dialog>
+      <BulkDeleteDialog bulk={bulk} />
     </section>
   );
 }

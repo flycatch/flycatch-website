@@ -10,9 +10,12 @@ from flycatch_api.models import Author
 from flycatch_api.models.case_study import ContentStatus
 from flycatch_api.models.catalog import (
     Application as ApplicationRow,
+    Contact as ContactRow,
+    Download as DownloadRow,
     EmailConfiguration as EmailConfigurationRow,
     EmailTemplate as EmailTemplateRow,
     EmployeeTestimonial as EmployeeTestimonialRow,
+    FlycatchSaudiArabia as FlycatchSaudiArabiaRow,
     Membership as MembershipRow,
     News as NewsRow,
     NewsAuthorLink,
@@ -23,6 +26,7 @@ from flycatch_api.models.catalog import (
     Resource as ResourceRow,
     ResourceCategory as ResourceCategoryRow,
     ResourceCategoryLink,
+    Subscription as SubscriptionRow,
 )
 from flycatch_api.schemas.admin_auth import FieldErrorDetail, FieldErrors
 from flycatch_api.schemas.admin_blogs import EntityNotFound
@@ -43,11 +47,28 @@ from flycatch_api.schemas.admin_catalog import (
     EmployeeTestimonialList,
     EmployeeTestimonialSummary,
     EmployeeTestimonialWrite,
+    Contact,
+    ContactList,
+    ContactSummary,
+    ContactWrite,
+    Download,
+    DownloadList,
+    DownloadSummary,
+    DownloadWrite,
+    FlycatchSaudiArabia,
+    FlycatchSaudiArabiaList,
+    FlycatchSaudiArabiaSummary,
+    FlycatchSaudiArabiaWrite,
     Membership,
     MembershipImage,
     MembershipList,
     MembershipSummary,
     MembershipWrite,
+    ServiceSectionItem,
+    Subscription,
+    SubscriptionList,
+    SubscriptionSummary,
+    SubscriptionWrite,
     NestedAuthor,
     News,
     NewsCategory,
@@ -81,8 +102,17 @@ from flycatch_api.schemas.public_catalog import (
     PublicEmailTemplateList,
     PublicEmployeeTestimonial,
     PublicEmployeeTestimonialList,
+    PublicContact,
+    PublicContactList,
+    PublicDownload,
+    PublicDownloadList,
+    PublicFlycatchSaudiArabia,
+    PublicFlycatchSaudiArabiaList,
     PublicMembership,
     PublicMembershipList,
+    PublicServiceSectionItem,
+    PublicSubscription,
+    PublicSubscriptionList,
     PublicNews,
     PublicNewsCategory,
     PublicNewsCategoryList,
@@ -97,10 +127,10 @@ from flycatch_api.schemas.public_catalog import (
     MembershipImage as PublicMembershipImage,
 )
 from flycatch_api.services.author_service import CatalogError, author_schema
-from flycatch_api.services.content_blocks import seo_dict
+from flycatch_api.services.content_blocks import optional_key, seo_dict
 from flycatch_api.services.industry_service import PER_PAGE, coerce_status
 from flycatch_api.services.landing_catalog import seo_snippet
-from flycatch_api.services.text import document_format, is_valid_slug, sanitize_html, slugify
+from flycatch_api.services.text import document_format, is_valid_media_key, is_valid_slug, sanitize_html, slugify
 
 LOCATIONS = {"Kochi", "Saudi Arabia", "Hybrid", "Remote"}
 JOB_TYPES = {"Full-Time", "Part-Time", "Contract"}
@@ -205,6 +235,8 @@ def public_application(row: ApplicationRow) -> PublicApplication:
 
 
 class ApplicationService:
+    model = ApplicationRow
+
     def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> ApplicationList:
         query = db.query(ApplicationRow)
         if q and q.strip():
@@ -302,6 +334,7 @@ class ApplicationService:
 
 
 class OpeningService:
+    model = OpeningRow
     def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> OpeningList:
         query = db.query(OpeningRow)
         if q and q.strip():
@@ -566,6 +599,7 @@ resource_category_service = NamedCatalogService(
 
 
 class EmployeeTestimonialService:
+    model = EmployeeTestimonialRow
     def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> EmployeeTestimonialList:
         query = db.query(EmployeeTestimonialRow)
         if q and q.strip():
@@ -681,6 +715,7 @@ class EmployeeTestimonialService:
 
 
 class EmailConfigurationService:
+    model = EmailConfigurationRow
     def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> EmailConfigurationList:
         query = db.query(EmailConfigurationRow)
         if q and q.strip():
@@ -780,6 +815,7 @@ class EmailConfigurationService:
 
 
 class EmailTemplateService:
+    model = EmailTemplateRow
     def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> EmailTemplateList:
         query = db.query(EmailTemplateRow)
         if q and q.strip():
@@ -883,6 +919,7 @@ class EmailTemplateService:
 
 
 class NewsService:
+    model = NewsRow
     def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> NewsList:
         query = db.query(NewsRow).options(joinedload(NewsRow.category_links).joinedload(NewsCategoryLink.category))
         if q and q.strip():
@@ -1064,6 +1101,7 @@ class NewsService:
 
 
 class ResourceService:
+    model = ResourceRow
     def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> ResourceList:
         query = db.query(ResourceRow)
         if q and q.strip():
@@ -1206,6 +1244,7 @@ class ResourceService:
 
 
 class MembershipService:
+    model = MembershipRow
     def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> MembershipList:
         query = db.query(MembershipRow)
         if q and q.strip():
@@ -1297,6 +1336,436 @@ class MembershipService:
         )
 
 
+def _required_pdf_key(value: str) -> str:
+    key = (value or "").strip()
+    if not key:
+        raise CatalogError(
+            422,
+            FieldErrors(fields={"file_key": FieldErrorDetail(message_key="admin.field.required")}).model_dump(),
+        )
+    if not is_valid_media_key(key) or not key.lower().endswith(".pdf"):
+        raise CatalogError(
+            422,
+            FieldErrors(fields={"file_key": FieldErrorDetail(message_key="admin.media.type.invalid")}).model_dump(),
+        )
+    return key
+
+
+def _unique_email(db: Session, email: str, current_id: UUID | None) -> str:
+    existing = db.query(SubscriptionRow).filter(func.lower(SubscriptionRow.email) == email.lower()).first()
+    if existing is not None and existing.id != current_id:
+        raise CatalogError(
+            422,
+            FieldErrors(
+                fields={"email": FieldErrorDetail(message_key="admin.subscriptions.email.duplicate")}
+            ).model_dump(),
+        )
+    return email
+
+
+class ContactService:
+    model = ContactRow
+    def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> ContactList:
+        query = db.query(ContactRow)
+        if q and q.strip():
+            term = f"%{q.strip()}%"
+            query = query.filter(
+                or_(
+                    ContactRow.name.ilike(term),
+                    ContactRow.last_name.ilike(term),
+                    ContactRow.email.ilike(term),
+                    ContactRow.country.ilike(term),
+                    ContactRow.company_name.ilike(term),
+                    ContactRow.subject.ilike(term),
+                )
+            )
+        page, per_page, rows, total = _paginate(query.order_by(ContactRow.created_at.desc()), page, per_page)
+        return ContactList(
+            items=[
+                ContactSummary(
+                    id=row.id, name=row.name, email=row.email, country=row.country, state=row.status
+                )
+                for row in rows
+            ],
+            page=page,
+            per_page=per_page,
+            total=total,
+        )
+
+    def list_published(self, db: Session, q: str | None, page: int, per_page: int) -> PublicContactList:
+        query = db.query(ContactRow).filter(ContactRow.status == ContentStatus.publish)
+        page, per_page, rows, total = _paginate(query.order_by(ContactRow.created_at.desc()), page, per_page)
+        return PublicContactList(items=[self._public(row) for row in rows], page=page, per_page=per_page, total=total)
+
+    def get(self, db: Session, item_id: UUID) -> Contact:
+        row = db.get(ContactRow, item_id)
+        if row is None:
+            raise _not_found("admin.contacts.not_found")
+        return self._detail(row)
+
+    def get_published(self, db: Session, item_id: UUID) -> PublicContact:
+        row = db.get(ContactRow, item_id)
+        if row is None or row.status != ContentStatus.publish:
+            raise _not_found("public.contacts.not_found")
+        return self._public(row)
+
+    def create(self, db: Session, payload: ContactWrite) -> Contact:
+        row = ContactRow(created_at=datetime.now(UTC))
+        self._apply(row, payload)
+        db.add(row)
+        db.commit()
+        db.refresh(row)
+        return self._detail(row)
+
+    def update(self, db: Session, item_id: UUID, payload: ContactWrite) -> Contact:
+        row = db.get(ContactRow, item_id)
+        if row is None:
+            raise _not_found("admin.contacts.not_found")
+        self._apply(row, payload)
+        db.commit()
+        db.refresh(row)
+        return self._detail(row)
+
+    def delete(self, db: Session, item_id: UUID) -> None:
+        row = db.get(ContactRow, item_id)
+        if row is None:
+            raise _not_found("admin.contacts.not_found")
+        db.delete(row)
+        db.commit()
+
+    def _apply(self, row: ContactRow, payload: ContactWrite) -> None:
+        row.name = _required(payload.name, "name")
+        row.last_name = payload.last_name.strip()
+        row.email = str(payload.email).strip()
+        row.country = payload.country.strip()
+        row.phone = payload.phone.strip()
+        row.subject = payload.subject.strip()
+        row.contact_date = payload.contact_date
+        row.details = payload.details.strip()
+        row.contact_type = payload.contact_type.strip()
+        row.company_name = payload.company_name.strip()
+        row.status = coerce_status(payload.status)
+
+    def _detail(self, row: ContactRow) -> Contact:
+        return Contact(
+            id=row.id,
+            name=row.name,
+            last_name=row.last_name,
+            email=row.email,
+            country=row.country,
+            phone=row.phone,
+            subject=row.subject,
+            contact_date=row.contact_date,
+            details=row.details,
+            contact_type=row.contact_type,
+            company_name=row.company_name,
+            status=row.status,
+            created_at=row.created_at,
+        )
+
+    def _public(self, row: ContactRow) -> PublicContact:
+        return PublicContact(
+            id=row.id,
+            name=row.name,
+            last_name=row.last_name,
+            email=row.email,
+            country=row.country,
+            phone=row.phone,
+            subject=row.subject,
+            contact_date=row.contact_date,
+            details=row.details,
+            contact_type=row.contact_type,
+            company_name=row.company_name,
+        )
+
+
+class DownloadService:
+    model = DownloadRow
+    def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> DownloadList:
+        query = db.query(DownloadRow)
+        if q and q.strip():
+            term = f"%{q.strip()}%"
+            query = query.filter(or_(DownloadRow.name.ilike(term), DownloadRow.company.ilike(term)))
+        page, per_page, rows, total = _paginate(query.order_by(DownloadRow.created_at.desc()), page, per_page)
+        return DownloadList(
+            items=[DownloadSummary(id=row.id, name=row.name, state=row.status) for row in rows],
+            page=page,
+            per_page=per_page,
+            total=total,
+        )
+
+    def list_published(self, db: Session, q: str | None, page: int, per_page: int) -> PublicDownloadList:
+        query = db.query(DownloadRow).filter(DownloadRow.status == ContentStatus.publish)
+        page, per_page, rows, total = _paginate(query.order_by(DownloadRow.created_at.desc()), page, per_page)
+        return PublicDownloadList(items=[self._public(row) for row in rows], page=page, per_page=per_page, total=total)
+
+    def get(self, db: Session, item_id: UUID) -> Download:
+        row = db.get(DownloadRow, item_id)
+        if row is None:
+            raise _not_found("admin.downloads.not_found")
+        return self._detail(row)
+
+    def get_published(self, db: Session, item_id: UUID) -> PublicDownload:
+        row = db.get(DownloadRow, item_id)
+        if row is None or row.status != ContentStatus.publish:
+            raise _not_found("public.downloads.not_found")
+        return self._public(row)
+
+    def create(self, db: Session, payload: DownloadWrite) -> Download:
+        row = DownloadRow(created_at=datetime.now(UTC))
+        self._apply(row, payload)
+        db.add(row)
+        db.commit()
+        db.refresh(row)
+        return self._detail(row)
+
+    def update(self, db: Session, item_id: UUID, payload: DownloadWrite) -> Download:
+        row = db.get(DownloadRow, item_id)
+        if row is None:
+            raise _not_found("admin.downloads.not_found")
+        self._apply(row, payload)
+        db.commit()
+        db.refresh(row)
+        return self._detail(row)
+
+    def delete(self, db: Session, item_id: UUID) -> None:
+        row = db.get(DownloadRow, item_id)
+        if row is None:
+            raise _not_found("admin.downloads.not_found")
+        db.delete(row)
+        db.commit()
+
+    def _apply(self, row: DownloadRow, payload: DownloadWrite) -> None:
+        row.name = _required(payload.name, "name")
+        row.company = payload.company.strip()
+        row.file_key = _required_pdf_key(payload.file_key)
+        row.status = coerce_status(payload.status)
+
+    def _detail(self, row: DownloadRow) -> Download:
+        return Download(
+            id=row.id,
+            name=row.name,
+            company=row.company,
+            file_key=row.file_key,
+            status=row.status,
+            created_at=row.created_at,
+        )
+
+    def _public(self, row: DownloadRow) -> PublicDownload:
+        return PublicDownload(id=row.id, name=row.name, company=row.company, file_key=row.file_key)
+
+
+class FlycatchSaudiArabiaService:
+    model = FlycatchSaudiArabiaRow
+    def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> FlycatchSaudiArabiaList:
+        query = db.query(FlycatchSaudiArabiaRow)
+        if q and q.strip():
+            term = f"%{q.strip()}%"
+            query = query.filter(
+                or_(
+                    FlycatchSaudiArabiaRow.banner_title.ilike(term),
+                    FlycatchSaudiArabiaRow.services_title.ilike(term),
+                    FlycatchSaudiArabiaRow.banner_explore_text.ilike(term),
+                )
+            )
+        page, per_page, rows, total = _paginate(
+            query.order_by(FlycatchSaudiArabiaRow.created_at.desc()), page, per_page
+        )
+        return FlycatchSaudiArabiaList(
+            items=[
+                FlycatchSaudiArabiaSummary(
+                    id=row.id,
+                    banner_title=row.banner_title,
+                    service_section=len(row.service_section or []),
+                    service_section_names=[
+                        str(item.get("types_title") or "") for item in (row.service_section or [])
+                    ],
+                    video_format=document_format(row.video_key),
+                    state=row.status,
+                )
+                for row in rows
+            ],
+            page=page,
+            per_page=per_page,
+            total=total,
+        )
+
+    def list_published(self, db: Session, q: str | None, page: int, per_page: int) -> PublicFlycatchSaudiArabiaList:
+        query = db.query(FlycatchSaudiArabiaRow).filter(FlycatchSaudiArabiaRow.status == ContentStatus.publish)
+        page, per_page, rows, total = _paginate(
+            query.order_by(FlycatchSaudiArabiaRow.created_at.desc()), page, per_page
+        )
+        return PublicFlycatchSaudiArabiaList(
+            items=[self._public(row) for row in rows], page=page, per_page=per_page, total=total
+        )
+
+    def get(self, db: Session, item_id: UUID) -> FlycatchSaudiArabia:
+        row = db.get(FlycatchSaudiArabiaRow, item_id)
+        if row is None:
+            raise _not_found("admin.flycatch_saudi_arabia.not_found")
+        return self._detail(row)
+
+    def get_published(self, db: Session, item_id: UUID) -> PublicFlycatchSaudiArabia:
+        row = db.get(FlycatchSaudiArabiaRow, item_id)
+        if row is None or row.status != ContentStatus.publish:
+            raise _not_found("public.flycatch_saudi_arabia.not_found")
+        return self._public(row)
+
+    def create(self, db: Session, payload: FlycatchSaudiArabiaWrite) -> FlycatchSaudiArabia:
+        row = FlycatchSaudiArabiaRow(created_at=datetime.now(UTC))
+        self._apply(row, payload)
+        db.add(row)
+        db.commit()
+        db.refresh(row)
+        return self._detail(row)
+
+    def update(self, db: Session, item_id: UUID, payload: FlycatchSaudiArabiaWrite) -> FlycatchSaudiArabia:
+        row = db.get(FlycatchSaudiArabiaRow, item_id)
+        if row is None:
+            raise _not_found("admin.flycatch_saudi_arabia.not_found")
+        self._apply(row, payload)
+        db.commit()
+        db.refresh(row)
+        return self._detail(row)
+
+    def delete(self, db: Session, item_id: UUID) -> None:
+        row = db.get(FlycatchSaudiArabiaRow, item_id)
+        if row is None:
+            raise _not_found("admin.flycatch_saudi_arabia.not_found")
+        db.delete(row)
+        db.commit()
+
+    def _apply(self, row: FlycatchSaudiArabiaRow, payload: FlycatchSaudiArabiaWrite) -> None:
+        row.banner_title = _required(payload.banner_title, "banner_title")
+        row.banner_explore_text = payload.banner_explore_text.strip()
+        row.services_title = payload.services_title.strip()
+        row.video_key = optional_key(payload.video_key, "video_key")
+        row.seo = seo_dict(payload.seo)
+        row.status = coerce_status(payload.status)
+        row.service_section = [
+            {
+                "image_key": optional_key(item.image_key, "service_section.image_key"),
+                "types_title": item.types_title.strip(),
+                "contents": item.contents.strip(),
+                "links": item.links.strip(),
+            }
+            for item in payload.service_section
+        ]
+
+    def _detail(self, row: FlycatchSaudiArabiaRow) -> FlycatchSaudiArabia:
+        return FlycatchSaudiArabia(
+            id=row.id,
+            banner_title=row.banner_title,
+            service_section=[ServiceSectionItem.model_validate(item) for item in (row.service_section or [])],
+            banner_explore_text=row.banner_explore_text,
+            services_title=row.services_title,
+            video_key=row.video_key,
+            seo=ContentSeo.model_validate(row.seo or {}),
+            status=row.status,
+            created_at=row.created_at,
+        )
+
+    def _public(self, row: FlycatchSaudiArabiaRow) -> PublicFlycatchSaudiArabia:
+        return PublicFlycatchSaudiArabia(
+            id=row.id,
+            banner_title=row.banner_title,
+            service_section=[
+                PublicServiceSectionItem.model_validate(item) for item in (row.service_section or [])
+            ],
+            banner_explore_text=row.banner_explore_text,
+            services_title=row.services_title,
+            video_key=row.video_key,
+            seo=ContentSeo.model_validate(row.seo or {}),
+        )
+
+
+class SubscriptionService:
+    model = SubscriptionRow
+    def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> SubscriptionList:
+        query = db.query(SubscriptionRow)
+        if q and q.strip():
+            term = f"%{q.strip()}%"
+            query = query.filter(SubscriptionRow.email.ilike(term))
+        page, per_page, rows, total = _paginate(query.order_by(SubscriptionRow.created_at.desc()), page, per_page)
+        return SubscriptionList(
+            items=[
+                SubscriptionSummary(
+                    id=row.id,
+                    email=row.email,
+                    active=row.active,
+                    created_at=row.created_at,
+                    state=row.status,
+                )
+                for row in rows
+            ],
+            page=page,
+            per_page=per_page,
+            total=total,
+        )
+
+    def list_published(self, db: Session, q: str | None, page: int, per_page: int) -> PublicSubscriptionList:
+        query = db.query(SubscriptionRow).filter(SubscriptionRow.status == ContentStatus.publish)
+        page, per_page, rows, total = _paginate(query.order_by(SubscriptionRow.created_at.desc()), page, per_page)
+        return PublicSubscriptionList(
+            items=[self._public(row) for row in rows], page=page, per_page=per_page, total=total
+        )
+
+    def get(self, db: Session, item_id: UUID) -> Subscription:
+        row = db.get(SubscriptionRow, item_id)
+        if row is None:
+            raise _not_found("admin.subscriptions.not_found")
+        return self._detail(row)
+
+    def get_published(self, db: Session, item_id: UUID) -> PublicSubscription:
+        row = db.get(SubscriptionRow, item_id)
+        if row is None or row.status != ContentStatus.publish:
+            raise _not_found("public.subscriptions.not_found")
+        return self._public(row)
+
+    def create(self, db: Session, payload: SubscriptionWrite) -> Subscription:
+        row = SubscriptionRow(created_at=datetime.now(UTC))
+        self._apply(db, row, payload, None)
+        db.add(row)
+        db.commit()
+        db.refresh(row)
+        return self._detail(row)
+
+    def update(self, db: Session, item_id: UUID, payload: SubscriptionWrite) -> Subscription:
+        row = db.get(SubscriptionRow, item_id)
+        if row is None:
+            raise _not_found("admin.subscriptions.not_found")
+        self._apply(db, row, payload, item_id)
+        db.commit()
+        db.refresh(row)
+        return self._detail(row)
+
+    def delete(self, db: Session, item_id: UUID) -> None:
+        row = db.get(SubscriptionRow, item_id)
+        if row is None:
+            raise _not_found("admin.subscriptions.not_found")
+        db.delete(row)
+        db.commit()
+
+    def _apply(
+        self, db: Session, row: SubscriptionRow, payload: SubscriptionWrite, current_id: UUID | None
+    ) -> None:
+        row.email = _unique_email(db, str(payload.email).strip(), current_id)
+        row.active = bool(payload.active)
+        row.status = coerce_status(payload.status)
+
+    def _detail(self, row: SubscriptionRow) -> Subscription:
+        return Subscription(
+            id=row.id,
+            email=row.email,
+            active=row.active,
+            status=row.status,
+            created_at=row.created_at,
+        )
+
+    def _public(self, row: SubscriptionRow) -> PublicSubscription:
+        return PublicSubscription(id=row.id, email=row.email, active=row.active, created_at=row.created_at)
+
+
 application_service = ApplicationService()
 opening_service = OpeningService()
 employee_testimonial_service = EmployeeTestimonialService()
@@ -1305,3 +1774,7 @@ email_template_service = EmailTemplateService()
 news_service = NewsService()
 resource_service = ResourceService()
 membership_service = MembershipService()
+contact_service = ContactService()
+download_service = DownloadService()
+flycatch_saudi_arabia_service = FlycatchSaudiArabiaService()
+subscription_service = SubscriptionService()
