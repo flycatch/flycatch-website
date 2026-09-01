@@ -1,0 +1,245 @@
+openapi: 3.1.0
+info:
+  title: Administration Email Configuration
+  version: 1.0.0
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+
+  /admin/email-configuration:
+    get:
+      operationId: listEmailConfiguration
+      summary: List with search and pagination of 10
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 10
+      responses:
+        '200':
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailConfigurationList'
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+    post:
+      operationId: createEmailConfiguration
+      summary: Create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailConfigurationWrite'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailConfiguration'
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+  /admin/email-configuration/{config_id}:
+    parameters:
+      - name: config_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getEmailConfiguration
+      summary: Return one record
+      responses:
+        '200':
+          description: Record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailConfiguration'
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+        '404':
+          $ref: '#/components/responses/EmailConfigurationNotFound'
+    patch:
+      operationId: updateEmailConfiguration
+      summary: Update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailConfigurationWrite'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailConfiguration'
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+        '404':
+          $ref: '#/components/responses/EmailConfigurationNotFound'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+    delete:
+      operationId: deleteEmailConfiguration
+      summary: Delete
+      responses:
+        '204':
+          description: Deleted
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+        '404':
+          $ref: '#/components/responses/EmailConfigurationNotFound'
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ContentStatus:
+      type: string
+      enum: [draft, publish]
+    FieldErrorDetail:
+      type: object
+      additionalProperties: false
+      required: [message_key]
+      properties:
+        message_key:
+          type: string
+    FieldErrors:
+      type: object
+      additionalProperties: false
+      required: [fields]
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldErrorDetail'
+
+    EmailConfiguration:
+      type: object
+      additionalProperties: false
+      required: [id, smtp_default_from, smtp_default_reply_to, smtp_admin_email, status, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        smtp_default_from: { type: string, format: email }
+        smtp_default_reply_to: { type: string, format: email }
+        smtp_admin_email: { type: string, format: email }
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+        created_at: { type: string, format: date-time }
+    EmailConfigurationSummary:
+      type: object
+      additionalProperties: false
+      required: [id, smtp_default_from, smtp_default_reply_to, smtp_admin_email, state]
+      properties:
+        id: { type: string, format: uuid }
+        smtp_default_from: { type: string }
+        smtp_default_reply_to: { type: string }
+        smtp_admin_email: { type: string }
+        state:
+          $ref: '#/components/schemas/ContentStatus'
+
+    EmailConfigurationList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailConfigurationSummary'
+        page:
+          type: integer
+          minimum: 1
+        per_page:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+
+    EmailConfigurationWrite:
+      type: object
+      additionalProperties: false
+      required: [smtp_default_from, smtp_default_reply_to, smtp_admin_email]
+      properties:
+        smtp_default_from: { type: string, format: email }
+        smtp_default_reply_to: { type: string, format: email }
+        smtp_admin_email: { type: string, format: email }
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+          default: draft
+
+  responses:
+    FieldErrors:
+      description: Field-level validation errors
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FieldErrors'
+    EmailConfigurationNotFound:
+      description: Unknown record
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [code, message_key]
+            properties:
+              code:
+                type: string
+                const: not_found
+              message_key:
+                type: string
+                const: admin.email_configuration.not_found
+

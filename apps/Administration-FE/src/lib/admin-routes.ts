@@ -1,4 +1,5 @@
 import { LANDING_SECTIONS } from './landing-sections';
+import { CATALOG_SECTIONS } from './catalog-sections';
 
 export type AdminView =
   | 'site_settings'
@@ -50,6 +51,26 @@ export type AdminView =
   | 'client_logo_form'
   | 'client_testimonials'
   | 'client_testimonial_form'
+  | 'applications'
+  | 'application_form'
+  | 'openings'
+  | 'opening_form'
+  | 'employee_testimonials'
+  | 'employee_testimonial_form'
+  | 'email_configuration'
+  | 'email_configuration_form'
+  | 'email_templates'
+  | 'email_template_form'
+  | 'news_categories'
+  | 'news_category_form'
+  | 'news'
+  | 'news_form'
+  | 'resource_categories'
+  | 'resource_category_form'
+  | 'resources'
+  | 'resource_form'
+  | 'memberships'
+  | 'membership_form'
   | 'roles'
   | 'role_form';
 
@@ -88,6 +109,11 @@ const SECTIONS: SectionConfig[] = [
   { segment: 'categories', list: 'categories', form: 'category_form' },
   { segment: 'client-logos', list: 'client_logos', form: 'client_logo_form' },
   { segment: 'client-testimonials', list: 'client_testimonials', form: 'client_testimonial_form' },
+  ...CATALOG_SECTIONS.map((section) => ({
+    segment: section.segment,
+    list: section.listView as AdminView,
+    form: section.formView as AdminView,
+  })),
   { segment: 'roles', list: 'roles', form: 'role_form' },
   { segment: 'settings', list: 'roles', form: 'role_form' },
 ];
@@ -118,6 +144,16 @@ const LIST_HREF: Record<string, string> = {
   categories: '/admin/categories/',
   client_logos: '/admin/client-logos/',
   client_testimonials: '/admin/client-testimonials/',
+  applications: '/admin/applications/',
+  openings: '/admin/openings/',
+  employee_testimonials: '/admin/employee-testimonials/',
+  email_configuration: '/admin/email-configuration/',
+  email_templates: '/admin/email-templates/',
+  news_categories: '/admin/news-categories/',
+  news: '/admin/news/',
+  resource_categories: '/admin/resource-categories/',
+  resources: '/admin/resources/',
+  memberships: '/admin/memberships/',
   roles: '/admin/roles/',
 };
 

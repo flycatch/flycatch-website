@@ -1,0 +1,253 @@
+openapi: 3.1.0
+info:
+  title: Administration Email Templates
+  version: 1.0.0
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+
+  /admin/email-templates:
+    get:
+      operationId: listEmailTemplate
+      summary: List with search and pagination of 10
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 10
+      responses:
+        '200':
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTemplateList'
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+    post:
+      operationId: createEmailTemplate
+      summary: Create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailTemplateWrite'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTemplate'
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+  /admin/email-templates/{template_id}:
+    parameters:
+      - name: template_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getEmailTemplate
+      summary: Return one record
+      responses:
+        '200':
+          description: Record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTemplate'
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+        '404':
+          $ref: '#/components/responses/EmailTemplateNotFound'
+    patch:
+      operationId: updateEmailTemplate
+      summary: Update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailTemplateWrite'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTemplate'
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+        '404':
+          $ref: '#/components/responses/EmailTemplateNotFound'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
+    delete:
+      operationId: deleteEmailTemplate
+      summary: Delete
+      responses:
+        '204':
+          description: Deleted
+
+        '401':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/Unauthenticated'
+        '403':
+          $ref: '../../002-auth-rbac/contracts/admin-rbac.v1.yaml#/components/responses/PermissionDenied'
+
+        '404':
+          $ref: '#/components/responses/EmailTemplateNotFound'
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ContentStatus:
+      type: string
+      enum: [draft, publish]
+    FieldErrorDetail:
+      type: object
+      additionalProperties: false
+      required: [message_key]
+      properties:
+        message_key:
+          type: string
+    FieldErrors:
+      type: object
+      additionalProperties: false
+      required: [fields]
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldErrorDetail'
+
+    EmailTemplateType:
+      type: string
+      enum: [user_notification, admin_notification]
+    EmailTemplate:
+      type: object
+      additionalProperties: false
+      required: [id, body, slug, type, subject, status, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        body: { type: string }
+        slug: { type: string }
+        type:
+          $ref: '#/components/schemas/EmailTemplateType'
+        subject: { type: string }
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+        created_at: { type: string, format: date-time }
+    EmailTemplateSummary:
+      type: object
+      additionalProperties: false
+      required: [id, slug, type, subject, state]
+      properties:
+        id: { type: string, format: uuid }
+        slug: { type: string }
+        type:
+          $ref: '#/components/schemas/EmailTemplateType'
+        subject: { type: string }
+        state:
+          $ref: '#/components/schemas/ContentStatus'
+
+    EmailTemplateList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailTemplateSummary'
+        page:
+          type: integer
+          minimum: 1
+        per_page:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+
+    EmailTemplateWrite:
+      type: object
+      additionalProperties: false
+      required: [slug, type, subject]
+      properties:
+        body: { type: string, default: '' }
+        slug: { type: string, minLength: 1, maxLength: 128 }
+        type:
+          $ref: '#/components/schemas/EmailTemplateType'
+        subject: { type: string, minLength: 1, maxLength: 200 }
+        status:
+          $ref: '#/components/schemas/ContentStatus'
+          default: draft
+
+  responses:
+    FieldErrors:
+      description: Field-level validation errors
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FieldErrors'
+    EmailTemplateNotFound:
+      description: Unknown record
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [code, message_key]
+            properties:
+              code:
+                type: string
+                const: not_found
+              message_key:
+                type: string
+                const: admin.email_templates.not_found
+

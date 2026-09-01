@@ -45,6 +45,16 @@ describe('parseAdminLocation', () => {
     );
     expect(parseAdminLocation('/admin/user-centered-design/').view).toBe('user_centered_design');
     expect(parseAdminLocation('/admin/overview/').view).toBe('overview');
+    expect(parseAdminLocation('/admin/applications/').view).toBe('applications');
+    expect(parseAdminLocation('/admin/openings/').view).toBe('openings');
+    expect(parseAdminLocation('/admin/employee-testimonials/').view).toBe('employee_testimonials');
+    expect(parseAdminLocation('/admin/email-configuration/').view).toBe('email_configuration');
+    expect(parseAdminLocation('/admin/email-templates/').view).toBe('email_templates');
+    expect(parseAdminLocation('/admin/news-categories/').view).toBe('news_categories');
+    expect(parseAdminLocation('/admin/news/').view).toBe('news');
+    expect(parseAdminLocation('/admin/resource-categories/').view).toBe('resource_categories');
+    expect(parseAdminLocation('/admin/resources/').view).toBe('resources');
+    expect(parseAdminLocation('/admin/memberships/').view).toBe('memberships');
     expect(parseAdminLocation('/admin/home/', '?new=1').view).toBe('home_form');
     expect(parseAdminLocation('/admin/home/', '?id=abc')).toEqual({
       view: 'home_form',
@@ -98,6 +108,10 @@ describe('admin href helpers', () => {
     );
     expect(adminListHref('user_centered_design')).toBe('/admin/user-centered-design/');
     expect(adminListHref('overview')).toBe('/admin/overview/');
+    expect(adminListHref('applications')).toBe('/admin/applications/');
+    expect(adminListHref('openings')).toBe('/admin/openings/');
+    expect(adminListHref('news')).toBe('/admin/news/');
+    expect(adminListHref('memberships')).toBe('/admin/memberships/');
     expect(adminFormHref('blogs', null)).toBe('/admin/blogs/?new=1');
     expect(adminFormHref('blogs', 'post-1')).toBe('/admin/blogs/?id=post-1');
   });

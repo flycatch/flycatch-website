@@ -1,0 +1,108 @@
+openapi: 3.1.0
+info:
+  title: Public Email Configuration
+  version: 1.0.0
+servers:
+  - url: /api/v1
+security: []
+paths:
+
+  /public/email-configuration:
+    get:
+      operationId: listPublicEmailConfiguration
+      summary: List published records
+      tags: [public]
+
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 10
+
+      responses:
+        '200':
+          description: Published list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicEmailConfigurationList'
+
+
+  /public/email-configuration/{config_id}:
+    get:
+      operationId: getPublicEmailConfiguration
+      summary: Return one published record
+      tags: [public]
+      parameters:
+        - name: config_id
+          in: path
+          required: true
+          schema:
+            type: string
+          format: uuid
+      responses:
+        '200':
+          description: Published record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicEmailConfiguration'
+        '404':
+          $ref: '#/components/responses/PublicNotFound'
+
+components:
+  schemas:
+    PublicEmailConfiguration:
+      type: object
+      additionalProperties: false
+      required: [id, smtp_default_from, smtp_default_reply_to, smtp_admin_email]
+      properties:
+        id: { type: string, format: uuid }
+        smtp_default_from: { type: string }
+        smtp_default_reply_to: { type: string }
+        smtp_admin_email: { type: string }
+    PublicEmailConfigurationList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicEmailConfiguration'
+        page: { type: integer }
+        per_page: { type: integer }
+        total: { type: integer }
+  responses:
+
+    PublicNotFound:
+      description: Unknown or unpublished
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [code, message_key]
+            properties:
+              code:
+                type: string
+                const: not_found
+              message_key:
+                type: string
+
