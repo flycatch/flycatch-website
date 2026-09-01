@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "astro dev --host --port 4173",
     "build": "astro build",
-    "preview": "astro preview --host 0.0.0.0 --port 4173",
+    "preview": "astro preview --host 0.0.0.0 --port 4173 --allowed-hosts",
     "check": "astro check",
     "generate:client": "node scripts/generate-client.mjs",
     "check:contracts": "node scripts/check-contract-drift.mjs",
