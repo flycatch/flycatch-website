@@ -4,27 +4,27 @@ kind: Kustomization
 namespace: flycatch-website-dev
 
 resources:
-  - ../../base
-  - ingress.yaml
-  - noindex-middleware.yaml
+- ../../base
+- ingress.yaml
+- noindex-middleware.yaml
 
 images:
-  - name: registry.k3s.flycatchtech.in/flycatch-website/backend
-    newName: registry.k3s.flycatchtech.in/flycatch-website/backend
-    newTag: latest
-  - name: registry.k3s.flycatchtech.in/flycatch-website/frontend
-    newName: registry.k3s.flycatchtech.in/flycatch-website/frontend
-    newTag: latest
-  - name: registry.k3s.flycatchtech.in/flycatch-website/administration-fe
-    newName: registry.k3s.flycatchtech.in/flycatch-website/administration-fe
-    newTag: latest
+- name: registry.k3s.flycatchtech.in/flycatch-website/administration-fe
+  newName: registry.k3s.flycatchtech.in/flycatch-website/administration-fe
+  newTag: fd0c30f579f7834c1d41454b5ac20d36aafaf8c7
+- name: registry.k3s.flycatchtech.in/flycatch-website/backend
+  newName: registry.k3s.flycatchtech.in/flycatch-website/backend
+  newTag: fd0c30f579f7834c1d41454b5ac20d36aafaf8c7
+- name: registry.k3s.flycatchtech.in/flycatch-website/frontend
+  newName: registry.k3s.flycatchtech.in/flycatch-website/frontend
+  newTag: fd0c30f579f7834c1d41454b5ac20d36aafaf8c7
 
 replicas:
-  - count: 1
-    name: backend
-  - count: 1
-    name: frontend
-  - count: 1
-    name: administration-fe
-  - count: 1
-    name: gateway
+- count: 1
+  name: backend
+- count: 1
+  name: frontend
+- count: 1
+  name: administration-fe
+- count: 1
+  name: gateway
