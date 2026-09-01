@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 
+from flycatch_api.config import settings
 from flycatch_api.api import (
     admin_ai_services,
     admin_auth,
