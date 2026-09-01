@@ -28,6 +28,25 @@ interface Props {
 
 type Status = 'draft' | 'publish';
 type Values = Record<string, unknown>;
+type RepeatableDraft = {
+  key: string;
+  image_key: string | null;
+  types_title: string;
+  contents: string;
+  links: string;
+  file: File | null;
+};
+
+function emptyRepeatableItem(): RepeatableDraft {
+  return {
+    key: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    image_key: null,
+    types_title: '',
+    contents: '',
+    links: '',
+    file: null,
+  };
+}
 
 function emptyValues(section: CatalogSection): Values {
   const values: Values = { status: 'draft' };
@@ -38,6 +57,7 @@ function emptyValues(section: CatalogSection): Values {
     else if (field.kind === 'select') values[field.key] = field.options[0];
     else if (field.kind === 'seo') values.seo = emptySeo;
     else if (field.kind === 'images') values.images = [];
+    else if (field.kind === 'repeatable') values[field.key] = [];
     else if (field.kind === 'media') values[field.key] = null;
     else if (field.kind === 'slug') values[field.key] = '';
     else values[field.key] = '';
@@ -54,6 +74,7 @@ export default function CatalogForm({ section, entryId, onCancel, onSaved }: Pro
   const [imageItems, setImageItems] = useState<{ key: string; image_key: string | null; alt: string; file: File | null }[]>(
     [],
   );
+  const [repeatableItems, setRepeatableItems] = useState<Record<string, RepeatableDraft[]>>({});
   const [status, setStatus] = useState<Status>('draft');
   const [slugManual, setSlugManual] = useState(false);
   const [options, setOptions] = useState<Record<string, { id: string; name: string }[]>>({});
@@ -86,6 +107,7 @@ export default function CatalogForm({ section, entryId, onCancel, onSaved }: Pro
     setSeoImageFile(null);
     setFiles({});
     setImageItems([]);
+    setRepeatableItems({});
     setStatus('draft');
     setSlugManual(Boolean(entryId));
     setReady(!entryId);
@@ -104,6 +126,20 @@ export default function CatalogForm({ section, entryId, onCancel, onSaved }: Pro
             })),
           );
         }
+        const nextRepeatable: Record<string, RepeatableDraft[]> = {};
+        for (const field of section.fields) {
+          if (field.kind !== 'repeatable') continue;
+          const rows = Array.isArray(item[field.key]) ? (item[field.key] as Record<string, unknown>[]) : [];
+          nextRepeatable[field.key] = rows.map((row, index) => ({
+            key: `${index}-${String(row.image_key || 'item')}`,
+            image_key: (row.image_key as string | null) ?? null,
+            types_title: String(row.types_title || ''),
+            contents: String(row.contents || ''),
+            links: String(row.links || ''),
+            file: null,
+          }));
+        }
+        setRepeatableItems(nextRepeatable);
         setStatus(item.status === 'publish' ? 'publish' : 'draft');
         setReady(true);
       })
@@ -157,6 +193,14 @@ export default function CatalogForm({ section, entryId, onCancel, onSaved }: Pro
           return;
         }
       }
+      if (field.kind === 'media' && field.required) {
+        const hasFile = Boolean(files[field.key]);
+        const hasStored = Boolean(values[field.key]);
+        if (!hasFile && !hasStored) {
+          setFieldError(t('admin.field.required'));
+          return;
+        }
+      }
       if (field.kind === 'number') {
         const amount = Number(values[field.key] || 0);
         if (!Number.isFinite(amount) || amount < 0) {
@@ -182,6 +226,18 @@ export default function CatalogForm({ section, entryId, onCancel, onSaved }: Pro
             images.push({ image_key: key, alt: item.alt });
           }
           payload.images = images;
+        } else if (field.kind === 'repeatable') {
+          const rows = [];
+          for (const item of repeatableItems[field.key] || []) {
+            const key = item.file ? (await uploadMedia(item.file)).key : item.image_key;
+            rows.push({
+              image_key: key,
+              types_title: item.types_title,
+              contents: item.contents,
+              links: item.links,
+            });
+          }
+          payload[field.key] = rows;
         } else if (field.kind === 'multiselect') {
           payload[field.idsKey] = values[field.idsKey] || [];
         } else if (field.kind === 'number') {
@@ -293,6 +349,109 @@ export default function CatalogForm({ section, entryId, onCancel, onSaved }: Pro
                         }
                       />
                     </label>
+                  </>
+                )}
+              </RepeatableSection>
+            );
+          }
+          if (field.kind === 'repeatable') {
+            const items = repeatableItems[field.key] || [];
+            return (
+              <RepeatableSection
+                key={field.key}
+                title={t(`${ns}.${field.labelKey}`)}
+                addLabel={t('admin.catalog.add_more')}
+                removeLabel={t('admin.media.remove')}
+                items={items}
+                itemTitle={(item, index) =>
+                  item.types_title.trim() || t('admin.catalog.service_item').replace('{n}', String(index + 1))
+                }
+                onAdd={() =>
+                  setRepeatableItems((current) => ({
+                    ...current,
+                    [field.key]: [...(current[field.key] || []), emptyRepeatableItem()],
+                  }))
+                }
+                onRemove={(key) =>
+                  setRepeatableItems((current) => ({
+                    ...current,
+                    [field.key]: (current[field.key] || []).filter((item) => item.key !== key),
+                  }))
+                }
+              >
+                {(item, index) => (
+                  <>
+                    {field.itemFields.map((itemField) => {
+                      if (itemField.kind === 'media') {
+                        return (
+                          <MediaField
+                            key={itemField.key}
+                            label={t(`${ns}.${itemField.labelKey}`)}
+                            accept={itemField.accept ?? IMAGE_ACCEPT}
+                            alt={item.types_title || t(`${ns}.${itemField.labelKey}`)}
+                            storedKey={item.image_key}
+                            file={item.file}
+                            onFile={(file) =>
+                              setRepeatableItems((current) => ({
+                                ...current,
+                                [field.key]: (current[field.key] || []).map((row, rowIndex) =>
+                                  rowIndex === index ? { ...row, file } : row,
+                                ),
+                              }))
+                            }
+                            onClear={() =>
+                              setRepeatableItems((current) => ({
+                                ...current,
+                                [field.key]: (current[field.key] || []).map((row, rowIndex) =>
+                                  rowIndex === index ? { ...row, file: null, image_key: null } : row,
+                                ),
+                              }))
+                            }
+                          />
+                        );
+                      }
+                      if (itemField.kind === 'textarea') {
+                        return (
+                          <label key={itemField.key}>
+                            {t(`${ns}.${itemField.labelKey}`)}
+                            <textarea
+                              value={item[itemField.key as 'contents']}
+                              rows={5}
+                              onChange={(event) =>
+                                setRepeatableItems((current) => ({
+                                  ...current,
+                                  [field.key]: (current[field.key] || []).map((row, rowIndex) =>
+                                    rowIndex === index
+                                      ? { ...row, [itemField.key]: event.target.value }
+                                      : row,
+                                  ),
+                                }))
+                              }
+                            />
+                          </label>
+                        );
+                      }
+                      return (
+                        <label key={itemField.key}>
+                          {t(`${ns}.${itemField.labelKey}`)}
+                          <input
+                            type="text"
+                            value={String(item[itemField.key as 'types_title' | 'links'] || '')}
+                            onChange={(event) =>
+                              setRepeatableItems((current) => ({
+                                ...current,
+                                [field.key]: (current[field.key] || []).map((row, rowIndex) =>
+                                  rowIndex === index
+                                    ? { ...row, [itemField.key]: event.target.value }
+                                    : row,
+                                ),
+                              }))
+                            }
+                            autoComplete="off"
+                          />
+                        </label>
+                      );
+                    })}
                   </>
                 )}
               </RepeatableSection>

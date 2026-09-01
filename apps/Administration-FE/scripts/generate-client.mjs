@@ -71,6 +71,13 @@ const resourceCategoriesContractsDir = join(
 );
 const resourcesContractsDir = join(repoRoot, 'specs/031-admin-resources/contracts');
 const membershipsContractsDir = join(repoRoot, 'specs/032-admin-memberships/contracts');
+const contactsContractsDir = join(repoRoot, 'specs/033-admin-contacts/contracts');
+const downloadsContractsDir = join(repoRoot, 'specs/034-admin-downloads/contracts');
+const flycatchSaudiArabiaContractsDir = join(
+  repoRoot,
+  'specs/035-admin-flycatch-saudi-arabia/contracts',
+);
+const subscriptionsContractsDir = join(repoRoot, 'specs/036-admin-subscriptions/contracts');
 
 const contractSets = [
   {
@@ -169,6 +176,10 @@ const contractSets = [
   { dir: resourceCategoriesContractsDir, files: ['admin-resource-categories.v1.yaml'] },
   { dir: resourcesContractsDir, files: ['admin-resources.v1.yaml'] },
   { dir: membershipsContractsDir, files: ['admin-memberships.v1.yaml'] },
+  { dir: contactsContractsDir, files: ['admin-contacts.v1.yaml'] },
+  { dir: downloadsContractsDir, files: ['admin-downloads.v1.yaml'] },
+  { dir: flycatchSaudiArabiaContractsDir, files: ['admin-flycatch-saudi-arabia.v1.yaml'] },
+  { dir: subscriptionsContractsDir, files: ['admin-subscriptions.v1.yaml'] },
 ];
 
 mkdirSync(outDir, { recursive: true });

@@ -60,6 +60,14 @@ CONTRACT_FILES = [
     SPECS / "031-admin-resources" / "contracts" / "public-resources.v1.yaml",
     SPECS / "032-admin-memberships" / "contracts" / "admin-memberships.v1.yaml",
     SPECS / "032-admin-memberships" / "contracts" / "public-memberships.v1.yaml",
+    SPECS / "033-admin-contacts" / "contracts" / "admin-contacts.v1.yaml",
+    SPECS / "033-admin-contacts" / "contracts" / "public-contacts.v1.yaml",
+    SPECS / "034-admin-downloads" / "contracts" / "admin-downloads.v1.yaml",
+    SPECS / "034-admin-downloads" / "contracts" / "public-downloads.v1.yaml",
+    SPECS / "035-admin-flycatch-saudi-arabia" / "contracts" / "admin-flycatch-saudi-arabia.v1.yaml",
+    SPECS / "035-admin-flycatch-saudi-arabia" / "contracts" / "public-flycatch-saudi-arabia.v1.yaml",
+    SPECS / "036-admin-subscriptions" / "contracts" / "admin-subscriptions.v1.yaml",
+    SPECS / "036-admin-subscriptions" / "contracts" / "public-subscriptions.v1.yaml",
 ];
 
 

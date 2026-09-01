@@ -29,6 +29,10 @@ def test_unauthenticated_catalog_is_rejected(client):
     assert client.get("/api/v1/admin/applications").status_code == 401
     assert client.get("/api/v1/admin/openings").status_code == 401
     assert client.get("/api/v1/admin/news").status_code == 401
+    assert client.get("/api/v1/admin/contacts").status_code == 401
+    assert client.get("/api/v1/admin/downloads").status_code == 401
+    assert client.get("/api/v1/admin/flycatch-saudi-arabia").status_code == 401
+    assert client.get("/api/v1/admin/subscriptions").status_code == 401
 
 
 def test_application_opening_and_public_nested(client, bootstrapped):
@@ -213,6 +217,90 @@ def test_named_categories_email_memberships_and_news(client, bootstrapped):
     listed_m = client.get("/api/v1/admin/memberships", headers=headers)
     assert listed_m.json()["items"][0]["images"] == 1
 
+    contact = client.post(
+        "/api/v1/admin/contacts",
+        headers=headers,
+        json={
+            "name": "Ada",
+            "last_name": "Lovelace",
+            "email": "ada@example.com",
+            "country": "UK",
+            "subject": "Hello",
+            "status": "publish",
+        },
+    )
+    assert contact.status_code == 201, contact.text
+    listed_c = client.get("/api/v1/admin/contacts", headers=headers)
+    assert listed_c.json()["per_page"] == 10
+    assert listed_c.json()["items"][0]["email"] == "ada@example.com"
+    public_c = client.get("/api/v1/public/contacts")
+    assert public_c.status_code == 200
+    assert "status" not in public_c.json()["items"][0]
+    bad_email = client.post(
+        "/api/v1/admin/contacts",
+        headers=headers,
+        json={"name": "Pat", "email": "not-an-email"},
+    )
+    assert bad_email.status_code == 422
+
+    missing_pdf = client.post(
+        "/api/v1/admin/downloads",
+        headers=headers,
+        json={"name": "Brochure"},
+    )
+    assert missing_pdf.status_code == 422
+    download = client.post(
+        "/api/v1/admin/downloads",
+        headers=headers,
+        json={"name": "Brochure", "company": "Flycatch", "file_key": "pack.pdf", "status": "publish"},
+    )
+    assert download.status_code == 201, download.text
+    assert client.get("/api/v1/public/downloads").json()["items"][0]["file_key"] == "pack.pdf"
+
+    saudi = client.post(
+        "/api/v1/admin/flycatch-saudi-arabia",
+        headers=headers,
+        json={
+            "banner_title": "KSA",
+            "service_section": [
+                {"types_title": "Cloud", "contents": "Hosting", "links": "/cloud"},
+                {"types_title": "Data", "contents": "Analytics", "links": "/data"},
+            ],
+            "video_key": "intro.mp4",
+            "status": "publish",
+        },
+    )
+    assert saudi.status_code == 201, saudi.text
+    listed_s = client.get("/api/v1/admin/flycatch-saudi-arabia", headers=headers)
+    assert listed_s.json()["items"][0]["service_section"] == 2
+    assert listed_s.json()["items"][0]["service_section_names"] == ["Cloud", "Data"]
+    assert listed_s.json()["items"][0]["video_format"] == "MP4"
+
+    subscription = client.post(
+        "/api/v1/admin/subscriptions",
+        headers=headers,
+        json={"email": "news@example.com", "active": False, "status": "publish"},
+    )
+    assert subscription.status_code == 201, subscription.text
+    public_sub = client.get("/api/v1/public/subscriptions")
+    assert public_sub.json()["items"][0]["active"] is False
+    assert "status" not in public_sub.json()["items"][0]
+    duplicate = client.post(
+        "/api/v1/admin/subscriptions",
+        headers=headers,
+        json={"email": "news@example.com"},
+    )
+    assert duplicate.status_code == 422
+
+    draft_contact = client.post(
+        "/api/v1/admin/contacts",
+        headers=headers,
+        json={"name": "Hidden", "email": "hidden@example.com"},
+    )
+    assert draft_contact.status_code == 201
+    public_emails = [item["email"] for item in client.get("/api/v1/public/contacts").json()["items"]]
+    assert "hidden@example.com" not in public_emails
+
     draft_news = client.post(
         "/api/v1/admin/news",
         headers=headers,
@@ -247,3 +335,26 @@ def test_document_upload_accepts_pdf_and_rejects_oversize(client, bootstrapped):
         },
     )
     assert too_large.status_code == 422
+
+
+def test_editor_cannot_publish_new_catalog_sections(client, bootstrapped):
+    tokens = client.post(
+        "/api/v1/admin/auth/sign-in",
+        json={"email": bootstrapped["editor_email"], "password": bootstrapped["editor_password"]},
+    ).json()
+    headers = {"Authorization": f"Bearer {tokens['access_token']}"}
+    listed = client.get("/api/v1/admin/contacts", headers=headers)
+    assert listed.status_code == 200
+    denied = client.post(
+        "/api/v1/admin/contacts",
+        headers=headers,
+        json={"name": "Ada", "email": "ada-editor@example.com", "status": "publish"},
+    )
+    assert denied.status_code == 403
+    created = client.post(
+        "/api/v1/admin/subscriptions",
+        headers=headers,
+        json={"email": "editor-sub@example.com"},
+    )
+    assert created.status_code == 201
+    assert created.json()["status"] == "draft"

@@ -71,6 +71,14 @@ export type AdminView =
   | 'resource_form'
   | 'memberships'
   | 'membership_form'
+  | 'contacts'
+  | 'contact_form'
+  | 'downloads'
+  | 'download_form'
+  | 'flycatch_saudi_arabia'
+  | 'flycatch_saudi_arabia_form'
+  | 'subscriptions'
+  | 'subscription_form'
   | 'roles'
   | 'role_form';
 
@@ -154,6 +162,10 @@ const LIST_HREF: Record<string, string> = {
   resource_categories: '/admin/resource-categories/',
   resources: '/admin/resources/',
   memberships: '/admin/memberships/',
+  contacts: '/admin/contacts/',
+  downloads: '/admin/downloads/',
+  flycatch_saudi_arabia: '/admin/flycatch-saudi-arabia/',
+  subscriptions: '/admin/subscriptions/',
   roles: '/admin/roles/',
 };
 

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from flycatch_api.schemas.admin_homes import ContentSeo
 
@@ -238,6 +238,97 @@ class PublicMembershipList(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     items: list[PublicMembership]
+    page: int = Field(ge=1)
+    per_page: int = Field(ge=1)
+    total: int = Field(ge=0)
+
+
+class PublicContact(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: UUID
+    name: str
+    last_name: str
+    email: EmailStr
+    country: str
+    phone: str
+    subject: str
+    contact_date: date | None = None
+    details: str
+    contact_type: str
+    company_name: str
+
+
+class PublicContactList(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    items: list[PublicContact]
+    page: int = Field(ge=1)
+    per_page: int = Field(ge=1)
+    total: int = Field(ge=0)
+
+
+class PublicDownload(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: UUID
+    name: str
+    company: str
+    file_key: str
+
+
+class PublicDownloadList(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    items: list[PublicDownload]
+    page: int = Field(ge=1)
+    per_page: int = Field(ge=1)
+    total: int = Field(ge=0)
+
+
+class PublicServiceSectionItem(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    image_key: str | None = None
+    types_title: str = ""
+    contents: str = ""
+    links: str = ""
+
+
+class PublicFlycatchSaudiArabia(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: UUID
+    banner_title: str
+    service_section: list[PublicServiceSectionItem]
+    banner_explore_text: str
+    services_title: str
+    video_key: str | None = None
+    seo: ContentSeo
+
+
+class PublicFlycatchSaudiArabiaList(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    items: list[PublicFlycatchSaudiArabia]
+    page: int = Field(ge=1)
+    per_page: int = Field(ge=1)
+    total: int = Field(ge=0)
+
+
+class PublicSubscription(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: UUID
+    email: EmailStr
+    active: bool
+    created_at: datetime
+
+
+class PublicSubscriptionList(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    items: list[PublicSubscription]
     page: int = Field(ge=1)
     per_page: int = Field(ge=1)
     total: int = Field(ge=0)

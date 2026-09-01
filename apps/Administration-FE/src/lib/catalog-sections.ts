@@ -1,15 +1,20 @@
 export type CatalogColumn =
-  | { key: string; labelKey: string; kind: 'text' | 'state' | 'date' | 'media' | 'seo' | 'format' }
+  | { key: string; labelKey: string; kind: 'text' | 'state' | 'date' | 'media' | 'seo' | 'format' | 'bool' }
   | { key: string; labelKey: string; kind: 'count'; namesKey: string };
+
+export type RepeatableItemField =
+  | { kind: 'text' | 'textarea'; key: string; labelKey: string }
+  | { kind: 'media'; key: string; labelKey: string; accept?: string };
 
 export type CatalogField =
   | { kind: 'text' | 'email' | 'textarea' | 'number' | 'checkbox' | 'date' | 'richtext'; key: string; labelKey: string; required?: boolean }
   | { kind: 'slug'; key: string; labelKey: string; fromKey: string; required?: boolean }
   | { kind: 'select'; key: string; labelKey: string; options: string[] }
-  | { kind: 'media'; key: string; labelKey: string; accept?: string }
+  | { kind: 'media'; key: string; labelKey: string; accept?: string; required?: boolean }
   | { kind: 'multiselect'; key: string; idsKey: string; labelKey: string; optionsFrom: 'applications' | 'news_categories' | 'authors' | 'resource_categories'; manageView: string }
   | { kind: 'seo' }
-  | { kind: 'images' };
+  | { kind: 'images' }
+  | { kind: 'repeatable'; key: string; labelKey: string; itemFields: RepeatableItemField[] };
 
 export const RESUME_ACCEPT =
   'image/jpeg,image/png,image/gif,image/webp,.jpg,.jpeg,.png,.gif,.webp,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf,.doc,.docx';
@@ -289,6 +294,108 @@ export const CATALOG_SECTIONS: CatalogSection[] = [
       { kind: 'textarea', key: 'description', labelKey: 'description' },
       { kind: 'images' },
       { kind: 'seo' },
+    ],
+  },
+  {
+    resource: 'contacts',
+    segment: 'contacts',
+    listView: 'contacts',
+    formView: 'contact_form',
+    ns: 'admin.contacts',
+    path: '/admin/contacts',
+    idParam: 'contact_id',
+    columns: [
+      { key: 'name', labelKey: 'name', kind: 'text' },
+      { key: 'email', labelKey: 'email', kind: 'text' },
+      { key: 'country', labelKey: 'country', kind: 'text' },
+      { key: 'state', labelKey: 'state', kind: 'state' },
+    ],
+    fields: [
+      { kind: 'text', key: 'name', labelKey: 'name', required: true },
+      { kind: 'text', key: 'last_name', labelKey: 'last_name' },
+      { kind: 'email', key: 'email', labelKey: 'email', required: true },
+      { kind: 'text', key: 'country', labelKey: 'country' },
+      { kind: 'text', key: 'phone', labelKey: 'phone' },
+      { kind: 'text', key: 'subject', labelKey: 'subject' },
+      { kind: 'date', key: 'contact_date', labelKey: 'contact_date' },
+      { kind: 'textarea', key: 'details', labelKey: 'details' },
+      { kind: 'text', key: 'contact_type', labelKey: 'contact_type' },
+      { kind: 'text', key: 'company_name', labelKey: 'company_name' },
+    ],
+  },
+  {
+    resource: 'downloads',
+    segment: 'downloads',
+    listView: 'downloads',
+    formView: 'download_form',
+    ns: 'admin.downloads',
+    path: '/admin/downloads',
+    idParam: 'download_id',
+    columns: [
+      { key: 'name', labelKey: 'name', kind: 'text' },
+      { key: 'state', labelKey: 'state', kind: 'state' },
+    ],
+    fields: [
+      { kind: 'text', key: 'name', labelKey: 'name', required: true },
+      { kind: 'text', key: 'company', labelKey: 'company' },
+      { kind: 'media', key: 'file_key', labelKey: 'file', accept: 'application/pdf,.pdf', required: true },
+    ],
+  },
+  {
+    resource: 'flycatch_saudi_arabia',
+    segment: 'flycatch-saudi-arabia',
+    listView: 'flycatch_saudi_arabia',
+    formView: 'flycatch_saudi_arabia_form',
+    ns: 'admin.flycatch_saudi_arabia',
+    path: '/admin/flycatch-saudi-arabia',
+    idParam: 'item_id',
+    columns: [
+      { key: 'banner_title', labelKey: 'banner_title', kind: 'text' },
+      { key: 'service_section', labelKey: 'service_section', kind: 'count', namesKey: 'service_section_names' },
+      { key: 'video_format', labelKey: 'video_file', kind: 'format' },
+      { key: 'state', labelKey: 'state', kind: 'state' },
+    ],
+    fields: [
+      { kind: 'text', key: 'banner_title', labelKey: 'banner_title', required: true },
+      {
+        kind: 'repeatable',
+        key: 'service_section',
+        labelKey: 'service_section',
+        itemFields: [
+          { kind: 'media', key: 'image_key', labelKey: 'services_image' },
+          { kind: 'text', key: 'types_title', labelKey: 'types_title' },
+          { kind: 'textarea', key: 'contents', labelKey: 'contents' },
+          { kind: 'text', key: 'links', labelKey: 'links' },
+        ],
+      },
+      { kind: 'text', key: 'banner_explore_text', labelKey: 'banner_explore_text' },
+      { kind: 'text', key: 'services_title', labelKey: 'services_title' },
+      {
+        kind: 'media',
+        key: 'video_key',
+        labelKey: 'video_file',
+        accept: 'video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov',
+      },
+      { kind: 'seo' },
+    ],
+  },
+  {
+    resource: 'subscriptions',
+    segment: 'subscriptions',
+    listView: 'subscriptions',
+    formView: 'subscription_form',
+    ns: 'admin.subscriptions',
+    path: '/admin/subscriptions',
+    idParam: 'subscription_id',
+    columns: [
+      { key: 'email', labelKey: 'email', kind: 'text' },
+      { key: 'active', labelKey: 'active', kind: 'bool' },
+      { key: 'created_at', labelKey: 'created_at', kind: 'date' },
+      { key: 'state', labelKey: 'state', kind: 'state' },
+    ],
+    fields: [
+      { kind: 'email', key: 'email', labelKey: 'email', required: true },
+      { kind: 'checkbox', key: 'active', labelKey: 'active' },
     ],
   },
 ];
