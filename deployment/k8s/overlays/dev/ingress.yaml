@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: flycatch-website
+  labels:
+    app.kubernetes.io/name: flycatch-website
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+    traefik.ingress.kubernetes.io/router.middlewares: flycatch-website-dev-noindex@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - flycatch-website-dev.k3s.flycatchtech.in
+      secretName: flycatch-website-dev-tls
+  rules:
+    - host: flycatch-website-dev.k3s.flycatchtech.in
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway
+                port:
+                  number: 8080

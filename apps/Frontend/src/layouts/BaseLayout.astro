@@ -13,6 +13,8 @@ interface Props {
 }
 
 const { title, metadata, structuredData = [], lang = 'en', dir = 'ltr' } = Astro.props;
+const isProduction = (import.meta.env.PUBLIC_ENVIRONMENT || 'development') === 'production';
+const shouldNoindex = !metadata.indexable || !isProduction;
 ---
 <!doctype html>
 <html lang={lang} dir={dir}>
@@ -22,7 +24,7 @@ const { title, metadata, structuredData = [], lang = 'en', dir = 'ltr' } = Astro
     <title>{title}</title>
     <meta name="description" content={metadata.description} />
     <link rel="canonical" href={metadata.canonical} />
-    {!metadata.indexable && <meta name="robots" content="noindex, nofollow" />}
+    {shouldNoindex && <meta name="robots" content="noindex, nofollow" />}
     <meta property="og:title" content={metadata.socialTitle} />
     <meta property="og:description" content={metadata.socialDescription} />
     <meta property="og:url" content={metadata.canonical} />

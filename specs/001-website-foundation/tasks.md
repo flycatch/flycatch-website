@@ -40,10 +40,10 @@ description: "Task list for Website Foundation feature implementation"
 - [x] T006 [P] Configure ESLint/Prettier for Frontend and Administration-FE (`apps/Frontend/`, `apps/Administration-FE/`)
 - [x] T007 [P] Configure Ruff and pytest for Backend in `apps/Backend/pyproject.toml`
 - [x] T008 [P] Add Dockerfiles for Frontend, Administration-FE, and Backend (`apps/Frontend/Dockerfile`, `apps/Administration-FE/Dockerfile`, `apps/Backend/Dockerfile`)
-- [x] T009 Complete `deployment/docker-compose.yml`, `deployment/Caddyfile`, and `deployment/.env.example` for gateway path split (`/`, `/admin`, `/api`)
+- [x] T009 Complete `deployment/compose/docker-compose.yml`, `deployment/k8s/base/Caddyfile`, and `deployment/compose/.env.example` for gateway path split (`/`, `/admin`, `/api`)
 - [x] T010 Write root `README.md` with project overview, deployment usage, and contract consumption rules
 
-**Checkpoint**: All three apps scaffolded; `docker compose -f deployment/docker-compose.yml up` starts services (may serve placeholders)
+**Checkpoint**: All three apps scaffolded; `docker compose -f deployment/compose/docker-compose.yml up` starts services (may serve placeholders)
 
 ---
 

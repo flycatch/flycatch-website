@@ -204,7 +204,7 @@ Promotion is blocked when any gate fails (FR-041, FR-043, SC-006).
 
 ## 13. Environments and hosting
 
-**Decision**: Hosting vendor is out of scope (spec). Local/preview/production MUST share the same HTML production path: export published snapshot → `astro build` in `apps/Frontend` → deploy static files with cache-busting. All foundation services (Frontend, Administration FE, Backend, PostgreSQL, object storage) share `deployment/docker-compose.yml` and `.env` configuration. Gateway provides one origin (`/`, `/admin`, `/api`).
+**Decision**: Hosting vendor is out of scope (spec). Local/preview/production MUST share the same HTML production path: export published snapshot → `astro build` in `apps/Frontend` → deploy static files with cache-busting. All foundation services (Frontend, Administration FE, Backend, PostgreSQL, object storage) share `deployment/compose/docker-compose.yml` and `.env` configuration. Gateway provides one origin (`/`, `/admin`, `/api`).
 
 **Rationale**: FR-004, FR-030, FR-041. Equivalent public HTML for the same revision in preview and production. One deployment folder avoids duplicated compose/env setup.
 

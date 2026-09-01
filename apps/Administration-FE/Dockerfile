@@ -5,7 +5,10 @@ RUN npm ci
 COPY . .
 COPY --from=specs . /specs
 ENV CONTRACTS_DIR=/specs/002-auth-rbac/contracts
-ENV PUBLIC_ORIGIN=http://localhost:8080
+ARG PUBLIC_ORIGIN=http://localhost:8080
+ARG PUBLIC_ENVIRONMENT=development
+ENV PUBLIC_ORIGIN=$PUBLIC_ORIGIN
+ENV PUBLIC_ENVIRONMENT=$PUBLIC_ENVIRONMENT
 RUN npm run generate:client && npm run build
 
 FROM node:22-alpine

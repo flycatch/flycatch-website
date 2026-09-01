@@ -1,3 +1,5 @@
+# Shared gateway routing for Docker Compose and k8s.
+# Compose mounts this path; k8s generates a ConfigMap from it.
 # Path-based gateway — single origin for Frontend, Administration FE, and Backend
 
 :{$GATEWAY_PORT:8080} {

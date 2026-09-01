@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: administration-fe
+  labels:
+    app.kubernetes.io/name: flycatch-website
+    app.kubernetes.io/component: administration-fe
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: flycatch-website
+    app.kubernetes.io/component: administration-fe
+  ports:
+    - name: http
+      port: 4173
+      targetPort: http
+      protocol: TCP
