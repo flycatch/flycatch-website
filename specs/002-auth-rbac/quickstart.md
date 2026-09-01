@@ -15,18 +15,18 @@ Related artifacts: [spec.md](./spec.md), [data-model.md](./data-model.md), [cont
 ## Setup
 
 1. Copy or update `deployment/.env` with `jwt_secret` (long random) in addition to existing Backend secrets.
-2. Start services: `docker compose -f deployment/docker-compose.yml up -d`.
+2. Start services: `docker compose -f deployment/docker-compose.yml up -d --build` (see [README.md](../../README.md#quick-start-docker-compose)).
 3. Apply Backend migrations (includes roles and refresh-session columns).
-4. Run bootstrap (see [bootstrap.cli.yaml](./contracts/bootstrap.cli.yaml)):
+4. Run bootstrap (see [bootstrap.cli.yaml](./contracts/bootstrap.cli.yaml)). Prefix with `docker compose -f deployment/docker-compose.yml exec backend` when using Compose:
 
-   ```text
+   ```bash
    flycatch-bootstrap \
      --user-1-email admin1@example.com \
      --user-2-email admin2@example.com \
      --user-2-role editor
    ```
 
-   Supply passwords via prompt or flags. Expect two users and roles `administrator` / `editor`. Re-run with the same emails and expect no duplicates.
+   Those emails are examples only; there is no committed default password. Supply passwords via prompt or flags (min 12 characters). Expect two users and roles `administrator` / `editor`. Re-run with the same emails and expect no duplicates.
 
 5. Generate Administration FE types/client from `specs/002-auth-rbac/contracts/` (`admin-auth.v2`, `admin-rbac.v1`, `admin-management.v2`, `publish.v2`). Confirm Backend served OpenAPI matches those files.
 6. Open the gateway origin `/admin`. Expect sign-in only — no register or create-account control.
