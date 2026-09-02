@@ -20,8 +20,8 @@ const overview = detail.item;
 const siteSettings = publicSiteSettings();
 const failed = listed.error || detail.error;
 const metadata = overview
-  ? metadataFromContentSeo(overview.seo, siteSettings)
-  : fallbackMetadata('/about', t('nav.about'), failed ? t('home.error') : t('home.empty'));
+  ? metadataFromContentSeo(overview.seo, siteSettings, t('page.about.title'))
+  : fallbackMetadata('/about', t('page.about.title'), failed ? t('home.error') : t('home.empty'));
 const heading = overview
   ? overview.seo.h1_tag.trim() || overview.banner_title || overview.introduction_title
   : t('nav.about');

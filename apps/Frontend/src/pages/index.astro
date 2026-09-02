@@ -3,8 +3,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import HomeHero from '../components/HomeHero.astro';
+import HomeOfferings from '../components/HomeOfferings.astro';
 import HomeServices from '../components/HomeServices.astro';
 import HomeCaseStudies from '../components/HomeCaseStudies.astro';
+import HomeMinds from '../components/HomeMinds.astro';
 import HomeClients from '../components/HomeClients.astro';
 import HomeTestimonials from '../components/HomeTestimonials.astro';
 import HomeInsights from '../components/HomeInsights.astro';
@@ -35,10 +37,10 @@ const [homesResult, logosResult, testimonialsResult, blogsResult] = await Promis
 const siteSettings = publicSiteSettings();
 const home = homesResult.items[0] ?? null;
 const metadata = home
-  ? metadataFromContentSeo(home.seo, siteSettings)
+  ? metadataFromContentSeo(home.seo, siteSettings, t('page.home.title'))
   : fallbackMetadata(
       '/',
-      siteSettings.site_name,
+      t('page.home.title'),
       homesResult.error ? t('home.error') : t('home.empty'),
     );
 const structuredData = home ? homeStructuredData(home, metadata, siteSettings) : [];
@@ -55,10 +57,12 @@ const structuredData = home ? homeStructuredData(home, metadata, siteSettings) :
         </div>
       </section>
     )}
-    <HomeServices services={home?.services ?? []} error={homesResult.error} />
+    <HomeOfferings />
     <HomeCaseStudies studies={home?.case_studies ?? []} error={homesResult.error} />
-    <HomeClients logos={logosResult.items} error={logosResult.error} />
+    <HomeServices services={home?.services ?? []} error={homesResult.error} />
+    <HomeMinds />
     <HomeTestimonials testimonials={testimonialsResult.items} error={testimonialsResult.error} />
+    <HomeClients logos={logosResult.items} error={logosResult.error} />
     <HomeInsights blogs={blogsResult.items} error={blogsResult.error} />
     <HomeFaq
       title={home?.faq_title ?? ''}

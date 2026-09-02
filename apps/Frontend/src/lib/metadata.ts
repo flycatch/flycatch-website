@@ -58,8 +58,23 @@ export function buildPageMetadata(
   };
 }
 
-export function metadataFromContentSeo(seo: ContentSeo, siteSettings: SiteSettings): PageMetadata {
-  const title = seo.meta_title.trim() || seo.title.trim() || siteSettings.site_name;
+export function documentTitleFromSeo(
+  seo: Pick<ContentSeo, 'meta_title' | 'title'> | null | undefined,
+  fallbackPageName: string,
+): string {
+  const metaTitle = seo?.meta_title?.trim();
+  if (metaTitle) return metaTitle;
+  const seoTitle = seo?.title?.trim();
+  if (seoTitle) return seoTitle;
+  return fallbackPageName;
+}
+
+export function metadataFromContentSeo(
+  seo: ContentSeo,
+  siteSettings: SiteSettings,
+  fallbackPageName = siteSettings.site_name,
+): PageMetadata {
+  const title = documentTitleFromSeo(seo, fallbackPageName);
   const description = seo.description.trim() || siteSettings.site_name;
   const canonical =
     seo.canonical_url.startsWith('http://') || seo.canonical_url.startsWith('https://')
