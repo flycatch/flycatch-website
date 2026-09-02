@@ -27,5 +27,5 @@ images:
     additionalContexts:
       specs: specs
     args:
-      PUBLIC_ORIGIN: https://flycatch-website-dev.k3s.flycatchtech.in
+      PUBLIC_ORIGIN: https://flycatch-website-test.k3s.flycatchtech.in
       PUBLIC_ENVIRONMENT: development
