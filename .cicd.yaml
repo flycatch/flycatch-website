@@ -8,7 +8,7 @@ environments:
   qa: qa
   uat: uat
   main: prod
-  feat/harbor-test: dev
+  feat/harbor-test: test
 
 images:
   - name: flycatch-website/frontend
