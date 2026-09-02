@@ -34,7 +34,7 @@ description: "Task list for Authentication and Authorisation (RBAC) feature impl
 
 - [x] T001 Add `PyJWT` to Backend dependencies in `apps/Backend/pyproject.toml`
 - [x] T002 [P] Add `jwt_secret` and `jwt_access_minutes` (default 15) settings in `apps/Backend/src/flycatch_api/config.py`
-- [x] T003 [P] Add `JWT_SECRET` and `JWT_ACCESS_MINUTES` placeholders (no well-known staff passwords) in `deployment/.env.example`
+- [x] T003 [P] Add `JWT_SECRET` and `JWT_ACCESS_MINUTES` placeholders (no well-known staff passwords) in `deployment/compose/.env.example`
 - [x] T004 [P] Point Administration FE OpenAPI generation at `admin-auth.v2`, `admin-rbac.v1`, `admin-management.v2`, and `publish.v2` in `apps/Administration-FE/scripts/generate-client.mjs` and `apps/Administration-FE/package.json`
 - [x] T005 [P] Extend `scripts/validate-contracts.mjs` to validate OpenAPI YAML under `specs/002-auth-rbac/contracts/` (skip `bootstrap.cli.yaml`)
 - [x] T006 Register `flycatch-bootstrap` console script in `apps/Backend/pyproject.toml`

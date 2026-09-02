@@ -7,6 +7,9 @@ export default defineConfig({
   trailingSlash: 'always',
   integrations: [react()],
   vite: {
+    preview: {
+      allowedHosts: true,
+    },
     server: {
       proxy: {
         '/api': {

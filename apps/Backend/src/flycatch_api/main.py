@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 
+from flycatch_api.config import settings
 from flycatch_api.api import (
     admin_ai_services,
     admin_auth,
@@ -74,7 +75,10 @@ async def security_headers(request: Request, call_next):
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    if request.url.path.startswith("/admin") or request.url.path.startswith("/api/v1/admin"):
+    is_admin_path = request.url.path.startswith("/admin") or request.url.path.startswith(
+        "/api/v1/admin"
+    )
+    if settings.environment != "production" or is_admin_path:
         response.headers["X-Robots-Tag"] = "noindex, nofollow"
     return response
 

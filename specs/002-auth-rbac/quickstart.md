@@ -14,10 +14,10 @@ Related artifacts: [spec.md](./spec.md), [data-model.md](./data-model.md), [cont
 
 ## Setup
 
-1. Copy or update `deployment/.env` with `jwt_secret` (long random) in addition to existing Backend secrets.
-2. Start services: `docker compose -f deployment/docker-compose.yml up -d --build` (see [README.md](../../README.md#quick-start-docker-compose)).
+1. Copy or update `deployment/compose/.env` with `jwt_secret` (long random) in addition to existing Backend secrets.
+2. Start services: `docker compose -f deployment/compose/docker-compose.yml up -d --build` (see [README.md](../../README.md#quick-start-docker-compose)).
 3. Apply Backend migrations (includes roles and refresh-session columns).
-4. Run bootstrap (see [bootstrap.cli.yaml](./contracts/bootstrap.cli.yaml)). Prefix with `docker compose -f deployment/docker-compose.yml exec backend` when using Compose:
+4. Run bootstrap (see [bootstrap.cli.yaml](./contracts/bootstrap.cli.yaml)). Prefix with `docker compose -f deployment/compose/docker-compose.yml exec backend` when using Compose:
 
    ```bash
    flycatch-bootstrap \

@@ -4,14 +4,14 @@
 
 Docker Compose starts Frontend, Administration FE, Backend, PostgreSQL, MinIO, and the gateway. It does **not** create staff users or apply migrations. There is no default login and no sign-up screen.
 
-1. `cp deployment/.env.example deployment/.env` and set `JWT_SECRET` (and other `change-me` values) to long random secrets. Do not commit `deployment/.env`.
-2. `docker compose -f deployment/docker-compose.yml up -d --build`
-3. Backend migrations: `docker compose -f deployment/docker-compose.yml exec backend alembic upgrade head`
-4. Seed records: `docker compose -f deployment/docker-compose.yml exec backend flycatch-seed-records`
+1. `cp deployment/compose/.env.example deployment/compose/.env` and set `JWT_SECRET` (and other `change-me` values) to long random secrets. Do not commit `deployment/compose/.env`.
+2. `docker compose -f deployment/compose/docker-compose.yml up -d --build`
+3. Backend migrations: `docker compose -f deployment/compose/docker-compose.yml exec backend alembic upgrade head`
+4. Seed records: `docker compose -f deployment/compose/docker-compose.yml exec backend flycatch-seed-records`
 5. Bootstrap default roles and two staff users:
 
    ```bash
-   docker compose -f deployment/docker-compose.yml exec backend flycatch-bootstrap \
+   docker compose -f deployment/compose/docker-compose.yml exec backend flycatch-bootstrap \
      --user-1-email admin1@example.com \
      --user-2-email admin2@example.com \
      --user-2-role editor
@@ -24,7 +24,7 @@ Docker Compose starts Frontend, Administration FE, Backend, PostgreSQL, MinIO, a
 
    These emails are examples only. Passwords are **not** stored in the repo: they are prompted (minimum 12 characters) unless you pass `--user-1-password` and `--user-2-password`. Re-running with the same emails is idempotent and does not change existing passwords. Pytest fixtures (`editor1@example.com` / test passwords) are not created by this command.
 
-6. Later staff: `docker compose -f deployment/docker-compose.yml exec backend flycatch-provision-admin --email someone@example.com --role editor` (`--role` is required: `administrator` or `editor`).
+6. Later staff: `docker compose -f deployment/compose/docker-compose.yml exec backend flycatch-provision-admin --email someone@example.com --role editor` (`--role` is required: `administrator` or `editor`).
 7. Generate Administration FE types: `cd apps/Administration-FE && npm run generate:client`
 8. Build Frontend: `cd apps/Frontend && pnpm install && pnpm run build`
 

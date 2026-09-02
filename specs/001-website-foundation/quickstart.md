@@ -15,13 +15,13 @@ Related artifacts: [spec.md](./spec.md), [data-model.md](./data-model.md), [cont
 
 ## Setup
 
-1. Copy environment config: `cp deployment/.env.example deployment/.env` and adjust values.
-2. Start all services: `docker compose -f deployment/docker-compose.yml up -d --build` (see [README.md](../../README.md#quick-start-docker-compose)).
+1. Copy environment config: `cp deployment/compose/.env.example deployment/compose/.env` and adjust values.
+2. Start all services: `docker compose -f deployment/compose/docker-compose.yml up -d --build` (see [README.md](../../README.md#quick-start-docker-compose)).
 3. Apply Backend migrations, seed records, and bootstrap two staff users (`flycatch-bootstrap`). Compose does not create a default login. Full commands: [docs/onboarding.md](../../docs/onboarding.md).
 4. Generate OpenAPI consumers for Frontend and Administration FE from `specs/001-website-foundation/contracts/`; confirm Backend served OpenAPI matches the same files.
 5. Export the published snapshot (empty or seed `home` + `site_settings`) into `apps/Frontend/src/data/published.json`.
 6. Build `apps/Frontend` with `astro build` (`output: 'static'`).
-7. Rebuild compose services when app images change: `docker compose -f deployment/docker-compose.yml up -d --build`.
+7. Rebuild compose services when app images change: `docker compose -f deployment/compose/docker-compose.yml up -d --build`.
 8. Open the gateway origin from `.env` (default `http://localhost:8080`): `/` → Frontend, `/admin` → Administration FE, `/api` → Backend.
 
 Do not point the public site at live API URLs for ordinary browsing.
@@ -95,7 +95,7 @@ Do not point the public site at live API URLs for ordinary browsing.
 
 | Environment | Public HTML | Admin / API |
 | --- | --- | --- |
-| Local | `docker compose -f deployment/docker-compose.yml up` | Gateway origin from `.env` |
+| Local | `docker compose -f deployment/compose/docker-compose.yml up` | Gateway origin from `.env` |
 | Preview | Same build command, HTTPS | HTTPS, production-like headers |
 | Production | Same build command, cacheable assets, invalidate on new published revision | HTTPS, idle session timeout enforced |
 
