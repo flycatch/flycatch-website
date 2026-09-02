@@ -23,7 +23,7 @@ images:
 
   - name: flycatch-website/administration-fe
     dockerfile: apps/Administration-FE/Dockerfile
-    context: .
+    context: apps/Administration-FE
     additionalContexts:
       specs: specs
     args:
