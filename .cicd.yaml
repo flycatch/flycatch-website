@@ -24,6 +24,8 @@ images:
   - name: flycatch-website/administration-fe
     dockerfile: apps/Administration-FE/Dockerfile
     context: .
+    additionalContexts:
+      specs: specs
     args:
       PUBLIC_ORIGIN: https://flycatch-website-dev.k3s.flycatchtech.in
       PUBLIC_ENVIRONMENT: development
