@@ -9,22 +9,22 @@ resources:
 - noindex-middleware.yaml
 
 images:
-- name: registry.k3s.flycatchtech.in/flycatch-website/administration-fe
-  newName: registry.k3s.flycatchtech.in/flycatch-website/administration-fe
-  newTag: 0b278535ef365379639be4f76ad8f4ac6fe84425
-- name: registry.k3s.flycatchtech.in/flycatch-website/backend
-  newName: registry.k3s.flycatchtech.in/flycatch-website/backend
-  newTag: 0b278535ef365379639be4f76ad8f4ac6fe84425
 - name: registry.k3s.flycatchtech.in/flycatch-website/frontend
   newName: registry.k3s.flycatchtech.in/flycatch-website/frontend
-  newTag: 0b278535ef365379639be4f76ad8f4ac6fe84425
+  newTag: dev-placeholder
+- name: registry.k3s.flycatchtech.in/flycatch-website/backend
+  newName: registry.k3s.flycatchtech.in/flycatch-website/backend
+  newTag: dev-placeholder
+- name: registry.k3s.flycatchtech.in/flycatch-website/administration-fe
+  newName: registry.k3s.flycatchtech.in/flycatch-website/administration-fe
+  newTag: dev-placeholder
 
 replicas:
-- count: 1
-  name: backend
-- count: 1
-  name: frontend
-- count: 1
-  name: administration-fe
-- count: 1
-  name: gateway
+- name: backend
+  count: 1
+- name: frontend
+  count: 1
+- name: administration-fe
+  count: 1
+- name: gateway
+  count: 1
