@@ -3,14 +3,27 @@ app:
 
 registry: registry.k3s.flycatchtech.in
 
-image:
-  name: flycatch-website/flycatch-website
-  dockerfile: apps/Frontend/Dockerfile
-  context: apps/Frontend
-  args: {}
-  environments:
-    dev: dev
-    qa: qa
-    uat: uat
-    main: prod
-    feat/harbor-test: dev
+environments:
+  dev: dev
+  qa: qa
+  uat: uat
+  main: prod
+  feat/harbor-test: dev
+
+images:
+  - name: flycatch-website/frontend
+    dockerfile: apps/Frontend/Dockerfile
+    context: apps/Frontend
+    args: {}
+
+  - name: flycatch-website/backend
+    dockerfile: apps/Backend/Dockerfile
+    context: apps/Backend
+    args: {}
+
+  - name: flycatch-website/administration-fe
+    dockerfile: apps/Administration-FE/Dockerfile
+    context: .
+    args:
+      PUBLIC_ORIGIN: https://flycatch-website-dev.k3s.flycatchtech.in
+      PUBLIC_ENVIRONMENT: development
