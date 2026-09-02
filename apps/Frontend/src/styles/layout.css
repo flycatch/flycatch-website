@@ -412,6 +412,64 @@ input:focus-visible {
   display: block;
 }
 
+.service-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s8);
+}
+
+.service-panel {
+  display: grid;
+  gap: var(--s5);
+}
+
+.service-media {
+  aspect-ratio: 16 / 10;
+}
+
+.service-media img {
+  transition: transform 0.45s ease;
+}
+
+.service-panel:hover .service-media img {
+  transform: scale(1.04);
+}
+
+.service-copy h3 {
+  margin: 0 0 var(--s3);
+  font-size: clamp(1.5rem, 3vw, 38px);
+  font-weight: 300;
+  line-height: 1.3;
+  letter-spacing: var(--tracking);
+}
+
+.service-copy p {
+  margin: 0 0 var(--s5);
+  font-size: clamp(1rem, 2vw, 22px);
+  font-weight: 300;
+}
+
+.service-know-more {
+  display: inline-flex;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: var(--tracking);
+}
+
+.service-know-more:hover {
+  color: var(--color-accent);
+}
+
+.minds-layout {
+  display: grid;
+  gap: var(--s7);
+}
+
+.minds-layout .lede {
+  margin-top: 0;
+}
+
 .card-grid,
 .logo-row,
 .insight-grid {
@@ -505,10 +563,6 @@ input:focus-visible {
   border-radius: 999px;
   padding: 0.35rem 0.9rem;
   font-size: 0.9rem;
-}
-
-.faq-item {
-  border-top: 1px solid var(--color-border);
 }
 
 .faq-item summary {
@@ -638,6 +692,16 @@ input:focus-visible {
 
   .case-card:nth-child(even) .media-frame {
     order: 2;
+  }
+
+  .service-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s8) var(--s7);
+  }
+
+  .minds-layout {
+    grid-template-columns: 1fr 1.2fr;
+    align-items: start;
   }
 
   .explore img {

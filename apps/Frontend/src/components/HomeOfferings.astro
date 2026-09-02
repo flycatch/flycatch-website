@@ -1,0 +1,21 @@
+---
+import { t } from '../lib/i18n';
+import { homeOfferings } from '../lib/home-offerings';
+
+---
+<section class="section" id="offerings">
+  <div class="container offerings-head">
+    <h2>{t('home.offerings')}</h2>
+  </div>
+  <div class="offer-grid">
+    {homeOfferings.map((offering) => (
+      <article class="offer-col">
+        <h3>{t(offering.titleKey)}</h3>
+        <p>{t(offering.bodyKey)}</p>
+        <a class="offer-link" href={offering.href}>
+          <img src="/icon-arrow-right.svg" width="50" height="50" alt={t('home.know_more')} />
+        </a>
+      </article>
+    ))}
+  </div>
+</section>

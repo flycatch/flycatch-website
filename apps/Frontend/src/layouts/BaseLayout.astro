@@ -30,7 +30,7 @@ const jsonLd = structuredData.map((block) => JSON.stringify(block));
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
+    <title>{metadata.title || title}</title>
     <meta name="description" content={metadata.description} />
     <link rel="canonical" href={metadata.canonical} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
