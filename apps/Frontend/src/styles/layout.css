@@ -664,11 +664,15 @@ input:focus-visible {
 
   .offer-col {
     border-right: 1px solid var(--color-border);
-    border-bottom: 0;
+    border-bottom: 1px solid var(--color-border);
   }
 
   .offer-col:nth-child(2n) {
     border-right: 0;
+  }
+
+  .offer-col:nth-last-child(-n + 2) {
+    border-bottom: 0;
   }
 
   .card-grid,
@@ -737,6 +741,7 @@ input:focus-visible {
   .offer-col {
     min-height: 780px;
     border-right: 1px solid var(--color-border);
+    border-bottom: 0;
   }
 
   .offer-col:last-child {
