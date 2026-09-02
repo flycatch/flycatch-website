@@ -11,7 +11,10 @@ RUN npm run build
 
 FROM node:22-alpine
 WORKDIR /app
-RUN npm install -g serve@14
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package.json ./
 COPY --from=build /app/dist ./dist
+ENV HOST=0.0.0.0
+ENV PORT=4321
 EXPOSE 4321
-CMD ["serve", "dist", "-l", "tcp://0.0.0.0:4321", "--no-clipboard", "--no-port-switching"]
+CMD ["node", "./dist/server/entry.mjs"]

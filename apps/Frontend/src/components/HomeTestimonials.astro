@@ -1,0 +1,51 @@
+---
+import { t } from '../lib/i18n';
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicClientTestimonial } from '../lib/public-api';
+import SectionState from './SectionState.astro';
+
+interface Props {
+  testimonials: PublicClientTestimonial[];
+  error?: boolean;
+}
+
+const { testimonials, error = false } = Astro.props;
+const featured = testimonials[0];
+---
+<section class="section" id="stories">
+  <div class="container">
+    <h2>{t('home.success_stories')}</h2>
+    <SectionState error={error} empty={!error && testimonials.length === 0} />
+    {featured && (
+      <div class="testimonial-layout">
+        <div>
+          {publicMediaUrl(featured.image_key) && (
+            <div class="media-frame">
+              <img
+                src={publicMediaUrl(featured.image_key) || ''}
+                alt={featured.alt_text || featured.client_name}
+                width="420"
+                height="420"
+                loading="lazy"
+              />
+            </div>
+          )}
+          <p><strong>{featured.client_name}</strong></p>
+          <p>
+            {featured.client_designation}{featured.client_company ? `, ${featured.client_company}` : ''}
+          </p>
+        </div>
+        <div>
+          <p class="clutch" hidden={!featured.is_clutch_review}>{t('home.clutch')}</p>
+          <p class="quote" hidden={!featured.title}>{featured.title}</p>
+          <p>{featured.review}</p>
+          {featured.review_link ? (
+            <a class="btn" href={featured.review_link} rel="noopener noreferrer">{t('home.view_stories')}</a>
+          ) : (
+            <a class="btn" href="/company/testimonials">{t('home.view_stories')}</a>
+          )}
+        </div>
+      </div>
+    )}
+  </div>
+</section>

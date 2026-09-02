@@ -1,0 +1,42 @@
+---
+import { t } from '../lib/i18n';
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicCaseStudySummary } from '../lib/public-api';
+import SectionState from './SectionState.astro';
+
+interface Props {
+  studies: PublicCaseStudySummary[];
+  error?: boolean;
+}
+
+const { studies, error = false } = Astro.props;
+---
+<section class="section" id="case-studies">
+  <div class="container">
+    <h2>{t('home.case_studies')}</h2>
+    <p>
+      <a class="btn" href="/case-studies">{t('home.view_works')}</a>
+    </p>
+    <SectionState error={error} empty={!error && studies.length === 0} />
+    {studies.map((study) => {
+      const image = publicMediaUrl(study.image_key);
+      const industry = study.industries[0]?.name;
+      return (
+        <article class="case-card">
+          {image ? (
+            <div class="media-frame">
+              <img src={image} alt={study.image_alt || study.heading} width="581" height="475" loading="lazy" />
+            </div>
+          ) : (
+            <div class="media-frame"></div>
+          )}
+          <div>
+            {industry && <p>{industry}</p>}<h3>{study.heading}</h3>
+            <p>{study.description}</p>
+            <a class="btn" href={`/case-studies/${study.slug}`}>{t('home.read_more')}</a>
+          </div>
+        </article>
+      );
+    })}
+  </div>
+</section>

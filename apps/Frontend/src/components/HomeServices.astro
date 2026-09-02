@@ -1,0 +1,29 @@
+---
+import { t } from '../lib/i18n';
+import type { HomeService } from '../lib/public-api';
+import SectionState from './SectionState.astro';
+
+interface Props {
+  services: HomeService[];
+  error?: boolean;
+}
+
+const { services, error = false } = Astro.props;
+---
+<section class="section" id="offerings">
+  <div class="container offerings-head">
+    <h2>{t('home.offerings')}</h2>
+    <SectionState error={error} empty={!error && services.length === 0} />
+  </div>{services.length > 0 && (
+      <div class="offer-grid">{services.map((service) => (
+            <article class="offer-col">
+              <h3>{service.services_types_title}</h3>
+              <p>{service.services_contents}</p>{service.our_services_links && (
+                <a class="offer-link" href={service.our_services_links}>
+                  <img src="/icon-arrow-right.svg" width="50" height="50" alt={t('home.know_more')} />
+                </a>
+              )}
+            </article>
+        ))}</div>
+    )}
+</section>

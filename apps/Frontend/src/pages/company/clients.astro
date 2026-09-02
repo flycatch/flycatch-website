@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import HomeClients from '../../components/HomeClients.astro';
+import { loadPublishedClientLogos } from '../../lib/public-api';
+import { fallbackMetadata, publicSiteSettings } from '../../lib/metadata';
+import { t } from '../../lib/i18n';
+
+const listed = await loadPublishedClientLogos();
+const siteSettings = publicSiteSettings();
+const metadata = fallbackMetadata(
+  '/company/clients',
+  t('nav.clients'),
+  listed.error ? t('home.error') : t('home.empty'),
+);
+metadata.title = `${t('nav.clients')} — ${siteSettings.site_name}`;
+metadata.indexable = !listed.error;
+---
+<BaseLayout title={metadata.title} metadata={metadata}>
+  <SiteHeader />
+  <main id="main" class="page-main" data-api-origin={listed.origin}>
+    <div class="container summary-region">
+      <h1>{t('nav.clients')}</h1>
+    </div>
+    <HomeClients logos={listed.items} error={listed.error} />
+  </main>
+  <SiteFooter />
+</BaseLayout>

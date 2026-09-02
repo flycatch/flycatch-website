@@ -15,6 +15,15 @@ interface Props {
 const { title, metadata, structuredData = [], lang = 'en', dir = 'ltr' } = Astro.props;
 const isProduction = (import.meta.env.PUBLIC_ENVIRONMENT || 'development') === 'production';
 const shouldNoindex = !metadata.indexable || !isProduction;
+const extraMetas: { name?: string; property?: string; content: string }[] = [];
+if (shouldNoindex) {
+  extraMetas.push({ name: 'robots', content: 'noindex, nofollow' });
+}
+if (metadata.socialImageUrl) {
+  extraMetas.push({ property: 'og:image', content: metadata.socialImageUrl });
+  extraMetas.push({ name: 'twitter:image', content: metadata.socialImageUrl });
+}
+const jsonLd = structuredData.map((block) => JSON.stringify(block));
 ---
 <!doctype html>
 <html lang={lang} dir={dir}>
@@ -24,15 +33,22 @@ const shouldNoindex = !metadata.indexable || !isProduction;
     <title>{title}</title>
     <meta name="description" content={metadata.description} />
     <link rel="canonical" href={metadata.canonical} />
-    {shouldNoindex && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />{extraMetas.map((item) => (
+      <meta name={item.name} property={item.property} content={item.content} />
+    ))}
+    <meta property="og:type" content="website" />
     <meta property="og:title" content={metadata.socialTitle} />
     <meta property="og:description" content={metadata.socialDescription} />
     <meta property="og:url" content={metadata.canonical} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={metadata.socialTitle} />
-    <meta name="twitter:description" content={metadata.socialDescription} />
-    {structuredData.map((block) => (
-      <script type="application/ld+json" set:html={JSON.stringify(block)} />
+    <meta name="twitter:description" content={metadata.socialDescription} />{jsonLd.map((json) => (
+      <script type="application/ld+json" set:html={json} />
     ))}
   </head>
   <body>

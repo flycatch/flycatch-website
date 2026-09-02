@@ -1,51 +1,72 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PageTemplate from '../layouts/PageTemplate.astro';
-import HomeEntries from '../components/HomeEntries.astro';
-import { getPageBySlug, getSiteSettings } from '../lib/published-snapshot';
-import { loadPublishedHomes } from '../lib/public-homes';
-import { buildPageMetadata, homeStructuredData, metadataFromContentSeo } from '../lib/metadata';
-import { buildStructuredData } from '../lib/json-ld';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import HomeHero from '../components/HomeHero.astro';
+import HomeServices from '../components/HomeServices.astro';
+import HomeCaseStudies from '../components/HomeCaseStudies.astro';
+import HomeClients from '../components/HomeClients.astro';
+import HomeTestimonials from '../components/HomeTestimonials.astro';
+import HomeInsights from '../components/HomeInsights.astro';
+import HomeFaq from '../components/HomeFaq.astro';
+import HomeCta from '../components/HomeCta.astro';
+import SectionState from '../components/SectionState.astro';
+import {
+  loadPublishedBlogs,
+  loadPublishedClientLogos,
+  loadPublishedClientTestimonials,
+  loadPublishedHomes,
+} from '../lib/public-api';
+import {
+  fallbackMetadata,
+  homeStructuredData,
+  metadataFromContentSeo,
+  publicSiteSettings,
+} from '../lib/metadata';
 import { t } from '../lib/i18n';
 
-const homes = await loadPublishedHomes();
-const page = getPageBySlug('home');
-if (!page) throw new Error('Home page missing from published snapshot');
-const siteSettings = getSiteSettings();
-const useCms = homes.length > 0;
-const first = homes[0];
-const metadata = useCms && first
-  ? metadataFromContentSeo(first.seo, siteSettings)
-  : buildPageMetadata(page.seo, siteSettings);
-const structuredData =
-  useCms && first
-    ? homeStructuredData(first, metadata, siteSettings)
-    : buildStructuredData(page.seo.structured_data_templates, metadata, page.seo, siteSettings);
+const [homesResult, logosResult, testimonialsResult, blogsResult] = await Promise.all([
+  loadPublishedHomes(),
+  loadPublishedClientLogos(),
+  loadPublishedClientTestimonials(),
+  loadPublishedBlogs(),
+]);
+
+const siteSettings = publicSiteSettings();
+const home = homesResult.items[0] ?? null;
+const metadata = home
+  ? metadataFromContentSeo(home.seo, siteSettings)
+  : fallbackMetadata(
+      '/',
+      siteSettings.site_name,
+      homesResult.error ? t('home.error') : t('home.empty'),
+    );
+const structuredData = home ? homeStructuredData(home, metadata, siteSettings) : [];
 ---
-{useCms ? (
-  <BaseLayout title={metadata.title} metadata={metadata} structuredData={structuredData}>
-    <header class="site-header">
-      <div class="container">
-        <p class="site-name">{siteSettings.site_name}</p>
-        <nav aria-label="Primary">
-          <ul class="nav-list">
-            <li><a href="/">{t('nav.home')}</a></li>
-            <li><a href="/about">{t('nav.about')}</a></li>
-          </ul>
-        </nav>
-      </div>
-    </header>
-    <main id="main" class="site-main">
-      <div class="container">
-        <HomeEntries homes={homes} />
-      </div>
-    </main>
-    <footer class="site-footer">
-      <div class="container">
-        <p>{t('site.footer.copyright')}</p>
-      </div>
-    </footer>
-  </BaseLayout>
-) : (
-  <PageTemplate page={page} />
-)}
+<BaseLayout title={metadata.title} metadata={metadata} structuredData={structuredData}>
+  <SiteHeader tone="dark" />
+  <main id="main" data-api-origin={homesResult.origin}>{home ? (
+      <HomeHero home={home} />
+    ) : (
+      <section class="hero">
+        <div class="container hero-copy summary-region">
+          <h1>{siteSettings.site_name}</h1>
+          <SectionState error={homesResult.error} empty={!homesResult.error} />
+        </div>
+      </section>
+    )}
+    <HomeServices services={home?.services ?? []} error={homesResult.error} />
+    <HomeCaseStudies studies={home?.case_studies ?? []} error={homesResult.error} />
+    <HomeClients logos={logosResult.items} error={logosResult.error} />
+    <HomeTestimonials testimonials={testimonialsResult.items} error={testimonialsResult.error} />
+    <HomeInsights blogs={blogsResult.items} error={blogsResult.error} />
+    <HomeFaq
+      title={home?.faq_title ?? ''}
+      description={home?.faq_description ?? ''}
+      faqs={home?.faqs ?? []}
+      error={homesResult.error}
+    />
+    <HomeCta />
+  </main>
+  <SiteFooter />
+</BaseLayout>

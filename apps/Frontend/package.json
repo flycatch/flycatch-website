@@ -17,10 +17,11 @@
     "check:parity": "node scripts/check-build-parity.mjs",
     "check:all": "npm run check:contracts && npm run check:seo && npm run check:i18n && npm run check:sitemap",
     "test:unit": "vitest run",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright test --config tests/playwright.config.ts",
     "lint": "eslint src --ext .ts,.astro"
   },
   "dependencies": {
+    "@astrojs/node": "^9.5.5",
     "@astrojs/sitemap": "^3.3.0",
     "astro": "^5.7.0"
   },

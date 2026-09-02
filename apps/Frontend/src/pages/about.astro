@@ -1,8 +1,57 @@
 ---
-import PageTemplate from '../layouts/PageTemplate.astro';
-import { getPageBySlug } from '../lib/published-snapshot';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import SectionState from '../components/SectionState.astro';
+import { loadPublishedOverview, loadPublishedOverviews, publicMediaUrl } from '../lib/public-api';
+import {
+  fallbackMetadata,
+  metadataFromContentSeo,
+  publicSiteSettings,
+} from '../lib/metadata';
+import { t } from '../lib/i18n';
 
-const page = getPageBySlug('about');
-if (!page) throw new Error('About page missing from published snapshot');
+const listed = await loadPublishedOverviews();
+const preferred =
+  listed.items.find((item) => item.slug === 'about' || item.slug === 'company-overview') ??
+  listed.items[0];
+const detail = preferred ? await loadPublishedOverview(preferred.slug) : { item: null, error: listed.error, origin: listed.origin };
+const overview = detail.item;
+const siteSettings = publicSiteSettings();
+const failed = listed.error || detail.error;
+const metadata = overview
+  ? metadataFromContentSeo(overview.seo, siteSettings)
+  : fallbackMetadata('/about', t('nav.about'), failed ? t('home.error') : t('home.empty'));
+const heading = overview
+  ? overview.seo.h1_tag.trim() || overview.banner_title || overview.introduction_title
+  : t('nav.about');
+const banner = overview ? publicMediaUrl(overview.banner_image_key) : null;
 ---
-<PageTemplate page={page} />
+<BaseLayout title={metadata.title} metadata={metadata}>
+  <SiteHeader />
+  <main id="main" class="page-main" data-api-origin={listed.origin}>
+    <article class="container">
+      <h1>{heading}</h1>
+      <SectionState error={failed} empty={!failed && !overview} />{overview && (
+        <div>
+          <div class="media-frame" hidden={!banner}>{banner && (
+            <img
+              src={banner}
+              alt={overview.seo.image_alt || overview.banner_title}
+              width="1192"
+              height="480"
+            />
+          )}</div>
+          <h2 hidden={!overview.introduction_title}>{overview.introduction_title}</h2>
+          <div class="summary-region" hidden={!overview.introduction_first_paragraph}>
+            <p>{overview.introduction_first_paragraph}</p>
+          </div>
+          <div class="body-region" hidden={!overview.introduction_second_paragraph}>
+            <p>{overview.introduction_second_paragraph}</p>
+          </div>
+        </div>
+      )}
+    </article>
+  </main>
+  <SiteFooter />
+</BaseLayout>
