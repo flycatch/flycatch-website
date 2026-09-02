@@ -13,6 +13,9 @@ export default defineConfig({
     inlineStylesheets: 'always',
   },
   vite: {
+    preview: {
+      allowedHosts: true,
+    },
     build: {
       rollupOptions: {
         output: {

@@ -1,41 +1,13 @@
 # Deployment
 
-Deployment-specific files for Docker Compose and environment configuration.
+How this app runs locally and on the cluster. Everything lives under this folder.
 
-**Project overview, stack, and full setup instructions:** see [README.md](../README.md) at the repository root.
-
-## Files in this directory
-
-| File | Purpose |
+| Path | Purpose |
 | --- | --- |
-| `docker-compose.yml` | Frontend, Administration FE, Backend, PostgreSQL, MinIO, gateway |
-| `.env.example` | Shared environment variables — copy to `.env` |
-| `Caddyfile` | Gateway routing: `/`, `/admin`, `/api` |
+| [compose/](compose/) | Docker Compose stack (local / preview): Postgres, MinIO, apps, Caddy gateway |
+| [k8s/](k8s/) | Kubernetes manifests (Kustomize) for the Flycatch k3s cluster |
 
-## Quick start
+Shared gateway routing for both compose and k8s: [k8s/base/Caddyfile](k8s/base/Caddyfile)
+(Compose mounts this file; k8s loads it via ConfigMap).
 
-From this directory:
-
-```bash
-cp .env.example .env
-# Set JWT_SECRET and other change-me values
-
-docker compose up -d --build
-```
-
-From the repository root: `docker compose -f deployment/docker-compose.yml up -d --build`.
-
-Compose does not provision staff. After services are healthy:
-
-```bash
-docker compose exec backend alembic upgrade head
-docker compose exec backend flycatch-seed-records
-docker compose exec backend flycatch-bootstrap \
-  --user-1-email admin1@example.com \
-  --user-2-email admin2@example.com \
-  --user-2-role editor
-```
-
-There is no default password. Bootstrap prompts for two passwords (min 12 characters). Sign in at `http://localhost:8080/admin`. Full startup notes: [README.md](../README.md#quick-start-docker-compose) and [docs/onboarding.md](../docs/onboarding.md).
-
-Validation scenarios: [quickstart.md](../specs/001-website-foundation/quickstart.md).
+**Project overview and day-to-day setup:** [README.md](../README.md).
