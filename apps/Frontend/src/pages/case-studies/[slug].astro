@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import SectionState from '../../components/SectionState.astro';
+import {
+  loadPublishedCaseStudy,
+  publicMediaUrl,
+} from '../../lib/public-api';
+import {
+  fallbackMetadata,
+  metadataFromCaseStudy,
+  publicSiteSettings,
+} from '../../lib/metadata';
+import { caseStudyStructuredData } from '../../lib/json-ld';
+import { t } from '../../lib/i18n';
+
+const { slug } = Astro.params;
+if (!slug) throw new Error('Case study slug missing');
+
+const siteSettings = publicSiteSettings();
+const result = await loadPublishedCaseStudy(slug);
+const study = result.item;
+const metadata = study
+  ? metadataFromCaseStudy(study, siteSettings, `/case-studies/${study.slug}`)
+  : fallbackMetadata(
+      `/case-studies/${slug}`,
+      t('nav.case_studies'),
+      result.error ? t('home.error') : t('home.empty'),
+    );
+const structuredData = study ? caseStudyStructuredData(study, metadata, siteSettings) : [];
+const image = study ? publicMediaUrl(study.image_key) : null;
+const chips = study ? [...study.industries, ...study.categories] : [];
+const heading = study ? study.heading : t('nav.case_studies');
+---
+<BaseLayout title={metadata.title} metadata={metadata} structuredData={structuredData}>
+  <SiteHeader />
+  <main id="main" class="page-main" data-api-origin={result.origin}>
+    <article class="container">
+      <SectionState error={result.error} empty={!result.error && !study} />
+      <h1>{heading}</h1>{study && (
+        <div>
+          <p class="insight-meta" hidden={!study.date}>{study.date}</p>
+          <p class="lede">{study.description}</p>
+          <div class="media-frame" hidden={!image}>{image && (
+            <img src={image} alt={study.image_alt || study.heading} width="1192" height="640" />
+          )}</div>
+          <div class="chip-row">{chips.map((item) => (
+            <span class="chip">{item.name}</span>
+          ))}</div>
+          <div class="body-region" set:html={study.body} />
+        </div>
+      )}
+    </article>
+  </main>
+  <SiteFooter />
+</BaseLayout>

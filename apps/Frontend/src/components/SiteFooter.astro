@@ -1,0 +1,63 @@
+---
+import { t } from '../lib/i18n';
+import { footerCompany, footerOthers, footerServices, socialLinks } from '../lib/nav';
+---
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="subscribe">
+        <h2>{t('footer.subscribe_title')}</h2>
+        <p>{t('footer.subscribe_body')}</p>
+      </div>
+      <div>
+        <p class="form-note">{t('footer.subscribe_unavailable')}</p>
+      </div>
+    </div>
+    <div class="footer-grid">
+      <nav class="footer-col" aria-labelledby="footer-company">
+        <h2 id="footer-company">{t('footer.company')}</h2>
+        <ul>
+          {footerCompany.map((link) => (
+            <li><a href={link.href}>{t(link.labelKey)}</a></li>
+          ))}
+        </ul>
+      </nav>
+      <nav class="footer-col" aria-labelledby="footer-services">
+        <h2 id="footer-services">{t('footer.services')}</h2>
+        <ul>
+          {footerServices.map((link) => (
+            <li><a href={link.href}>{t(link.labelKey)}</a></li>
+          ))}
+        </ul>
+      </nav>
+      <nav class="footer-col" aria-labelledby="footer-others">
+        <h2 id="footer-others">{t('footer.others')}</h2>
+        <ul>
+          {footerOthers.map((link) => (
+            <li><a href={link.href}>{t(link.labelKey)}</a></li>
+          ))}
+        </ul>
+      </nav>
+      <nav class="footer-col" aria-labelledby="footer-global">
+        <h2 id="footer-global">{t('footer.global')}</h2>
+        <ul>
+          <li>
+            <a href="/software-development-services-in-saudi-arabia">{t('footer.saudi')}</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <p>{t('site.footer.copyright')}</p>
+      <div class="legal-links">
+        <a href="/privacy-policy">{t('footer.privacy')}</a>
+        <a href="/terms-and-conditions">{t('footer.terms')}</a>
+      </div>
+      <nav class="social-links" aria-label={t('footer.social')}>
+        {socialLinks.map((link) => (
+          <a href={link.href} rel="noopener noreferrer">{t(link.labelKey)}</a>
+        ))}
+      </nav>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,34 @@
+---
+import { t } from '../lib/i18n';
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicClientLogo } from '../lib/public-api';
+import SectionState from './SectionState.astro';
+
+interface Props {
+  logos: PublicClientLogo[];
+  error?: boolean;
+}
+
+const { logos, error = false } = Astro.props;
+---
+<section class="section section-muted" id="clients">
+  <div class="container">
+    <h2>{t('home.clients')}</h2>
+    <p class="lede">{t('home.clients_intro')}</p>
+    <SectionState error={error} empty={!error && logos.length === 0} />
+    {logos.length > 0 && (
+      <div class="logo-row">
+        {logos.map((logo) => {
+          const src = publicMediaUrl(logo.colour_logo_key) || publicMediaUrl(logo.white_logo_key);
+          if (!src) return null;
+          return (
+            <img src={src} alt={logo.alt_text} width="160" height="64" loading="lazy" />
+          );
+        })}
+      </div>
+    )}
+    <p>
+      <a class="btn" href="/company/clients">{t('home.view_clients')}</a>
+    </p>
+  </div>
+</section>

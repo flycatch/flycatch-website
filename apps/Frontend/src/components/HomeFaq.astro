@@ -1,0 +1,29 @@
+---
+import type { HomeFaq } from '../lib/public-api';
+import SectionState from './SectionState.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  faqs: HomeFaq[];
+  error?: boolean;
+}
+
+const { title, description, faqs, error = false } = Astro.props;
+const idle = !error && !title && faqs.length === 0;
+---
+{!idle && (
+<section class="section" id="faq">
+  <div class="container">
+    <h2 hidden={!title}>{title}</h2>
+    <div class="lede" hidden={!description} set:html={description} />
+    <SectionState error={error} empty={!error && faqs.length === 0} />
+    {faqs.map((faq) => (
+      <details class="faq-item">
+        <summary>{faq.title}</summary>
+        <p>{faq.contents}</p>
+      </details>
+    ))}
+  </div>
+</section>
+)}

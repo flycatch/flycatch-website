@@ -1,0 +1,19 @@
+---
+import { t } from '../lib/i18n';
+
+interface Props {
+  error?: boolean;
+  empty?: boolean;
+  loading?: boolean;
+}
+
+const { error = false, empty = false, loading = false } = Astro.props;
+const message = loading
+  ? t('home.loading')
+  : error
+    ? t('home.error')
+    : empty
+      ? t('home.empty')
+      : '';
+---
+{message && <p class="state-msg" role="status">{message}</p>}

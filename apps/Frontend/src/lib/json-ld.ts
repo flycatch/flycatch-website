@@ -1,5 +1,7 @@
 import type { PageMetadata } from './metadata';
+import type { PublicBlogDetail, PublicCaseStudy } from './public-api';
 import type { SeoMetadata, SiteSettings } from './published-snapshot';
+import { absoluteMediaUrl } from './public-api';
 
 export function buildOrganizationJsonLd(siteSettings: SiteSettings) {
   return {
@@ -41,4 +43,46 @@ export function buildStructuredData(
     if (template === 'faq') blocks.push(buildFaqJsonLd(seo));
   }
   return blocks;
+}
+
+export function caseStudyStructuredData(
+  study: PublicCaseStudy,
+  metadata: PageMetadata,
+  siteSettings: SiteSettings,
+) {
+  return [
+    buildOrganizationJsonLd(siteSettings),
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: study.heading,
+      description: study.description,
+      url: metadata.canonical,
+      image: absoluteMediaUrl(siteSettings.canonical_origin, study.image_key) ?? undefined,
+    },
+  ];
+}
+
+export function blogStructuredData(
+  blog: PublicBlogDetail,
+  metadata: PageMetadata,
+  siteSettings: SiteSettings,
+) {
+  return [
+    buildOrganizationJsonLd(siteSettings),
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: blog.title,
+      description: blog.description,
+      url: metadata.canonical,
+      image: absoluteMediaUrl(siteSettings.canonical_origin, blog.image_key) ?? undefined,
+      author: blog.authors.map((author) => ({
+        '@type': 'Person',
+        name: author.name,
+        jobTitle: author.designation,
+      })),
+      timeRequired: `PT${Math.max(blog.reading_time, 1)}M`,
+    },
+  ];
 }

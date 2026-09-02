@@ -1,0 +1,54 @@
+---
+import { t } from '../lib/i18n';
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicBlogSummary } from '../lib/public-api';
+import SectionState from './SectionState.astro';
+
+interface Props {
+  blogs: PublicBlogSummary[];
+  error?: boolean;
+  limit?: number;
+}
+
+const { blogs, error = false, limit = 3 } = Astro.props;
+const featured = limit > 0 ? blogs.slice(0, limit) : blogs;
+---
+<section class="section section-muted" id="insights">
+  <div class="container">
+    <h2>{t('home.insights')}</h2>
+    <SectionState error={error} empty={!error && featured.length === 0} />
+    {featured.length > 0 && (
+      <div class="insight-grid">
+        {featured.map((blog) => {
+          const image = publicMediaUrl(blog.image_key);
+          return (
+            <article class="insight-card">
+              <a href={`/blogs/${blog.slug}`}>
+                {image ? (
+                  <div class="media-frame">
+                    <img src={image} alt={blog.image_alt || blog.title} width="377" height="244" loading="lazy" />
+                  </div>
+                ) : (
+                  <div class="media-frame"></div>
+                )}
+                <p class="insight-meta">
+                  <span>{t('home.blog_label')}</span>
+                  <span>{t('home.reading_time', { minutes: blog.reading_time })}</span>
+                </p>
+                <h3>{blog.title}</h3>
+                <div class="chip-row">
+                  {blog.categories.map((category) => (
+                    <span class="chip">{category.name}</span>
+                  ))}
+                </div>
+              </a>
+            </article>
+          );
+        })}
+      </div>
+    )}
+    <p>
+      <a class="btn" href="/company/blogs">{t('home.view_insights')}</a>
+    </p>
+  </div>
+</section>

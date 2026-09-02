@@ -1,0 +1,38 @@
+---
+import { t } from '../lib/i18n';
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicHome } from '../lib/public-api';
+
+interface Props {
+  home: PublicHome;
+}
+
+const { home } = Astro.props;
+const video = publicMediaUrl(home.video_key);
+const heading = home.banner_title.trim() || home.seo.h1_tag?.trim() || home.title;
+---
+<section class="hero" aria-labelledby="home-heading">{video ? (
+    <video
+      class="hero-media"
+      src={video}
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+    />
+  ) : (
+    <div class="hero-fallback" role="img" aria-label={home.seo.image_alt || t('home.hero_unavailable')}></div>
+  )}
+  <div class="hero-scrim"></div>
+  <div class="container hero-copy summary-region">
+    <div class="hero-heading">
+      <h1 id="home-heading">{heading}</h1>
+      <p class="lede" hidden={!home.banner_explore_text}>{home.banner_explore_text}</p>
+    </div>
+    <a class="explore" href="#offerings">
+      <img src="/icon-explore.svg" width="104" height="104" alt="" />
+      <span>{t('home.explore')}</span>
+    </a>
+  </div>
+</section>

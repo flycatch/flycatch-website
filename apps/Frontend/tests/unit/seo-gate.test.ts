@@ -21,5 +21,6 @@ describe('seo metadata helper', () => {
       },
     );
     expect(metadata.canonical).toBe('http://localhost:8080/');
+    expect(metadata.socialImageUrl).toBeNull();
   });
 });

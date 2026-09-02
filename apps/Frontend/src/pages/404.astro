@@ -1,0 +1,33 @@
+---
+export const prerender = true;
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { publicSiteSettings } from '../lib/metadata';
+import { buildCanonicalUrl, type PageMetadata } from '../lib/metadata';
+import { t } from '../lib/i18n';
+
+const siteSettings = publicSiteSettings();
+const metadata: PageMetadata = {
+  title: t('page.not_found.title'),
+  description: t('page.not_found.body'),
+  canonical: buildCanonicalUrl(siteSettings.canonical_origin, '/404'),
+  socialTitle: t('page.not_found.title'),
+  socialDescription: t('page.not_found.body'),
+  socialImageKey: null,
+  socialImageUrl: null,
+  indexable: false,
+};
+---
+<BaseLayout title={metadata.title} metadata={metadata}>
+  <SiteHeader />
+  <main id="main" class="page-main">
+    <div class="container">
+      <h1>{t('page.not_found.title')}</h1>
+      <p class="summary-region">{t('page.not_found.body')}</p>
+      <p><a class="btn" href="/">{t('page.not_found.home')}</a></p>
+    </div>
+  </main>
+  <SiteFooter />
+</BaseLayout>
