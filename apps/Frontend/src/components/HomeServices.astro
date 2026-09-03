@@ -11,9 +11,9 @@ interface Props {
 
 const { services, error = false } = Astro.props;
 ---
-<section class="section" id="services">
+<section class="section section-dark" id="services">
   <div class="container">
-    <h2>{t('home.services')}</h2>
+    <h2 class="type-section">{t('home.services')}</h2>
     <SectionState error={error} empty={!error && services.length === 0} />
     {services.length > 0 && (
       <div class="service-grid">
@@ -39,9 +39,12 @@ const { services, error = false } = Astro.props;
                 <h3>{service.services_types_title}</h3>
                 <p>{service.services_contents}</p>
                 {href && (
-                  <a class="service-know-more" href={href}>
-                    {t('home.know_more')}
-                  </a>
+                  <p class="service-actions">
+                    <a class="btn btn-on-dark" href={href}>
+                      {t('home.know_more')}
+                      <img src="/icon-arrow-right.svg" width="20" height="20" alt="" />
+                    </a>
+                  </p>
                 )}
               </div>
             </article>

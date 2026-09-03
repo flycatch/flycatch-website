@@ -15,7 +15,7 @@ const featured = limit > 0 ? blogs.slice(0, limit) : blogs;
 ---
 <section class="section section-muted" id="insights">
   <div class="container">
-    <h2>{t('home.insights')}</h2>
+    <h2 class="type-section">{t('home.insights')}</h2>
     <SectionState error={error} empty={!error && featured.length === 0} />
     {featured.length > 0 && (
       <div class="insight-grid">
@@ -31,7 +31,7 @@ const featured = limit > 0 ? blogs.slice(0, limit) : blogs;
                 ) : (
                   <div class="media-frame"></div>
                 )}
-                <p class="insight-meta">
+                <p class="insight-meta type-meta">
                   <span>{t('home.blog_label')}</span>
                   <span>{t('home.reading_time', { minutes: blog.reading_time })}</span>
                 </p>
@@ -47,8 +47,11 @@ const featured = limit > 0 ? blogs.slice(0, limit) : blogs;
         })}
       </div>
     )}
-    <p>
-      <a class="btn" href="/company/blogs">{t('home.view_insights')}</a>
+    <p class="section-actions">
+      <a class="btn" href="/company/blogs">
+        {t('home.view_insights')}
+        <img src="/icon-arrow-right.svg" width="20" height="20" alt="" />
+      </a>
     </p>
   </div>
 </section>

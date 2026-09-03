@@ -13,7 +13,7 @@ const { logos, error = false } = Astro.props;
 ---
 <section class="section section-muted" id="clients">
   <div class="container">
-    <h2>{t('home.clients')}</h2>
+    <h2 class="type-section">{t('home.clients')}</h2>
     <p class="lede">{t('home.clients_intro')}</p>
     <SectionState error={error} empty={!error && logos.length === 0} />
     {logos.length > 0 && (
@@ -27,8 +27,11 @@ const { logos, error = false } = Astro.props;
         })}
       </div>
     )}
-    <p>
-      <a class="btn" href="/company/clients">{t('home.view_clients')}</a>
+    <p class="section-actions">
+      <a class="btn" href="/company/clients">
+        {t('home.view_clients')}
+        <img src="/icon-arrow-right.svg" width="20" height="20" alt="" />
+      </a>
     </p>
   </div>
 </section>

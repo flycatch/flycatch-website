@@ -1,13 +1,14 @@
 FROM node:22-alpine AS build
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci
+RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 COPY . .
 ARG PUBLIC_ORIGIN=http://localhost:8080
 ARG PUBLIC_ENVIRONMENT=development
 ENV PUBLIC_ORIGIN=$PUBLIC_ORIGIN
 ENV PUBLIC_ENVIRONMENT=$PUBLIC_ENVIRONMENT
-RUN npm run build
+RUN pnpm run build
 
 FROM node:22-alpine
 WORKDIR /app

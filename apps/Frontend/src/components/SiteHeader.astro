@@ -25,53 +25,55 @@ const mobileServiceLinks = [
       <img src="/logo.png" width="190" height="60" alt={t('site.logo_alt')} />
     </a>
     <nav class="primary-nav" aria-label={t('nav.primary')}>
-      <details class="nav-item">
-        <summary>{t('nav.services')}</summary>
-        <div class="mega-panel">
-          <div>
-            <p class="mega-heading">{t('nav.services_intro')}</p>
-            <a href={servicesOverview.href}>{t(servicesOverview.labelKey)}</a>
-          </div>
-          {serviceGroups.map((group) => (
+      <div class="nav-cluster">
+        <details class="nav-item">
+          <summary>{t('nav.services')}</summary>
+          <div class="mega-panel">
             <div>
-              <p class="mega-heading">{t(group.headingKey)}</p>
+              <p class="mega-heading">{t('nav.services_intro')}</p>
+              <a href={servicesOverview.href}>{t(servicesOverview.labelKey)}</a>
+            </div>
+            {serviceGroups.map((group) => (
+              <div>
+                <p class="mega-heading">{t(group.headingKey)}</p>
+                <ul>
+                  {group.links.map((link) => (
+                    <li><a href={link.href}>{t(link.labelKey)}</a></li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+            <div>
               <ul>
-                {group.links.map((link) => (
+                {serviceSingles.map((link) => (
                   <li><a href={link.href}>{t(link.labelKey)}</a></li>
                 ))}
               </ul>
             </div>
-          ))}
-          <div>
+          </div>
+        </details>
+        <details class="nav-item">
+          <summary>{t('nav.solutions')}</summary>
+          <div class="drop-panel">
             <ul>
-              {serviceSingles.map((link) => (
+              {solutionLinks.map((link) => (
                 <li><a href={link.href}>{t(link.labelKey)}</a></li>
               ))}
             </ul>
           </div>
-        </div>
-      </details>
-      <details class="nav-item">
-        <summary>{t('nav.solutions')}</summary>
-        <div class="drop-panel">
-          <ul>
-            {solutionLinks.map((link) => (
-              <li><a href={link.href}>{t(link.labelKey)}</a></li>
-            ))}
-          </ul>
-        </div>
-      </details>
-      <a class="nav-link" href="/case-studies">{t('nav.case_studies')}</a>
-      <details class="nav-item">
-        <summary>{t('nav.company')}</summary>
-        <div class="drop-panel">
-          <ul>
-            {companyLinks.map((link) => (
-              <li><a href={link.href}>{t(link.labelKey)}</a></li>
-            ))}
-          </ul>
-        </div>
-      </details>
+        </details>
+        <a class="nav-link" href="/case-studies">{t('nav.case_studies')}</a>
+        <details class="nav-item">
+          <summary>{t('nav.company')}</summary>
+          <div class="drop-panel">
+            <ul>
+              {companyLinks.map((link) => (
+                <li><a href={link.href}>{t(link.labelKey)}</a></li>
+              ))}
+            </ul>
+          </div>
+        </details>
+      </div>
       <a class="contact-cta" href="/contact-us">{t('nav.contact')}</a>
     </nav>
     <details class="mobile-nav">

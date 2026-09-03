@@ -15,7 +15,7 @@ const idle = !error && !title && faqs.length === 0;
 {!idle && (
 <section class="section" id="faq">
   <div class="container">
-    <h2 hidden={!title}>{title}</h2>
+    <h2 hidden={!title} class="type-section">{title}</h2>
     <div class="lede" hidden={!description} set:html={description} />
     <SectionState error={error} empty={!error && faqs.length === 0} />
     {faqs.map((faq) => (
