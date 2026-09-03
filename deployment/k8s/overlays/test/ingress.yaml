@@ -6,15 +6,15 @@ metadata:
     app.kubernetes.io/name: flycatch-website
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-production
-    traefik.ingress.kubernetes.io/router.middlewares: flycatch-website-dev-noindex@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: flycatch-website-test-noindex@kubernetescrd
 spec:
   ingressClassName: traefik
   tls:
     - hosts:
-        - flycatch-website-dev.k3s.flycatchtech.in
-      secretName: flycatch-website-dev-tls
+        - flycatch-website-test.k3s.flycatchtech.in
+      secretName: flycatch-website-test-tls
   rules:
-    - host: flycatch-website-dev.k3s.flycatchtech.in
+    - host: flycatch-website-test.k3s.flycatchtech.in
       http:
         paths:
           - path: /

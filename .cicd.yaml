@@ -3,6 +3,9 @@ app:
 
 registry: registry.k3s.flycatchtech.in
 
+gitops:
+  overlayPath: deployment/k8s/overlays
+
 environments:
   dev: dev
   qa: qa
