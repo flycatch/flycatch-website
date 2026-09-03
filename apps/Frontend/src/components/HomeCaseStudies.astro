@@ -13,9 +13,12 @@ const { studies, error = false } = Astro.props;
 ---
 <section class="section" id="case-studies">
   <div class="container">
-    <h2>{t('home.case_studies')}</h2>
+    <h2 class="type-section">{t('home.case_studies')}</h2>
     <p>
-      <a class="btn" href="/case-studies">{t('home.view_works')}</a>
+      <a class="btn" href="/case-studies">
+        {t('home.view_works')}
+        <img src="/icon-arrow-right.svg" width="20" height="20" alt="" />
+      </a>
     </p>
     <SectionState error={error} empty={!error && studies.length === 0} />
     {studies.map((study) => {
@@ -33,7 +36,10 @@ const { studies, error = false } = Astro.props;
           <div>
             {industry && <p>{industry}</p>}<h3>{study.heading}</h3>
             <p>{study.description}</p>
-            <a class="btn" href={`/case-studies/${study.slug}`}>{t('home.read_more')}</a>
+            <a class="btn" href={`/case-studies/${study.slug}`}>
+              {t('home.read_more')}
+              <img src="/icon-arrow-right.svg" width="20" height="20" alt="" />
+            </a>
           </div>
         </article>
       );

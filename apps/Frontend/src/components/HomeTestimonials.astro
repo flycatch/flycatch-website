@@ -14,7 +14,7 @@ const featured = testimonials[0];
 ---
 <section class="section" id="stories">
   <div class="container">
-    <h2>{t('home.success_stories')}</h2>
+    <h2 class="type-section">{t('home.success_stories')}</h2>
     <SectionState error={error} empty={!error && testimonials.length === 0} />
     {featured && (
       <div class="testimonial-layout">
@@ -40,9 +40,15 @@ const featured = testimonials[0];
           <p class="quote" hidden={!featured.title}>{featured.title}</p>
           <p>{featured.review}</p>
           {featured.review_link ? (
-            <a class="btn" href={featured.review_link} rel="noopener noreferrer">{t('home.view_stories')}</a>
+            <a class="btn" href={featured.review_link} rel="noopener noreferrer">
+              {t('home.view_stories')}
+              <img src="/icon-arrow-right.svg" width="20" height="20" alt="" />
+            </a>
           ) : (
-            <a class="btn" href="/company/testimonials">{t('home.view_stories')}</a>
+            <a class="btn" href="/company/testimonials">
+              {t('home.view_stories')}
+              <img src="/icon-arrow-right.svg" width="20" height="20" alt="" />
+            </a>
           )}
         </div>
       </div>

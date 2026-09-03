@@ -3,6 +3,7 @@
   "type": "module",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@9.15.9",
   "scripts": {
     "dev": "astro dev --host",
     "build": "node scripts/ensure-published-snapshot.mjs && astro build",
@@ -15,7 +16,7 @@
     "check:sitemap": "node scripts/check-sitemap.mjs",
     "check:performance": "node scripts/check-performance-budget.mjs",
     "check:parity": "node scripts/check-build-parity.mjs",
-    "check:all": "npm run check:contracts && npm run check:seo && npm run check:i18n && npm run check:sitemap",
+    "check:all": "pnpm run check:contracts && pnpm run check:seo && pnpm run check:i18n && pnpm run check:sitemap",
     "test:unit": "vitest run",
     "test:e2e": "playwright test --config tests/playwright.config.ts",
     "lint": "eslint src --ext .ts,.astro"
