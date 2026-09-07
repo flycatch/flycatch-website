@@ -10,47 +10,96 @@ interface Props {
 }
 
 const { services, error = false } = Astro.props;
+
+function serviceHref(raw: string): string {
+  const value = raw.trim();
+  if (!value) return '';
+  if (/^[a-z][a-z0-9+.-]*:/i.test(value) || value.startsWith('/') || value.startsWith('#')) {
+    return value;
+  }
+  return `/${value}`;
+}
 ---
-<section class="section section-dark" id="services">
-  <div class="container">
-    <h2 class="type-section">{t('home.services')}</h2>
+<section
+  class="section section-dark services-stage"
+  id="services"
+  data-services-stage={services.length > 0 ? 'true' : undefined}
+>
+  {services.length > 0 && (
+    <>
+      <div class="services-stage-media" aria-hidden="true">
+        {services.map((service, index) => {
+          const image = publicMediaUrl(service.services_image_key);
+          return image ? (
+            <img
+              data-service-index={index}
+              class:list={[{ 'is-active': index === 0 }]}
+              src={image}
+              alt=""
+              width="1920"
+              height="1080"
+              loading={index === 0 ? 'eager' : 'lazy'}
+            />
+          ) : (
+            <div
+              data-service-index={index}
+              class:list={['services-stage-fallback', { 'is-active': index === 0 }]}
+            ></div>
+          );
+        })}
+      </div>
+      <div class="services-stage-scrim" aria-hidden="true"></div>
+    </>
+  )}
+  <div class="container services-stage-inner">
     <SectionState error={error} empty={!error && services.length === 0} />
     {services.length > 0 && (
-      <div class="service-grid">
-        {services.map((service) => {
-          const image = publicMediaUrl(service.services_image_key);
-          const href = service.our_services_links.trim();
-          return (
-            <article class="service-panel">
-              {image ? (
-                <div class="media-frame service-media">
-                  <img
-                    src={image}
-                    alt={service.services_types_title}
-                    width="581"
-                    height="360"
-                    loading="lazy"
-                  />
-                </div>
-              ) : (
-                <div class="media-frame service-media"></div>
-              )}
-              <div class="service-copy">
-                <h3>{service.services_types_title}</h3>
-                <p>{service.services_contents}</p>
+      <div class="services-layout">
+        <div class="services-nav">
+          <h2 class="type-section">{t('home.services')}</h2>
+          <div class="services-nav-track">
+            <span class="services-nav-arrow" aria-hidden="true"></span>
+            <ul data-service-nav>
+              {services.map((service, index) => (
+                <li>
+                  <button
+                    type="button"
+                    class:list={['services-nav-item', { 'is-active': index === 0 }]}
+                    data-service-index={index}
+                    aria-current={index === 0 ? 'true' : 'false'}
+                  >
+                    {service.services_types_title}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div class="services-detail" aria-live="polite">
+          {services.map((service, index) => {
+            const href = serviceHref(service.our_services_links);
+            return (
+              <article
+                class:list={['services-detail-item', { 'is-active': index === 0 }]}
+                data-service-index={index}
+              >
+                <h3 class="type-card-title">{service.services_types_title}</h3>
+                <p class="type-lede">{service.services_contents}</p>
                 {href && (
                   <p class="service-actions">
                     <a class="btn btn-on-dark" href={href}>
                       {t('home.know_more')}
-                      <img src="/icon-arrow-right.svg" width="20" height="20" alt="" />
+                      <span class="services-btn-arrow" aria-hidden="true"></span>
                     </a>
                   </p>
                 )}
-              </div>
-            </article>
-          );
-        })}
+              </article>
+            );
+          })}
+        </div>
       </div>
     )}
   </div>
 </section>
+
+{services.length > 0 && <script src="../scripts/home-services.ts"></script>}
