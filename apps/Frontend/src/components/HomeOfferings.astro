@@ -12,9 +12,9 @@ import { homeOfferings } from '../lib/home-offerings';
       <article class="offer-col">
         <h3>{t(offering.titleKey)}</h3>
         <p>{t(offering.bodyKey)}</p>
-        <a class="offer-link" href={offering.href}>
-          <img src="/icon-arrow-right.svg" width="50" height="50" alt={t('home.know_more')} />
-        </a>
+        <span class="offer-link" aria-hidden="true">
+          <img src="/icon-arrow-right.svg" width="50" height="50" alt="" />
+        </span>
       </article>
     ))}
   </div>

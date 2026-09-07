@@ -974,7 +974,7 @@ input:focus-visible {
   }
 
   .offer-col:nth-child(2n) {
-    border-right: 0;
+    border-right: 1;
   }
 
   .offer-col:nth-last-child(-n + 2) {
