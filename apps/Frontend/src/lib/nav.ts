@@ -39,6 +39,25 @@ export const serviceSingles: NavLink[] = [
   { href: '/services/digital-transformation', labelKey: 'nav.digital_transformation' },
 ];
 
+export const serviceFlyoutApplication = serviceGroups[0];
+
+export const serviceFlyoutDevops: NavLink[] = [
+  { href: '/services/devOps-consultation', labelKey: 'nav.flyout_devops_consult' },
+  {
+    href: '/services/infrastructure-management-and-automation',
+    labelKey: 'nav.flyout_infra',
+  },
+];
+
+export const serviceFlyoutColumnFour: NavLink[] = [
+  { href: '/services/ai-services', labelKey: 'nav.ai_services' },
+  { href: '/services/cloud-migration', labelKey: 'nav.cloud_services_migrations' },
+  ...serviceSingles.filter(
+    (link) =>
+      link.href !== '/services/ai-services' && link.href !== '/services/cloud-migration',
+  ),
+];
+
 export const solutionLinks: NavLink[] = [
   { href: '/solutions', labelKey: 'nav.solutions_overview' },
   { href: '/solutions/credit-life', labelKey: 'nav.credit_life' },
@@ -57,6 +76,19 @@ export const companyLinks: NavLink[] = [
   { href: '/company/clients', labelKey: 'nav.clients' },
   { href: '/company/testimonials', labelKey: 'nav.stories' },
   { href: '/company/blogs', labelKey: 'nav.blogs' },
+];
+
+export const companyMenuColumns: NavLink[][] = [
+  [
+    { href: '/about', labelKey: 'nav.about_us' },
+    { href: '/company/careers', labelKey: 'nav.careers' },
+    { href: '/company/careers', labelKey: 'nav.job_openings' },
+  ],
+  [
+    { href: '/company/blogs', labelKey: 'nav.resources' },
+    { href: '/company/clients', labelKey: 'nav.clients' },
+    { href: '/company/testimonials', labelKey: 'nav.testimonials' },
+  ],
 ];
 
 export const footerCompany: NavLink[] = [
