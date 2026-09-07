@@ -102,4 +102,5 @@
   --bp-xl: 1440px;
   --shadow-menu: 0 12px 40px var(--color-shadow);
   --motion-media: 0.45s ease;
+  --motion-nav: 0.3s ease;
 }
