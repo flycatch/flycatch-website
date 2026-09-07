@@ -58,8 +58,8 @@ const structuredData = home ? homeStructuredData(home, metadata, siteSettings) :
       </section>
     )}
     <HomeOfferings />
-    <HomeCaseStudies studies={home?.case_studies ?? []} error={homesResult.error} />
     <HomeServices services={home?.services ?? []} error={homesResult.error} />
+    <HomeCaseStudies studies={home?.case_studies ?? []} error={homesResult.error} />
     <HomeMinds />
     <HomeTestimonials testimonials={testimonialsResult.items} error={testimonialsResult.error} />
     <HomeClients logos={logosResult.items} error={logosResult.error} />
