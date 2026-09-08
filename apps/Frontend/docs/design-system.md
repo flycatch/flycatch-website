@@ -146,7 +146,7 @@ Keep native `<a class="btn">` (or `<button>`). Optional trailing 24px arrow (`--
 - **Offerings:** full-bleed column grid, 1px `--color-border`, padding `--s7`, desktop min-height 780px, 4 columns from `--bp-lg`.
 - **Services:** image 16/10, hover scale 1.04 / 0.45s, outline CTA.
 - **Insights:** image height 244px (Figma), meta 14px, title 32px Regular, category chips.
-- **Case studies:** stacked on small screens; two-column split from `--bp-md`.
+- **Case studies:** stacked on small screens; two-column split from `--bp-md`. Homepage shows the latest 3 from the Home/case-study API. “View all works” is a circular `--radius-chip` control to the left of the cards; a red stroke draws around the grey ring in step with section scroll.
 
 No drop shadows on content cards. Mega/drop menus use `--shadow-menu`.
 

@@ -7,42 +7,118 @@ import SectionState from './SectionState.astro';
 interface Props {
   studies: PublicCaseStudySummary[];
   error?: boolean;
+  home?: boolean;
 }
 
-const { studies, error = false } = Astro.props;
+const { studies, error = false, home = false } = Astro.props;
+
+function latestStudies(items: PublicCaseStudySummary[], limit: number) {
+  return [...items]
+    .sort((a, b) => {
+      const dateA = a.date ? Date.parse(a.date) : Number.NaN;
+      const dateB = b.date ? Date.parse(b.date) : Number.NaN;
+      const hasA = Number.isFinite(dateA);
+      const hasB = Number.isFinite(dateB);
+      if (hasA && hasB && dateB !== dateA) return dateB - dateA;
+      if (hasA !== hasB) return hasA ? -1 : 1;
+      return b.order - a.order;
+    })
+    .slice(0, limit);
+}
+
+const visible = home ? latestStudies(studies, 3) : studies;
 ---
-<section class="section" id="case-studies">
+<section
+  class="section"
+  id="case-studies"
+  data-case-progress={home ? 'true' : undefined}
+>
   <div class="container">
     <h2 class="type-section">{t('home.case_studies')}</h2>
-    <p>
-      <a class="btn" href="/case-studies">
-        {t('home.view_works')}
-        <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
-      </a>
-    </p>
-    <SectionState error={error} empty={!error && studies.length === 0} />
-    {studies.map((study) => {
-      const image = publicMediaUrl(study.image_key);
-      const industry = study.industries[0]?.name;
-      return (
-        <article class="case-card">
-          {image ? (
-            <div class="media-frame">
-              <img src={image} alt={study.image_alt || study.heading} width="581" height="475" loading="lazy" />
-            </div>
-          ) : (
-            <div class="media-frame"></div>
-          )}
-          <div>
-            {industry && <p>{industry}</p>}<h3>{study.heading}</h3>
-            <p>{study.description}</p>
-            <a class="btn" href={`/case-studies/${study.slug}`}>
-              {t('home.read_more')}
-              <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
-            </a>
-          </div>
-        </article>
-      );
-    })}
+    <SectionState error={error} empty={!error && visible.length === 0} />
+    {home ? (
+      <div class="case-home">
+        <div class="case-works">
+          <svg class="case-works-ring" viewBox="0 0 36 36" aria-hidden="true">
+            <circle class="case-works-track" cx="18" cy="18" r="17"></circle>
+            <circle class="case-works-fill" cx="18" cy="18" r="17"></circle>
+          </svg>
+          <p class="case-works-label">{t('home.view_works')}</p>
+        </div>
+        <div class="case-home-list">
+          {visible.map((study) => {
+            const image = publicMediaUrl(study.image_key);
+            const industry = study.industries[0]?.name;
+            return (
+              <article class="case-card">
+                {image ? (
+                  <div class="media-frame case-media">
+                    <img
+                      src={image}
+                      alt={study.image_alt || study.heading}
+                      width="581"
+                      height="475"
+                      loading="lazy"
+                    />
+                  </div>
+                ) : (
+                  <div class="media-frame case-media"></div>
+                )}
+                <div class="case-copy">
+                  {industry && <p class="case-industry type-meta">{industry}</p>}
+                  <h3>{study.heading}</h3>
+                  <p class="case-excerpt">{study.description}</p>
+                  <a class="btn" href={`/case-studies/${study.slug}`}>
+                    {t('home.read_more')}
+                    <img src="/icon-arrow-right.svg" width="32" height="32" alt="" />
+                  </a>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    ) : (
+      <>
+        <p>
+          <a class="btn" href="/case-studies">
+            {t('home.view_works')}
+            <img src="/icon-arrow-right.svg" width="32" height="32" alt="" />
+          </a>
+        </p>
+        {visible.map((study) => {
+          const image = publicMediaUrl(study.image_key);
+          const industry = study.industries[0]?.name;
+          return (
+            <article class="case-card">
+              {image ? (
+                <div class="media-frame">
+                  <img
+                    src={image}
+                    alt={study.image_alt || study.heading}
+                    width="581"
+                    height="475"
+                    loading="lazy"
+                  />
+                </div>
+              ) : (
+                <div class="media-frame"></div>
+              )}
+              <div>
+                {industry && <p class="case-industry type-meta">{industry}</p>}
+                <h3>{study.heading}</h3>
+                <p>{study.description}</p>
+                <a class="btn" href={`/case-studies/${study.slug}`}>
+                  {t('home.read_more')}
+                  <img src="/icon-arrow-right.svg" width="32" height="32" alt="" />
+                </a>
+              </div>
+            </article>
+          );
+        })}
+      </>
+    )}
   </div>
 </section>
+
+{home && <script src="../scripts/home-case-studies.ts"></script>}
