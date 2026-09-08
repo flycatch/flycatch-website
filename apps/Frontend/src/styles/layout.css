@@ -1190,26 +1190,29 @@ input:focus-visible {
 
 .clients-marquee {
   display: grid;
-  gap: var(--s6);
   margin-top: var(--s6);
+  margin-inline: 0;
+  padding-inline: 0;
 }
 
 .clients-marquee-viewport {
   overflow: hidden;
+  margin-inline: 0;
+  padding-inline: 0;
 }
 
 .clients-marquee-track {
   display: flex;
   align-items: stretch;
   width: max-content;
-  gap: var(--s7);
+  gap: var(--s4);
   will-change: transform;
 }
 
 .clients-marquee-set {
   display: flex;
   flex: 0 0 auto;
-  gap: var(--s7);
+  gap: var(--s4);
 }
 
 .clients-logo-cell {
@@ -1218,9 +1221,9 @@ input:focus-visible {
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  width: calc(var(--s10) * 2.5);
-  height: calc(var(--s10) + var(--s7));
-  padding: var(--s4) var(--s5);
+  width: calc(var(--s10) * 3);
+  height: calc(var(--s10) + var(--s6));
+  padding: 0;
 }
 
 .clients-actions {
@@ -1231,7 +1234,7 @@ input:focus-visible {
   display: block;
   width: auto;
   max-width: 100%;
-  height: var(--s9);
+  height: var(--s10);
   object-fit: contain;
 }
 
@@ -1435,7 +1438,11 @@ input:focus-visible {
   }
 
   .clients-logo-cell {
-    width: calc(var(--s10) * 3);
+    width: calc(var(--s10) * 3.5);
+  }
+
+  .clients-logo-cell img {
+    height: calc(var(--s10) + var(--s2));
   }
 
   .case-card {
