@@ -1,4 +1,4 @@
-# Kubernetes (dev) — Harbor + Argo CD
+# Kubernetes (test) — Harbor + Argo CD
 
 Secrets and credentials must never be committed. Bootstrap against the Flycatch k3s
 cluster using this file as the single source of truth.
@@ -11,8 +11,7 @@ The Caddy gateway config is shared at [base/Caddyfile](base/Caddyfile) (Compose 
 ```
 deployment/k8s/
   base/                 # Namespace, Deployments, Services, ConfigMap, Caddyfile ConfigMap
-  overlays/dev/         # Ingress (TLS), noindex Middleware, image tags, replica counts
-  scripts/deploy-dev.sh # Build/push Harbor images + bump overlay tags
+  overlays/test/        # Ingress (TLS), noindex Middleware, image tags, replica counts
 ```
 
 The Argo CD Application is owned by the platform app-of-apps in
@@ -27,10 +26,10 @@ Ingress routes only to `gateway:8080`. Caddy path-splits `/`, `/admin`, and `/ap
 to the Frontend, Administration FE, and Backend Services (same names as Compose).
 
 **SEO:** this overlay is a non-production environment. App builds use
-`PUBLIC_ENVIRONMENT=development` / `ENVIRONMENT=development`, and Traefik Middleware
+`PUBLIC_ENVIRONMENT=development` / `ENVIRONMENT=test`, and Traefik Middleware
 `noindex` adds `X-Robots-Tag: noindex, nofollow` on every response.
 
-Hostname: `https://flycatch-website-dev.k3s.flycatchtech.in`
+Hostname: `https://flycatch-website-test.k3s.flycatchtech.in`
 
 ## Prerequisites
 
@@ -45,13 +44,13 @@ Hostname: `https://flycatch-website-dev.k3s.flycatchtech.in`
 Preview manifests without applying:
 
 ```bash
-kubectl kustomize deployment/k8s/overlays/dev
+kubectl kustomize deployment/k8s/overlays/test
 ```
 
 ## 0. Argo CD access to the app repo
 
 If the app repo is private, Argo CD must be able to clone it, or the Application
-`flycatch-website-dev` stays `Unknown` with authentication errors.
+`flycatch-website-test` stays `Unknown` with authentication errors.
 
 ```bash
 kubectl -n argocd create secret generic repo-flycatch-website \
@@ -66,16 +65,16 @@ kubectl -n argocd create secret generic repo-flycatch-website \
 The `url` must match the Application source exactly. Then hard-refresh:
 
 ```bash
-kubectl -n argocd annotate application flycatch-website-dev \
+kubectl -n argocd annotate application flycatch-website-test \
   argocd.argoproj.io/refresh=hard --overwrite
 ```
 
 ## 1. Namespace + Harbor pull secret
 
 ```bash
-kubectl create namespace flycatch-website-dev --dry-run=client -o yaml | kubectl apply -f -
+kubectl create namespace flycatch-website-test --dry-run=client -o yaml | kubectl apply -f -
 
-kubectl -n flycatch-website-dev create secret docker-registry harbor-pull \
+kubectl -n flycatch-website-test create secret docker-registry harbor-pull \
   --docker-server=registry.k3s.flycatchtech.in \
   --docker-username='robot$flycatch-website+githubbot' \
   --docker-password='<harbor-robot-secret>' \
@@ -139,11 +138,11 @@ ConfigMap already points `S3_ENDPOINT` / `S3_BUCKET` at the shared service and
 
 ## 4. App secrets
 
-Template: [overlays/dev/secret.example.yaml](overlays/dev/secret.example.yaml)
+Template: [overlays/test/secret.example.yaml](overlays/test/secret.example.yaml)
 (not applied by Kustomize).
 
 ```bash
-kubectl -n flycatch-website-dev create secret generic flycatch-website-secrets \
+kubectl -n flycatch-website-test create secret generic flycatch-website-secrets \
   --from-literal=DATABASE_URL='postgresql+psycopg://flycatch_website:<app-db-password>@postgres.database.svc.cluster.local:5432/flycatch_website' \
   --from-literal=S3_ACCESS_KEY='<minio-access-key>' \
   --from-literal=S3_SECRET_KEY='<minio-secret-key>' \
@@ -159,7 +158,7 @@ kubectl -n flycatch-website-dev create secret generic flycatch-website-secrets \
 Create a Cloudflare A (or CNAME) record:
 
 ```text
-flycatch-website-dev.k3s.flycatchtech.in → <Traefik LoadBalancer IP>
+flycatch-website-test.k3s.flycatchtech.in → <Traefik LoadBalancer IP>
 ```
 
 (Same LB IP used by other `*.k3s.flycatchtech.in` apps.)
@@ -171,12 +170,14 @@ From a machine that can reach Harbor (LAN/VPN), with a clean git working tree:
 ```bash
 export HARBOR_USERNAME='robot$flycatch-website+githubbot'
 export HARBOR_PASSWORD='...'
-./deployment/k8s/scripts/deploy-dev.sh
+<your CI pipeline builds and pushes the test-tagged images>
 ```
 
-The script builds `linux/amd64` images, pushes `:SHA` and `:latest` to Harbor,
-updates `overlays/dev/kustomization.yaml` image tags, commits, and pushes so Argo CD
-can sync.
+Build the three images for `linux/amd64`, push an immutable test tag to Harbor, then
+update `overlays/test/kustomization.yaml` with that tag and commit the change so Argo CD
+can sync. The test images must be built with
+`PUBLIC_ORIGIN=https://flycatch-website-test.k3s.flycatchtech.in` and
+`PUBLIC_ENVIRONMENT=development`; Astro embeds these variables at build time.
 
 Images:
 
@@ -184,15 +185,11 @@ Images:
 - `registry.k3s.flycatchtech.in/flycatch-website/frontend`
 - `registry.k3s.flycatchtech.in/flycatch-website/administration-fe`
 
-Frontend and Administration FE are built with
-`PUBLIC_ORIGIN=https://flycatch-website-dev.k3s.flycatchtech.in` and
-`PUBLIC_ENVIRONMENT=development`.
-
 ## 7. Verify Argo CD sync
 
 ```bash
-kubectl -n argocd get application flycatch-website-dev
-kubectl -n flycatch-website-dev get pods,ingress,certificate
+kubectl -n argocd get application flycatch-website-test
+kubectl -n flycatch-website-test get pods,ingress,certificate
 ```
 
 ## 8. One-time seed and staff bootstrap
@@ -200,20 +197,20 @@ kubectl -n flycatch-website-dev get pods,ingress,certificate
 After the Backend pod is Ready:
 
 ```bash
-kubectl -n flycatch-website-dev exec -it deploy/backend -- flycatch-seed-records
-kubectl -n flycatch-website-dev exec -it deploy/backend -- flycatch-bootstrap \
+kubectl -n flycatch-website-test exec -it deploy/backend -- flycatch-seed-records
+kubectl -n flycatch-website-test exec -it deploy/backend -- flycatch-bootstrap \
   --user-1-email admin1@example.com \
   --user-2-email admin2@example.com \
   --user-2-role editor
 ```
 
-Sign in at `https://flycatch-website-dev.k3s.flycatchtech.in/admin`.
+Sign in at `https://flycatch-website-test.k3s.flycatchtech.in/admin`.
 
 ## 9. SEO / noindex checks
 
 ```bash
-curl -sI https://flycatch-website-dev.k3s.flycatchtech.in/ | grep -i robots
-curl -s https://flycatch-website-dev.k3s.flycatchtech.in/robots.txt
+curl -sI https://flycatch-website-test.k3s.flycatchtech.in/ | grep -i robots
+curl -s https://flycatch-website-test.k3s.flycatchtech.in/robots.txt
 ```
 
 Expect `X-Robots-Tag: noindex, nofollow` and `Disallow: /` in robots.txt.
@@ -227,9 +224,9 @@ public site, wider on `/admin*` (inline scripts for Astro islands, Google
 Fonts, and `blob:` media previews).
 
 ```bash
-curl -sI https://flycatch-website-dev.k3s.flycatchtech.in/ \
+curl -sI https://flycatch-website-test.k3s.flycatchtech.in/ \
   | grep -iE 'content-security|strict-transport|cross-origin|x-frame|x-content'
-curl -sI https://flycatch-website-dev.k3s.flycatchtech.in/admin/ \
+curl -sI https://flycatch-website-test.k3s.flycatchtech.in/admin/ \
   | grep -i content-security
 ```
 
@@ -244,6 +241,6 @@ HSTS over non-HTTPS.
 
 ## Rollback
 
-Revert the image-tag commit in `overlays/dev/kustomization.yaml` (or re-run
-`deploy-dev.sh` from an older commit) and let Argo CD sync. Secrets, DNS, and the
+Revert the image-tag commit in `overlays/test/kustomization.yaml` (or restore an
+earlier immutable image tag) and let Argo CD sync. Secrets, DNS, and the
 shared Postgres/MinIO data are unchanged by that rollback.

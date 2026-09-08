@@ -8,6 +8,24 @@ resources:
 - ingress.yaml
 - noindex-middleware.yaml
 
+# Keep environment-specific values out of the shared base.  The public origin is
+# consumed by the Backend; Astro embeds its equivalent at image-build time.
+patches:
+- target:
+    version: v1
+    kind: ConfigMap
+    name: flycatch-website-config
+  patch: |-
+    - op: replace
+      path: /data/PUBLIC_ORIGIN
+      value: https://flycatch-website-test.k3s.flycatchtech.in
+    - op: replace
+      path: /data/PUBLIC_ENVIRONMENT
+      value: development
+    - op: replace
+      path: /data/ENVIRONMENT
+      value: test
+
 images:
 - name: registry.k3s.flycatchtech.in/flycatch-website/administration-fe
   newName: registry.k3s.flycatchtech.in/flycatch-website/administration-fe
