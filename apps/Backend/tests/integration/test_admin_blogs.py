@@ -236,3 +236,50 @@ def test_media_upload_and_fetch(client, bootstrapped):
     fetched = client.get(f"/api/v1/admin/media/{key}", headers=headers)
     assert fetched.status_code == 200
     assert fetched.content.startswith(b"\x89PNG")
+
+
+def test_media_upload_accepts_svg_and_existing_raster_types(client, bootstrapped):
+    headers = _admin(client, bootstrapped)
+    storage = MemoryStorage()
+    admin_media._media = MediaService(storage=storage)
+    svg_body = b'<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"></svg>'
+    svg_upload = client.post(
+        "/api/v1/admin/media",
+        headers=headers,
+        files={"file": ("logo.svg", BytesIO(svg_body), "image/svg+xml")},
+    )
+    assert svg_upload.status_code == 201
+    svg_key = svg_upload.json()["key"]
+    assert svg_key.endswith(".svg")
+    svg_fetched = client.get(f"/api/v1/admin/media/{svg_key}", headers=headers)
+    assert svg_fetched.status_code == 200
+    assert svg_fetched.content == svg_body
+    assert "image/svg+xml" in svg_fetched.headers["content-type"]
+
+    fallback_upload = client.post(
+        "/api/v1/admin/media",
+        headers=headers,
+        files={"file": ("fallback.svg", BytesIO(svg_body), "application/octet-stream")},
+    )
+    assert fallback_upload.status_code == 201
+    assert fallback_upload.json()["key"].endswith(".svg")
+
+    png_upload = client.post(
+        "/api/v1/admin/media",
+        headers=headers,
+        files={"file": ("photo.png", BytesIO(b"\x89PNG\r\n"), "image/png")},
+    )
+    assert png_upload.status_code == 201
+    assert png_upload.json()["key"].endswith(".png")
+    jpeg_upload = client.post(
+        "/api/v1/admin/media",
+        headers=headers,
+        files={"file": ("photo.jpg", BytesIO(b"\xff\xd8\xff"), "image/jpeg")},
+    )
+    assert jpeg_upload.status_code == 201
+    webp_upload = client.post(
+        "/api/v1/admin/media",
+        headers=headers,
+        files={"file": ("photo.webp", BytesIO(b"RIFF"), "image/webp")},
+    )
+    assert webp_upload.status_code == 201

@@ -14,6 +14,15 @@ IMAGE_TYPES = {
     "image/png": ".png",
     "image/gif": ".gif",
     "image/webp": ".webp",
+    "image/svg+xml": ".svg",
+}
+_SVG_FALLBACK_TYPES = {
+    "",
+    "application/octet-stream",
+    "application/xml",
+    "image/svg",
+    "text/plain",
+    "text/xml",
 }
 VIDEO_TYPES = {
     "video/mp4": ".mp4",
@@ -29,6 +38,17 @@ ALLOWED_TYPES = {**IMAGE_TYPES, **VIDEO_TYPES, **DOCUMENT_TYPES}
 IMAGE_MAX_BYTES = 5 * 1024 * 1024
 VIDEO_MAX_BYTES = 50 * 1024 * 1024
 DOCUMENT_MAX_BYTES = 10 * 1024 * 1024
+
+
+def _resolved_type(filename: str | None, content_type: str | None) -> tuple[str, str] | None:
+    normalized = (content_type or "").lower()
+    extension = ALLOWED_TYPES.get(normalized)
+    if extension is not None:
+        return normalized, extension
+    name = (filename or "").lower()
+    if name.endswith(".svg") and normalized in _SVG_FALLBACK_TYPES:
+        return "image/svg+xml", ".svg"
+    return None
 
 
 class MediaService:
@@ -49,15 +69,15 @@ class MediaService:
                     fields={"file": FieldErrorDetail(message_key="admin.field.required")}
                 ).model_dump(),
             )
-        normalized = (content_type or "").lower()
-        extension = ALLOWED_TYPES.get(normalized)
-        if extension is None:
+        resolved = _resolved_type(_filename, content_type)
+        if resolved is None:
             raise CatalogError(
                 422,
                 FieldErrors(
                     fields={"file": FieldErrorDetail(message_key="admin.media.type.invalid")}
                 ).model_dump(),
             )
+        normalized, extension = resolved
         if normalized in VIDEO_TYPES:
             limit = VIDEO_MAX_BYTES
         elif normalized in DOCUMENT_TYPES:
@@ -72,7 +92,7 @@ class MediaService:
                 ).model_dump(),
             )
         key = f"{uuid.uuid4().hex}{extension}"
-        self.storage.put_bytes(key, data, content_type or "application/octet-stream")
+        self.storage.put_bytes(key, data, normalized)
         return MediaObject(key=key)
 
     def get(self, key: str) -> tuple[BytesIO, str]:
