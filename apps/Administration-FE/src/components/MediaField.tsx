@@ -2,6 +2,22 @@ import { useRef } from 'react';
 import MediaPreview from './MediaPreview';
 
 export const IMAGE_ACCEPT = 'image/jpeg,image/png,image/gif,image/webp';
+export const LOGO_IMAGE_ACCEPT = `${IMAGE_ACCEPT},image/svg+xml,.svg`;
+
+export function fileMatchesAccept(file: File, accept: string): boolean {
+  const tokens = accept
+    .split(',')
+    .map((token) => token.trim().toLowerCase())
+    .filter(Boolean);
+  if (tokens.length === 0) return true;
+  const type = file.type.toLowerCase();
+  const name = file.name.toLowerCase();
+  return tokens.some((token) => {
+    if (token.startsWith('.')) return name.endsWith(token);
+    if (token.endsWith('/*')) return type.startsWith(token.slice(0, -1));
+    return type === token;
+  });
+}
 
 type SingleProps = {
   label: string;
@@ -62,11 +78,16 @@ export default function MediaField(props: SingleProps | MultiProps) {
           accept={accept}
           multiple={multiple}
           onChange={(event) => {
+            const selected = Array.from(event.target.files || []).filter((file) =>
+              fileMatchesAccept(file, accept),
+            );
             if (multiple) {
-              props.onFiles(Array.from(event.target.files || []));
+              props.onFiles(selected);
+              if (selected.length === 0) resetInput();
               return;
             }
-            props.onFile(event.target.files?.[0] || null);
+            props.onFile(selected[0] || null);
+            if (selected.length === 0) resetInput();
           }}
         />
       </label>

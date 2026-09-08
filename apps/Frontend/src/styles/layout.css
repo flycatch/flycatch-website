@@ -1188,6 +1188,53 @@ input:focus-visible {
   object-fit: contain;
 }
 
+.clients-marquee {
+  display: grid;
+  gap: var(--s6);
+  margin-top: var(--s6);
+}
+
+.clients-marquee-viewport {
+  overflow: hidden;
+}
+
+.clients-marquee-track {
+  display: flex;
+  align-items: stretch;
+  width: max-content;
+  gap: var(--s7);
+  will-change: transform;
+}
+
+.clients-marquee-set {
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--s7);
+}
+
+.clients-logo-cell {
+  box-sizing: border-box;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--s10) * 2.5);
+  height: calc(var(--s10) + var(--s7));
+  padding: var(--s4) var(--s5);
+}
+
+.clients-actions {
+  justify-content: flex-start;
+}
+
+.clients-logo-cell img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: var(--s9);
+  object-fit: contain;
+}
+
 .testimonial-layout {
   display: grid;
   gap: var(--s6);
@@ -1223,7 +1270,7 @@ input:focus-visible {
 .section-actions {
   margin-top: var(--s8);
   display: flex;
-  justify-content: center;
+  justify-content: start;
 }
 
 .chip-row {
@@ -1385,6 +1432,10 @@ input:focus-visible {
 
   .logo-row {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .clients-logo-cell {
+    width: calc(var(--s10) * 3);
   }
 
   .case-card {
@@ -1558,7 +1609,8 @@ input:focus-visible {
   .services-nav-arrow,
   .services-nav-item,
   .services-detail-item,
-  .minds-stat {
+  .minds-stat,
+  .clients-marquee-track {
     transition: none;
     animation: none;
   }
