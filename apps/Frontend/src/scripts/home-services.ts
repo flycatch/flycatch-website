@@ -1,4 +1,4 @@
-const HOLD_MS = 5000;
+const HOLD_MS = 3500;
 
 function initHomeServices() {
   const root = document.querySelector('[data-services-stage]');

@@ -1,0 +1,26 @@
+---
+import { t } from '../lib/i18n';
+---
+<section class="section section-contact" id="contact">
+  <div class="container contact-layout">
+    <div class="contact-copy">
+      <p class="type-lede">{t('home.contact_eyebrow')}</p>
+      <h2 class="type-section">{t('home.contact_title')}</h2>
+      <p>
+        <a class="btn" href="/contact-us">
+          {t('home.contact_action')}
+          <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
+        </a>
+      </p>
+    </div>
+    <div class="contact-visual">
+      <img
+        src="/contact-us-sphere.webp"
+        alt={t('home.contact_image_alt')}
+        width="690"
+        height="530"
+        loading="lazy"
+      />
+    </div>
+  </div>
+</section>

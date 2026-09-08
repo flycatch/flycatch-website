@@ -17,7 +17,7 @@ const { studies, error = false } = Astro.props;
     <p>
       <a class="btn" href="/case-studies">
         {t('home.view_works')}
-        <img src="/icon-arrow-right.svg" width="20" height="20" alt="" />
+        <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
       </a>
     </p>
     <SectionState error={error} empty={!error && studies.length === 0} />
@@ -38,7 +38,7 @@ const { studies, error = false } = Astro.props;
             <p>{study.description}</p>
             <a class="btn" href={`/case-studies/${study.slug}`}>
               {t('home.read_more')}
-              <img src="/icon-arrow-right.svg" width="20" height="20" alt="" />
+              <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
             </a>
           </div>
         </article>

@@ -66,6 +66,7 @@ Figma variables: White `#ffffff`, Black `#000000`, Red `#e50914`.
 | `--color-hero` | `#000b18` | Hero fallback |
 | `--color-on-dark` | white | Text on dark |
 | `--color-muted-surface` | `#f7f7f7` | Clients / insights |
+| `--color-contact-surface` | `#f3f3f3` | Homepage contact band (live site) |
 | `--color-media` | `#dddddd` | Image placeholders |
 | `--color-overlay` | `rgba(0,0,0,0.78)` | Hero scrim |
 | `--color-on-dark-muted` | `rgba(255,255,255,0.75)` | Footer / dark lede |
@@ -120,7 +121,7 @@ Design frame 1512px is documentation only, not a layout breakpoint.
 
 ## Buttons
 
-Keep native `<a class="btn">` (or `<button>`). Optional trailing 20px arrow (`/icon-arrow-right.svg`).
+Keep native `<a class="btn">` (or `<button>`). Optional trailing 24px arrow (`--btn-icon` / `--s5`, `/icon-arrow-right.svg`).
 
 **Outline (default `.btn`)** — Figma Component 38; live “Read more” / “View all insights”:
 
@@ -130,6 +131,7 @@ Keep native `<a class="btn">` (or `<button>`). Optional trailing 20px arrow (`/i
 - Min-height 59px
 - Gap `--s2`, Poppins 18 Regular, tracking 0.6px
 - Dark sections: `.btn-on-dark` (white border/text)
+- Hover (all `.btn` variants): fill `--color-red`, text `--color-white`, border `--color-red`. Trailing arrow rotates `-30deg` (2 o’clock) with `--motion-nav`. SVG arrows use `currentColor`; image arrows invert to white.
 
 **Solid `.btn-solid`:** white fill, black text (on dark CTA band).
 
