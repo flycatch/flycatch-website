@@ -516,13 +516,36 @@ input:focus-visible {
   font-weight: var(--font-weight-regular);
   line-height: var(--line-height-nav);
   letter-spacing: var(--tracking);
+  transition:
+    background-color var(--motion-nav),
+    color var(--motion-nav),
+    border-color var(--motion-nav);
 }
 
-.btn img {
+.btn img,
+.btn svg,
+.btn .services-btn-arrow {
   width: var(--btn-icon);
   height: var(--btn-icon);
   display: block;
   flex-shrink: 0;
+  transition: transform var(--motion-nav), filter var(--motion-nav);
+}
+
+.btn:hover {
+  background-color: var(--color-red);
+  color: var(--color-white);
+  border-color: var(--color-red);
+}
+
+.btn:hover img,
+.btn:hover svg,
+.btn:hover .services-btn-arrow {
+  transform: rotate(-30deg);
+}
+
+.btn:hover img {
+  filter: brightness(0) invert(1);
 }
 
 .btn-solid {
@@ -547,6 +570,10 @@ input:focus-visible {
 
 .section-muted {
   background: var(--color-muted-surface);
+}
+
+.section-contact {
+  background: var(--color-contact-surface);
 }
 
 .section h2,
@@ -856,6 +883,31 @@ input:focus-visible {
   -webkit-mask: url('/icon-arrow-right.svg') center / contain no-repeat;
 }
 
+.contact-layout {
+  display: grid;
+  gap: var(--s8);
+  align-items: center;
+}
+
+.contact-copy {
+  display: grid;
+  align-content: start;
+  gap: var(--s5);
+}
+
+.contact-copy .type-lede,
+.contact-copy .type-section,
+.contact-copy p {
+  margin: 0;
+}
+
+.contact-visual img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
 .minds-layout {
   display: grid;
   gap: var(--s7);
@@ -1155,6 +1207,11 @@ input:focus-visible {
     width: 100%;
   }
 
+  .contact-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: var(--s8) var(--s7);
+  }
+
   .minds-layout {
     grid-template-columns: 1fr 1.2fr;
     align-items: start;
@@ -1253,6 +1310,10 @@ input:focus-visible {
   .flyout,
   .flyout-panel,
   .flyout a,
+  .btn,
+  .btn img,
+  .btn svg,
+  .btn .services-btn-arrow,
   .services-stage-media img,
   .services-stage-fallback,
   .services-nav-arrow,

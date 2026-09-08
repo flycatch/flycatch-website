@@ -5,6 +5,7 @@ import SiteFooter from '../components/SiteFooter.astro';
 import HomeHero from '../components/HomeHero.astro';
 import HomeOfferings from '../components/HomeOfferings.astro';
 import HomeServices from '../components/HomeServices.astro';
+import HomeContact from '../components/HomeContact.astro';
 import HomeCaseStudies from '../components/HomeCaseStudies.astro';
 import HomeMinds from '../components/HomeMinds.astro';
 import HomeClients from '../components/HomeClients.astro';
@@ -59,6 +60,7 @@ const structuredData = home ? homeStructuredData(home, metadata, siteSettings) :
     )}
     <HomeOfferings />
     <HomeServices services={home?.services ?? []} error={homesResult.error} />
+    <HomeContact />
     <HomeCaseStudies studies={home?.case_studies ?? []} error={homesResult.error} />
     <HomeMinds />
     <HomeTestimonials testimonials={testimonialsResult.items} error={testimonialsResult.error} />
