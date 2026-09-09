@@ -21,6 +21,8 @@ spec:
         - name: harbor-pull
       containers:
         - name: administration-fe
+          securityContext:
+            allowPrivilegeEscalation: false
           image: registry.k3s.flycatchtech.in/flycatch-website/administration-fe:latest
           imagePullPolicy: IfNotPresent
           ports:

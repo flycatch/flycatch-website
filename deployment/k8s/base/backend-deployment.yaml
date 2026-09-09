@@ -21,6 +21,8 @@ spec:
         - name: harbor-pull
       containers:
         - name: backend
+          securityContext:
+            allowPrivilegeEscalation: false
           image: registry.k3s.flycatchtech.in/flycatch-website/backend:latest
           imagePullPolicy: IfNotPresent
           ports:
