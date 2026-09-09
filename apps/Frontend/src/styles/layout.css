@@ -682,14 +682,46 @@ input:focus-visible {
 .offer-col {
   display: grid;
   align-content: center;
-  gap: var(--s6);
+  justify-items: start;
+  gap: 0;
   padding: var(--s7);
   border-bottom: 1px solid var(--color-border);
   min-height: 16rem;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  overflow: hidden;
+  transition:
+    background-color var(--motion-media),
+    color var(--motion-media);
+}
+
+.offer-hover-visual {
+  display: none;
+  width: 100%;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  margin: 0;
+  pointer-events: none;
+  transition:
+    grid-template-rows var(--motion-media),
+    opacity var(--motion-media),
+    margin-bottom var(--motion-media);
+}
+
+.offer-hover-visual-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.offer-hover-gif {
+  display: block;
+  width: min(100%, 280px);
+  height: auto;
+  margin-inline: auto;
 }
 
 .offer-col h3 {
-  margin: 0;
+  margin: 0 0 var(--s6);
   font-size: var(--text-card-title);
   font-weight: var(--font-weight-light);
   line-height: var(--line-height-heading);
@@ -697,7 +729,7 @@ input:focus-visible {
 }
 
 .offer-col p {
-  margin: 0;
+  margin: 0 0 var(--s6);
   font-size: var(--text-lede);
   font-weight: var(--font-weight-light);
   letter-spacing: var(--tracking);
@@ -716,6 +748,7 @@ input:focus-visible {
   width: 50px;
   height: 50px;
   display: block;
+  transition: transform var(--motion-nav);
 }
 
 .services-stage {
@@ -1552,6 +1585,30 @@ input:focus-visible {
   text-transform: uppercase;
 }
 
+@media (hover: hover) and (min-width: 768px) {
+  .offer-hover-visual {
+    display: grid;
+  }
+
+  .offer-col:hover,
+  .offer-col:focus-within {
+    background-color: var(--color-black);
+    color: var(--color-on-dark);
+  }
+
+  .offer-col:hover .offer-hover-visual,
+  .offer-col:focus-within .offer-hover-visual {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    margin-bottom: var(--s6);
+  }
+
+  .offer-col:hover .offer-link img,
+  .offer-col:focus-within .offer-link img {
+    transform: rotate(-30deg);
+  }
+}
+
 @media (min-width: 768px) {
   .container {
     padding-left: var(--container-pad-md);
@@ -1784,7 +1841,10 @@ input:focus-visible {
   .services-nav-item,
   .services-detail-item,
   .minds-stat,
-  .clients-marquee-track {
+  .clients-marquee-track,
+  .offer-col,
+  .offer-hover-visual,
+  .offer-link img {
     transition: none;
     animation: none;
   }
