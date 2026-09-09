@@ -82,6 +82,7 @@ def test_public_list_and_detail_are_unauthenticated(client, bootstrapped):
     assert item["title"] == "Public Post"
     assert item["description"] == "Visible on the site"
     assert item["reading_time"] == 3
+    assert item["created_at"]
     assert item["authors"][0]["name"] == "Ada Lovelace"
     assert item["authors"][0]["designation"] == "Writer"
     assert item["authors"][0]["writer_image_keys"] == ["ada.png"]

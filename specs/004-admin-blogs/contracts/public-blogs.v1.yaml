@@ -159,6 +159,7 @@ components:
         - slug
         - description
         - reading_time
+        - created_at
         - image_key
         - image_alt
         - authors
@@ -172,6 +173,9 @@ components:
           type: string
         reading_time:
           type: integer
+        created_at:
+          type: string
+          format: date-time
         image_key:
           type: string
           nullable: true

@@ -12,6 +12,26 @@ interface Props {
 
 const { blogs, error = false, limit = 3 } = Astro.props;
 const featured = limit > 0 ? blogs.slice(0, limit) : blogs;
+const months = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
+function formatCreatedDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return `${date.getUTCDate()} ${months[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
+}
 ---
 <section class="section section-muted" id="insights">
   <div class="container">
@@ -21,6 +41,7 @@ const featured = limit > 0 ? blogs.slice(0, limit) : blogs;
       <div class="insight-grid">
         {featured.map((blog) => {
           const image = publicMediaUrl(blog.image_key);
+          const created = formatCreatedDate(blog.created_at);
           return (
             <article class="insight-card">
               <a href={`/blogs/${blog.slug}`}>
@@ -32,8 +53,11 @@ const featured = limit > 0 ? blogs.slice(0, limit) : blogs;
                   <div class="media-frame"></div>
                 )}
                 <p class="insight-meta type-meta">
-                  <span>{t('home.blog_label')}</span>
-                  <span>{t('home.reading_time', { minutes: blog.reading_time })}</span>
+                  <span class="insight-blog-label">{t('home.blog_label')}</span>
+                  <span class="insight-meta-aside">
+                    <span>{t('home.reading_time', { minutes: blog.reading_time })}</span>
+                    {created && <time datetime={blog.created_at}>{created}</time>}
+                  </span>
                 </p>
                 <h3>{blog.title}</h3>
                 <div class="chip-row">
@@ -47,7 +71,7 @@ const featured = limit > 0 ? blogs.slice(0, limit) : blogs;
         })}
       </div>
     )}
-    <p class="section-actions">
+    <p class="insights-actions">
       <a class="btn" href="/company/blogs">
         {t('home.view_insights')}
         <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />

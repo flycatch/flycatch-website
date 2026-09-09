@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -43,6 +45,7 @@ class PublicBlogSummary(BaseModel):
     slug: str
     description: str
     reading_time: int
+    created_at: datetime
     image_key: str | None
     image_alt: str
     authors: list[PublicAuthor]

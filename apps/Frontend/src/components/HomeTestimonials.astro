@@ -7,49 +7,70 @@ import SectionState from './SectionState.astro';
 interface Props {
   testimonials: PublicClientTestimonial[];
   error?: boolean;
+  home?: boolean;
 }
 
-const { testimonials, error = false } = Astro.props;
+const { testimonials, error = false, home = false } = Astro.props;
 const featured = testimonials[0];
+const imageSrc = featured ? publicMediaUrl(featured.image_key) : null;
+const roleParts = featured
+  ? [featured.client_designation, featured.client_company].filter(Boolean)
+  : [];
+const role = roleParts.join(', ');
 ---
-<section class="section" id="stories">
+<section class:list={['section', 'stories', { 'section-dark': home }]} id="stories">
   <div class="container">
-    <h2 class="type-section">{t('home.success_stories')}</h2>
-    <SectionState error={error} empty={!error && testimonials.length === 0} />
+    {!featured && (
+      <>
+        <h2 class="stories-hashtag"># {t('home.success_stories')}</h2>
+        <SectionState error={error} empty={!error} />
+      </>
+    )}
     {featured && (
-      <div class="testimonial-layout">
-        <div>
-          {publicMediaUrl(featured.image_key) && (
-            <div class="media-frame">
+      <div class="stories-layout">
+        <div class="stories-left">
+          {imageSrc && (
+            <div class="stories-photo">
               <img
-                src={publicMediaUrl(featured.image_key) || ''}
+                src={imageSrc}
                 alt={featured.alt_text || featured.client_name}
-                width="420"
-                height="420"
+                width="150"
+                height="150"
                 loading="lazy"
+                decoding="async"
               />
             </div>
           )}
-          <p><strong>{featured.client_name}</strong></p>
-          <p>
-            {featured.client_designation}{featured.client_company ? `, ${featured.client_company}` : ''}
-          </p>
-        </div>
-        <div>
-          <p class="clutch" hidden={!featured.is_clutch_review}>{t('home.clutch')}</p>
-          <p class="quote" hidden={!featured.title}>{featured.title}</p>
-          <p>{featured.review}</p>
-          {featured.review_link ? (
-            <a class="btn" href={featured.review_link} rel="noopener noreferrer">
-              {t('home.view_stories')}
-              <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
-            </a>
-          ) : (
-            <a class="btn" href="/company/testimonials">
-              {t('home.view_stories')}
-              <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
-            </a>
+          <div class="stories-byline">
+            <p class="stories-name">{featured.client_name}</p>
+            {role && <p class="stories-role">{role}</p>}
+          </div>
+          {home && (
+            <img
+              class="stories-quote"
+              src="/testimonial-quote-icon.png"
+              alt=""
+              width="162"
+              height="142"
+              loading="lazy"
+              decoding="async"
+            />
           )}
+        </div>
+        <div class="stories-right">
+          <h2 class="stories-hashtag"># {t('home.success_stories')}</h2>
+          {featured.title && <p class="stories-title">{featured.title}</p>}
+          {featured.review && <p class="stories-review">{featured.review}</p>}
+          <div class="stories-byline stories-byline-mobile">
+            <p class="stories-name">{featured.client_name}</p>
+            {role && <p class="stories-role">{role}</p>}
+          </div>
+          <p class="stories-actions">
+            <a class:list={['btn', { 'btn-on-dark': home }]} href="/company/testimonials">
+              {t('home.view_stories')}
+              <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
+            </a>
+          </p>
         </div>
       </div>
     )}
