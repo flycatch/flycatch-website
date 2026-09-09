@@ -1459,6 +1459,10 @@ input:focus-visible {
   color: var(--color-white);
 }
 
+.cta-book-btn img {
+  filter: brightness(0) invert(1);
+}
+
 .cta-book-btn:hover {
   background: var(--color-red);
   color: var(--color-white);
