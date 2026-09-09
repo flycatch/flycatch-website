@@ -303,6 +303,7 @@ class BlogService:
             slug=blog.slug,
             description=blog.description,
             reading_time=blog.reading_time,
+            created_at=blog.created_at,
             image_key=blog.image_key,
             image_alt=blog.image_alt,
             authors=self._public_authors(blog),

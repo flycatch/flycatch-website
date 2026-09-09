@@ -34,6 +34,7 @@ describe('CATALOG_SECTIONS', () => {
     expect(resume?.kind).toBe('media');
     if (resume?.kind === 'media') {
       expect(resume.accept).toContain('image/jpeg');
+      expect(resume.accept).toContain('image/svg+xml');
       expect(resume.accept).toContain('application/pdf');
     }
   });

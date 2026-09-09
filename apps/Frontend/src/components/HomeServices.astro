@@ -1,0 +1,99 @@
+---
+import { t } from '../lib/i18n';
+import { publicMediaUrl } from '../lib/public-api';
+import type { HomeService } from '../lib/public-api';
+
+interface Props {
+  services: HomeService[];
+  error?: boolean;
+}
+
+const { services } = Astro.props;
+
+function serviceHref(raw: string): string {
+  const value = raw.trim();
+  if (!value) return '';
+  if (/^[a-z][a-z0-9+.-]*:/i.test(value) || value.startsWith('/') || value.startsWith('#')) {
+    return value;
+  }
+  return `/${value}`;
+}
+---
+{services.length > 0 && (
+<section
+  class="section section-dark services-stage"
+  id="services"
+  data-services-stage="true"
+>
+  <div class="services-stage-media" aria-hidden="true">
+    {services.map((service, index) => {
+      const image = publicMediaUrl(service.services_image_key);
+      return image ? (
+        <img
+          data-service-index={index}
+          class:list={[{ 'is-active': index === 0 }]}
+          src={image}
+          alt=""
+          width="1920"
+          height="1080"
+          loading={index === 0 ? 'eager' : 'lazy'}
+        />
+      ) : (
+        <div
+          data-service-index={index}
+          class:list={['services-stage-fallback', { 'is-active': index === 0 }]}
+        ></div>
+      );
+    })}
+  </div>
+  <div class="services-stage-scrim" aria-hidden="true"></div>
+  <div class="container services-stage-inner">
+    <div class="services-layout">
+        <div class="services-nav">
+          <h2 class="type-section">{t('home.services')}</h2>
+          <div class="services-nav-track">
+            <span class="services-nav-arrow" aria-hidden="true"></span>
+            <ul data-service-nav>
+              {services.map((service, index) => (
+                <li>
+                  <button
+                    type="button"
+                    class:list={['services-nav-item', { 'is-active': index === 0 }]}
+                    data-service-index={index}
+                    aria-current={index === 0 ? 'true' : 'false'}
+                  >
+                    {service.services_types_title}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div class="services-detail" aria-live="polite">
+          {services.map((service, index) => {
+            const href = serviceHref(service.our_services_links);
+            return (
+              <article
+                class:list={['services-detail-item', { 'is-active': index === 0 }]}
+                data-service-index={index}
+              >
+                <h3 class="type-card-title">{service.services_types_title}</h3>
+                <p class="type-lede">{service.services_contents}</p>
+                {href && (
+                  <p class="service-actions">
+                    <a class="btn btn-on-dark" href={href}>
+                      {t('home.know_more')}
+                      <span class="services-btn-arrow" aria-hidden="true"></span>
+                    </a>
+                  </p>
+                )}
+              </article>
+            );
+          })}
+        </div>
+      </div>
+  </div>
+</section>
+)}
+
+{services.length > 0 && <script src="../scripts/home-services.ts"></script>}

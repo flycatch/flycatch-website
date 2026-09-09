@@ -4,6 +4,7 @@ import 'quill/dist/quill.snow.css';
 import { uploadMedia } from '../lib/admin-api';
 import { rememberMediaSrc } from '../lib/rich-text';
 import { t } from '../lib/i18n';
+import { IMAGE_ACCEPT, fileMatchesAccept } from './MediaField';
 
 interface Props {
   id: string;
@@ -93,12 +94,12 @@ export default function RichTextEditor({ id, label, value, onChange }: Props) {
       toolbar.addHandler('image', () => {
         const input = document.createElement('input');
         input.type = 'file';
-        input.accept = 'image/jpeg,image/png,image/gif,image/webp';
+        input.accept = IMAGE_ACCEPT;
         input.addEventListener(
           'change',
           async () => {
             const file = input.files?.[0];
-            if (!file) return;
+            if (!file || !fileMatchesAccept(file, IMAGE_ACCEPT)) return;
             setError(null);
             const previewUrl = URL.createObjectURL(file);
             const index = insertIndex(quill);

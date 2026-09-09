@@ -1,0 +1,89 @@
+---
+import { t } from '../lib/i18n';
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicClientLogo } from '../lib/public-api';
+import SectionState from './SectionState.astro';
+
+interface Props {
+  logos: PublicClientLogo[];
+  error?: boolean;
+  home?: boolean;
+}
+
+const { logos, error = false, home = false } = Astro.props;
+
+function logoSrc(logo: PublicClientLogo, preferWhite: boolean) {
+  if (preferWhite) {
+    return publicMediaUrl(logo.white_logo_key) || publicMediaUrl(logo.colour_logo_key);
+  }
+  return publicMediaUrl(logo.colour_logo_key) || publicMediaUrl(logo.white_logo_key);
+}
+
+const visible = logos
+  .map((logo) => ({ logo, src: logoSrc(logo, home) }))
+  .filter((item): item is { logo: PublicClientLogo; src: string } => Boolean(item.src));
+const hideOnHome = home && visible.length === 0;
+---
+{!hideOnHome && (
+<section
+  class:list={['section', home ? 'section-dark' : 'section-muted']}
+  id="clients"
+>
+  <div class="container">
+    <h2 class="type-section">{t('home.clients')}</h2>
+    <p class="lede type-lede">{t('home.clients_intro')}</p>
+    <SectionState error={error} empty={!home && !error && visible.length === 0} />
+    {visible.length > 0 && home && (
+      <div class="clients-marquee" data-clients-marquee>
+        <div class="clients-marquee-viewport" data-clients-row data-direction="left">
+          <div class="clients-marquee-track">
+            <div class="clients-marquee-set">
+              {visible.map(({ logo, src }) => (
+                <div class="clients-logo-cell">
+                  <img
+                    src={src}
+                    alt={logo.alt_text}
+                    width="192"
+                    height="64"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              ))}
+            </div>
+            <div class="clients-marquee-set" aria-hidden="true">
+              {visible.map(({ src }) => (
+                <div class="clients-logo-cell">
+                  <img
+                    src={src}
+                    alt=""
+                    width="192"
+                    height="64"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+    {visible.length > 0 && !home && (
+      <div class="logo-row">
+        {visible.map(({ logo, src }) => (
+          <img src={src} alt={logo.alt_text} width="160" height="64" loading="lazy" />
+        ))}
+      </div>
+    )}
+    <p class:list={['section-actions', { 'clients-actions': home }]}>
+      <a class:list={['btn', { 'btn-on-dark': home }]} href="/company/clients">
+        {t('home.view_clients')}
+        <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
+      </a>
+    </p>
+  </div>
+</section>
+)}
+
+{home && visible.length > 0 && <script src="../scripts/home-clients.ts"></script>}

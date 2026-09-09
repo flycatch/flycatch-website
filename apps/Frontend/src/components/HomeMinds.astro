@@ -1,0 +1,56 @@
+---
+import { t } from '../lib/i18n';
+
+const stats = [
+  { valueKey: 'home.minds_stat.projects.value', labelKey: 'home.minds_stat.projects.label' },
+  { valueKey: 'home.minds_stat.associates.value', labelKey: 'home.minds_stat.associates.label' },
+  { valueKey: 'home.minds_stat.customers.value', labelKey: 'home.minds_stat.customers.label' },
+  { valueKey: 'home.minds_stat.years.value', labelKey: 'home.minds_stat.years.label' },
+];
+---
+<section class="section section-dark" id="about-us" aria-labelledby="minds-heading">
+  <div class="container minds-layout">
+    <figure class="minds-orbit" data-minds-stats>
+      <img
+        class="minds-orbit-image"
+        src="/about-us-orbit.jpg"
+        alt={t('home.minds_image_alt')}
+        width="640"
+        height="632"
+        loading="lazy"
+      />
+      <img
+        class="minds-stats-glow"
+        src="/about-us-stats-glow.png"
+        alt=""
+        width="500"
+        height="500"
+        loading="lazy"
+      />
+      <ul class="minds-stats" aria-live="polite">
+        {stats.map((stat, index) => (
+          <li
+            class:list={['minds-stat', { 'is-active': index === 0 }]}
+            data-stat-index={index}
+            aria-hidden={index === 0 ? 'false' : 'true'}
+          >
+            <span class="minds-stat-value">{t(stat.valueKey)}</span>
+            <span class="minds-stat-label">{t(stat.labelKey)}</span>
+          </li>
+        ))}
+      </ul>
+    </figure>
+    <div class="minds-copy">
+      <h2 id="minds-heading" class="type-section">{t('home.minds_title')}</h2>
+      <p class="lede type-lede">{t('home.minds_body')}</p>
+      <p>
+        <a class="btn btn-on-dark" href="/about-us">
+          {t('home.about_us')}
+          <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
+        </a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<script src="../scripts/home-minds.ts"></script>

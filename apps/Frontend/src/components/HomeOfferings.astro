@@ -1,0 +1,26 @@
+---
+import { t } from '../lib/i18n';
+import { homeOfferings } from '../lib/home-offerings';
+
+---
+<section class="section" id="offerings">
+  <div class="container offerings-head">
+    <h2 class="type-section">{t('home.offerings')}</h2>
+  </div>
+  <div class="offer-grid">
+    {homeOfferings.map((offering) => (
+      <article class="offer-col">
+        <div class="offer-hover-visual" aria-hidden="true">
+          <div class="offer-hover-visual-inner">
+            <img class="offer-hover-gif" src={offering.hoverGif} width="280" height="280" alt="" />
+          </div>
+        </div>
+        <h3>{t(offering.titleKey)}</h3>
+        <p>{t(offering.bodyKey)}</p>
+        <span class="offer-link" aria-hidden="true">
+          <img src="/icon-arrow-offerings.svg" width="50" height="50" alt="" />
+        </span>
+      </article>
+    ))}
+  </div>
+</section>

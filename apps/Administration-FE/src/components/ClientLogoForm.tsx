@@ -9,7 +9,7 @@ import {
 } from '../lib/admin-api';
 import { t } from '../lib/i18n';
 import FormPageHeader from './FormPageHeader';
-import MediaField from './MediaField';
+import MediaField, { LOGO_IMAGE_ACCEPT } from './MediaField';
 
 interface Props {
   logoId: string | null;
@@ -116,6 +116,7 @@ export default function ClientLogoForm({ logoId, onCancel, onSaved }: Props) {
         <MediaField
           label={t('admin.client_logos.colour_logo')}
           alt={altText || t('admin.client_logos.colour_logo')}
+          accept={LOGO_IMAGE_ACCEPT}
           storedKey={colourKey}
           file={colourFile}
           onFile={setColourFile}
@@ -127,6 +128,7 @@ export default function ClientLogoForm({ logoId, onCancel, onSaved }: Props) {
         <MediaField
           label={t('admin.client_logos.white_logo')}
           alt={altText || t('admin.client_logos.white_logo')}
+          accept={LOGO_IMAGE_ACCEPT}
           storedKey={whiteKey}
           file={whiteFile}
           onFile={setWhiteFile}
