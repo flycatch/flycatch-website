@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import SectionState from '../../components/SectionState.astro';
+import { loadPublishedBlog, publicMediaUrl } from '../../lib/public-api';
+import { fallbackMetadata, metadataFromBlog, publicSiteSettings } from '../../lib/metadata';
+import { blogStructuredData } from '../../lib/json-ld';
+import { t } from '../../lib/i18n';
+
+const { slug } = Astro.params;
+if (!slug) throw new Error('Blog slug missing');
+
+const siteSettings = publicSiteSettings();
+const result = await loadPublishedBlog(slug);
+const blog = result.item;
+const metadata = blog
+  ? metadataFromBlog(blog, siteSettings, `/blogs/${blog.slug}`)
+  : fallbackMetadata(
+      `/blogs/${slug}`,
+      t('nav.blogs'),
+      result.error ? t('home.error') : t('blog.not_found'),
+    );
+const structuredData = blog ? blogStructuredData(blog, metadata, siteSettings) : [];
+const image = blog ? publicMediaUrl(blog.image_key) : null;
+---
+<BaseLayout title={metadata.title} metadata={metadata} structuredData={structuredData}>
+  <SiteHeader />
+  <main id="main" class="page-main" data-api-origin={result.origin}>
+    <article class="container">
+      <SectionState error={result.error} empty={!result.error && !blog} />{blog ? (
+        <div>
+          <p class="insight-meta">
+            <span>{t('home.blog_label')}</span>
+            <span>{t('blog.reading_time', { minutes: blog.reading_time })}</span>
+          </p>
+          <h1>{blog.title}</h1>
+          <p class="lede">{blog.description}</p>
+          <div class="media-frame" hidden={!image}>{image && <img src={image} alt={blog.image_alt || blog.title} width="1192" height="640" />}</div>
+          <div class="body-region" set:html={blog.body} />{blog.authors.length > 0 && (
+            <section>
+              <h2>{t('blog.authors')}</h2>
+              <ul>{blog.authors.map((author) => (
+                <li>{author.name}{author.designation ? ` — ${author.designation}` : ''}</li>
+              ))}</ul>
+            </section>
+          )}
+        </div>
+      ) : (
+        <h1>{t('blog.not_found')}</h1>
+      )}
+    </article>
+  </main>
+  <SiteFooter />
+</BaseLayout>

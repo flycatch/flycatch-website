@@ -1,0 +1,81 @@
+---
+import { t } from '../lib/i18n';
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicClientTestimonial } from '../lib/public-api';
+import SectionState from './SectionState.astro';
+
+interface Props {
+  testimonials: PublicClientTestimonial[];
+  error?: boolean;
+  home?: boolean;
+}
+
+const { testimonials, error = false, home = false } = Astro.props;
+const featured = testimonials[0];
+const hideOnHome = home && !featured;
+const imageSrc = featured ? publicMediaUrl(featured.image_key) : null;
+const roleParts = featured
+  ? [featured.client_designation, featured.client_company].filter(Boolean)
+  : [];
+const role = roleParts.join(', ');
+---
+{!hideOnHome && (
+<section class:list={['section', 'stories', { 'section-dark': home }]} id="stories">
+  <div class="container">
+    {!featured && (
+      <>
+        <h2 class="stories-hashtag"># {t('home.success_stories')}</h2>
+        <SectionState error={error} empty={!error} />
+      </>
+    )}
+    {featured && (
+      <div class="stories-layout">
+        <div class="stories-left">
+          {imageSrc && (
+            <div class="stories-photo">
+              <img
+                src={imageSrc}
+                alt={featured.alt_text || featured.client_name}
+                width="150"
+                height="150"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          )}
+          <div class="stories-byline">
+            <p class="stories-name">{featured.client_name}</p>
+            {role && <p class="stories-role">{role}</p>}
+          </div>
+          {home && (
+            <img
+              class="stories-quote"
+              src="/testimonial-quote-icon.png"
+              alt=""
+              width="162"
+              height="142"
+              loading="lazy"
+              decoding="async"
+            />
+          )}
+        </div>
+        <div class="stories-right">
+          <h2 class="stories-hashtag"># {t('home.success_stories')}</h2>
+          {featured.title && <p class="stories-title">{featured.title}</p>}
+          {featured.review && <p class="stories-review">{featured.review}</p>}
+          <div class="stories-byline stories-byline-mobile">
+            <p class="stories-name">{featured.client_name}</p>
+            {role && <p class="stories-role">{role}</p>}
+          </div>
+          <p class="stories-actions">
+            <a class:list={['btn', { 'btn-on-dark': home }]} href="/company/testimonials">
+              {t('home.view_stories')}
+              <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
+            </a>
+          </p>
+        </div>
+      </div>
+    )}
+  </div>
+</section>
+)}

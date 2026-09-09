@@ -1,0 +1,85 @@
+---
+import { t } from '../lib/i18n';
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicBlogSummary } from '../lib/public-api';
+import SectionState from './SectionState.astro';
+
+interface Props {
+  blogs: PublicBlogSummary[];
+  error?: boolean;
+  limit?: number;
+  home?: boolean;
+}
+
+const { blogs, error = false, limit = 3, home = false } = Astro.props;
+const featured = limit > 0 ? blogs.slice(0, limit) : blogs;
+const months = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
+function formatCreatedDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return `${date.getUTCDate()} ${months[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
+}
+const hideOnHome = home && featured.length === 0;
+---
+{!hideOnHome && (
+<section class="section section-muted" id="insights">
+  <div class="container">
+    <h2 class="type-section">{t('home.insights')}</h2>
+    <SectionState error={error} empty={!home && !error && featured.length === 0} />
+    {featured.length > 0 && (
+      <div class="insight-grid">
+        {featured.map((blog) => {
+          const image = publicMediaUrl(blog.image_key);
+          const created = formatCreatedDate(blog.created_at);
+          return (
+            <article class="insight-card">
+              <a href={`/blogs/${blog.slug}`}>
+                {image ? (
+                  <div class="media-frame">
+                    <img src={image} alt={blog.image_alt || blog.title} width="377" height="244" loading="lazy" />
+                  </div>
+                ) : (
+                  <div class="media-frame"></div>
+                )}
+                <p class="insight-meta type-meta">
+                  <span class="insight-blog-label">{t('home.blog_label')}</span>
+                  <span class="insight-meta-aside">
+                    <span>{t('home.reading_time', { minutes: blog.reading_time })}</span>
+                    {created && <time datetime={blog.created_at}>{created}</time>}
+                  </span>
+                </p>
+                <h3>{blog.title}</h3>
+                <div class="chip-row">
+                  {blog.categories.map((category) => (
+                    <span class="chip">{category.name}</span>
+                  ))}
+                </div>
+              </a>
+            </article>
+          );
+        })}
+      </div>
+    )}
+    <p class="insights-actions">
+      <a class="btn" href="/company/blogs">
+        {t('home.view_insights')}
+        <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
+      </a>
+    </p>
+  </div>
+</section>
+)}

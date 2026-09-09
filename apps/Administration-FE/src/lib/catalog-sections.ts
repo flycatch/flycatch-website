@@ -17,7 +17,7 @@ export type CatalogField =
   | { kind: 'repeatable'; key: string; labelKey: string; itemFields: RepeatableItemField[] };
 
 export const RESUME_ACCEPT =
-  'image/jpeg,image/png,image/gif,image/webp,.jpg,.jpeg,.png,.gif,.webp,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf,.doc,.docx';
+  'image/jpeg,image/png,image/gif,image/webp,image/svg+xml,.jpg,.jpeg,.png,.gif,.webp,.svg,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf,.doc,.docx';
 
 export type CatalogSection = {
   resource: string;

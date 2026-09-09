@@ -124,8 +124,8 @@ Make sure to install dependencies for the respective services first.
 The public website (Astro).
 ```bash
 cd apps/Frontend
-npm install
-npm run dev
+pnpm install
+pnpm run dev
 ```
 Runs at: `http://localhost:4321`
 
