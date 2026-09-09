@@ -1,16 +1,16 @@
 ---
 import { t } from '../lib/i18n';
 import {
-  companyLinks,
   companyMenuColumns,
+  mobileApplicationLinks,
+  mobileCompanyLinks,
+  mobileDevopsLinks,
+  mobileServiceLeaves,
   serviceFlyoutApplication,
   serviceFlyoutColumnFour,
   serviceFlyoutDevops,
-  serviceGroups,
-  serviceSingles,
   servicesOverview,
   socialLinks,
-  solutionLinks,
 } from '../lib/nav';
 
 interface Props {
@@ -18,11 +18,6 @@ interface Props {
 }
 
 const { tone = 'light' } = Astro.props;
-const mobileServiceLinks = [
-  servicesOverview,
-  ...serviceGroups.flatMap((group) => group.links),
-  ...serviceSingles,
-];
 ---
 <header class={`site-header tone-${tone}`} data-tone={tone}>
   <div class="container header-bar">
@@ -131,41 +126,158 @@ const mobileServiceLinks = [
       </div>
       <a class="contact-cta" href="/contact-us">{t('nav.contact')}</a>
     </nav>
-    <details class="mobile-nav">
-      <summary>
-        <img src="/icon-menu.svg" width="40" height="40" alt="" />
-        <span class="visually-hidden">{t('nav.menu')}</span>
-      </summary>
-      <div class="mobile-panel">
-        <details>
-          <summary>{t('nav.services')}</summary>
-          <ul>
-            {mobileServiceLinks.map((link) => (
-              <li><a href={link.href}>{t(link.labelKey)}</a></li>
-            ))}
-          </ul>
-        </details>
-        <details>
-          <summary>{t('nav.solutions')}</summary>
-          <ul>
-            {solutionLinks.map((link) => (
-              <li><a href={link.href}>{t(link.labelKey)}</a></li>
-            ))}
-          </ul>
-        </details>
-        <p><a href="/case-studies">{t('nav.case_studies')}</a></p>
-        <details>
-          <summary>{t('nav.company')}</summary>
-          <ul>
-            {companyLinks.map((link) => (
-              <li><a href={link.href}>{t(link.labelKey)}</a></li>
-            ))}
-          </ul>
-        </details>
-        <p><a class="contact-cta" href="/contact-us">{t('nav.contact')}</a></p>
-      </div>
-    </details>
+    <button
+      class="mobile-nav-toggle"
+      type="button"
+      data-mobile-toggle
+      aria-expanded="false"
+      aria-controls="mobile-drawer"
+    >
+      <img src="/icon-menu.svg" width="40" height="40" alt="" aria-hidden="true" />
+      <span class="visually-hidden">{t('nav.menu')}</span>
+    </button>
   </div>
 </header>
+<div class="mobile-drawer" id="mobile-drawer" data-mobile-drawer hidden>
+  <div class="mobile-drawer-overlay" data-mobile-close tabindex="-1"></div>
+  <div
+    class="mobile-drawer-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="mobile-drawer-title"
+    data-mobile-panel
+  >
+    <div class="mobile-drawer-toolbar">
+      <button class="mobile-drawer-back" type="button" data-mobile-back hidden>
+        <img src="/icon-menu-back.svg" width="6" height="11" alt="" aria-hidden="true" />
+        {t('nav.back')}
+      </button>
+      <button class="mobile-drawer-close" type="button" data-mobile-close>
+        <img src="/icon-menu-close.svg" width="40" height="40" alt="" aria-hidden="true" />
+        <span class="visually-hidden">{t('nav.menu_close')}</span>
+      </button>
+    </div>
+    <div class="mobile-drawer-frames" data-mobile-frames>
+      <div class="mobile-drawer-view is-active" data-panel="root">
+        <h2 class="visually-hidden" id="mobile-drawer-title">{t('nav.menu')}</h2>
+        <ul class="mobile-drawer-list">
+          <li>
+            <button
+              class="mobile-drawer-item"
+              type="button"
+              data-mobile-push="services"
+              aria-haspopup="true"
+              aria-expanded="false"
+              aria-controls="mobile-panel-services"
+            >
+              <span>{t('nav.services')}</span>
+              <img src="/icon-menu-next.svg" width="26" height="27" alt="" aria-hidden="true" />
+            </button>
+          </li>
+          <li>
+            <a class="mobile-drawer-item" href="/solutions">{t('nav.solutions')}</a>
+          </li>
+          <li>
+            <a class="mobile-drawer-item" href="/case-studies">{t('nav.mobile_case_studies')}</a>
+          </li>
+          <li>
+            <button
+              class="mobile-drawer-item"
+              type="button"
+              data-mobile-push="company"
+              aria-haspopup="true"
+              aria-expanded="false"
+              aria-controls="mobile-panel-company"
+            >
+              <span>{t('nav.company')}</span>
+              <img src="/icon-menu-next.svg" width="26" height="27" alt="" aria-hidden="true" />
+            </button>
+          </li>
+          <li>
+            <a class="mobile-drawer-item" href="/company/blogs">{t('nav.resources')}</a>
+          </li>
+          <li>
+            <a class="mobile-drawer-item" href="/company/clients">{t('nav.clients')}</a>
+          </li>
+          <li>
+            <a class="mobile-drawer-item" href="/company/testimonials">{t('nav.testimonials')}</a>
+          </li>
+          <li>
+            <a class="mobile-drawer-cta contact-cta" href="/contact-us">{t('nav.contact_us')}</a>
+          </li>
+        </ul>
+      </div>
+      <div class="mobile-drawer-view" id="mobile-panel-services" data-panel="services" inert>
+        <h2 class="mobile-drawer-heading">{t('nav.services')}</h2>
+        <ul class="mobile-drawer-list">
+          <li>
+            <a class="mobile-drawer-item" href={servicesOverview.href}>{t(servicesOverview.labelKey)}</a>
+          </li>
+          <li>
+            <button
+              class="mobile-drawer-item"
+              type="button"
+              data-mobile-push="application"
+              aria-haspopup="true"
+              aria-expanded="false"
+              aria-controls="mobile-panel-application"
+            >
+              <span>{t('nav.flyout_application_services')}</span>
+              <img src="/icon-menu-next.svg" width="26" height="27" alt="" aria-hidden="true" />
+            </button>
+          </li>
+          <li>
+            <button
+              class="mobile-drawer-item"
+              type="button"
+              data-mobile-push="devops"
+              aria-haspopup="true"
+              aria-expanded="false"
+              aria-controls="mobile-panel-devops"
+            >
+              <span>{t('nav.flyout_devops')}</span>
+              <img src="/icon-menu-next.svg" width="26" height="27" alt="" aria-hidden="true" />
+            </button>
+          </li>
+          {mobileServiceLeaves.map((link) => (
+            <li>
+              <a class="mobile-drawer-item" href={link.href}>{t(link.labelKey)}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="mobile-drawer-view" id="mobile-panel-application" data-panel="application" inert>
+        <h2 class="mobile-drawer-heading">{t('nav.flyout_application_services')}</h2>
+        <ul class="mobile-drawer-list">
+          {mobileApplicationLinks.map((link) => (
+            <li>
+              <a class="mobile-drawer-item" href={link.href}>{t(link.labelKey)}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="mobile-drawer-view" id="mobile-panel-devops" data-panel="devops" inert>
+        <h2 class="mobile-drawer-heading">{t('nav.flyout_devops')}</h2>
+        <ul class="mobile-drawer-list">
+          {mobileDevopsLinks.map((link) => (
+            <li>
+              <a class="mobile-drawer-item" href={link.href}>{t(link.labelKey)}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="mobile-drawer-view" id="mobile-panel-company" data-panel="company" inert>
+        <h2 class="mobile-drawer-heading">{t('nav.company')}</h2>
+        <ul class="mobile-drawer-list">
+          {mobileCompanyLinks.map((link) => (
+            <li>
+              <a class="mobile-drawer-item" href={link.href}>{t(link.labelKey)}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
 {tone === 'light' && <div class="header-spacer" aria-hidden="true"></div>}
 <script src="../scripts/site-header.ts"></script>

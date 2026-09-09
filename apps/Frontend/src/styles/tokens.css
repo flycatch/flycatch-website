@@ -38,7 +38,7 @@
   --text-60: 60px;
   --text-68: 68px;
   --text-88: 88px;
-  --text-hero: var(--text-46);
+  --text-hero: clamp(1.75rem, 0.85rem + 2.4vw, 2.875rem);
   --text-section: var(--text-46);
   --text-cta: var(--text-58);
   --text-card-title: var(--text-32);
@@ -100,8 +100,11 @@
   --line-height-nav: 27px;
   --tracking: 0.6px;
   --bp-md: 768px;
+  --bp-nav: 1024px;
   --bp-lg: 1024px;
   --bp-xl: 1440px;
+  --z-drawer: 40;
+  --mobile-drawer-width: min(100%, 48rem);
   --shadow-menu: 0 12px 40px var(--color-shadow);
   --motion-media: 0.45s ease;
   --motion-nav: 0.3s ease;

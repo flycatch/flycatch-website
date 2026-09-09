@@ -16,7 +16,7 @@ This is the standard for all Frontend pages. Reuse these tokens, type roles, spa
 
 Figma display sizes are larger than the live homepage at 1920px. Both exist as tokens:
 
-- Homepage uses **live** roles (`--text-hero`, `--text-section` → 46px).
+- Homepage uses **live** roles (`--text-hero` fluid clamp capped at 46px, `--text-section` → 46px). Hide `.explore` when it wraps under the hero heading.
 - Interior / future Figma pages use **display** roles (`--text-display` 60px, `--text-display-lg` 68px, `--text-display-xl` 88px).
 
 Do not add a second scale in a page stylesheet.
@@ -40,7 +40,7 @@ Do not add a second scale in a page stylesheet.
 | Offering title | `.offer-col h3` | `--text-32` | 300 | 1.55 | Homepage offering columns |
 | Section | `.type-section` | `--text-46` | 300 | 1.55 (~71px) | Homepage h2 |
 | Display | `.type-display` | `--text-60` | 300 | 80px | Interior section titles (Figma) |
-| Hero (home) | `.type-hero` | `--text-46` | 400 | 1.55 | Homepage hero |
+| Hero (home) | `.type-hero` | `--text-hero` (`clamp`, max 2.875rem / 46px) | 400 | 1.55 | Homepage hero |
 | Hero (Figma) | `.type-display-lg` | `--text-68` | 300 | normal | Interior heroes |
 | CTA band (home) | `.cta-banner h2` | `--text-58` | 300 | 1.4 | Homepage CTA |
 | CTA band (Figma) | `.type-display-xl` | `--text-88` | 300 | normal | Interior CTA |
@@ -115,7 +115,8 @@ Mobile-first. Named in tokens; media queries must use the same pixel values.
 | Token | Value | Behaviour |
 |---|---|---|
 | `--bp-md` | 768px | 2-col grids, case-study split |
-| `--bp-lg` | 1024px | Desktop nav, 4-col offerings, 3-col insights |
+| `--bp-nav` | 1024px | Hamburger / right drawer at this width and below |
+| `--bp-lg` | 1024px | Desktop hover flyouts, 4-col offerings, 3-col insights |
 | `--bp-xl` | 1440px | 160px container inset |
 
 Design frame 1512px is documentation only, not a layout breakpoint.
@@ -158,8 +159,8 @@ No drop shadows on content cards. Mega/drop menus use `--shadow-menu`.
 ## Header and navigation
 
 - Height 100px; absolute over dark heroes (`.tone-dark`); white bar + border on `.tone-light`.
-- Desktop from `--bp-lg`: `.primary-nav` flex; `.nav-cluster` gap `--s9` (56px); `--s10` (64px) before Contact.
-- Mobile: hamburger 40px, full-width dark panel.
+- Desktop above `--bp-nav` (1024px): `.primary-nav` flex; `.nav-cluster` gap `--s9` (56px); `--s10` (64px) before Contact. Hover flyouts from `--bp-lg`.
+- ≤1024px: hamburger 40px. Opens a right drawer that covers the toggle; close (X) lives in the drawer. Nested panels for Services and Company.
 - Nav type: 18 Regular, tracking 0.6px.
 - Invert logo on `.tone-dark`.
 
