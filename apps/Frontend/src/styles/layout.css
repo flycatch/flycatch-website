@@ -43,6 +43,7 @@ body {
   letter-spacing: var(--tracking);
   color: var(--color-text);
   background: var(--color-bg);
+  overflow-wrap: break-word;
 }
 
 img,
@@ -68,6 +69,7 @@ video {
 .type-meta,
 .type-nav {
   letter-spacing: var(--tracking);
+  overflow-wrap: break-word;
 }
 
 .type-hero {
@@ -1781,7 +1783,7 @@ body.is-mobile-drawer-open {
 .footer-col h2 {
   font-size: var(--text-24);
   font-weight: var(--font-weight-light);
-  line-height: 30px;
+  line-height: 1.25;
   margin: 0 0 var(--s4);
 }
 

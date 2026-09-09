@@ -16,8 +16,8 @@ This is the standard for all Frontend pages. Reuse these tokens, type roles, spa
 
 Figma display sizes are larger than the live homepage at 1920px. Both exist as tokens:
 
-- Homepage uses **live** roles (`--text-hero` fluid clamp capped at 46px, `--text-section` → 46px). Hide `.explore` when it wraps under the hero heading.
-- Interior / future Figma pages use **display** roles (`--text-display` 60px, `--text-display-lg` 68px, `--text-display-xl` 88px).
+- Homepage uses **live** roles (`--text-hero` / `--text-section` → `--text-46`, `--text-cta` → `--text-58`). Hide `.explore` when it wraps under the hero heading.
+- Interior / future Figma pages use **display** roles (`--text-display`, `--text-display-lg`, `--text-display-xl`).
 
 Do not add a second scale in a page stylesheet.
 
@@ -29,24 +29,47 @@ Do not add a second scale in a page stylesheet.
 
 **Weights:** Light 300 (headings, ledes), Regular 400 (UI, nav, buttons, card titles).
 
+**Fluid size:** Every `--text-*` scale token is `clamp(min, preferred, max)` in `rem`. Desktop size is the **max** (same as the previous px value). Preferred interpolates from **360px** to **1440px** (`--bp-xl`) so type shrinks smoothly on smaller viewports. Do not add per-page `font-size` media queries.
+
+| Token | Min (360px) | Max (desktop) |
+|---|---|---|
+| `--text-14` | 0.75rem (12px) | 0.875rem (14px) |
+| `--text-16` | 0.8125rem (13px) | 1rem (16px) |
+| `--text-18` | 0.9375rem (15px) | 1.125rem (18px) |
+| `--text-20` | 1rem (16px) | 1.25rem (20px) |
+| `--text-24` | 1.125rem (18px) | 1.5rem (24px) |
+| `--text-25` | 1.125rem (18px) | 1.5625rem (25px) |
+| `--text-26` | 1.125rem (18px) | 1.625rem (26px) |
+| `--text-32` | 1.5rem (24px) | 2rem (32px) |
+| `--text-36` | 1.5rem (24px) | 2.25rem (36px) |
+| `--text-46` | 1.75rem (28px) | 2.875rem (46px) |
+| `--text-58` | 2rem (32px) | 3.625rem (58px) |
+| `--text-60` | 2rem (32px) | 3.75rem (60px) |
+| `--text-68` | 2.125rem (34px) | 4.25rem (68px) |
+| `--text-88` | 2.25rem (36px) | 5.5rem (88px) |
+
+Roles alias the scale: `--text-body` / `--text-ui` → `--text-18`; `--text-meta` → `--text-14`; `--text-lede` → `--text-20`; `--text-card-title` → `--text-32`; `--text-hero` / `--text-section` → `--text-46`; `--text-cta` → `--text-58`; `--text-display` → `--text-60`; `--text-display-lg` → `--text-68`; `--text-display-xl` → `--text-88`.
+
+**Line-height:** keep existing ratios. `--line-height-body` / `--line-height-heading` 1.55; `--line-height-cta` 1.4; `--line-height-nav` 1.5 (27px at 18px); `--line-height-display` 1.333 (80px at 60px).
+
+Body and `.type-*` use `overflow-wrap: break-word` so copy does not force horizontal scroll.
+
 | Role | Class | Size token | Weight | Line-height | Use |
 |---|---|---|---|---|---|
-| Body | `body` | `--text-18` | 400 | 1.55 (27.9px) | Default copy |
-| UI / nav | `.type-nav` | `--text-18` | 400 | 27px | Header links |
+| Body | `body` | `--text-18` | 400 | 1.55 | Default copy |
+| UI / nav | `.type-nav` | `--text-18` | 400 | 1.5 | Header links |
 | Meta | `.type-meta` | `--text-14` | 400 | 1.55 | Insight labels, legal |
-| Button | `.btn` | `--text-18` | 400 | 27px | Outline / solid CTAs |
+| Button | `.btn` | `--text-18` | 400 | 1.5 | Outline / solid CTAs |
 | Lede | `.type-lede` | `--text-20` (home) / `--text-25` (Figma intro) | 300 | ~1.55 | Section intros |
-| Card title | `.type-card-title` | `--text-32` | 400 | normal | Insight / offering titles |
+| Card title | `.type-card-title` | `--text-32` | 400 | 1.55 | Insight / offering titles |
 | Offering title | `.offer-col h3` | `--text-32` | 300 | 1.55 | Homepage offering columns |
-| Section | `.type-section` | `--text-46` | 300 | 1.55 (~71px) | Homepage h2 |
-| Display | `.type-display` | `--text-60` | 300 | 80px | Interior section titles (Figma) |
-| Hero (home) | `.type-hero` | `--text-hero` (`clamp`, max 2.875rem / 46px) | 400 | 1.55 | Homepage hero |
-| Hero (Figma) | `.type-display-lg` | `--text-68` | 300 | normal | Interior heroes |
+| Section | `.type-section` | `--text-46` | 300 | 1.55 | Homepage h2 |
+| Display | `.type-display` | `--text-60` | 300 | 1.333 | Interior section titles (Figma) |
+| Hero (home) | `.type-hero` | `--text-46` | 400 | 1.55 | Homepage hero |
+| Hero (Figma) | `.type-display-lg` | `--text-68` | 300 | 1.55 | Interior heroes |
 | CTA band (home) | `.cta-banner h2` | `--text-58` | 300 | 1.4 | Homepage CTA |
-| CTA band (Figma) | `.type-display-xl` | `--text-88` | 300 | normal | Interior CTA |
-| Footer heading | `.footer-col h2` | `--text-24` | 300 | 30px | Footer columns |
-
-Scale tokens: `--text-14` 16 18 20 24 25 26 32 36 46 58 60 68 88.
+| CTA band (Figma) | `.type-display-xl` | `--text-88` | 300 | 1.55 | Interior CTA |
+| Footer heading | `.footer-col h2` | `--text-24` | 300 | 1.25 | Footer columns |
 
 ## Colors
 
@@ -131,7 +154,7 @@ Keep native `<a class="btn">` (or `<button>`). Optional trailing 24px arrow (`--
 - Padding `--s4` `--s7` (16×40)
 - Radius `--r3` (12)
 - Min-height 59px
-- Gap `--s2`, Poppins 18 Regular, tracking 0.6px
+- Gap `--s2`, Poppins 18 Regular (fluid `--text-18`), tracking 0.6px
 - Dark sections: `.btn-on-dark` (white border/text)
 - Hover (all `.btn` variants): fill `--color-red`, text `--color-white`, border `--color-red`. Trailing arrow rotates `-30deg` (2 o’clock) with `--motion-nav`. SVG arrows use `currentColor`; image arrows invert to white.
 
@@ -151,7 +174,7 @@ Keep native `<a class="btn">` (or `<button>`). Optional trailing 24px arrow (`--
 
 - **Offerings:** full-bleed column grid, 1px `--color-border`, padding `--s7`, desktop min-height 780px, 4 columns from `--bp-lg`.
 - **Services:** image 16/10, hover scale 1.04 / 0.45s, outline CTA.
-- **Insights:** image height 244px (Figma), “Blog” label 16px red, meta time/date 14px, title 26px Regular clamped to 2 lines, category chips. The section CTA is centered in this section only.
+- **Insights:** image height 244px (Figma), “Blog” label `--text-16` red, meta time/date `--text-14`, title `--text-26` Regular clamped to 2 lines, category chips. The section CTA is centered in this section only.
 - **Case studies:** stacked on small screens; two-column split from `--bp-md`. Homepage shows the latest 3 from the Home/case-study API. “View all works” is a circular `--radius-chip` control to the left of the cards; a red stroke draws around the grey ring in step with section scroll.
 
 No drop shadows on content cards. Mega/drop menus use `--shadow-menu`.
@@ -161,7 +184,7 @@ No drop shadows on content cards. Mega/drop menus use `--shadow-menu`.
 - Height 100px; absolute over dark heroes (`.tone-dark`); white bar + border on `.tone-light`.
 - Desktop above `--bp-nav` (1024px): `.primary-nav` flex; `.nav-cluster` gap `--s9` (56px); `--s10` (64px) before Contact. Hover flyouts from `--bp-lg`.
 - ≤1024px: hamburger 40px. Opens a right drawer that covers the toggle; close (X) lives in the drawer. Nested panels for Services and Company.
-- Nav type: 18 Regular, tracking 0.6px.
+- Nav type: `--text-18` Regular, tracking 0.6px.
 - Invert logo on `.tone-dark`.
 
 ## Future pages
