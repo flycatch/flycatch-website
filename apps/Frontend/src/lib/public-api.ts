@@ -98,6 +98,7 @@ export type PublicBlogSummary = {
   slug: string;
   description: string;
   reading_time: number;
+  created_at: string;
   image_key: string | null;
   image_alt: string;
   authors: PublicAuthor[];
