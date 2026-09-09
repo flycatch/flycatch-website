@@ -1,3 +1,4 @@
+/// <reference types="astro/client" />
 import type { AstroUserConfig } from 'astro';
 
 declare global {
