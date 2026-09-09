@@ -5,10 +5,8 @@ import { footerCompany, footerOthers, footerServices, socialLinks } from '../lib
 <footer class="site-footer">
   <div class="container">
     <div class="footer-top">
-      <div class="subscribe">
-        <h2 class="type-section">{t('footer.subscribe_title')}</h2>
-        <p>{t('footer.subscribe_body')}</p>
-      </div>
+      <h2 class="type-section subscribe-title">{t('footer.subscribe_title')}</h2>
+      <p class="subscribe-body">{t('footer.subscribe_body')}</p>
       <form class="footer-subscribe" data-footer-subscribe novalidate>
         <label class="visually-hidden" for="footer-subscribe-email">{t('footer.email_label')}</label>
         <input
@@ -70,13 +68,11 @@ import { footerCompany, footerOthers, footerServices, socialLinks } from '../lib
       </nav>
     </div>
     <div class="footer-bottom">
-      <div class="footer-bottom-copy">
-        <p>{t('site.footer.copyright')}</p>
-        <div class="legal-links">
-          <a href="/privacy-policy">{t('footer.privacy')}</a>
-          <span aria-hidden="true">|</span>
-          <a href="/terms-and-conditions">{t('footer.terms')}</a>
-        </div>
+      <p class="footer-copyright">{t('site.footer.copyright')}</p>
+      <div class="legal-links">
+        <a href="/privacy-policy">{t('footer.privacy')}</a>
+        <span aria-hidden="true">|</span>
+        <a href="/terms-and-conditions">{t('footer.terms')}</a>
       </div>
       <nav class="footer-social" aria-label={t('footer.social')}>
         <a href={socialLinks[0].href} rel="noopener noreferrer" aria-label={t(socialLinks[0].labelKey)}>
