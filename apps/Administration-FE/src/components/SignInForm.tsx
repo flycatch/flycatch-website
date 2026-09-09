@@ -50,7 +50,13 @@ export default function SignInForm({ onSignedIn }: Props) {
   return (
     <form className="auth-form" onSubmit={onSubmit} method="post" action="/admin/" noValidate>
       <div className="auth-brand">
-        <span className="brand-mark" aria-hidden="true" />
+        <img
+          className="brand-mark"
+          src="/admin/favicon.png"
+          width={28}
+          height={28}
+          alt=""
+        />
         <span>{t('admin.workspace.title')}</span>
       </div>
       <h1>{t('admin.sign_in.title')}</h1>

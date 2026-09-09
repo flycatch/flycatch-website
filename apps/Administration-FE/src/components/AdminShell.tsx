@@ -688,7 +688,13 @@ export default function AdminShell() {
       ) : null}
       <aside id="admin-sidebar" className={navOpen ? 'admin-sidebar is-open' : 'admin-sidebar'}>
         <div className="admin-brand">
-          <span className="brand-mark" aria-hidden="true" />
+          <img
+            className="brand-mark"
+            src="/admin/favicon.png"
+            width={28}
+            height={28}
+            alt=""
+          />
           <span>{t('admin.workspace.title')}</span>
         </div>
         <nav className="admin-nav" aria-label="Administration">
