@@ -1,8 +1,8 @@
 import { useRef } from 'react';
 import MediaPreview from './MediaPreview';
 
-export const IMAGE_ACCEPT = 'image/jpeg,image/png,image/gif,image/webp';
-export const LOGO_IMAGE_ACCEPT = `${IMAGE_ACCEPT},image/svg+xml,.svg`;
+export const IMAGE_ACCEPT = 'image/jpeg,image/png,image/gif,image/webp,image/svg+xml,.svg';
+export const LOGO_IMAGE_ACCEPT = IMAGE_ACCEPT;
 
 export function fileMatchesAccept(file: File, accept: string): boolean {
   const tokens = accept
