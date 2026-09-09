@@ -6,20 +6,19 @@
 
 **Status**: Draft
 
-**Input**: Staff Administration CRUD for subscription emails; plus unauthenticated public reads of published rows.
+**Input**: Staff Administration CRUD for subscription emails; unauthenticated public reads of published rows; visitor subscribe via POST.
 
-**Constitution alignment**: Contract-first (III), security (VIII), i18n (V), quality gates (XIII). Drafts MUST NOT appear on public routes.
+**Constitution alignment**: Contract-first (III), security (VIII), i18n (V), quality gates (XIII). Drafts MUST NOT appear on public GET routes.
 
 ## Scope
 
-Staff list, create, edit, delete, search, pagination of ten, and draft/publish on each row. Public GET returns only `publish` rows. Permissions are `subscriptions.create|read|update|delete|publish`.
+Staff list, create, edit, delete, search, pagination of ten, and draft/publish on each row. Public GET returns only `publish` rows. Visitor POST `/public/subscriptions` creates a row with `active` true. Permissions are `subscriptions.create|read|update|delete|publish`.
 
 ### Out of scope
 
-- Website frontend pages
+- Website frontend pages other than footer subscribe
 - Snapshot publish pipeline
-- Public write/delete
-- Visitor self-subscribe forms
+- Public update/delete
 
 ## User Scenarios & Testing
 
@@ -51,6 +50,7 @@ Unauthenticated callers list published subscriptions only, identified by UUID.
 - **FR-008**: Admin list pagination is ten per page.
 - **FR-009**: Admin list columns are ID, Email, Active, Created At, State, Actions.
 - **FR-010**: Create/edit fields: Email, Active (true/false). Active is independent of publish status.
+- **FR-011**: Unauthenticated POST `/public/subscriptions` with a valid email MUST create a row with `active` true. Duplicate emails MUST be rejected. Draft visitor rows MUST NOT appear on public GET.
 
 ## Key Entities
 

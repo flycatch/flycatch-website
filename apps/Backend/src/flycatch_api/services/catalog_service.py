@@ -113,6 +113,7 @@ from flycatch_api.schemas.public_catalog import (
     PublicServiceSectionItem,
     PublicSubscription,
     PublicSubscriptionList,
+    PublicSubscriptionWrite,
     PublicNews,
     PublicNewsCategory,
     PublicNewsCategoryList,
@@ -1729,6 +1730,18 @@ class SubscriptionService:
         db.commit()
         db.refresh(row)
         return self._detail(row)
+
+    def subscribe(self, db: Session, payload: PublicSubscriptionWrite) -> PublicSubscription:
+        created = self.create(
+            db,
+            SubscriptionWrite(email=payload.email, active=True, status=ContentStatus.draft),
+        )
+        return PublicSubscription(
+            id=created.id,
+            email=created.email,
+            active=created.active,
+            created_at=created.created_at,
+        )
 
     def update(self, db: Session, item_id: UUID, payload: SubscriptionWrite) -> Subscription:
         row = db.get(SubscriptionRow, item_id)
