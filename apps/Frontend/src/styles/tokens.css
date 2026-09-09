@@ -13,6 +13,7 @@
   --color-on-dark: var(--color-white);
   --color-muted-surface: #f7f7f7;
   --color-contact-surface: #f3f3f3;
+  --color-cta-surface: #f2f2f2;
   --color-media: #dddddd;
   --color-overlay: rgba(0, 0, 0, 0.78);
   --color-on-dark-muted: rgba(255, 255, 255, 0.75);

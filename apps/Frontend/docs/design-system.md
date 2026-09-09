@@ -67,6 +67,7 @@ Figma variables: White `#ffffff`, Black `#000000`, Red `#e50914`.
 | `--color-on-dark` | white | Text on dark |
 | `--color-muted-surface` | `#f7f7f7` | Clients / insights |
 | `--color-contact-surface` | `#f3f3f3` | Homepage contact band (live site) |
+| `--color-cta-surface` | `#f2f2f2` | Homepage Book a Call band |
 | `--color-media` | `#dddddd` | Image placeholders |
 | `--color-overlay` | `rgba(0,0,0,0.78)` | Hero scrim |
 | `--color-on-dark-muted` | `rgba(255,255,255,0.75)` | Footer / dark lede |
@@ -134,6 +135,8 @@ Keep native `<a class="btn">` (or `<button>`). Optional trailing 24px arrow (`--
 - Hover (all `.btn` variants): fill `--color-red`, text `--color-white`, border `--color-red`. Trailing arrow rotates `-30deg` (2 o’clock) with `--motion-nav`. SVG arrows use `currentColor`; image arrows invert to white.
 
 **Solid `.btn-solid`:** white fill, black text (on dark CTA band).
+
+**Homepage Book a Call (exception, this section only):** surface `--color-cta-surface` (`#f2f2f2`). Button `.cta-book-btn` is black, padding `--s4` `--s5` (16×24), height 90px, width 100%, radius `--r3`. Hover uses the shared red fill, white label, and `-30deg` arrow.
 
 **Header Contact `.contact-cta`:**
 

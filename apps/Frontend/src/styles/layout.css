@@ -1046,6 +1046,7 @@ input:focus-visible {
   height: 100%;
   object-fit: cover;
   display: block;
+  border-radius: 16px;
 }
 
 .insight-card .media-frame {
@@ -1427,6 +1428,10 @@ input:focus-visible {
   display: none;
 }
 
+.section-cta {
+  background: var(--color-cta-surface);
+}
+
 .cta-banner {
   display: grid;
   gap: var(--s5);
@@ -1435,10 +1440,34 @@ input:focus-visible {
 
 .cta-banner h2 {
   margin: 0;
+  color: var(--color-text);
   font-size: var(--text-cta);
   font-weight: var(--font-weight-light);
   line-height: var(--line-height-cta);
   letter-spacing: var(--tracking);
+}
+
+.cta-book-btn {
+  box-sizing: border-box;
+  width: 100%;
+  height: 90px;
+  min-height: 90px;
+  padding: var(--s4) var(--s5);
+  border-color: var(--color-black);
+  border-radius: var(--r3);
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+.cta-book-btn:hover {
+  background: var(--color-red);
+  color: var(--color-white);
+  border-color: var(--color-red);
+}
+
+.cta-book-btn:hover img {
+  filter: brightness(0) invert(1);
+  transform: rotate(-30deg);
 }
 
 .site-footer {
@@ -1637,7 +1666,10 @@ input:focus-visible {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .cta-banner,
+  .cta-banner {
+    grid-template-columns: 1.4fr minmax(0, 1fr);
+  }
+
   .footer-top,
   .footer-bottom {
     grid-template-columns: 1.4fr auto;
