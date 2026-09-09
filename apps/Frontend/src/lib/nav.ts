@@ -91,6 +91,30 @@ export const companyMenuColumns: NavLink[][] = [
   ],
 ];
 
+export const mobileCompanyLinks = companyMenuColumns[0];
+
+export const mobileApplicationLinks: NavLink[] = [
+  { href: '/services/application-development-services', labelKey: 'nav.application_development_services' },
+  { href: '/services/application-modernization', labelKey: 'nav.mobile_application_modernization' },
+  { href: '/services/mobile-application-development', labelKey: 'nav.mobile_application_development' },
+  { href: '/services/user-centered-design', labelKey: 'nav.mobile_user_centered_design' },
+];
+
+export const mobileDevopsLinks: NavLink[] = [
+  { href: '/services/devOps-consultation', labelKey: 'nav.devops_consulting' },
+  {
+    href: '/services/infrastructure-management-and-automation',
+    labelKey: 'nav.infra_management_full',
+  },
+];
+
+export const mobileServiceLeaves: NavLink[] = [
+  { href: '/services/ai-services', labelKey: 'nav.ai_services' },
+  { href: '/services/cloud-migration', labelKey: 'nav.cloud_services' },
+  { href: '/services/data-migration', labelKey: 'nav.data_analytics_migrations' },
+  { href: '/services/digital-transformation', labelKey: 'nav.mobile_digital_transformation' },
+];
+
 export const footerCompany: NavLink[] = [
   { href: '/solutions', labelKey: 'nav.solutions' },
   { href: '/about', labelKey: 'nav.about' },
