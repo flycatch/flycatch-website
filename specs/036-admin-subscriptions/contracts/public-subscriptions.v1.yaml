@@ -7,6 +7,26 @@ servers:
 security: []
 paths:
   /public/subscriptions:
+    post:
+      operationId: createPublicSubscription
+      summary: Visitor newsletter subscribe
+      tags: [public]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicSubscriptionWrite'
+      responses:
+        '201':
+          description: Created subscription
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicSubscription'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
     get:
       operationId: listPublicSubscriptions
       summary: List published records
@@ -62,6 +82,12 @@ paths:
           $ref: '#/components/responses/PublicNotFound'
 components:
   schemas:
+    PublicSubscriptionWrite:
+      type: object
+      additionalProperties: false
+      required: [email]
+      properties:
+        email: { type: string, format: email }
 
     PublicSubscription:
       type: object
@@ -86,6 +112,23 @@ components:
         total: { type: integer }
 
   responses:
+    FieldErrors:
+      description: Field-level validation errors
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [fields]
+            properties:
+              fields:
+                type: object
+                additionalProperties:
+                  type: object
+                  additionalProperties: false
+                  required: [message_key]
+                  properties:
+                    message_key: { type: string }
     PublicNotFound:
       description: Unknown or unpublished
       content:

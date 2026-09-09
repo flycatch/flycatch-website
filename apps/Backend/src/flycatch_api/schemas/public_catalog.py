@@ -316,6 +316,12 @@ class PublicFlycatchSaudiArabiaList(BaseModel):
     total: int = Field(ge=0)
 
 
+class PublicSubscriptionWrite(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    email: EmailStr
+
+
 class PublicSubscription(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
