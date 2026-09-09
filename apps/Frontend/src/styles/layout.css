@@ -599,7 +599,7 @@ input:focus-visible {
   line-height: var(--line-height-body);
   letter-spacing: var(--tracking);
   color: var(--color-muted);
-  max-width: 46rem;
+  max-width: 100%;
 }
 
 .section-dark .lede,

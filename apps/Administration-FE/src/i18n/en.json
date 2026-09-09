@@ -390,7 +390,7 @@
   "admin.client_testimonials.not_found": "That client testimonial could not be found.",
   "admin.media.not_found": "That media file could not be found.",
   "admin.media.too_large": "That file is too large.",
-  "admin.media.type.invalid": "Upload a JPEG, PNG, GIF, or WebP image, or an MP4, WebM, or QuickTime video.",
+  "admin.media.type.invalid": "Upload a JPEG, PNG, GIF, WebP, or SVG image, or an MP4, WebM, or QuickTime video.",
   "admin.seo.title": "SEO",
   "admin.seo.field.title": "Title",
   "admin.seo.field.description": "Description",
