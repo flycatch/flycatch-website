@@ -2,14 +2,13 @@
 import { t } from '../lib/i18n';
 import { publicMediaUrl } from '../lib/public-api';
 import type { HomeService } from '../lib/public-api';
-import SectionState from './SectionState.astro';
 
 interface Props {
   services: HomeService[];
   error?: boolean;
 }
 
-const { services, error = false } = Astro.props;
+const { services } = Astro.props;
 
 function serviceHref(raw: string): string {
   const value = raw.trim();
@@ -20,41 +19,36 @@ function serviceHref(raw: string): string {
   return `/${value}`;
 }
 ---
+{services.length > 0 && (
 <section
   class="section section-dark services-stage"
   id="services"
-  data-services-stage={services.length > 0 ? 'true' : undefined}
+  data-services-stage="true"
 >
-  {services.length > 0 && (
-    <>
-      <div class="services-stage-media" aria-hidden="true">
-        {services.map((service, index) => {
-          const image = publicMediaUrl(service.services_image_key);
-          return image ? (
-            <img
-              data-service-index={index}
-              class:list={[{ 'is-active': index === 0 }]}
-              src={image}
-              alt=""
-              width="1920"
-              height="1080"
-              loading={index === 0 ? 'eager' : 'lazy'}
-            />
-          ) : (
-            <div
-              data-service-index={index}
-              class:list={['services-stage-fallback', { 'is-active': index === 0 }]}
-            ></div>
-          );
-        })}
-      </div>
-      <div class="services-stage-scrim" aria-hidden="true"></div>
-    </>
-  )}
+  <div class="services-stage-media" aria-hidden="true">
+    {services.map((service, index) => {
+      const image = publicMediaUrl(service.services_image_key);
+      return image ? (
+        <img
+          data-service-index={index}
+          class:list={[{ 'is-active': index === 0 }]}
+          src={image}
+          alt=""
+          width="1920"
+          height="1080"
+          loading={index === 0 ? 'eager' : 'lazy'}
+        />
+      ) : (
+        <div
+          data-service-index={index}
+          class:list={['services-stage-fallback', { 'is-active': index === 0 }]}
+        ></div>
+      );
+    })}
+  </div>
+  <div class="services-stage-scrim" aria-hidden="true"></div>
   <div class="container services-stage-inner">
-    <SectionState error={error} empty={!error && services.length === 0} />
-    {services.length > 0 && (
-      <div class="services-layout">
+    <div class="services-layout">
         <div class="services-nav">
           <h2 class="type-section">{t('home.services')}</h2>
           <div class="services-nav-track">
@@ -98,8 +92,8 @@ function serviceHref(raw: string): string {
           })}
         </div>
       </div>
-    )}
   </div>
 </section>
+)}
 
 {services.length > 0 && <script src="../scripts/home-services.ts"></script>}

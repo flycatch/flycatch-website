@@ -10,15 +10,15 @@ interface Props {
 }
 
 const { title, description, faqs, error = false } = Astro.props;
-const idle = !error && !title && faqs.length === 0;
+const items = faqs.filter((faq) => (faq.title ?? '').trim() || (faq.contents ?? '').trim());
 ---
-{!idle && (
+{items.length > 0 && (
 <section class="section" id="faq">
   <div class="container">
     <h2 hidden={!title} class="type-section">{title}</h2>
     <div class="lede" hidden={!description} set:html={description} />
-    <SectionState error={error} empty={!error && faqs.length === 0} />
-    {faqs.map((faq) => (
+    <SectionState error={error} />
+    {items.map((faq) => (
       <details class="faq-item">
         <summary>{faq.title}</summary>
         <p>{faq.contents}</p>

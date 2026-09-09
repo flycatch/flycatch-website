@@ -22,8 +22,9 @@ function logoSrc(logo: PublicClientLogo, preferWhite: boolean) {
 const visible = logos
   .map((logo) => ({ logo, src: logoSrc(logo, home) }))
   .filter((item): item is { logo: PublicClientLogo; src: string } => Boolean(item.src));
-
+const hideOnHome = home && visible.length === 0;
 ---
+{!hideOnHome && (
 <section
   class:list={['section', home ? 'section-dark' : 'section-muted']}
   id="clients"
@@ -31,7 +32,7 @@ const visible = logos
   <div class="container">
     <h2 class="type-section">{t('home.clients')}</h2>
     <p class="lede type-lede">{t('home.clients_intro')}</p>
-    <SectionState error={error} empty={!error && visible.length === 0} />
+    <SectionState error={error} empty={!home && !error && visible.length === 0} />
     {visible.length > 0 && home && (
       <div class="clients-marquee" data-clients-marquee>
         <div class="clients-marquee-viewport" data-clients-row data-direction="left">
@@ -83,5 +84,6 @@ const visible = logos
     </p>
   </div>
 </section>
+)}
 
 {home && visible.length > 0 && <script src="../scripts/home-clients.ts"></script>}
