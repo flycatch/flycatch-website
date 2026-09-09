@@ -426,3 +426,13 @@ public_subscriptions = public_uuid(
     svc=subscription_service,
     id_name="subscription_id",
 )
+
+
+@public_subscriptions.post("", response_model=public.PublicSubscription, status_code=status.HTTP_201_CREATED)
+def create_public_subscription(
+    payload: public.PublicSubscriptionWrite, db: Session = Depends(get_db)
+):
+    try:
+        return subscription_service.subscribe(db, payload)
+    except CatalogError as error:
+        _raise(error)

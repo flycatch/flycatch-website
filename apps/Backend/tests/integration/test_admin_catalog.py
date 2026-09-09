@@ -292,6 +292,21 @@ def test_named_categories_email_memberships_and_news(client, bootstrapped):
     )
     assert duplicate.status_code == 422
 
+    public_create = client.post(
+        "/api/v1/public/subscriptions",
+        json={"email": "visitor@example.com"},
+    )
+    assert public_create.status_code == 201, public_create.text
+    assert public_create.json()["email"] == "visitor@example.com"
+    assert public_create.json()["active"] is True
+    listed_subs = client.get("/api/v1/admin/subscriptions", headers=headers)
+    visitor = next(item for item in listed_subs.json()["items"] if item["email"] == "visitor@example.com")
+    assert visitor["active"] is True
+    public_listed = client.get("/api/v1/public/subscriptions")
+    assert "visitor@example.com" not in [item["email"] for item in public_listed.json()["items"]]
+    again = client.post("/api/v1/public/subscriptions", json={"email": "visitor@example.com"})
+    assert again.status_code == 422
+
     draft_contact = client.post(
         "/api/v1/admin/contacts",
         headers=headers,
