@@ -715,9 +715,9 @@ body.is-mobile-drawer-open {
   border-color: var(--color-on-dark);
 }
 
-.section {
+/* .section {
   padding: var(--section-pad) 0;
-}
+} */
 
 .section-dark {
   background: var(--color-dark);
@@ -738,7 +738,7 @@ body.is-mobile-drawer-open {
   font-weight: var(--font-weight-light);
   line-height: var(--line-height-heading);
   letter-spacing: var(--tracking);
-  margin: 0 0 var(--s7);
+  /* margin: 0 0 var(--s7); */
 }
 
 .offerings-head h2 {

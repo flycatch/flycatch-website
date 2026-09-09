@@ -33,6 +33,9 @@ const jsonLd = structuredData.map((block) => JSON.stringify(block));
     <title>{metadata.title || title}</title>
     <meta name="description" content={metadata.description} />
     <link rel="canonical" href={metadata.canonical} />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
