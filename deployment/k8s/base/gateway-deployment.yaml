@@ -19,6 +19,8 @@ spec:
     spec:
       containers:
         - name: gateway
+          securityContext:
+            allowPrivilegeEscalation: false
           image: caddy:2-alpine
           imagePullPolicy: IfNotPresent
           ports:

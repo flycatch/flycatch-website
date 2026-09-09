@@ -21,6 +21,8 @@ spec:
         - name: harbor-pull
       containers:
         - name: frontend
+          securityContext:
+            allowPrivilegeEscalation: false
           image: registry.k3s.flycatchtech.in/flycatch-website/frontend:latest
           imagePullPolicy: IfNotPresent
           envFrom:
