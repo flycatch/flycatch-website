@@ -10,6 +10,11 @@ import { homeOfferings } from '../lib/home-offerings';
   <div class="offer-grid">
     {homeOfferings.map((offering) => (
       <article class="offer-col">
+        <div class="offer-hover-visual" aria-hidden="true">
+          <div class="offer-hover-visual-inner">
+            <img class="offer-hover-gif" src={offering.hoverGif} width="280" height="280" alt="" />
+          </div>
+        </div>
         <h3>{t(offering.titleKey)}</h3>
         <p>{t(offering.bodyKey)}</p>
         <span class="offer-link" aria-hidden="true">
