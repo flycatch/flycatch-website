@@ -138,7 +138,7 @@ Keep native `<a class="btn">` (or `<button>`). Optional trailing 24px arrow (`--
 
 **Homepage Book a Call (exception, this section only):** surface `--color-cta-surface` (`#f2f2f2`). Button `.cta-book-btn` is black, padding `--s4` `--s5` (16×24), height 90px, width 100%, radius `--r3`. Hover uses the shared red fill, white label, and `-30deg` arrow.
 
-**Footer subscribe (exception, footer only):** heading uses `--text-46`. Email field is 56px (`--s9`) tall, full width of the form column, `--r3` radius, `1px solid` white, padding `0` `--s4`. `.footer-subscribe-btn` is not `.btn`: full width, black fill, white border, `--r3` radius, flex centered label plus a white right arrow. On `--bp-md` the field sits opposite the heading; the button stacks under the field. Visitor POST `/api/v1/public/subscriptions` stores the email with `active: true`.
+**Footer subscribe (exception, footer only):** heading uses `--text-46`. Email field is 56px (`--s9`) tall, full width of the form column, `--r3` radius, `1px solid` white, white fill (`--color-white`), padding `0` `--s4`, text `--color-text`. `.footer-subscribe-btn` is not `.btn`: full width, black fill, white border, `--r3` radius, flex centered label plus a white right arrow. On `--bp-md` the heading spans the top row; the field sits opposite the privacy description, with the button stacked under the field. Hover uses the shared red fill (`--color-red`), white label, and `-30deg` (2 o’clock) arrow. Footer bottom is copyright, then Privacy Policy | Terms & Conditions, then social icons in one row; social links are `--s6` circular white badges (`--radius-chip`) with `--s5` black glyphs. Visitor POST `/api/v1/public/subscriptions` stores the email with `active: true`.
 
 **Header Contact `.contact-cta`:**
 
