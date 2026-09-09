@@ -8,9 +8,10 @@ interface Props {
   blogs: PublicBlogSummary[];
   error?: boolean;
   limit?: number;
+  home?: boolean;
 }
 
-const { blogs, error = false, limit = 3 } = Astro.props;
+const { blogs, error = false, limit = 3, home = false } = Astro.props;
 const featured = limit > 0 ? blogs.slice(0, limit) : blogs;
 const months = [
   'Jan',
@@ -32,11 +33,13 @@ function formatCreatedDate(value: string) {
   if (Number.isNaN(date.getTime())) return '';
   return `${date.getUTCDate()} ${months[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
 }
+const hideOnHome = home && featured.length === 0;
 ---
+{!hideOnHome && (
 <section class="section section-muted" id="insights">
   <div class="container">
     <h2 class="type-section">{t('home.insights')}</h2>
-    <SectionState error={error} empty={!error && featured.length === 0} />
+    <SectionState error={error} empty={!home && !error && featured.length === 0} />
     {featured.length > 0 && (
       <div class="insight-grid">
         {featured.map((blog) => {
@@ -79,3 +82,4 @@ function formatCreatedDate(value: string) {
     </p>
   </div>
 </section>
+)}

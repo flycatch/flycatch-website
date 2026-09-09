@@ -12,12 +12,14 @@ interface Props {
 
 const { testimonials, error = false, home = false } = Astro.props;
 const featured = testimonials[0];
+const hideOnHome = home && !featured;
 const imageSrc = featured ? publicMediaUrl(featured.image_key) : null;
 const roleParts = featured
   ? [featured.client_designation, featured.client_company].filter(Boolean)
   : [];
 const role = roleParts.join(', ');
 ---
+{!hideOnHome && (
 <section class:list={['section', 'stories', { 'section-dark': home }]} id="stories">
   <div class="container">
     {!featured && (
@@ -76,3 +78,4 @@ const role = roleParts.join(', ');
     )}
   </div>
 </section>
+)}

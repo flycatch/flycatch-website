@@ -69,7 +69,7 @@ const structuredData = home ? homeStructuredData(home, metadata, siteSettings) :
       error={testimonialsResult.error}
       home
     />
-    <HomeInsights blogs={blogsResult.items} error={blogsResult.error} />
+    <HomeInsights blogs={blogsResult.items} error={blogsResult.error} home />
     <HomeFaq
       title={home?.faq_title ?? ''}
       description={home?.faq_description ?? ''}

@@ -27,15 +27,17 @@ function latestStudies(items: PublicCaseStudySummary[], limit: number) {
 }
 
 const visible = home ? latestStudies(studies, 3) : studies;
+const hideOnHome = home && visible.length === 0;
 ---
+{!hideOnHome && (
 <section
   class="section"
   id="case-studies"
-  data-case-progress={home ? 'true' : undefined}
+  data-case-progress={home && visible.length > 0 ? 'true' : undefined}
 >
   <div class="container">
     <h2 class="type-section">{t('home.case_studies')}</h2>
-    <SectionState error={error} empty={!error && visible.length === 0} />
+    <SectionState error={error} empty={!home && !error && visible.length === 0} />
     {home ? (
       <div class="case-home">
         <div class="case-works">
@@ -120,5 +122,6 @@ const visible = home ? latestStudies(studies, 3) : studies;
     )}
   </div>
 </section>
+)}
 
-{home && <script src="../scripts/home-case-studies.ts"></script>}
+{home && visible.length > 0 && <script src="../scripts/home-case-studies.ts"></script>}
