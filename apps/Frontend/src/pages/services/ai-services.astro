@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/home.css';
+import '../../styles/ai-services.css';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import HomeInsights from '../../components/HomeInsights.astro';
+import HomeCta from '../../components/HomeCta.astro';
+import AiServicesHero from '../../components/AiServicesHero.astro';
+import AiServicesIntro from '../../components/AiServicesIntro.astro';
+import AiServicesSolutions from '../../components/AiServicesSolutions.astro';
+import AiServicesExpertise from '../../components/AiServicesExpertise.astro';
+import AiServicesIndustries from '../../components/AiServicesIndustries.astro';
+import {
+  loadPublishedAiService,
+  loadPublishedAiServices,
+  loadPublishedBlogs,
+} from '../../lib/public-api';
+import { aiServicePage } from '../../lib/ai-services-content';
+import { metadataFromContentSeo, publicSiteSettings } from '../../lib/metadata';
+import { t } from '../../lib/i18n';
+
+const [listed, blogsResult] = await Promise.all([
+  loadPublishedAiServices(),
+  loadPublishedBlogs(),
+]);
+const preferred =
+  listed.items.find((item) => item.slug === 'ai-services') ?? listed.items[0];
+const detail = preferred
+  ? await loadPublishedAiService(preferred.slug)
+  : { item: null, error: listed.error, origin: listed.origin };
+const page = aiServicePage(detail.item);
+const siteSettings = publicSiteSettings();
+const metadata = metadataFromContentSeo(page.seo, siteSettings, t('page.ai_services.title'));
+---
+<BaseLayout title={metadata.title} metadata={metadata}>
+  <SiteHeader tone="dark" />
+  <main id="main" class="ai-services-page" data-api-origin={listed.origin}>
+    <AiServicesHero page={page} />
+    <AiServicesIntro page={page} />
+    <AiServicesSolutions page={page} />
+    <AiServicesExpertise page={page} />
+    <AiServicesIndustries page={page} />
+    <HomeInsights blogs={blogsResult.items} error={blogsResult.error} home />
+    <HomeCta />
+  </main>
+  <SiteFooter />
+</BaseLayout>

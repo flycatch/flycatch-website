@@ -1,0 +1,46 @@
+---
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicAiService } from '../lib/public-api';
+
+interface Props {
+  page: PublicAiService;
+}
+
+const { page } = Astro.props;
+const title = page.solutions_title.trim();
+const description = page.solutions_description.trim();
+const solutions = page.solutions ?? [];
+const show = Boolean(title || description || solutions.length);
+---
+{show && (
+  <section class="ai-solutions" aria-labelledby="ai-solutions-heading">
+    <div class="container">
+      <div class="ai-solutions-head" hidden={!(title || description)}>
+        <h2 id="ai-solutions-heading" class="type-display" hidden={!title}>{title}</h2>
+        <p class="ai-copy" hidden={!description}>{description}</p>
+      </div>
+      <div class="ai-solutions-track" hidden={!solutions.length}>{solutions.map((solution) => {
+          const image = publicMediaUrl(solution.banner?.image_key);
+          const overlayTitle = (solution.introduction?.sub_title ?? '').trim();
+          const overlayBody = (solution.introduction?.description ?? '').trim();
+          const label = solution.title.trim() || solution.banner?.title || '';
+          const showHover = Boolean(overlayTitle || overlayBody);
+          return (
+            <a class="ai-solution-card" href={`/solutions/${solution.slug}`}>{image ? (
+                <img src={image} alt="" width="283" height="458" loading="lazy" />
+              ) : (
+                <span class="ai-solution-fallback"></span>
+              )}
+              <span class="ai-solution-scrim" aria-hidden="true"></span>
+              <span class="ai-solution-name" hidden={!label}>{label}</span>
+              <span class="ai-solution-hover" hidden={!showHover}>
+                <span class="ai-solution-hover-title" hidden={!overlayTitle}>{overlayTitle}</span>
+                <span class="ai-solution-hover-body" hidden={!overlayBody}>{overlayBody}</span>
+              </span>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+)}

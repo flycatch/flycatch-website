@@ -100,24 +100,66 @@ def _heading_items(items: object) -> list[dict]:
         result.append(
             {
                 "title": str(item.get("title") or ""),
-                "order": max(0, int(item.get("order") or 0)),
+                "order": _order(item.get("order")),
                 "color": str(item.get("color") or ""),
             }
         )
     return result
 
 
+def _order(value: object) -> int:
+    try:
+        return max(0, int(value or 0))
+    except (TypeError, ValueError):
+        return 0
+
+
+def _type_item(row: dict) -> dict:
+    return {
+        "image_key": row.get("image_key"),
+        "description": str(row.get("description") or ""),
+        "order": _order(row.get("order")),
+        "title": str(row.get("title") or ""),
+    }
+
+
 def _collected_types(block: dict) -> list:
+    raw_rows: list = []
     if isinstance(block.get("types"), list):
-        return [row for row in block["types"] if isinstance(row, dict)]
-    collected: list = []
-    items = block.get("items") if isinstance(block.get("items"), list) else []
-    for item in items:
-        if not isinstance(item, dict):
-            continue
-        types = item.get("types") if isinstance(item.get("types"), list) else []
-        collected.extend(row for row in types if isinstance(row, dict))
-    return collected
+        raw_rows = [row for row in block["types"] if isinstance(row, dict)]
+    else:
+        items = block.get("items") if isinstance(block.get("items"), list) else []
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            types = item.get("types") if isinstance(item.get("types"), list) else []
+            raw_rows.extend(row for row in types if isinstance(row, dict))
+    return [_type_item(row) for row in raw_rows]
+
+
+def normalize_banner(raw: object) -> dict:
+    block = raw if isinstance(raw, dict) else {}
+    image_key = block.get("image_key")
+    return {
+        "image_key": image_key if isinstance(image_key, str) else None,
+        "title": str(block.get("title") or "")[:200],
+        "sub_title": str(block.get("sub_title") or "")[:200],
+        "industry_type": str(block.get("industry_type") or "")[:120],
+    }
+
+
+def normalize_seo(raw: object) -> dict:
+    block = raw if isinstance(raw, dict) else {}
+    image_key = block.get("image_key")
+    return {
+        "title": str(block.get("title") or "")[:200],
+        "description": str(block.get("description") or "")[:500],
+        "canonical_url": str(block.get("canonical_url") or "")[:500],
+        "meta_title": str(block.get("meta_title") or "")[:200],
+        "h1_tag": str(block.get("h1_tag") or "")[:200],
+        "image_alt": str(block.get("image_alt") or "")[:200],
+        "image_key": image_key if isinstance(image_key, str) else None,
+    }
 
 
 def _icon_keys(block: dict, first: dict) -> list[str]:
@@ -287,7 +329,7 @@ def detail_schema(row: SolutionDetail) -> SolutionDetailSchema:
         id=row.id,
         title=row.title,
         slug=row.slug,
-        banner=SolutionBanner.model_validate(row.banner or {}),
+        banner=SolutionBanner.model_validate(normalize_banner(row.banner)),
         introduction=IntroductionBlock.model_validate(normalize_introduction(row.introduction)),
         challenges=ChallengesBlock.model_validate(normalize_challenges(row.challenges)),
         benefits=BenefitsBlock.model_validate(normalize_benefits(row.benefits)),
@@ -295,7 +337,7 @@ def detail_schema(row: SolutionDetail) -> SolutionDetailSchema:
             normalize_solutions_section(row.solutions_section)
         ),
         cta=SolutionCta.model_validate(normalize_cta(row.cta)),
-        seo=ContentSeo.model_validate(row.seo or {}),
+        seo=ContentSeo.model_validate(normalize_seo(row.seo)),
         status=row.status,
         created_at=row.created_at,
     )
@@ -347,7 +389,7 @@ class SolutionDetailService:
                 PublicSolutionDetailSummary(
                     slug=row.slug,
                     title=row.title,
-                    banner=SolutionBanner.model_validate(row.banner or {}),
+                    banner=SolutionBanner.model_validate(normalize_banner(row.banner)),
                 )
                 for row in rows
             ],

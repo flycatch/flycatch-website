@@ -139,6 +139,66 @@ export type PublicOverview = {
   seo: ContentSeo;
 };
 
+export type PublicAccordionItem = {
+  title: string;
+  contents: string;
+  order: number;
+};
+
+export type PublicIndustryItem = {
+  title: string;
+  image_key: string | null;
+  order: number;
+};
+
+export type PublicSolutionBanner = {
+  image_key: string | null;
+  title: string;
+  sub_title: string;
+  industry_type: string;
+};
+
+export type PublicSolutionIntroduction = {
+  sub_title: string;
+  description: string;
+};
+
+export type PublicSolutionDetail = {
+  title: string;
+  slug: string;
+  banner: PublicSolutionBanner;
+  introduction: PublicSolutionIntroduction;
+};
+
+export type PublicAiServiceSummary = {
+  slug: string;
+  banner_title: string;
+  banner_image_key: string | null;
+  introduction_title: string;
+};
+
+export type PublicAiService = {
+  slug: string;
+  banner_title: string;
+  banner_image_key: string | null;
+  introduction_title: string;
+  introduction_description: string;
+  solutions_title: string;
+  solutions_description: string;
+  industry_title: string;
+  industry_description: string;
+  industry_items: PublicIndustryItem[];
+  ai_expertise_title: string;
+  ai_expertise_image_key: string | null;
+  ai_expertise_accordion: PublicAccordionItem[];
+  ai_expertise_accordion_description: string;
+  solutions: PublicSolutionDetail[];
+  faq_title: string;
+  faq_description: string;
+  faq_accordion: PublicAccordionItem[];
+  seo: ContentSeo;
+};
+
 export type PublicListResult<T> = {
   items: T[];
   error: boolean;
@@ -168,6 +228,7 @@ export function fetchOrigin(): string {
 
 export function publicMediaUrl(key: string | null | undefined): string | null {
   if (!key) return null;
+  if (key.startsWith('/')) return key;
   return `/api/v1/public/media/${encodeURIComponent(key)}`;
 }
 
@@ -271,6 +332,18 @@ export async function loadPublishedOverview(
   slug: string,
 ): Promise<PublicItemResult<PublicOverview>> {
   return getJson<PublicOverview>(`/api/v1/public/overview/${encodeURIComponent(slug)}`).then(
+    ({ data, error, origin }) => ({ item: data, error, origin }),
+  );
+}
+
+export async function loadPublishedAiServices(): Promise<PublicListResult<PublicAiServiceSummary>> {
+  return loadPaginated<PublicAiServiceSummary>('/api/v1/public/ai-services');
+}
+
+export async function loadPublishedAiService(
+  slug: string,
+): Promise<PublicItemResult<PublicAiService>> {
+  return getJson<PublicAiService>(`/api/v1/public/ai-services/${encodeURIComponent(slug)}`).then(
     ({ data, error, origin }) => ({ item: data, error, origin }),
   );
 }
