@@ -1,4 +1,9 @@
 /* Home page styles: explicit values only (no design tokens). */
+.home-page {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
 .home-page > section:not(#offerings) {
   padding-top: 50px;
   padding-bottom: 50px;
@@ -103,7 +108,7 @@
   background: transparent;
   color: inherit;
   font-family: inherit;
-  font-size: 16px;
+  font-size: clamp(0.8125rem, 0.75rem + 0.2778vw, 1rem);
   font-weight: 400;
   line-height: 1.5;
   letter-spacing: 0.6px;
@@ -174,6 +179,7 @@
 
 .home-page .offerings-head h2 {
   text-align: center;
+  margin-top: 0.83em;
 }
 
 .home-page .lede {
@@ -441,7 +447,7 @@
   background: transparent;
   color: rgba(255, 255, 255, 0.75);
   font-family: inherit;
-  font-size: 20px;
+  font-size: clamp(1rem, 0.9167rem + 0.3704vw, 1.25rem);
   font-weight: 400;
   line-height: 1.55;
   letter-spacing: 0.6px;
@@ -485,7 +491,7 @@
 
 .home-page .services-detail-item h3 {
   margin: 0;
-  font-size: 46px;
+  font-size: clamp(1.75rem, 1.375rem + 1.6667vw, 2.875rem);
   font-weight: 300;
   line-height: 1.55;
   letter-spacing: 0.6px;
@@ -493,7 +499,7 @@
 
 .home-page .services-stage .type-lede {
   margin: 0;
-  font-size: 20px;
+  font-size: clamp(1rem, 0.9167rem + 0.3704vw, 1.25rem);
   color: rgba(255, 255, 255, 0.75);
   max-width: none;
 }
@@ -623,19 +629,19 @@
 }
 
 .home-page .minds-stat-number {
-  font-size: 46px;
+  font-size: clamp(1.75rem, 1.375rem + 1.6667vw, 2.875rem);
   font-weight: 400;
   line-height: 1;
 }
 
 .home-page .minds-stat-plus {
-  font-size: 18px;
+  font-size: clamp(0.9375rem, 0.875rem + 0.2778vw, 1.125rem);
   font-weight: 400;
   line-height: 1;
 }
 
 .home-page .minds-stat-label {
-  font-size: 14px;
+  font-size: clamp(0.75rem, 0.7083rem + 0.1852vw, 0.875rem);
   font-weight: 400;
   line-height: 1.55;
   letter-spacing: 0.6px;
@@ -705,7 +711,7 @@
 }
 
 .home-page .case-card h3 {
-  font-size: 26px;
+  font-size: clamp(1.125rem, 0.9583rem + 0.7407vw, 1.625rem);
   font-weight: 400;
   margin: 8px 0;
   letter-spacing: 0.6px;
@@ -714,7 +720,7 @@
 .home-page .case-industry {
   color: #e50914;
   margin: 0;
-  font-size: 16px;
+  font-size: clamp(0.8125rem, 0.75rem + 0.2778vw, 1rem);
 }
 
 .home-page .case-home {
@@ -1024,7 +1030,7 @@
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 12px;
-  font-size: 16px;
+  font-size: clamp(0.8125rem, 0.75rem + 0.2778vw, 1rem);
   font-weight: 400;
   color: rgba(0, 0, 0, 0.4);
 }
@@ -1072,6 +1078,7 @@
   font-size: clamp(1.5rem, 1.3333rem + 0.7407vw, 2rem);
   font-weight: 300;
   letter-spacing: 0.6px;
+  overflow-wrap: break-word;
 }
 
 .home-page .faq-item summary::-webkit-details-marker {
@@ -1107,7 +1114,7 @@
   border-radius: 12px;
   background: #000000;
   color: #ffffff;
-  font-size: 16px;
+  font-size: clamp(0.8125rem, 0.75rem + 0.2778vw, 1rem);
   font-weight: 400;
 }
 
@@ -1317,6 +1324,159 @@
     padding-right: 160px;
   }
 
+}
+
+@media (max-width: 1024px) {
+  /* Offerings cards */
+  .home-page #offerings {
+    padding-bottom: 50px;
+  }
+
+  .home-page .offer-grid {
+    gap: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 0;
+    border-top: none;
+    border-bottom: none;
+  }
+
+  .home-page .offer-col,
+  .home-page .offer-col:nth-child(n),
+  .home-page .offer-col:nth-last-child(n) {
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+  }
+
+  /* Contact image */
+  .home-page .contact-visual {
+    display: none;
+  }
+
+  .home-page .contact-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* Minds image */
+  .home-page .minds-orbit-image,
+  .home-page .minds-stats-glow {
+    display: none;
+  }
+
+  .home-page .minds-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .home-page .minds-orbit,
+  .home-page .minds-copy {
+    display: contents;
+  }
+
+  .home-page .minds-copy h2 {
+    order: 1;
+  }
+
+  .home-page .minds-copy .lede {
+    order: 2;
+  }
+
+  .home-page .minds-stats {
+    order: 3;
+    position: static;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-items: start;
+    gap: 32px 20px;
+    padding: 0;
+    margin: 0;
+  }
+
+  .home-page .minds-actions {
+    order: 4;
+    margin: 0;
+  }
+
+  .home-page .minds-stat,
+  .home-page .minds-stat.is-active,
+  .home-page .minds-stat.is-leaving,
+  .home-page .minds-stat.is-prep {
+    grid-area: auto;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: none;
+    justify-items: start;
+    text-align: left;
+  }
+
+  .home-page .minds-stat-value {
+    justify-content: flex-start;
+  }
+
+  .home-page .minds-stat-number {
+    font-size: clamp(1.375rem, 1.2083rem + 0.7407vw, 1.6875rem);
+  }
+
+  .home-page .minds-stat-plus {
+    font-size: clamp(0.9375rem, 0.875rem + 0.2778vw, 1.125rem);
+  }
+
+  .home-page .minds-stat-label {
+    font-size: clamp(0.625rem, 0.5833rem + 0.1852vw, 0.6875rem);
+  }
+}
+
+body:has(.home-page) .footer-top {
+  gap: 24px 80px;
+  justify-content: space-between;
+}
+
+@media (min-width: 768px) {
+  body:has(.home-page) .footer-top {
+    align-items: start;
+    column-gap: 80px;
+  }
+}
+body:has(.home-page) .nav-trigger,
+body:has(.home-page) .nav-link,
+body:has(.home-page) .contact-cta,
+body:has(.home-page) .flyout a,
+body:has(.home-page) .flyout-heading,
+body:has(.home-page) .mobile-drawer-item,
+body:has(.home-page) .mobile-drawer-heading,
+body:has(.home-page) .mobile-drawer-back {
+  font-size: clamp(0.9375rem, 0.875rem + 0.2778vw, 1.125rem);
+  overflow-wrap: break-word;
+}
+
+body:has(.home-page) .flyout-tagline {
+  font-size: clamp(1.5rem, 1.3333rem + 0.7407vw, 2rem);
+  overflow-wrap: break-word;
+}
+
+body:has(.home-page) .site-footer {
+  overflow-wrap: break-word;
+}
+
+body:has(.home-page) .subscribe-title {
+  font-size: clamp(1.75rem, 1.375rem + 1.6667vw, 2.875rem);
+}
+
+body:has(.home-page) .subscribe-body,
+body:has(.home-page) .footer-col a,
+body:has(.home-page) .footer-subscribe-input {
+  font-size: clamp(0.9375rem, 0.875rem + 0.2778vw, 1.125rem);
+}
+
+body:has(.home-page) .footer-col h2 {
+  font-size: clamp(1.125rem, 1rem + 0.5556vw, 1.5rem);
+}
+
+body:has(.home-page) .footer-subscribe-btn,
+body:has(.home-page) .footer-copyright,
+body:has(.home-page) .legal-links,
+body:has(.home-page) .footer-subscribe-status {
+  font-size: clamp(0.8125rem, 0.75rem + 0.2778vw, 1rem);
 }
 
 @media (prefers-reduced-motion: reduce) {

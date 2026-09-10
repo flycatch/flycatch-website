@@ -6,15 +6,34 @@ This is the standard for all Frontend pages. Reuse these tokens, type roles, spa
 
 ## Finalized typography (explicit values)
 
-These pixel and weight values are the source of truth for future pages and components. Implement them as literal CSS (`16px`, `400`, `rgba(0, 0, 0, 0.4)`). Do not map them to `--text-*`, `--font-weight-*`, or other tokens.
+These sizes and weights are the source of truth for future pages and components. Implement them as literal CSS. Do not map them to `--text-*`, `--font-weight-*`, or other tokens.
 
 **Family:** Poppins, 300 / 400 / 500 / 600 / 700. **Default tracking:** `0.6px`.
 
+### Responsive type (homepage)
+
+All homepage text scales with the viewport using `clamp(min, preferred, max)` in **rem**. Desktop sizes below are the **maximum**. Interpolation follows 360px → 1440px (same slope as the historical scale). Do not use CSS variables for these values.
+
+Copy uses `overflow-wrap: break-word` so type does not force horizontal scroll.
+
+| Role | Max (desktop) | Explicit clamp |
+|---|---|---|
+| Buttons, legal, copyright, insight time/date, case industry | 16px (1rem) | `clamp(0.8125rem, 0.75rem + 0.2778vw, 1rem)` |
+| Nav, footer body/links, Explore, 18px UI | 18px (1.125rem) | `clamp(0.9375rem, 0.875rem + 0.2778vw, 1.125rem)` |
+| Lede, service list, service body | 20px (1.25rem) | `clamp(1rem, 0.9167rem + 0.3704vw, 1.25rem)` |
+| Footer column headings | 24px (1.5rem) | `clamp(1.125rem, 1rem + 0.5556vw, 1.5rem)` |
+| Case / insight headings | 26px (1.625rem) | `clamp(1.125rem, 0.9583rem + 0.7407vw, 1.625rem)` |
+| Offering titles, flyout tagline | 32px (2rem) | `clamp(1.5rem, 1.3333rem + 0.7407vw, 2rem)` |
+| Section / hero / right service title | 46px (2.875rem) | `clamp(1.75rem, 1.375rem + 1.6667vw, 2.875rem)` |
+| CTA band heading | 58px (3.625rem) | `clamp(2rem, 1.4583rem + 2.4074vw, 3.625rem)` |
+
+Preserve current font family, weight, line-height, letter-spacing, color, and hierarchy. Weights stay as previously finalized (buttons 400, section titles 300, and so on).
+
 ### Buttons
 
-All homepage buttons (outline `.btn`, dark `.btn-on-dark`, Book a Call `.cta-book-btn`, Know More): **16px / 400**. Preserve existing colors, min-height, padding, radius, hover (red fill, white label, `-30deg` arrow), and icons.
+All homepage buttons (outline `.btn`, dark `.btn-on-dark`, Book a Call `.cta-book-btn`, Know More): **16px / 400** maximum, via the 16px clamp above. Preserve existing colors, min-height, padding, radius, hover (red fill, white label, `-30deg` arrow), and icons.
 
-Footer Subscribe is not `.btn`: **16px / 400**. Other footer copy is **300**.
+Footer Subscribe is not `.btn`: **16px / 400** maximum (same clamp). Other footer copy is **300**.
 
 ### Homepage header / hero
 
@@ -39,13 +58,23 @@ Homepage sections (except Our Offerings): **padding-top: 50px** and **padding-bo
 
 ### Our Minds / About Us
 
-| Element | Size | Weight |
-|---|---|---|
-| Statistic number (e.g. 55) | 46px | 400 |
-| Plus (+) | 18px | 400 |
-| Statistic labels (Projects, Associates, Customers, Years in IT Industry) | 14px | 400 |
+| Element | Viewport | Size | Weight |
+|---|---|---|---|
+| Statistic number (e.g. 55) | above 1024px | 46px max (`clamp(1.75rem, 1.375rem + 1.6667vw, 2.875rem)`) | 400 |
+| Plus (+) | above 1024px | 18px max (`clamp(0.9375rem, 0.875rem + 0.2778vw, 1.125rem)`) | 400 |
+| Labels | above 1024px | 14px max (`clamp(0.75rem, 0.7083rem + 0.1852vw, 0.875rem)`) | 400 |
+| Statistic number | 1024px and below | 27px max (`clamp(1.375rem, 1.2083rem + 0.7407vw, 1.6875rem)`) | 400 |
+| Plus (+) | 1024px and below | 18px max (`clamp(0.9375rem, 0.875rem + 0.2778vw, 1.125rem)`) | 400 |
+| Labels | 1024px and below | 11px max (`clamp(0.625rem, 0.5833rem + 0.1852vw, 0.6875rem)`) | 400 |
 
 The sentence “Join us in shaping the future of IT with passion and purpose.” starts on its own line (`.minds-join { display: block }`). Do not change the copy.
+
+**Count-up:** At **1024px and below only**, each statistic counts from 1 to its target (then shows `+`) when the Minds section enters the viewport. Timing is ease-out. `prefers-reduced-motion` jumps to the final value. **Above 1024px**, keep the existing one-at-a-time slide/loop. Do not count-up on desktop.
+
+**Responsive rules (≤1024px):**
+- **Contact & Minds images:** Hidden on mobile/tablet (≤1024px). Above 1024px, the existing images remain unchanged.
+- **Minds statistics:** Show all 4 stats at once in a 2-column × 2-row grid, placed immediately above the About Us button (title and body stay above the stats).
+- **Our Offerings:** Keep 20px gaps between cards. Keep **50px** padding below the offerings section so the last row is not cramped against the next section.
 
 ### Case studies
 
@@ -76,7 +105,7 @@ All footer text **font-weight: 300**, except the Subscribe button.
 | Privacy Policy \| Terms & Conditions | 16px | 300 |
 | Subscribe button | 16px | 400 |
 
-Preserve footer layout, subscription POST, input, social icons, and breakpoints.
+Preserve footer layout, subscription POST, input, social icons, and breakpoints. On the homepage, the subscribe intro (privacy/content) and the email + Subscribe form use a clear `space-between` / 80px column gap so the two areas do not sit cramped together.
 
 ## Sources of truth
 
@@ -105,7 +134,7 @@ Do not add a second fluid `--text-*` scale in a page stylesheet. Prefer the expl
 
 **Weights:** Light 300 (headings, ledes, footer copy), Regular 400 (UI, nav, buttons, card titles, service list, statistic numbers).
 
-**Fluid size:** Token `--text-*` scale remains `clamp(...)` in `tokens.css` for interior pages that still consume tokens. Homepage and the rules in **Finalized typography** use **explicit px**, not those tokens.
+**Fluid size:** Homepage type uses explicit `clamp(...)` in rem (see **Responsive type**). Token `--text-*` remains for interior pages that still consume `tokens.css`. Do not substitute homepage clamps with those tokens.
 
 | Token | Min (360px) | Max (desktop) |
 |---|---|---|
@@ -250,7 +279,7 @@ Keep native `<a class="btn">` (or `<button>`). Optional trailing 24px arrow (`--
 
 ## Cards
 
-- **Offerings:** full-bleed column grid, 1px `--color-border`, padding `--s7`, desktop min-height 780px, 4 columns from `--bp-lg`.
+- **Offerings:** full-bleed column grid, 1px `--color-border`, padding `--s7`, desktop min-height 780px, 4 columns from `--bp-lg`. ≤1024px: clean card/grid layout with 20px gap, 20px side spacing, and `16px` radius. Title top margin is equal to its current bottom margin (`0.83em`).
 - **Services:** image 16/10, hover scale 1.04 / 0.45s, outline CTA.
 - **Insights:** image height 244px, “Blog” label 16px red, time/date **16px / 400** at `rgba(0, 0, 0, 0.4)`, title 26px Regular clamped to 2 lines, category chips. The section CTA is centered in this section only.
 - **Case studies:** stacked on small screens; two-column split from 768px. Homepage shows the latest 3 from the Home/case-study API. Industry **16px / 400**, heading **26px / 400**, description **font-weight 300**. “View all works” is a circular control to the left of the cards; a red stroke draws around the grey ring in step with section scroll.
