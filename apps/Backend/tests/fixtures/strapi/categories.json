@@ -1,0 +1,15 @@
+{
+  "data": [
+    {
+      "id": 7,
+      "attributes": {
+        "name": "Engineering",
+        "publishedAt": "2024-01-01T00:00:00.000Z",
+        "createdAt": "2024-01-01T00:00:00.000Z"
+      }
+    }
+  ],
+  "meta": {
+    "pagination": {"page": 1, "pageSize": 100, "pageCount": 1, "total": 1}
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "attributes": {
+        "banner_title": "Application Development",
+        "slug": "application-development",
+        "introduction_title": "Build with us",
+        "introduction_first_paragraph": "First",
+        "introduction_second_paragraph": "Second",
+        "offering_title": "Offerings",
+        "offering_description": [
+          {"type": "paragraph", "children": [{"type": "text", "text": "We build apps"}]}
+        ],
+        "publishedAt": "2024-02-01T00:00:00.000Z",
+        "createdAt": "2024-02-01T00:00:00.000Z",
+        "updatedAt": "2024-02-01T00:00:00.000Z",
+        "banner_image": {
+          "data": {
+            "id": 50,
+            "attributes": {
+              "url": "/uploads/banner.jpg",
+              "mime": "image/jpeg",
+              "name": "banner.jpg"
+            }
+          }
+        },
+        "offering_img": {"data": null},
+        "application_development_accordion": [
+          {
+            "id": 1,
+            "ai_expertise_accordian_title": "Discovery",
+            "ai_expertise_accordian_contents": [
+              {"type": "paragraph", "children": [{"type": "text", "text": "Discover needs"}]}
+            ],
+            "order": 0
+          }
+        ],
+        "seo": {
+          "title": "App Dev",
+          "description": "SEO desc",
+          "canonical_url": "",
+          "meta_title": "App Dev",
+          "h1_tag": "App Dev",
+          "image_alt": ""
+        }
+      }
+    }
+  ],
+  "meta": {
+    "pagination": {"page": 1, "pageSize": 100, "pageCount": 1, "total": 1}
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "attributes": {
+        "title": "Hello World",
+        "slug": "hello-world",
+        "description": "A sample blog",
+        "reading_time": 3,
+        "publishedAt": "2024-01-15T10:00:00.000Z",
+        "createdAt": "2024-01-10T10:00:00.000Z",
+        "updatedAt": "2024-01-15T10:00:00.000Z",
+        "body": [
+          {
+            "type": "paragraph",
+            "children": [{"type": "text", "text": "Hello ", "bold": true}, {"type": "text", "text": "world"}]
+          },
+          {
+            "type": "heading",
+            "level": 2,
+            "children": [{"type": "text", "text": "Section"}]
+          },
+          {
+            "type": "list",
+            "format": "unordered",
+            "children": [
+              {"type": "list-item", "children": [{"type": "text", "text": "One"}]},
+              {"type": "list-item", "children": [{"type": "text", "text": "Two"}]}
+            ]
+          }
+        ],
+        "image": {
+          "data": {
+            "id": 99,
+            "attributes": {
+              "url": "/uploads/hero.png",
+              "mime": "image/png",
+              "name": "hero.png"
+            }
+          }
+        },
+        "categories": {
+          "data": [
+            {"id": 7, "attributes": {"name": "Engineering", "publishedAt": "2024-01-01T00:00:00.000Z"}}
+          ]
+        },
+        "author": {
+          "data": {
+            "id": 3,
+            "attributes": {"username": "alice", "email": "alice@example.com"}
+          }
+        },
+        "writer_image": {"data": null},
+        "image_alt": "Hero",
+        "facebook": "",
+        "linkedin": "",
+        "twitter": "",
+        "instagram": "",
+        "canonical_url": ""
+      }
+    }
+  ],
+  "meta": {
+    "pagination": {"page": 1, "pageSize": 100, "pageCount": 1, "total": 1}
+  }
+}
