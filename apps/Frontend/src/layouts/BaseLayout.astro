@@ -1,4 +1,9 @@
 ---
+import '@fontsource/poppins/300.css';
+import '@fontsource/poppins/400.css';
+import '@fontsource/poppins/500.css';
+import '@fontsource/poppins/600.css';
+import '@fontsource/poppins/700.css';
 import '../styles/tokens.css';
 import '../styles/layout.css';
 import type { PageMetadata } from '../lib/metadata';
@@ -36,12 +41,7 @@ const jsonLd = structuredData.map((block) => JSON.stringify(block));
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />{extraMetas.map((item) => (
+    {extraMetas.map((item) => (
       <meta name={item.name} property={item.property} content={item.content} />
     ))}
     <meta property="og:type" content="website" />
