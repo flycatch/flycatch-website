@@ -2008,7 +2008,7 @@ body.is-mobile-drawer-open {
   .footer-top {
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
     grid-template-areas:
-      "heading heading"
+      "heading ."
       "body form";
     align-items: start;
   }

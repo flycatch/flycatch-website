@@ -49,7 +49,7 @@ const stats = [
             aria-hidden={index === 0 ? 'false' : 'true'}
           >
             <span class="minds-stat-value">
-              <span class="minds-stat-number">{stat.number}</span>
+              <span class="minds-stat-number" data-stat-target={stat.number}>{stat.number}</span>
               {stat.plus && <span class="minds-stat-plus">{stat.plus}</span>}
             </span>
             <span class="minds-stat-label">{t(stat.labelKey)}</span>
@@ -64,7 +64,7 @@ const stats = [
           <span class="minds-join">{mindsJoin}</span>
         )}
       </p>
-      <p>
+      <p class="minds-actions">
         <a class="btn btn-on-dark" href="/about-us">
           {t('home.about_us')}
           <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
