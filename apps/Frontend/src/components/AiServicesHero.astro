@@ -1,0 +1,29 @@
+---
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicAiService } from '../lib/public-api';
+
+interface Props {
+  page: PublicAiService;
+}
+
+const { page } = Astro.props;
+const banner = publicMediaUrl(page.banner_image_key);
+const heading = page.seo.h1_tag.trim() || page.banner_title;
+---
+<section class="ai-hero" aria-labelledby="ai-heading">{banner ? (
+    <img
+      class="ai-hero-media"
+      src={banner}
+      alt={page.seo.image_alt || page.banner_title}
+      width="1512"
+      height="982"
+    />
+  ) : (
+    <div class="ai-hero-media ai-hero-fallback"></div>
+  )}
+  <div class="ai-hero-overlay" aria-hidden="true"></div>
+  <div class="ai-hero-scrim" aria-hidden="true"></div>
+  <div class="container ai-hero-copy">
+    <h1 id="ai-heading" class="type-display-lg">{heading}</h1>
+  </div>
+</section>

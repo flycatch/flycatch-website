@@ -1,0 +1,43 @@
+---
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicAiService } from '../lib/public-api';
+
+interface Props {
+  page: PublicAiService;
+}
+
+const { page } = Astro.props;
+const title = page.ai_expertise_title.trim();
+const description = page.ai_expertise_accordion_description.trim();
+const image = publicMediaUrl(page.ai_expertise_image_key);
+const items = [...(page.ai_expertise_accordion ?? [])]
+  .filter((item) => item.title.trim() || item.contents.trim())
+  .sort((a, b) => a.order - b.order);
+const show = Boolean(title || description || image || items.length);
+---
+{show && (
+  <section class="ai-expertise" aria-labelledby="ai-expertise-heading">
+    <div class="container">
+      <div class="ai-expertise-head" hidden={!(title || description)}>
+        <h2 id="ai-expertise-heading" class="type-display-lg" hidden={!title}>{title}</h2>
+        <div class="ai-copy" hidden={!description} set:html={description}></div>
+      </div>
+      <div class="ai-expertise-body" hidden={!(image || items.length)}>
+        <div class="ai-expertise-media" hidden={!image}>{image && (
+            <img src={image} alt="" width="377" height="450" loading="lazy" />
+          )}
+        </div>
+        <div class="ai-expertise-list">{items.map((item) => (
+            <details class="ai-accordion">
+              <summary>
+                <span>{item.title}</span>
+                <img src="/icon-expand-more.svg" width="40" height="40" alt="" />
+              </summary>
+              <div class="ai-accordion-body" hidden={!item.contents.trim()} set:html={item.contents}></div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+)}

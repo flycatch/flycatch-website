@@ -1,0 +1,43 @@
+---
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicAiService } from '../lib/public-api';
+
+interface Props {
+  page: PublicAiService;
+}
+
+const { page } = Astro.props;
+const title = page.industry_title.trim();
+const description = page.industry_description.trim();
+const items = [...(page.industry_items ?? [])]
+  .filter((item) => item.title.trim() || item.image_key)
+  .sort((a, b) => a.order - b.order);
+const show = Boolean(title || description || items.length);
+---
+{show && (
+  <section class="ai-industries" aria-labelledby="ai-industries-heading">
+    <div class="container">
+      <div class="ai-industries-head" hidden={!(title || description)}>
+        <h2 id="ai-industries-heading" class="type-display-lg" hidden={!title}>{title}</h2>
+        <p class="ai-copy" hidden={!description}>{description}</p>
+      </div>
+      <div class="ai-industry-grid" hidden={!items.length}>{items.map((item, index) => {
+          const image = publicMediaUrl(item.image_key);
+          const pair = index % 4;
+          const tall = pair === 1 || pair === 2;
+          const wide = index === items.length - 1 && items.length % 2 === 1;
+          return (
+            <article class:list={['ai-industry-tile', { 'is-tall': tall, 'is-wide': wide }]}>{image ? (
+                <img src={image} alt="" width={wide ? 1192 : 586} height={tall || wide ? 400 : 320} loading="lazy" />
+              ) : (
+                <span class="ai-industry-fallback"></span>
+              )}
+              <span class="ai-industry-scrim" aria-hidden="true"></span>
+              <h3 hidden={!item.title.trim()}>{item.title}</h3>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+)}
