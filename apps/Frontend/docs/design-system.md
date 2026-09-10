@@ -23,7 +23,7 @@ Do not add a second scale in a page stylesheet.
 
 ## Typography
 
-**Family:** Poppins (`--font-family-base`), loaded as 300 / 400 / 500 / 600 / 700.
+**Family:** Poppins (`--font-family-base`), self-hosted via `@fontsource/poppins` as 300 / 400 / 500 / 600 / 700.
 
 **Default tracking:** `0.6px` (`--tracking`) — Figma. Live computed letter-spacing is often `normal`; keep Figma tracking as the system.
 
