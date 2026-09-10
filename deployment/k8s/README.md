@@ -222,9 +222,11 @@ Expect `X-Robots-Tag: noindex, nofollow` and `Disallow: /` in robots.txt.
 
 The shared Caddy gateway ([base/Caddyfile](base/Caddyfile)) sets HSTS, COOP,
 `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, and
-`Permissions-Policy` on every response. CSP is route-scoped: strict on the
-public site, wider on `/admin*` (inline scripts for Astro islands and `blob:`
-media previews). Poppins is self-hosted, so Google Fonts is not in the policy.
+`Permissions-Policy` on every response. CSP is route-scoped: both the public
+site and `/admin*` allow `'unsafe-inline'` in `script-src` and `style-src`
+(Astro inlines small page scripts such as the header/hamburger module, plus
+JSON-LD; Admin also needs `blob:` for media previews). Poppins is self-hosted,
+so Google Fonts is not in the policy.
 
 ```bash
 curl -sI https://flycatch-website-dev.k3s.flycatchtech.in/ \
@@ -235,9 +237,9 @@ curl -sI https://flycatch-website-dev.k3s.flycatchtech.in/admin/ \
 
 Expect `Strict-Transport-Security`, `Cross-Origin-Opener-Policy: same-origin`,
 `X-Frame-Options: DENY`, and a `Content-Security-Policy` on both `/` and
-`/admin/`. The admin policy should include `'unsafe-inline'` in `script-src`.
+`/admin/`. Both policies should include `'unsafe-inline'` in `script-src`.
 After deploy, load `/` and `/admin/` in a browser and confirm the console has
-no CSP violations.
+no CSP violations (especially that the header hamburger drawer opens).
 
 Local Compose (HTTP on `:8080`) returns the same headers; browsers ignore
 HSTS over non-HTTPS.

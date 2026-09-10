@@ -452,16 +452,10 @@ input:focus-visible {
   flex-shrink: 0;
 }
 
-.mobile-nav-toggle img {
+.mobile-nav-toggle svg {
   width: var(--menu-icon);
   height: var(--menu-icon);
   display: block;
-  object-fit: cover;
-}
-
-.tone-light .mobile-nav-toggle img,
-.is-scrolled .mobile-nav-toggle img {
-  filter: invert(1);
 }
 
 .site-header.is-drawer-open .mobile-nav-toggle {
@@ -1908,7 +1902,7 @@ body.is-mobile-drawer-open {
   }
 
   .offer-col:nth-child(2n) {
-    border-right: 1;
+    border-right: none;
   }
 
   .offer-col:nth-last-child(-n + 2) {

@@ -1179,7 +1179,7 @@
   }
 
   .home-page .offer-col:nth-child(2n) {
-    border-right: 1;
+    border-right: none;
   }
 
   .home-page .offer-col:nth-last-child(-n + 2) {
