@@ -2,24 +2,100 @@
 
 This is the standard for all Frontend pages. Reuse these tokens, type roles, spacing, and components. Do not invent per-page palettes, type scales, or button styles unless a design reference requires a documented exception.
 
-**Stack:** native HTML + CSS custom properties in `src/styles/tokens.css` and utilities in `src/styles/layout.css`. No Tailwind, Mantine, or other UI kits.
+**Stack:** native HTML + CSS custom properties in `src/styles/tokens.css` and utilities in `src/styles/layout.css`. Homepage-specific type, section spacing, and component styles use **explicit CSS values** in `src/styles/home.css` (no design-system tokens or CSS variables for those rules). No Tailwind, Mantine, or other UI kits.
+
+## Finalized typography (explicit values)
+
+These pixel and weight values are the source of truth for future pages and components. Implement them as literal CSS (`16px`, `400`, `rgba(0, 0, 0, 0.4)`). Do not map them to `--text-*`, `--font-weight-*`, or other tokens.
+
+**Family:** Poppins, 300 / 400 / 500 / 600 / 700. **Default tracking:** `0.6px`.
+
+### Buttons
+
+All homepage buttons (outline `.btn`, dark `.btn-on-dark`, Book a Call `.cta-book-btn`, Know More): **16px / 400**. Preserve existing colors, min-height, padding, radius, hover (red fill, white label, `-30deg` arrow), and icons.
+
+Footer Subscribe is not `.btn`: **16px / 400**. Other footer copy is **300**.
+
+### Homepage header / hero
+
+The hero Explore arrow (`.explore`) scrolls to the **Services** section (`#services`), not Our Offerings.
+
+### Services
+
+| Element | Size | Weight |
+|---|---|---|
+| Left section title | Keep current (46px) | Keep current (300) |
+| Service list | 20px | 400 |
+| Active service (list + arrow affordance) | — | 400 |
+| Right service title | 46px | 300 |
+| Service body | 20px | keep current (300) |
+| Know More | 16px | 400 |
+
+### Section titles
+
+Titles such as Services, Case Studies, Clients, Insights, About Us, FAQ: **margin-top: 0**. Keep other title spacing (including Services list `margin-bottom: 24px`).
+
+Homepage sections (except Our Offerings): **padding-top: 50px** and **padding-bottom: 50px**. Our Offerings keeps its previous spacing (`padding-bottom: 0`, no 50px vertical padding).
+
+### Our Minds / About Us
+
+| Element | Size | Weight |
+|---|---|---|
+| Statistic number (e.g. 55) | 46px | 400 |
+| Plus (+) | 18px | 400 |
+| Statistic labels (Projects, Associates, Customers, Years in IT Industry) | 14px | 400 |
+
+The sentence “Join us in shaping the future of IT with passion and purpose.” starts on its own line (`.minds-join { display: block }`). Do not change the copy.
+
+### Case studies
+
+| Element | Size | Weight |
+|---|---|---|
+| Industry | 16px | keep current (400) |
+| Heading | 26px | keep current (400) |
+| Description | keep current | 300 |
+
+Preserve card layout, images, 4-line truncation, and the scroll progress circle.
+
+### Insights
+
+| Element | Size | Weight | Color |
+|---|---|---|---|
+| Time / date | 16px | keep current (400) | `rgba(0, 0, 0, 0.4)` |
+
+Blog label stays red. Preserve card layout and 2-line title clamp.
+
+### Footer
+
+All footer text **font-weight: 300**, except the Subscribe button.
+
+| Element | Size | Weight |
+|---|---|---|
+| Footer copy (columns, subscribe intro, status) | keep current unless noted | 300 |
+| `© 2026 Copyright Flycatch. All rights reserved.` | 16px | 300 |
+| Privacy Policy \| Terms & Conditions | 16px | 300 |
+| Subscribe button | 16px | 400 |
+
+Preserve footer layout, subscription POST, input, social icons, and breakpoints.
 
 ## Sources of truth
 
 | Concern | Source |
 |---|---|
+| Finalized homepage type, buttons, section padding, footer legal/copyright sizes | This file (explicit values above) + `src/styles/home.css` |
+| Tokens still used for chrome (header, shared layout) | `src/styles/tokens.css` |
 | Tokens, type roles, spacing, radii, colors, buttons, container, header structure | Figma [AI Services](https://www.figma.com/design/k6nRrDb6bIxaJxy6wYILr2/Flycatch-Website_Revamp-UI?node-id=9717-26580) — desktop frame **1512** wide, content **1192px**, side inset **160px** |
 | Homepage layout, interactions, section composition, desktop/mobile behaviour | [https://www.flycatchtech.com/](https://www.flycatchtech.com/) |
 | Mobile / tablet | Live site + breakpoints below. The Figma AI page has **no mobile frame**. |
 
 ### Type-size conflicts
 
-Figma display sizes are larger than the live homepage at 1920px. Both exist as tokens:
+Figma display sizes are larger than the live homepage at 1920px. Token scale still exists for interior pages:
 
-- Homepage uses **live** roles (`--text-hero` / `--text-section` → `--text-46`, `--text-cta` → `--text-58`). Hide `.explore` when it wraps under the hero heading.
-- Interior / future Figma pages use **display** roles (`--text-display`, `--text-display-lg`, `--text-display-xl`).
+- Homepage implements the **explicit values in Finalized typography** above (`src/styles/home.css`). Hide `.explore` when it wraps under the hero heading.
+- Interior / future Figma pages use **display** roles (`--text-display`, `--text-display-lg`, `--text-display-xl`) unless a rule in Finalized typography applies (buttons 16px / 400, footer legal 16px / 300, and so on).
 
-Do not add a second scale in a page stylesheet.
+Do not add a second fluid `--text-*` scale in a page stylesheet. Prefer the explicit px values documented here.
 
 ## Typography
 
@@ -27,9 +103,9 @@ Do not add a second scale in a page stylesheet.
 
 **Default tracking:** `0.6px` (`--tracking`) — Figma. Live computed letter-spacing is often `normal`; keep Figma tracking as the system.
 
-**Weights:** Light 300 (headings, ledes), Regular 400 (UI, nav, buttons, card titles).
+**Weights:** Light 300 (headings, ledes, footer copy), Regular 400 (UI, nav, buttons, card titles, service list, statistic numbers).
 
-**Fluid size:** Every `--text-*` scale token is `clamp(min, preferred, max)` in `rem`. Desktop size is the **max** (same as the previous px value). Preferred interpolates from **360px** to **1440px** (`--bp-xl`) so type shrinks smoothly on smaller viewports. Do not add per-page `font-size` media queries.
+**Fluid size:** Token `--text-*` scale remains `clamp(...)` in `tokens.css` for interior pages that still consume tokens. Homepage and the rules in **Finalized typography** use **explicit px**, not those tokens.
 
 | Token | Min (360px) | Max (desktop) |
 |---|---|---|
@@ -48,28 +124,30 @@ Do not add a second scale in a page stylesheet.
 | `--text-68` | 2.125rem (34px) | 4.25rem (68px) |
 | `--text-88` | 2.25rem (36px) | 5.5rem (88px) |
 
-Roles alias the scale: `--text-body` / `--text-ui` → `--text-18`; `--text-meta` → `--text-14`; `--text-lede` → `--text-20`; `--text-card-title` → `--text-32`; `--text-hero` / `--text-section` → `--text-46`; `--text-cta` → `--text-58`; `--text-display` → `--text-60`; `--text-display-lg` → `--text-68`; `--text-display-xl` → `--text-88`.
+Roles alias the scale for token consumers: `--text-body` / `--text-ui` → `--text-18`; `--text-meta` → `--text-14`; `--text-lede` → `--text-20`; `--text-card-title` → `--text-32`; `--text-hero` / `--text-section` → `--text-46`; `--text-cta` → `--text-58`; `--text-display` → `--text-60`; `--text-display-lg` → `--text-68`; `--text-display-xl` → `--text-88`.
 
 **Line-height:** keep existing ratios. `--line-height-body` / `--line-height-heading` 1.55; `--line-height-cta` 1.4; `--line-height-nav` 1.5 (27px at 18px); `--line-height-display` 1.333 (80px at 60px).
 
 Body and `.type-*` use `overflow-wrap: break-word` so copy does not force horizontal scroll.
 
-| Role | Class | Size token | Weight | Line-height | Use |
+| Role | Class | Size | Weight | Line-height | Use |
 |---|---|---|---|---|---|
-| Body | `body` | `--text-18` | 400 | 1.55 | Default copy |
-| UI / nav | `.type-nav` | `--text-18` | 400 | 1.5 | Header links |
-| Meta | `.type-meta` | `--text-14` | 400 | 1.55 | Insight labels, legal |
-| Button | `.btn` | `--text-18` | 400 | 1.5 | Outline / solid CTAs |
-| Lede | `.type-lede` | `--text-20` (home) / `--text-25` (Figma intro) | 300 | ~1.55 | Section intros |
-| Card title | `.type-card-title` | `--text-32` | 400 | 1.55 | Insight / offering titles |
-| Offering title | `.offer-col h3` | `--text-32` | 300 | 1.55 | Homepage offering columns |
-| Section | `.type-section` | `--text-46` | 300 | 1.55 | Homepage h2 |
-| Display | `.type-display` | `--text-60` | 300 | 1.333 | Interior section titles (Figma) |
-| Hero (home) | `.type-hero` | `--text-46` | 400 | 1.55 | Homepage hero |
-| Hero (Figma) | `.type-display-lg` | `--text-68` | 300 | 1.55 | Interior heroes |
-| CTA band (home) | `.cta-banner h2` | `--text-58` | 300 | 1.4 | Homepage CTA |
-| CTA band (Figma) | `.type-display-xl` | `--text-88` | 300 | 1.55 | Interior CTA |
-| Footer heading | `.footer-col h2` | `--text-24` | 300 | 1.25 | Footer columns |
+| Body | `body` | 18px token scale | 400 | 1.55 | Default copy |
+| UI / nav | `.type-nav` | 18px token scale | 400 | 1.5 | Header links |
+| Meta | `.type-meta` | 14px token scale | 400 | 1.55 | Non-home insight labels |
+| Button (home / future standard) | `.btn` | **16px** | **400** | 1.5 | Homepage CTAs |
+| Lede | `.type-lede` | 20px | 300 | ~1.55 | Section intros, service body |
+| Card title | `.type-card-title` | 32px token scale | 400 | 1.55 | Offering titles |
+| Offering title | `.offer-col h3` | 32px token scale | 300 | 1.55 | Homepage offering columns |
+| Section | `.type-section` | 46px | 300 | 1.55 | Homepage h2; **margin-top: 0** |
+| Display | `.type-display` | 60px token scale | 300 | 1.333 | Interior section titles (Figma) |
+| Hero (home) | `.type-hero` | 46px | 400 | 1.55 | Homepage hero |
+| Hero (Figma) | `.type-display-lg` | 68px token scale | 300 | 1.55 | Interior heroes |
+| CTA band (home) | `.cta-banner h2` | 58px | 300 | 1.4 | Homepage CTA |
+| CTA band (Figma) | `.type-display-xl` | 88px token scale | 300 | 1.55 | Interior CTA |
+| Footer heading | `.footer-col h2` | 24px | 300 | 1.25 | Footer columns |
+| Footer legal / copyright | `.footer-copyright`, `.legal-links` | **16px** | **300** | — | Footer bottom |
+| Footer Subscribe | `.footer-subscribe-btn` | **16px** | **400** | — | Footer form only |
 
 ## Colors
 
@@ -154,15 +232,15 @@ Keep native `<a class="btn">` (or `<button>`). Optional trailing 24px arrow (`--
 - Padding `--s4` `--s7` (16×40)
 - Radius `--r3` (12)
 - Min-height 59px
-- Gap `--s2`, Poppins 18 Regular (fluid `--text-18`), tracking 0.6px
+- Gap 8px, Poppins **16px / 400**, tracking 0.6px
 - Dark sections: `.btn-on-dark` (white border/text)
-- Hover (all `.btn` variants): fill `--color-red`, text `--color-white`, border `--color-red`. Trailing arrow rotates `-30deg` (2 o’clock) with `--motion-nav`. SVG arrows use `currentColor`; image arrows invert to white.
+- Hover (all `.btn` variants): fill `#e50914`, text `#ffffff`, border `#e50914`. Trailing arrow rotates `-30deg` (2 o’clock). SVG arrows use `currentColor`; image arrows invert to white.
 
 **Solid `.btn-solid`:** white fill, black text (on dark CTA band).
 
-**Homepage Book a Call (exception, this section only):** surface `--color-cta-surface` (`#f2f2f2`). Button `.cta-book-btn` is black, padding `--s4` `--s5` (16×24), height 90px, width 100%, radius `--r3`. Hover uses the shared red fill, white label, and `-30deg` arrow.
+**Homepage Book a Call (exception, this section only):** surface `#f2f2f2`. Button `.cta-book-btn` is black, padding 16px 24px, height 90px, width 100%, radius 12px, type **16px / 400**. Hover uses the shared red fill, white label, and `-30deg` arrow.
 
-**Footer subscribe (exception, footer only):** heading uses `--text-46`. Email field is 56px (`--s9`) tall, full width of the form column, `--r3` radius, `1px solid` white, white fill (`--color-white`), padding `0` `--s4`, text `--color-text`. `.footer-subscribe-btn` is not `.btn`: full width, black fill, white border, `--r3` radius, flex centered label plus a white right arrow. On `--bp-md` the heading spans the top row; the field sits opposite the privacy description, with the button stacked under the field. Hover uses the shared red fill (`--color-red`), white label, and `-30deg` (2 o’clock) arrow. Footer bottom is copyright, then Privacy Policy | Terms & Conditions, then social icons in one row; social links are `--s6` circular white badges (`--radius-chip`) with `--s5` black glyphs. Visitor POST `/api/v1/public/subscriptions` stores the email with `active: true`.
+**Footer subscribe (exception, footer only):** heading 46px / 300. Email field is 56px tall, full width of the form column, 12px radius, `1px solid` white, white fill, padding `0` 16px. `.footer-subscribe-btn` is not `.btn`: full width, black fill, white border, 12px radius, flex centered label plus a white right arrow, type **16px / 400**. All other footer text is **font-weight 300**. Copyright and Privacy Policy | Terms & Conditions are **16px / 300**. On 768px the heading spans the top row; the field sits opposite the privacy description, with the button stacked under the field. Hover uses the shared red fill (`#e50914`), white label, and `-30deg` (2 o’clock) arrow. Footer bottom is copyright, then Privacy Policy | Terms & Conditions, then social icons in one row; social links are 32px circular white badges with 24px black glyphs. Visitor POST `/api/v1/public/subscriptions` stores the email with `active: true`.
 
 **Header Contact `.contact-cta`:**
 
@@ -174,8 +252,8 @@ Keep native `<a class="btn">` (or `<button>`). Optional trailing 24px arrow (`--
 
 - **Offerings:** full-bleed column grid, 1px `--color-border`, padding `--s7`, desktop min-height 780px, 4 columns from `--bp-lg`.
 - **Services:** image 16/10, hover scale 1.04 / 0.45s, outline CTA.
-- **Insights:** image height 244px (Figma), “Blog” label `--text-16` red, meta time/date `--text-14`, title `--text-26` Regular clamped to 2 lines, category chips. The section CTA is centered in this section only.
-- **Case studies:** stacked on small screens; two-column split from `--bp-md`. Homepage shows the latest 3 from the Home/case-study API. “View all works” is a circular `--radius-chip` control to the left of the cards; a red stroke draws around the grey ring in step with section scroll.
+- **Insights:** image height 244px, “Blog” label 16px red, time/date **16px / 400** at `rgba(0, 0, 0, 0.4)`, title 26px Regular clamped to 2 lines, category chips. The section CTA is centered in this section only.
+- **Case studies:** stacked on small screens; two-column split from 768px. Homepage shows the latest 3 from the Home/case-study API. Industry **16px / 400**, heading **26px / 400**, description **font-weight 300**. “View all works” is a circular control to the left of the cards; a red stroke draws around the grey ring in step with section scroll.
 
 No drop shadows on content cards. Mega/drop menus use `--shadow-menu`.
 
@@ -185,11 +263,12 @@ No drop shadows on content cards. Mega/drop menus use `--shadow-menu`.
 - Desktop above `--bp-nav` (1024px): `.primary-nav` flex; `.nav-cluster` gap `--s9` (56px); `--s10` (64px) before Contact. Hover flyouts from `--bp-lg`.
 - ≤1024px: hamburger 40px. Opens a right drawer that covers the toggle; close (X) lives in the drawer. Nested panels for Services and Company.
 - Nav type: `--text-18` Regular, tracking 0.6px.
+- The hero Explore control links to `#services`.
 - Invert logo on `.tone-dark`.
 
 ## Future pages
 
-1. Import nothing new for color/type/space — use `tokens.css` + existing classes.
+1. For type sizes and weights listed under **Finalized typography**, use explicit CSS values. Do not introduce tokens or CSS variables for those rules.
 2. Prefer `.container`, `.section`, `.type-*`, `.btn`.
-3. Map Figma 60/68/88 headings to `.type-display` / `.type-display-lg` / `.type-display-xl`.
+3. Map Figma 60/68/88 headings to `.type-display` / `.type-display-lg` / `.type-display-xl` unless a finalized explicit value applies.
 4. Record exceptions in this file, not in a page-local spec.
