@@ -715,10 +715,6 @@ body.is-mobile-drawer-open {
   border-color: var(--color-on-dark);
 }
 
-/* .section {
-  padding: var(--section-pad) 0;
-} */
-
 .section-dark {
   background: var(--color-dark);
   color: var(--color-on-dark);
@@ -743,10 +739,6 @@ body.is-mobile-drawer-open {
 
 .offerings-head h2 {
   text-align: center;
-}
-
-#offerings {
-  padding-bottom: 0;
 }
 
 .lede {

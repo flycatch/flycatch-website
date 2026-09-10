@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/home.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import HomeHero from '../components/HomeHero.astro';
@@ -48,7 +49,7 @@ const structuredData = home ? homeStructuredData(home, metadata, siteSettings) :
 ---
 <BaseLayout title={metadata.title} metadata={metadata} structuredData={structuredData}>
   <SiteHeader tone="dark" />
-  <main id="main" data-api-origin={homesResult.origin}>{home ? (
+  <main id="main" class="home-page" data-api-origin={homesResult.origin}>{home ? (
       <HomeHero home={home} />
     ) : (
       <section class="hero">
