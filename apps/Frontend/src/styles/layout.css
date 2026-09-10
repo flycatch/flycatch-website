@@ -715,10 +715,6 @@ body.is-mobile-drawer-open {
   border-color: var(--color-on-dark);
 }
 
-/* .section {
-  padding: var(--section-pad) 0;
-} */
-
 .section-dark {
   background: var(--color-dark);
   color: var(--color-on-dark);
@@ -743,10 +739,6 @@ body.is-mobile-drawer-open {
 
 .offerings-head h2 {
   text-align: center;
-}
-
-#offerings {
-  padding-bottom: 0;
 }
 
 .lede {
@@ -1670,8 +1662,9 @@ body.is-mobile-drawer-open {
 
 .site-footer {
   background: var(--color-dark);
-  color: var(--color-on-dark);
+  color: #fff;
   padding: var(--section-pad) 0 var(--s6);
+  font-weight: 300;
 }
 
 .footer-top {
@@ -1687,7 +1680,7 @@ body.is-mobile-drawer-open {
 }
 
 .subscribe-body {
-  color: var(--color-on-dark-muted);
+  color: #fff;
   font-weight: var(--font-weight-light);
   margin: 0;
 }
@@ -1729,8 +1722,8 @@ body.is-mobile-drawer-open {
   gap: var(--s2);
   color: var(--color-white);
   font-family: inherit;
-  font-size: var(--text-ui);
-  font-weight: var(--font-weight-regular);
+  font-size: 16px;
+  font-weight: 400;
   letter-spacing: var(--tracking);
   cursor: pointer;
   transition:
@@ -1772,7 +1765,7 @@ body.is-mobile-drawer-open {
 }
 
 .footer-subscribe-status.is-success {
-  color: var(--color-on-dark);
+  color: #fff;
 }
 
 .footer-grid {
@@ -1788,11 +1781,16 @@ body.is-mobile-drawer-open {
 }
 
 .footer-col a {
-  color: var(--color-on-dark-muted);
+  color: #fff;
+  font-weight: 300;
+  display: inline-block;
+  transition: color var(--motion-nav), transform var(--motion-nav);
+  transform-origin: left center;
 }
 
 .footer-col a:hover {
-  color: var(--color-on-dark);
+  color: var(--color-red);
+  transform: scale(1.05);
 }
 
 .footer-bottom {
@@ -1803,11 +1801,14 @@ body.is-mobile-drawer-open {
   margin-top: var(--s6);
   padding-top: var(--s5);
   border-top: 1px solid var(--color-on-dark-border);
-  font-size: var(--text-meta);
+  font-size: 16px;
+  font-weight: 300;
 }
 
 .footer-copyright {
   margin: 0;
+  font-size: 16px;
+  font-weight: 300;
 }
 
 .legal-links,
@@ -1819,6 +1820,8 @@ body.is-mobile-drawer-open {
 
 .legal-links {
   gap: var(--s3);
+  font-size: 16px;
+  font-weight: 300;
 }
 
 .footer-social {
@@ -2009,7 +2012,7 @@ body.is-mobile-drawer-open {
   .footer-top {
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
     grid-template-areas:
-      "heading heading"
+      "heading ."
       "body form";
     align-items: start;
   }
