@@ -163,11 +163,18 @@ export type PublicSolutionIntroduction = {
   description: string;
 };
 
+export type PublicSolutionsSection = {
+  title: string;
+  image_key: string | null;
+  description: string;
+};
+
 export type PublicSolutionDetail = {
   title: string;
   slug: string;
   banner: PublicSolutionBanner;
   introduction: PublicSolutionIntroduction;
+  solutions_section: PublicSolutionsSection;
 };
 
 export type PublicAiServiceSummary = {

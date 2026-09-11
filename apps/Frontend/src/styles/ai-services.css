@@ -464,6 +464,143 @@
   }
 }
 
+.ai-minds {
+  position: relative;
+  overflow: hidden;
+  background: #000000;
+  color: #ffffff;
+  padding: 80px 0;
+}
+
+.ai-minds-media,
+.ai-minds-globe,
+.ai-minds-hue {
+  position: absolute;
+  inset: 0;
+}
+
+.ai-minds-globe {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  max-width: none;
+}
+
+.ai-minds-hue {
+  background: #000000;
+  mix-blend-mode: hue;
+  pointer-events: none;
+}
+
+.ai-minds-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 32px;
+  justify-items: center;
+  text-align: center;
+  color: #ffffff;
+}
+
+.ai-minds h2,
+.ai-minds-copy {
+  margin: 0;
+  max-width: 1192px;
+  font-weight: 300;
+  letter-spacing: 0.6px;
+  color: #ffffff;
+}
+
+.ai-minds h2 {
+  font-size: clamp(2rem, 1.4167rem + 2.5926vw, 3.75rem);
+  line-height: 1.333;
+}
+
+.ai-minds-copy {
+  font-size: clamp(1.125rem, 0.9792rem + 0.6481vw, 1.5625rem);
+  line-height: 1.55;
+}
+
+.ai-minds-stats {
+  display: grid;
+  gap: 20px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ai-minds-stat {
+  display: grid;
+  gap: 16px;
+  justify-items: center;
+  padding: 32px 16px;
+  border-radius: 12px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.ai-minds-stat-value {
+  display: inline-flex;
+  align-items: flex-start;
+  line-height: 1;
+}
+
+.ai-minds-stat-number {
+  font-size: clamp(2.5rem, 1.8333rem + 2.963vw, 4.5rem);
+  font-weight: 400;
+  letter-spacing: 0.6px;
+  line-height: 1;
+}
+
+.ai-minds-stat-plus {
+  font-size: clamp(2.5rem, 1.8333rem + 2.963vw, 4.5rem);
+  font-weight: 400;
+  letter-spacing: 0.6px;
+  line-height: 1;
+}
+
+.ai-minds-stat-label {
+  font-size: clamp(0.875rem, 0.7917rem + 0.3704vw, 1.25rem);
+  font-weight: 300;
+  letter-spacing: 0.6px;
+  line-height: 1.2;
+}
+
+@media (min-width: 768px) {
+  .ai-minds-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .ai-minds-stat {
+    padding: 40px 16px;
+    gap: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ai-minds {
+    padding: 120px 0;
+    min-height: 672px;
+    display: grid;
+    align-items: center;
+  }
+
+  .ai-minds-inner {
+    gap: 56px;
+  }
+
+  .ai-minds-stats {
+    gap: 45px;
+  }
+
+  .ai-minds-stat {
+    padding: 48px 16px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ai-accordion summary img,
   .ai-solution-hover {

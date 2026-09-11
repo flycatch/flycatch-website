@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from uuid import UUID
 
+from pydantic import ValidationError
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
@@ -99,9 +100,9 @@ def _heading_items(items: object) -> list[dict]:
             continue
         result.append(
             {
-                "title": str(item.get("title") or ""),
+                "title": str(item.get("title") or "")[:200],
                 "order": _order(item.get("order")),
-                "color": str(item.get("color") or ""),
+                "color": str(item.get("color") or "")[:20],
             }
         )
     return result
@@ -114,12 +115,17 @@ def _order(value: object) -> int:
         return 0
 
 
+def _as_key(value: object) -> str | None:
+    return value if isinstance(value, str) and value else None
+
+
 def _type_item(row: dict) -> dict:
+    image_key = row.get("image_key")
     return {
-        "image_key": row.get("image_key"),
+        "image_key": image_key if isinstance(image_key, str) and image_key else None,
         "description": str(row.get("description") or ""),
         "order": _order(row.get("order")),
-        "title": str(row.get("title") or ""),
+        "title": str(row.get("title") or "")[:200],
     }
 
 
@@ -182,9 +188,9 @@ def normalize_introduction(raw: object) -> dict:
         ],
         "description": str(block.get("description") or first.get("description") or ""),
         "icon_keys": _icon_keys(block, first),
-        "sub_title": str(block.get("sub_title") or first.get("sub_title") or ""),
+        "sub_title": str(block.get("sub_title") or first.get("sub_title") or "")[:200],
         "sub_description": str(block.get("sub_description") or first.get("sub_description") or ""),
-        "image_key": block.get("image_key") or first.get("image_key"),
+        "image_key": _as_key(block.get("image_key") or first.get("image_key")),
     }
 
 
@@ -197,7 +203,7 @@ def normalize_challenges(raw: object) -> dict:
             for item in _heading_items(block.get("items"))
         ],
         "description": str(block.get("description") or first.get("description") or ""),
-        "image_key": block.get("image_key") or first.get("image_key"),
+        "image_key": _as_key(block.get("image_key") or first.get("image_key")),
         "name": str(block.get("name") or first.get("name") or ""),
         "position": str(block.get("position") or first.get("position") or ""),
         "types": _collected_types(block),
@@ -222,8 +228,8 @@ def normalize_solutions_section(raw: object) -> dict:
     keys = block.get("image_keys") if isinstance(block.get("image_keys"), list) else []
     image_key = block.get("image_key") or (keys[0] if keys else None)
     return {
-        "title": str(block.get("title") or ""),
-        "image_key": image_key,
+        "title": str(block.get("title") or "")[:200],
+        "image_key": _as_key(image_key),
         "description": str(block.get("description") or ""),
     }
 
@@ -384,15 +390,20 @@ class SolutionDetailService:
         self, db: Session, q: str | None, page: int, per_page: int
     ) -> PublicSolutionDetailList:
         page, per_page, rows, total = self._page(db, q, page, per_page, published_only=True)
-        return PublicSolutionDetailList(
-            items=[
-                PublicSolutionDetailSummary(
-                    slug=row.slug,
-                    title=row.title,
-                    banner=SolutionBanner.model_validate(normalize_banner(row.banner)),
+        items: list[PublicSolutionDetailSummary] = []
+        for row in rows:
+            try:
+                items.append(
+                    PublicSolutionDetailSummary(
+                        slug=row.slug,
+                        title=row.title,
+                        banner=SolutionBanner.model_validate(normalize_banner(row.banner)),
+                    )
                 )
-                for row in rows
-            ],
+            except (CatalogError, ValidationError, ValueError, TypeError):
+                continue
+        return PublicSolutionDetailList(
+            items=items,
             page=page,
             per_page=per_page,
             total=total,
