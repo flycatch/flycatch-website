@@ -27,3 +27,24 @@ const heading = page.banner_title.trim();
     <h1 id="ai-heading" class="type-display-lg" hidden={!heading}>{heading}</h1>
   </div>
 </section>
+
+<script>
+  const heading = document.getElementById('ai-heading');
+  if (heading) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          } else {
+            entry.target.classList.remove('is-visible');
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+      }
+    );
+    observer.observe(heading);
+  }
+</script>

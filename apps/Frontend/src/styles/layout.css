@@ -1609,6 +1609,9 @@ body.is-mobile-drawer-open {
 }
 
 .section-cta {
+  display: grid;
+  align-items: center;
+  min-height: var(--cta-section-min-height);
   background: var(--color-cta-surface);
 }
 
