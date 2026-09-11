@@ -12,9 +12,11 @@ const show = Boolean(title || description);
 ---
 {show && (
   <section class="ai-intro" aria-labelledby="ai-intro-heading">
-    <div class="container ai-intro-inner">
-      <h2 id="ai-intro-heading" class="type-display" hidden={!title}>{title}</h2>
-      <p class="ai-copy" hidden={!description}>{description}</p>
+    <div class="container">
+      <div class="ai-intro-inner">
+        <h2 id="ai-intro-heading" class="type-display" hidden={!title}>{title}</h2>
+        <p class="ai-copy" hidden={!description}>{description}</p>
+      </div>
     </div>
   </section>
 )}
