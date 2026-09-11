@@ -1,0 +1,40 @@
+---
+const title = 'We work with great minds';
+const body =
+  'FlyCatch has been specifically formed to bring IT innovation to traditional processes in organizations across the world.Our team is charged with a positive aura, motivated with challenges, and a soothing work culture makes them enthusiastic.';
+const stats = [
+  { number: '30', plus: '+', label: 'Projects' },
+  { number: '25', plus: '+', label: 'Customers' },
+  { number: '60', plus: '+', label: 'Passionate Associates' },
+];
+---
+<section class="ai-minds" id="great-minds" aria-labelledby="ai-minds-heading" data-ai-minds>
+  <div class="ai-minds-media" aria-hidden="true">
+    <img
+      class="ai-minds-globe"
+      src="/ai-services/minds-globe.png"
+      alt=""
+      width="1512"
+      height="672"
+      loading="lazy"
+    />
+    <span class="ai-minds-hue"></span>
+  </div>
+  <div class="container ai-minds-inner">
+    <h2 id="ai-minds-heading">{title}</h2>
+    <p class="ai-minds-copy">{body}</p>
+    <ul class="ai-minds-stats">
+      {stats.map((stat) => (
+        <li class="ai-minds-stat">
+          <span class="ai-minds-stat-value">
+            <span class="ai-minds-stat-number" data-stat-target={stat.number}>0</span>
+            {stat.plus && <span class="ai-minds-stat-plus">{stat.plus}</span>}
+          </span>
+          <span class="ai-minds-stat-label">{stat.label}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<script src="../scripts/ai-minds.ts"></script>
