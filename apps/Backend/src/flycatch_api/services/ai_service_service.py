@@ -3,9 +3,8 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from uuid import UUID
 
-from pydantic import ValidationError
 from sqlalchemy import func, or_
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, object_session
 
 from flycatch_api.models.ai_service import AiService, AiServiceSolution
 from flycatch_api.models.case_study import ContentStatus
@@ -160,17 +159,33 @@ def ai_schema(row: AiService) -> AiServiceSchema:
     )
 
 
-def public_ai(row: AiService) -> PublicAiService:
+def _published_solutions(row: AiService) -> list:
+    session = object_session(row)
+
+    def rollback() -> None:
+        if session is not None:
+            session.rollback()
+
+    try:
+        links = list(row.solution_links or [])
+    except Exception:
+        rollback()
+        return []
     solutions = []
-    for link in row.solution_links:
-        detail = link.solution_detail
-        if detail is None or detail.status != ContentStatus.publish:
-            continue
+    for link in links:
         try:
+            detail = link.solution_detail
+            if detail is None or detail.status != ContentStatus.publish:
+                continue
             solutions.append(public_detail(detail))
-        except (CatalogError, ValidationError, ValueError, TypeError):
+        except Exception:
+            rollback()
             continue
-    return PublicAiService(
+    return solutions
+
+
+def public_ai(row: AiService) -> PublicAiService:
+    payload = PublicAiService(
         slug=row.slug or "",
         banner_title=row.banner_title or "",
         banner_image_key=row.banner_image_key,
@@ -185,12 +200,13 @@ def public_ai(row: AiService) -> PublicAiService:
         ai_expertise_image_key=row.ai_expertise_image_key,
         ai_expertise_accordion=_accordion_public(row.ai_expertise_accordion),
         ai_expertise_accordion_description=row.ai_expertise_accordion_description or "",
-        solutions=solutions,
+        solutions=[],
         faq_title=row.faq_title or "",
         faq_description=row.faq_description or "",
         faq_accordion=_accordion_public(row.faq_accordion),
         seo=_seo_public(row.seo),
     )
+    return payload.model_copy(update={"solutions": _published_solutions(row)})
 
 
 class AiServiceService:

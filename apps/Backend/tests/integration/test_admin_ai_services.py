@@ -18,7 +18,7 @@ def test_unauthenticated_ai_services_are_rejected(client):
     assert response.status_code == 401
 
 
-def test_ai_service_crud_solutions_and_public(client, bootstrapped, db):
+def test_ai_service_crud_solutions_and_public(client, bootstrapped, db, monkeypatch):
     headers = _admin(client, bootstrapped)
     detail = client.post(
         "/api/v1/admin/solution-details",
@@ -82,6 +82,18 @@ def test_ai_service_crud_solutions_and_public(client, bootstrapped, db):
     assert live.status_code == 200
     assert "status" not in live.json()
     assert live.json()["solutions"][0]["banner"]["title"] == "Vision"
+
+    def boom(_row):
+        raise RuntimeError("nested-solution")
+
+    monkeypatch.setattr(
+        "flycatch_api.services.ai_service_service.public_detail",
+        boom,
+    )
+    isolated = client.get("/api/v1/public/ai-services/ai-lab")
+    assert isolated.status_code == 200, isolated.text
+    assert isolated.json()["banner_title"] == "AI Lab"
+    assert isolated.json()["solutions"] == []
 
     detail_row = db.query(SolutionDetail).filter(SolutionDetail.slug == "vision-detail").one()
     detail_row.banner = {**(detail_row.banner or {}), "legacy_caption": "old"}

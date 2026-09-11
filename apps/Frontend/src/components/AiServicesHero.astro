@@ -8,7 +8,7 @@ interface Props {
 
 const { page } = Astro.props;
 const banner = publicMediaUrl(page.banner_image_key);
-const heading = page.seo.h1_tag.trim() || page.banner_title;
+const heading = page.banner_title.trim();
 ---
 <section class="ai-hero" aria-labelledby="ai-heading">{banner ? (
     <img
@@ -24,6 +24,6 @@ const heading = page.seo.h1_tag.trim() || page.banner_title;
   <div class="ai-hero-overlay" aria-hidden="true"></div>
   <div class="ai-hero-scrim" aria-hidden="true"></div>
   <div class="container ai-hero-copy">
-    <h1 id="ai-heading" class="type-display-lg">{heading}</h1>
+    <h1 id="ai-heading" class="type-display-lg" hidden={!heading}>{heading}</h1>
   </div>
 </section>

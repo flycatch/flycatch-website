@@ -102,44 +102,62 @@ describe('public AI services loaders', () => {
   });
 });
 
-describe('AI services designed fallback', () => {
-  it('fills empty published fields from the designed page', async () => {
-    const { aiServicePage } = await import('../../src/lib/ai-services-content');
-    const page = aiServicePage({
-      slug: 'cms-ai',
-      banner_title: 'CMS title',
-      banner_image_key: null,
-      introduction_title: '',
-      introduction_description: '',
-      solutions_title: '',
-      solutions_description: '',
-      industry_title: '',
-      industry_description: '',
-      industry_items: [],
-      ai_expertise_title: '',
-      ai_expertise_image_key: null,
-      ai_expertise_accordion: [],
-      ai_expertise_accordion_description: '',
-      solutions: [],
-      faq_title: '',
-      faq_description: '',
-      faq_accordion: [],
-      seo: {
-        title: '',
-        description: '',
-        canonical_url: '',
-        meta_title: '',
-        h1_tag: '',
-        image_alt: '',
-        image_key: null,
-      },
+describe('public AI service field mapping', () => {
+  it('returns published detail fields without substituting designed content', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        slug: 'cms-ai',
+        banner_title: 'CMS title',
+        banner_image_key: null,
+        introduction_title: '',
+        introduction_description: '',
+        solutions_title: '',
+        solutions_description: '',
+        industry_title: '',
+        industry_description: '',
+        industry_items: [],
+        ai_expertise_title: '',
+        ai_expertise_image_key: null,
+        ai_expertise_accordion: [],
+        ai_expertise_accordion_description: '',
+        solutions: [
+          {
+            title: 'DoctCare AI',
+            slug: 'doctcare-ai',
+            banner: { image_key: null, title: '', sub_title: '', industry_type: '' },
+            introduction: { sub_title: '', description: '' },
+            solutions_section: {
+              title: 'DoctCare AI',
+              image_key: 'solutions/doctcare.jpg',
+              description: 'Hover copy',
+            },
+          },
+        ],
+        faq_title: '',
+        faq_description: '',
+        faq_accordion: [],
+        seo: {
+          title: 'AI Services',
+          description: '',
+          canonical_url: '/services/ai-services',
+          meta_title: '',
+          h1_tag: '',
+          image_alt: '',
+          image_key: null,
+        },
+      }),
     });
-    expect(page.slug).toBe('cms-ai');
-    expect(page.banner_title).toBe('CMS title');
-    expect(page.banner_image_key).toBe('/ai-services/hero.jpg');
-    expect(page.introduction_title).toBe('Offering best services');
-    expect(page.solutions).toHaveLength(4);
-    expect(page.industry_items).toHaveLength(5);
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedAiService('cms-ai');
+    expect(result.error).toBe(false);
+    expect(result.item?.banner_title).toBe('CMS title');
+    expect(result.item?.banner_image_key).toBeNull();
+    expect(result.item?.introduction_title).toBe('');
+    expect(result.item?.industry_items).toHaveLength(0);
+    expect(result.item?.solutions[0].solutions_section.title).toBe('DoctCare AI');
+    expect(result.item?.solutions[0].solutions_section.image_key).toBe('solutions/doctcare.jpg');
+    vi.unstubAllGlobals();
   });
 });
 

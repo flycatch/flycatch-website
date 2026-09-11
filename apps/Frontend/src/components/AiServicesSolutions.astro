@@ -20,13 +20,15 @@ const show = Boolean(title || description || solutions.length);
         <p class="ai-copy" hidden={!description}>{description}</p>
       </div>
       <div class="ai-solutions-track" hidden={!solutions.length}>{solutions.map((solution) => {
-          const image = publicMediaUrl(solution.banner?.image_key);
-          const overlayTitle = (solution.introduction?.sub_title ?? '').trim();
-          const overlayBody = (solution.introduction?.description ?? '').trim();
-          const label = solution.title.trim() || solution.banner?.title || '';
+          const section = solution.solutions_section;
+          const image = publicMediaUrl(section?.image_key);
+          const overlayTitle = (section?.title ?? '').trim();
+          const overlayBody = (section?.description ?? '').trim();
+          const label = overlayTitle || solution.title.trim() || '';
           const showHover = Boolean(overlayTitle || overlayBody);
+          const href = solution.slug.trim() ? `/solutions/${solution.slug}` : '';
           return (
-            <a class="ai-solution-card" href={`/solutions/${solution.slug}`}>{image ? (
+            <a class="ai-solution-card" href={href || undefined}>{image ? (
                 <img src={image} alt="" width="283" height="458" loading="lazy" />
               ) : (
                 <span class="ai-solution-fallback"></span>
