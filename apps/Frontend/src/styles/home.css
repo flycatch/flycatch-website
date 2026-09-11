@@ -1086,6 +1086,9 @@
 }
 
 :is(.home-page, .ai-services-page) .section-cta {
+  display: grid;
+  align-items: center;
+  min-height: clamp(23.75rem, 20rem + 8vw, 26.25rem);
   background: #f2f2f2;
 }
 

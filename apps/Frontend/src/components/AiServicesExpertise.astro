@@ -12,7 +12,13 @@ const description = page.ai_expertise_accordion_description.trim();
 const image = publicMediaUrl(page.ai_expertise_image_key);
 const items = [...(page.ai_expertise_accordion ?? [])]
   .filter((item) => item.title.trim() || item.contents.trim())
-  .sort((a, b) => a.order - b.order);
+  .sort((a, b) => a.order - b.order)
+  .map((item) => ({
+    ...item,
+    contents: item.contents.replace(/<\/?ol\b[^>]*>/gi, (tag) =>
+      tag.startsWith('</') ? '</ul>' : tag.replace(/^<ol\b/i, '<ul'),
+    ),
+  }));
 const show = Boolean(title || description || image || items.length);
 ---
 {show && (
