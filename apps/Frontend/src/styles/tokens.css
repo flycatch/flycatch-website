@@ -90,6 +90,7 @@
   --explore-size: 72px;
   --explore-size-md: 104px;
   --offer-min-height: 780px;
+  --cta-section-min-height: clamp(23.75rem, 20rem + 8vw, 26.25rem);
   --insight-media-height: 244px;
   --menu-icon: 40px;
   --line-height: 1.55;
