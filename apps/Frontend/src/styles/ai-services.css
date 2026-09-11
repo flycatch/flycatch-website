@@ -11,7 +11,8 @@
 
 .ai-copy {
   margin: 0;
-  font-size: clamp(1.125rem, 0.9792rem + 0.6481vw, 1.5625rem);
+  max-width: 100%;
+  font-size: clamp(1rem, 0.9167rem + 0.3704vw, 1.25rem);
   font-weight: 300;
   line-height: 1.55;
   letter-spacing: 0.6px;
@@ -70,13 +71,21 @@
   padding-bottom: 24px;
 }
 
-.ai-hero h1 {
+.ai-services-page .ai-hero h1 {
   margin: 0;
+  max-width: 100%;
   color: #ffffff;
-  font-size: clamp(2.125rem, 1.4167rem + 3.1481vw, 4.25rem);
-  font-weight: 300;
+  font-size: clamp(1.75rem, 1.375rem + 1.6667vw, 2.875rem);
+  font-weight: 400;
   line-height: normal;
   letter-spacing: 0.6px;
+  transform: scale(0.9);
+  transition: transform 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.ai-services-page .ai-hero h1.is-visible {
+  transform: scale(1);
 }
 
 .ai-intro {
@@ -91,9 +100,10 @@
   margin-inline: auto;
 }
 
-.ai-intro h2 {
+.ai-services-page .ai-intro h2 {
   margin: 0;
-  font-size: clamp(2rem, 1.4167rem + 2.5926vw, 3.75rem);
+  max-width: 100%;
+  font-size: clamp(1.75rem, 1.375rem + 1.6667vw, 2.875rem);
   font-weight: 300;
   line-height: 1.333;
   letter-spacing: 0.6px;
@@ -111,10 +121,11 @@
   gap: 24px;
 }
 
-.ai-solutions h2 {
+.ai-services-page .ai-solutions h2 {
   margin: 0;
+  max-width: 100%;
   color: #ffffff;
-  font-size: clamp(2rem, 1.4167rem + 2.5926vw, 3.75rem);
+  font-size: clamp(1.75rem, 1.375rem + 1.6667vw, 2.875rem);
   font-weight: 300;
   line-height: 1.333;
   letter-spacing: 0.6px;
@@ -143,6 +154,9 @@
   color: #ffffff;
   text-decoration: none;
   scroll-snap-align: start;
+  border-radius: 16px;
+  box-shadow: 0 7px 10px rgba(0, 0, 0, 0.5);
+  transition: 0.4s ease-out;
 }
 
 .ai-solution-card img,
@@ -153,6 +167,7 @@
   height: 100%;
   object-fit: cover;
   max-width: none;
+  border-radius: 16px;
 }
 
 .ai-solution-fallback {
@@ -171,9 +186,10 @@
   right: 20px;
   bottom: 20px;
   z-index: 1;
+  max-width: calc(100% - 40px);
   font-size: clamp(1.125rem, 1rem + 0.5556vw, 1.5rem);
   font-weight: 500;
-  line-height: 32px;
+  line-height: 1.25;
   letter-spacing: 0.6px;
 }
 
@@ -191,10 +207,11 @@
   gap: 32px;
 }
 
-.ai-expertise h2,
-.ai-industries h2 {
+.ai-services-page .ai-expertise h2,
+.ai-services-page .ai-industries h2 {
   margin: 0;
-  font-size: clamp(2.125rem, 1.4167rem + 3.1481vw, 4.25rem);
+  max-width: 100%;
+  font-size: clamp(1.75rem, 1.375rem + 1.6667vw, 2.875rem);
   font-weight: 300;
   line-height: normal;
   letter-spacing: 0.6px;
@@ -250,6 +267,11 @@
   letter-spacing: 0.6px;
 }
 
+.ai-accordion summary span {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
 .ai-accordion summary::-webkit-details-marker {
   display: none;
 }
@@ -268,10 +290,27 @@
 
 .ai-accordion-body {
   padding: 0 0 24px;
+  max-width: 100%;
   font-size: clamp(1rem, 0.9167rem + 0.3704vw, 1.25rem);
   font-weight: 300;
   line-height: 1.55;
   letter-spacing: 0.6px;
+}
+
+.ai-accordion-body :is(ul, ol) {
+  margin: 0;
+  padding-left: 1.2em;
+  list-style-type: disc;
+  list-style-position: outside;
+}
+
+.ai-accordion-body li {
+  margin: 0.35em 0;
+  list-style-type: disc;
+}
+
+.ai-accordion-body .ql-ui {
+  display: none;
 }
 
 .ai-industries {
@@ -324,8 +363,9 @@
   bottom: 32px;
   margin: 0;
   z-index: 1;
+  max-width: calc(100% - 64px);
   color: #ffffff;
-  font-size: clamp(1.5rem, 1.3333rem + 0.7407vw, 2rem);
+  font-size: clamp(1.25rem, 1.125rem + 0.5556vw, 1.625rem);
   font-weight: 400;
   line-height: 1.25;
   letter-spacing: 0.6px;
@@ -333,7 +373,7 @@
 
 @media (min-width: 768px) {
   .ai-intro-inner {
-    gap: 80px;
+    gap: 30px;
   }
 
   .ai-solutions-head {
@@ -403,7 +443,7 @@
 
   .ai-expertise-head {
     gap: 40px;
-    margin-bottom: 80px;
+    margin-bottom: 35px;
   }
 
   .ai-expertise-body {
@@ -426,20 +466,32 @@
 }
 
 @media (hover: hover) and (min-width: 1024px) {
-  .ai-solution-hover {
-    display: grid;
-    align-content: center;
-    gap: 24px;
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.78);
+  .ai-solution-scrim {
+    transition: 0.4s ease-out;
+  }
+
+  .ai-solution-name {
     opacity: 0;
-    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .ai-solution-hover {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 0;
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    z-index: 2;
+    max-width: calc(100% - 40px);
+    transform: translateY(0);
+    transition: 0.4s ease-out;
   }
 
   .ai-solution-hover-title {
+    display: block;
     font-size: clamp(1.125rem, 1rem + 0.5556vw, 1.5rem);
     font-weight: 500;
     line-height: 1.25;
@@ -447,20 +499,31 @@
   }
 
   .ai-solution-hover-body {
-    font-size: clamp(0.9375rem, 0.875rem + 0.2778vw, 1.125rem);
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    font-size: clamp(0.75rem, 0.7083rem + 0.1852vw, 0.875rem);
     font-weight: 300;
-    line-height: 1.55;
+    line-height: 1.45;
     letter-spacing: 0.6px;
+    transition: 0.4s ease-out;
+  }
+
+  .ai-solution-card:hover .ai-solution-scrim,
+  .ai-solution-card:focus-visible .ai-solution-scrim {
+    background: rgba(0, 0, 0, 0.78);
   }
 
   .ai-solution-card:hover .ai-solution-hover,
   .ai-solution-card:focus-visible .ai-solution-hover {
-    opacity: 1;
+    gap: 8px;
+    transform: translateY(-20px);
   }
 
-  .ai-solution-card:hover .ai-solution-name,
-  .ai-solution-card:focus-visible .ai-solution-name {
-    opacity: 0;
+  .ai-solution-card:hover .ai-solution-hover-body,
+  .ai-solution-card:focus-visible .ai-solution-hover-body {
+    max-height: 12rem;
+    opacity: 1;
   }
 }
 
@@ -506,19 +569,19 @@
 .ai-minds h2,
 .ai-minds-copy {
   margin: 0;
-  max-width: 1192px;
+  max-width: min(1192px, 100%);
   font-weight: 300;
   letter-spacing: 0.6px;
   color: #ffffff;
 }
 
-.ai-minds h2 {
-  font-size: clamp(2rem, 1.4167rem + 2.5926vw, 3.75rem);
+.ai-services-page .ai-minds h2 {
+  font-size: clamp(1.75rem, 1.375rem + 1.6667vw, 2.875rem);
   line-height: 1.333;
 }
 
 .ai-minds-copy {
-  font-size: clamp(1.125rem, 0.9792rem + 0.6481vw, 1.5625rem);
+  font-size: clamp(1rem, 0.9167rem + 0.3704vw, 1.25rem);
   line-height: 1.55;
 }
 
@@ -548,21 +611,21 @@
 }
 
 .ai-minds-stat-number {
-  font-size: clamp(2.5rem, 1.8333rem + 2.963vw, 4.5rem);
+  font-size: clamp(2rem, 1.4583rem + 2.4074vw, 3.625rem);
   font-weight: 400;
   letter-spacing: 0.6px;
   line-height: 1;
 }
 
 .ai-minds-stat-plus {
-  font-size: clamp(2.5rem, 1.8333rem + 2.963vw, 4.5rem);
+  font-size: clamp(2rem, 1.4583rem + 2.4074vw, 3.625rem);
   font-weight: 400;
   letter-spacing: 0.6px;
   line-height: 1;
 }
 
 .ai-minds-stat-label {
-  font-size: clamp(0.875rem, 0.7917rem + 0.3704vw, 1.25rem);
+  font-size: clamp(0.875rem, 0.8125rem + 0.2778vw, 1.125rem);
   font-weight: 300;
   letter-spacing: 0.6px;
   line-height: 1.2;
@@ -603,7 +666,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .ai-accordion summary img,
-  .ai-solution-hover {
+  .ai-solution-card,
+  .ai-solution-hover,
+  .ai-solution-hover-body,
+  .ai-solution-scrim {
     transition: none;
   }
 }
