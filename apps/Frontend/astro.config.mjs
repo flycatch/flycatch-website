@@ -14,6 +14,7 @@ export default defineConfig({
       customPages: [
         `${site}/`,
         `${site}/about`,
+        `${site}/services/ai-services`,
         `${site}/case-studies`,
         `${site}/company/blogs`,
         `${site}/company/clients`,

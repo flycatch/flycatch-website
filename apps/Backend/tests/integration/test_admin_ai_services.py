@@ -1,5 +1,8 @@
 from fastapi.testclient import TestClient
 
+from flycatch_api.models.ai_service import AiService
+from flycatch_api.models.solution_detail import SolutionDetail
+
 
 def _sign_in(client: TestClient, email: str, password: str):
     return client.post("/api/v1/admin/auth/sign-in", json={"email": email, "password": password})
@@ -15,7 +18,7 @@ def test_unauthenticated_ai_services_are_rejected(client):
     assert response.status_code == 401
 
 
-def test_ai_service_crud_solutions_and_public(client, bootstrapped):
+def test_ai_service_crud_solutions_and_public(client, bootstrapped, db, monkeypatch):
     headers = _admin(client, bootstrapped)
     detail = client.post(
         "/api/v1/admin/solution-details",
@@ -79,6 +82,31 @@ def test_ai_service_crud_solutions_and_public(client, bootstrapped):
     assert live.status_code == 200
     assert "status" not in live.json()
     assert live.json()["solutions"][0]["banner"]["title"] == "Vision"
+
+    def boom(_row):
+        raise RuntimeError("nested-solution")
+
+    monkeypatch.setattr(
+        "flycatch_api.services.ai_service_service.public_detail",
+        boom,
+    )
+    isolated = client.get("/api/v1/public/ai-services/ai-lab")
+    assert isolated.status_code == 200, isolated.text
+    assert isolated.json()["banner_title"] == "AI Lab"
+    assert isolated.json()["solutions"] == []
+
+    detail_row = db.query(SolutionDetail).filter(SolutionDetail.slug == "vision-detail").one()
+    detail_row.banner = {**(detail_row.banner or {}), "legacy_caption": "old"}
+    detail_row.challenges = {"types": [{"title": "Scale", "legacy": True, "order": 0}]}
+    entry = db.query(AiService).filter(AiService.slug == "ai-lab").one()
+    entry.industry_items = [{"title": "Health", "image_key": None, "order": 0, "legacy": True}]
+    entry.seo = {**(entry.seo or {}), "unknown": "x", "description": "d" * 600}
+    db.commit()
+    resilient = client.get("/api/v1/public/ai-services/ai-lab")
+    assert resilient.status_code == 200, resilient.text
+    assert resilient.json()["industry_items"][0]["title"] == "Health"
+    assert "legacy" not in resilient.json()["industry_items"][0]
+    assert len(resilient.json()["seo"]["description"]) == 500
 
     deleted = client.delete(f"/api/v1/admin/ai-services/{entry_id}", headers=headers)
     assert deleted.status_code == 204

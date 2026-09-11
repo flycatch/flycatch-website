@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from uuid import UUID
 
+from pydantic import ValidationError
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
@@ -99,25 +100,72 @@ def _heading_items(items: object) -> list[dict]:
             continue
         result.append(
             {
-                "title": str(item.get("title") or ""),
-                "order": max(0, int(item.get("order") or 0)),
-                "color": str(item.get("color") or ""),
+                "title": str(item.get("title") or "")[:200],
+                "order": _order(item.get("order")),
+                "color": str(item.get("color") or "")[:20],
             }
         )
     return result
 
 
+def _order(value: object) -> int:
+    try:
+        return max(0, int(value or 0))
+    except (TypeError, ValueError):
+        return 0
+
+
+def _as_key(value: object) -> str | None:
+    return value if isinstance(value, str) and value else None
+
+
+def _type_item(row: dict) -> dict:
+    image_key = row.get("image_key")
+    return {
+        "image_key": image_key if isinstance(image_key, str) and image_key else None,
+        "description": str(row.get("description") or ""),
+        "order": _order(row.get("order")),
+        "title": str(row.get("title") or "")[:200],
+    }
+
+
 def _collected_types(block: dict) -> list:
+    raw_rows: list = []
     if isinstance(block.get("types"), list):
-        return [row for row in block["types"] if isinstance(row, dict)]
-    collected: list = []
-    items = block.get("items") if isinstance(block.get("items"), list) else []
-    for item in items:
-        if not isinstance(item, dict):
-            continue
-        types = item.get("types") if isinstance(item.get("types"), list) else []
-        collected.extend(row for row in types if isinstance(row, dict))
-    return collected
+        raw_rows = [row for row in block["types"] if isinstance(row, dict)]
+    else:
+        items = block.get("items") if isinstance(block.get("items"), list) else []
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            types = item.get("types") if isinstance(item.get("types"), list) else []
+            raw_rows.extend(row for row in types if isinstance(row, dict))
+    return [_type_item(row) for row in raw_rows]
+
+
+def normalize_banner(raw: object) -> dict:
+    block = raw if isinstance(raw, dict) else {}
+    image_key = block.get("image_key")
+    return {
+        "image_key": image_key if isinstance(image_key, str) else None,
+        "title": str(block.get("title") or "")[:200],
+        "sub_title": str(block.get("sub_title") or "")[:200],
+        "industry_type": str(block.get("industry_type") or "")[:120],
+    }
+
+
+def normalize_seo(raw: object) -> dict:
+    block = raw if isinstance(raw, dict) else {}
+    image_key = block.get("image_key")
+    return {
+        "title": str(block.get("title") or "")[:200],
+        "description": str(block.get("description") or "")[:500],
+        "canonical_url": str(block.get("canonical_url") or "")[:500],
+        "meta_title": str(block.get("meta_title") or "")[:200],
+        "h1_tag": str(block.get("h1_tag") or "")[:200],
+        "image_alt": str(block.get("image_alt") or "")[:200],
+        "image_key": image_key if isinstance(image_key, str) else None,
+    }
 
 
 def _icon_keys(block: dict, first: dict) -> list[str]:
@@ -140,9 +188,9 @@ def normalize_introduction(raw: object) -> dict:
         ],
         "description": str(block.get("description") or first.get("description") or ""),
         "icon_keys": _icon_keys(block, first),
-        "sub_title": str(block.get("sub_title") or first.get("sub_title") or ""),
+        "sub_title": str(block.get("sub_title") or first.get("sub_title") or "")[:200],
         "sub_description": str(block.get("sub_description") or first.get("sub_description") or ""),
-        "image_key": block.get("image_key") or first.get("image_key"),
+        "image_key": _as_key(block.get("image_key") or first.get("image_key")),
     }
 
 
@@ -155,7 +203,7 @@ def normalize_challenges(raw: object) -> dict:
             for item in _heading_items(block.get("items"))
         ],
         "description": str(block.get("description") or first.get("description") or ""),
-        "image_key": block.get("image_key") or first.get("image_key"),
+        "image_key": _as_key(block.get("image_key") or first.get("image_key")),
         "name": str(block.get("name") or first.get("name") or ""),
         "position": str(block.get("position") or first.get("position") or ""),
         "types": _collected_types(block),
@@ -180,8 +228,8 @@ def normalize_solutions_section(raw: object) -> dict:
     keys = block.get("image_keys") if isinstance(block.get("image_keys"), list) else []
     image_key = block.get("image_key") or (keys[0] if keys else None)
     return {
-        "title": str(block.get("title") or ""),
-        "image_key": image_key,
+        "title": str(block.get("title") or "")[:200],
+        "image_key": _as_key(image_key),
         "description": str(block.get("description") or ""),
     }
 
@@ -287,7 +335,7 @@ def detail_schema(row: SolutionDetail) -> SolutionDetailSchema:
         id=row.id,
         title=row.title,
         slug=row.slug,
-        banner=SolutionBanner.model_validate(row.banner or {}),
+        banner=SolutionBanner.model_validate(normalize_banner(row.banner)),
         introduction=IntroductionBlock.model_validate(normalize_introduction(row.introduction)),
         challenges=ChallengesBlock.model_validate(normalize_challenges(row.challenges)),
         benefits=BenefitsBlock.model_validate(normalize_benefits(row.benefits)),
@@ -295,7 +343,7 @@ def detail_schema(row: SolutionDetail) -> SolutionDetailSchema:
             normalize_solutions_section(row.solutions_section)
         ),
         cta=SolutionCta.model_validate(normalize_cta(row.cta)),
-        seo=ContentSeo.model_validate(row.seo or {}),
+        seo=ContentSeo.model_validate(normalize_seo(row.seo)),
         status=row.status,
         created_at=row.created_at,
     )
@@ -342,15 +390,20 @@ class SolutionDetailService:
         self, db: Session, q: str | None, page: int, per_page: int
     ) -> PublicSolutionDetailList:
         page, per_page, rows, total = self._page(db, q, page, per_page, published_only=True)
-        return PublicSolutionDetailList(
-            items=[
-                PublicSolutionDetailSummary(
-                    slug=row.slug,
-                    title=row.title,
-                    banner=SolutionBanner.model_validate(row.banner or {}),
+        items: list[PublicSolutionDetailSummary] = []
+        for row in rows:
+            try:
+                items.append(
+                    PublicSolutionDetailSummary(
+                        slug=row.slug,
+                        title=row.title,
+                        banner=SolutionBanner.model_validate(normalize_banner(row.banner)),
+                    )
                 )
-                for row in rows
-            ],
+            except (CatalogError, ValidationError, ValueError, TypeError):
+                continue
+        return PublicSolutionDetailList(
+            items=items,
             page=page,
             per_page=per_page,
             total=total,

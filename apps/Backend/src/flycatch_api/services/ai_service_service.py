@@ -4,7 +4,7 @@ from datetime import UTC, datetime
 from uuid import UUID
 
 from sqlalchemy import func, or_
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, object_session
 
 from flycatch_api.models.ai_service import AiService, AiServiceSolution
 from flycatch_api.models.case_study import ContentStatus
@@ -30,6 +30,68 @@ from flycatch_api.services.content_blocks import accordion_dicts, optional_key, 
 from flycatch_api.services.industry_service import PER_PAGE, coerce_status
 from flycatch_api.services.solution_detail_service import public_detail
 from flycatch_api.services.text import is_valid_slug, sanitize_html, slugify
+
+
+def _order(value: object) -> int:
+    try:
+        return max(0, int(value or 0))
+    except (TypeError, ValueError):
+        return 0
+
+
+def _clip(value: object, limit: int) -> str:
+    return str(value or "")[:limit]
+
+
+def _media_key(value: object) -> str | None:
+    return value if isinstance(value, str) and value else None
+
+
+def _industry_public(items: object) -> list[IndustryItem]:
+    result: list[IndustryItem] = []
+    if not isinstance(items, list):
+        return result
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        result.append(
+            IndustryItem(
+                title=_clip(item.get("title"), 200),
+                image_key=_media_key(item.get("image_key")),
+                order=_order(item.get("order")),
+            )
+        )
+    return result
+
+
+def _accordion_public(items: object) -> list[AccordionItem]:
+    result: list[AccordionItem] = []
+    if not isinstance(items, list):
+        return result
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        result.append(
+            AccordionItem(
+                title=_clip(item.get("title"), 200),
+                contents=str(item.get("contents") or ""),
+                order=_order(item.get("order")),
+            )
+        )
+    return result
+
+
+def _seo_public(raw: object) -> ContentSeo:
+    data = raw if isinstance(raw, dict) else {}
+    return ContentSeo(
+        title=_clip(data.get("title"), 200),
+        description=_clip(data.get("description"), 500),
+        canonical_url=_clip(data.get("canonical_url"), 500),
+        meta_title=_clip(data.get("meta_title"), 200),
+        h1_tag=_clip(data.get("h1_tag"), 200),
+        image_alt=_clip(data.get("image_alt"), 200),
+        image_key=_media_key(data.get("image_key")),
+    )
 
 
 def _industry_items(items: list[IndustryItem]) -> list[dict]:
@@ -97,34 +159,54 @@ def ai_schema(row: AiService) -> AiServiceSchema:
     )
 
 
+def _published_solutions(row: AiService) -> list:
+    session = object_session(row)
+
+    def rollback() -> None:
+        if session is not None:
+            session.rollback()
+
+    try:
+        links = list(row.solution_links or [])
+    except Exception:
+        rollback()
+        return []
+    solutions = []
+    for link in links:
+        try:
+            detail = link.solution_detail
+            if detail is None or detail.status != ContentStatus.publish:
+                continue
+            solutions.append(public_detail(detail))
+        except Exception:
+            rollback()
+            continue
+    return solutions
+
+
 def public_ai(row: AiService) -> PublicAiService:
-    schema = ai_schema(row)
-    solutions = [
-        public_detail(link.solution_detail)
-        for link in row.solution_links
-        if link.solution_detail is not None and link.solution_detail.status == ContentStatus.publish
-    ]
-    return PublicAiService(
-        slug=schema.slug,
-        banner_title=schema.banner_title,
-        banner_image_key=schema.banner_image_key,
-        introduction_title=schema.introduction_title,
-        introduction_description=schema.introduction_description,
-        solutions_title=schema.solutions_title,
-        solutions_description=schema.solutions_description,
-        industry_title=schema.industry_title,
-        industry_description=schema.industry_description,
-        industry_items=schema.industry_items,
-        ai_expertise_title=schema.ai_expertise_title,
-        ai_expertise_image_key=schema.ai_expertise_image_key,
-        ai_expertise_accordion=schema.ai_expertise_accordion,
-        ai_expertise_accordion_description=schema.ai_expertise_accordion_description,
-        solutions=solutions,
-        faq_title=schema.faq_title,
-        faq_description=schema.faq_description,
-        faq_accordion=schema.faq_accordion,
-        seo=schema.seo,
+    payload = PublicAiService(
+        slug=row.slug or "",
+        banner_title=row.banner_title or "",
+        banner_image_key=row.banner_image_key,
+        introduction_title=row.introduction_title or "",
+        introduction_description=row.introduction_description or "",
+        solutions_title=row.solutions_title or "",
+        solutions_description=row.solutions_description or "",
+        industry_title=row.industry_title or "",
+        industry_description=row.industry_description or "",
+        industry_items=_industry_public(row.industry_items),
+        ai_expertise_title=row.ai_expertise_title or "",
+        ai_expertise_image_key=row.ai_expertise_image_key,
+        ai_expertise_accordion=_accordion_public(row.ai_expertise_accordion),
+        ai_expertise_accordion_description=row.ai_expertise_accordion_description or "",
+        solutions=[],
+        faq_title=row.faq_title or "",
+        faq_description=row.faq_description or "",
+        faq_accordion=_accordion_public(row.faq_accordion),
+        seo=_seo_public(row.seo),
     )
+    return payload.model_copy(update={"solutions": _published_solutions(row)})
 
 
 class AiServiceService:
