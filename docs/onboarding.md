@@ -32,6 +32,34 @@ Gateway: `http://localhost:8080` (`/` Frontend, `/admin` Administration FE, `/ap
 
 Tokens stay in Administration FE memory and are sent as `Authorization: Bearer`.
 
+## Import content from Strapi
+
+One-shot CLI reads Strapi v4 REST collections and upserts into Postgres (media → MinIO). Idempotent by slug/name.
+
+```bash
+export STRAPI_API_URL=https://your-strapi.example/api
+export STRAPI_API_TOKEN=your-read-token
+# optional if media URLs are relative to a different host:
+# export STRAPI_IMAGE_BASE_URL=https://your-strapi.example
+
+docker compose -f deployment/compose/docker-compose.yml exec \
+  -e STRAPI_API_URL -e STRAPI_API_TOKEN -e STRAPI_IMAGE_BASE_URL \
+  backend flycatch-import-strapi --dry-run
+
+docker compose -f deployment/compose/docker-compose.yml exec \
+  -e STRAPI_API_URL -e STRAPI_API_TOKEN -e STRAPI_IMAGE_BASE_URL \
+  backend flycatch-import-strapi
+```
+
+Useful flags:
+
+- `--only blogs,categories,case-studies` — limit steps (see `IMPORT_ORDER` in `flycatch_api/import_strapi/populate.py`)
+- `--publication-state live` — published entries only (`preview` is default and includes drafts)
+- `--id-map /tmp/strapi-id-map.json` — persist Strapi id → UUID map across runs
+- `-v` — verbose logging
+
+After import, review records in `/admin`. Published Strapi rows are imported with `status=publish`; the public Frontend still needs the usual publish/snapshot rebuild to show content.
+
 ## Publish-and-rebuild workflow
 
 1. Sign in to `/admin`

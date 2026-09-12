@@ -32,6 +32,7 @@ dev = [
 flycatch-provision-admin = "flycatch_api.cli.provision_admin:main"
 flycatch-seed-records = "flycatch_api.cli.seed_records:main"
 flycatch-bootstrap = "flycatch_api.cli.bootstrap:main"
+flycatch-import-strapi = "flycatch_api.import_strapi.cli:main"
 
 [build-system]
 requires = ["hatchling"]
