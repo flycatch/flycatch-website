@@ -1,0 +1,15 @@
+[
+  {
+    "id": 31,
+    "name": "Whitepaper",
+    "company": "Acme",
+    "file": {
+      "data": {
+        "id": 501,
+        "attributes": {"url": "/uploads/pack.pdf", "mime": "application/pdf", "name": "pack.pdf"}
+      }
+    },
+    "publishedAt": "2024-01-01T00:00:00.000Z",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  }
+]

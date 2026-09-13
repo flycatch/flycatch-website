@@ -3,15 +3,15 @@
 ## Public routes
 
 - Place pages in `apps/Frontend/src/pages/`
-- Use `PageTemplate.astro` for foundation routes
-- Bind content from `apps/Frontend/src/data/published.json` via `getPageBySlug()`
+- Render pages through `BaseLayout.astro` (Astro SSR, not a static export)
+- Bind published content through `src/lib/public-api.ts`
 - Externalise user-facing strings in `apps/Frontend/src/i18n/en.json`
 - Every indexable page MUST have: unique title, description, canonical, exactly one `h1`
 
 ## New route checklist
 
 1. Add page payload to published snapshot (or publish via Administration UI)
-2. Create `apps/Frontend/src/pages/{route}.astro` using `PageTemplate`
+2. Create `apps/Frontend/src/pages/{route}.astro` using `BaseLayout`
 3. Add message keys to `en.json`
 4. Add internal link from an existing indexable page
 5. Run `pnpm run check:all` in `apps/Frontend`

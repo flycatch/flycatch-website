@@ -41,6 +41,7 @@ class CaseStudy(Base):
     )
     image_key: Mapped[str | None] = mapped_column(String(255), nullable=True)
     image_alt: Mapped[str] = mapped_column(String(200), nullable=False, default="")
+    seo: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
     content_available_in: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)

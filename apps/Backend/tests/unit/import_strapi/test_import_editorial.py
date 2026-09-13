@@ -85,6 +85,8 @@ def test_import_categories_blogs_authors_idempotent(db, routes):
         assert blog.status == BlogStatus.publish
         assert "<strong>Hello </strong>" in blog.body
         assert blog.image_key == "uploaded-1.bin"
+        assert blog.seo["title"] == "Hello World"
+        assert blog.seo["image_alt"] == "Hero"
         assert len(blog.author_links) == 1
         assert len(blog.category_links) == 1
 

@@ -35,11 +35,21 @@ Compose does not provision staff. After services are healthy:
 
 ```bash
 docker compose -f deployment/compose/docker-compose.yml --env-file deployment/compose/.env exec backend alembic upgrade head
-docker compose -f deployment/compose/docker-compose.yml --env-file deployment/compose/.env exec backend flycatch-seed-records
 docker compose -f deployment/compose/docker-compose.yml --env-file deployment/compose/.env exec backend flycatch-bootstrap \
   --user-1-email admin1@example.com \
   --user-2-email admin2@example.com \
   --user-2-role editor
+docker compose -f deployment/compose/docker-compose.yml --env-file deployment/compose/.env exec backend flycatch-seed-records
+```
+
+Keep `PUBLIC_ORIGIN=http://localhost:8080`. Do not point Compose at the k3s or production APIs.
+
+Load the bundled Strapi fixtures (no remote CMS):
+
+```bash
+docker compose -f deployment/compose/docker-compose.yml --env-file deployment/compose/.env exec \
+  backend flycatch-import-strapi --from-dir /app/strapi-fixtures --publication-state live
+docker compose -f deployment/compose/docker-compose.yml --env-file deployment/compose/.env up -d --build frontend
 ```
 
 There is no default password. Bootstrap prompts for two passwords (min 12 characters). Sign in at `http://localhost:8080/admin`. Full startup notes: [README.md](../../README.md#quick-start-docker-compose) and [docs/onboarding.md](../../docs/onboarding.md).

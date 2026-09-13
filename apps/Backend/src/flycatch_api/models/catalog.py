@@ -335,6 +335,39 @@ class Download(Base):
     )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
+    requests: Mapped[list["DownloadRequest"]] = relationship(back_populates="download")
+
+
+class DownloadRequest(Base):
+    __tablename__ = "download_requests"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    download_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("downloads.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    name: Mapped[str] = mapped_column(String(120), nullable=False)
+    email: Mapped[str] = mapped_column(String(200), nullable=False)
+    company: Mapped[str] = mapped_column(String(200), nullable=False, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+    download: Mapped[Download] = relationship(back_populates="requests")
+
+
+class EmailOutbox(Base):
+    __tablename__ = "email_outbox"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    kind: Mapped[str] = mapped_column(String(40), nullable=False)
+    source_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
+    recipient: Mapped[str] = mapped_column(String(200), nullable=False)
+    subject: Mapped[str] = mapped_column(String(200), nullable=False)
+    body: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="pending")
+    attempts: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    last_error: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
 
 class FlycatchSaudiArabia(Base):
     __tablename__ = "flycatch_saudi_arabia"
@@ -344,6 +377,7 @@ class FlycatchSaudiArabia(Base):
     service_section: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
     banner_explore_text: Mapped[str] = mapped_column(String(200), nullable=False, default="")
     services_title: Mapped[str] = mapped_column(String(200), nullable=False, default="")
+    banner_image_key: Mapped[str | None] = mapped_column(String(255), nullable=True)
     video_key: Mapped[str | None] = mapped_column(String(255), nullable=True)
     seo: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
     status: Mapped[ContentStatus] = mapped_column(
@@ -352,6 +386,40 @@ class FlycatchSaudiArabia(Base):
         default=ContentStatus.draft,
     )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class PrivacyPolicy(Base):
+    __tablename__ = "privacy_policies"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    slug: Mapped[str] = mapped_column(String(128), unique=True, nullable=False, index=True)
+    body: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    seo: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    status: Mapped[ContentStatus] = mapped_column(
+        Enum(ContentStatus, name="content_status", create_type=False),
+        nullable=False,
+        default=ContentStatus.draft,
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class Terms(Base):
+    __tablename__ = "terms"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    slug: Mapped[str] = mapped_column(String(128), unique=True, nullable=False, index=True)
+    body: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    seo: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    status: Mapped[ContentStatus] = mapped_column(
+        Enum(ContentStatus, name="content_status", create_type=False),
+        nullable=False,
+        default=ContentStatus.draft,
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
 class Subscription(Base):

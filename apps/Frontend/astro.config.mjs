@@ -1,27 +1,50 @@
 import node from '@astrojs/node';
-import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
 
 const site = process.env.PUBLIC_ORIGIN || 'http://localhost:8080';
+
+function remotePatternFromOrigin(raw) {
+  try {
+    const url = new URL(raw);
+    return {
+      protocol: url.protocol.replace(':', ''),
+      hostname: url.hostname,
+      ...(url.port ? { port: url.port } : {}),
+    };
+  } catch {
+    return null;
+  }
+}
+
+const remotePatterns = [
+  remotePatternFromOrigin(site),
+  remotePatternFromOrigin(process.env.API_ORIGIN || ''),
+  { protocol: 'http', hostname: 'localhost' },
+  { protocol: 'http', hostname: '127.0.0.1' },
+  { protocol: 'http', hostname: 'backend' },
+  { protocol: 'https', hostname: 'www.flycatchtech.com' },
+  { protocol: 'https', hostname: '**.flycatchtech.in' },
+].filter(Boolean);
 
 export default defineConfig({
   output: 'server',
   adapter: node({ mode: 'standalone' }),
   site,
-  integrations: [
-    sitemap({
-      filter: (page) => !page.includes('/admin') && !page.includes('/api'),
-      customPages: [
-        `${site}/`,
-        `${site}/about`,
-        `${site}/services/ai-services`,
-        `${site}/case-studies`,
-        `${site}/company/blogs`,
-        `${site}/company/clients`,
-        `${site}/company/testimonials`,
-      ],
-    }),
-  ],
+  security: {
+    allowedDomains: [
+      { hostname: 'localhost' },
+      { hostname: '127.0.0.1' },
+      { hostname: 'www.flycatchtech.com' },
+      { hostname: '**.flycatchtech.in' },
+    ],
+  },
+  trailingSlash: 'never',
+  image: {
+    service: {
+      entrypoint: 'astro/assets/services/sharp',
+    },
+    remotePatterns,
+  },
   build: {
     inlineStylesheets: 'auto',
   },
@@ -29,7 +52,7 @@ export default defineConfig({
     preview: {
       allowedHosts: true,
       proxy: {
-        '/api': {
+        '/api/v1': {
           target: process.env.PUBLIC_ORIGIN || 'http://localhost:8080',
           changeOrigin: true,
         },
@@ -37,7 +60,7 @@ export default defineConfig({
     },
     server: {
       proxy: {
-        '/api': {
+        '/api/v1': {
           target: process.env.PUBLIC_ORIGIN || 'http://localhost:8080',
           changeOrigin: true,
         },

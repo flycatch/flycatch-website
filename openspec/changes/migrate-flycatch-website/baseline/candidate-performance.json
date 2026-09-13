@@ -1,0 +1,117 @@
+{
+  "captured_at": "2026-09-12T09:15:02.081Z",
+  "method": "Local Lighthouse against the candidate origin, mobile emulation. Figures are lab, not CrUX field data.",
+  "candidate_origin": "http://127.0.0.1:4321",
+  "pages": [
+    {
+      "id": "home",
+      "url": "http://127.0.0.1:4321/",
+      "requested_url": "http://127.0.0.1:4321/",
+      "final_url": "http://127.0.0.1:4321/",
+      "strategy": "mobile",
+      "source": "lighthouse@13.4.1 headless Chrome, form-factor=mobile",
+      "lab": {
+        "lcp_ms": 1735.1199000000001,
+        "inp_ms": 0,
+        "cls": 0.00005772961403922291,
+        "ttfb_ms": 1,
+        "tbt_ms": 0,
+        "transfer_size_bytes": 156238,
+        "performance_score": 1,
+        "inp_source": "tbt-lab-proxy-event-timing-unavailable"
+      },
+      "notes": [
+        "LCP, CLS, TTFB, and transfer size are Lighthouse mobile lab values.",
+        "INP is recorded from Lighthouse when present; otherwise Total Blocking Time is stored as the lab interactivity proxy, matching the 1.3 production baseline method."
+      ]
+    },
+    {
+      "id": "service",
+      "url": "http://127.0.0.1:4321/services/ai-services",
+      "requested_url": "http://127.0.0.1:4321/services/ai-services",
+      "final_url": "http://127.0.0.1:4321/services/ai-services",
+      "strategy": "mobile",
+      "source": "lighthouse@13.4.1 headless Chrome, form-factor=mobile",
+      "lab": {
+        "lcp_ms": 2032.7914500000002,
+        "inp_ms": 0,
+        "cls": 0.02126095961873341,
+        "ttfb_ms": 2,
+        "tbt_ms": 0,
+        "transfer_size_bytes": 165862,
+        "performance_score": 0.99,
+        "inp_source": "tbt-lab-proxy-event-timing-unavailable"
+      },
+      "notes": [
+        "LCP, CLS, TTFB, and transfer size are Lighthouse mobile lab values.",
+        "INP is recorded from Lighthouse when present; otherwise Total Blocking Time is stored as the lab interactivity proxy, matching the 1.3 production baseline method."
+      ]
+    },
+    {
+      "id": "solution",
+      "url": "http://127.0.0.1:4321/solutions/flyGrid-ai",
+      "requested_url": "http://127.0.0.1:4321/solutions/flyGrid-ai",
+      "final_url": "http://127.0.0.1:4321/solutions/flyGrid-ai",
+      "strategy": "mobile",
+      "source": "lighthouse@13.4.1 headless Chrome, form-factor=mobile",
+      "lab": {
+        "lcp_ms": 1663.60935,
+        "inp_ms": 0,
+        "cls": 0.001587903135462686,
+        "ttfb_ms": 2,
+        "tbt_ms": 0,
+        "transfer_size_bytes": 116672,
+        "performance_score": 0.99,
+        "inp_source": "tbt-lab-proxy-event-timing-unavailable"
+      },
+      "notes": [
+        "LCP, CLS, TTFB, and transfer size are Lighthouse mobile lab values.",
+        "INP is recorded from Lighthouse when present; otherwise Total Blocking Time is stored as the lab interactivity proxy, matching the 1.3 production baseline method."
+      ]
+    },
+    {
+      "id": "case_study",
+      "url": "http://127.0.0.1:4321/case-studies/a-social-e-commerce-platform-for-medallion-retailers",
+      "requested_url": "http://127.0.0.1:4321/case-studies/a-social-e-commerce-platform-for-medallion-retailers",
+      "final_url": "http://127.0.0.1:4321/case-studies/a-social-e-commerce-platform-for-medallion-retailers",
+      "strategy": "mobile",
+      "source": "lighthouse@13.4.1 headless Chrome, form-factor=mobile",
+      "lab": {
+        "lcp_ms": 1885.7811000000002,
+        "inp_ms": 0,
+        "cls": 0.002141919354341533,
+        "ttfb_ms": 3,
+        "tbt_ms": 0,
+        "transfer_size_bytes": 116564,
+        "performance_score": 0.99,
+        "inp_source": "tbt-lab-proxy-event-timing-unavailable"
+      },
+      "notes": [
+        "LCP, CLS, TTFB, and transfer size are Lighthouse mobile lab values.",
+        "INP is recorded from Lighthouse when present; otherwise Total Blocking Time is stored as the lab interactivity proxy, matching the 1.3 production baseline method."
+      ]
+    },
+    {
+      "id": "blog",
+      "url": "http://127.0.0.1:4321/company/blogs/how-kubernetes-help-your-growing-business",
+      "requested_url": "http://127.0.0.1:4321/company/blogs/how-kubernetes-help-your-growing-business",
+      "final_url": "http://127.0.0.1:4321/company/blogs/how-kubernetes-help-your-growing-business",
+      "strategy": "mobile",
+      "source": "lighthouse@13.4.1 headless Chrome, form-factor=mobile",
+      "lab": {
+        "lcp_ms": 1890.8422500000001,
+        "inp_ms": 0,
+        "cls": 0.02607716610900552,
+        "ttfb_ms": 3,
+        "tbt_ms": 0,
+        "transfer_size_bytes": 116504,
+        "performance_score": 0.99,
+        "inp_source": "tbt-lab-proxy-event-timing-unavailable"
+      },
+      "notes": [
+        "LCP, CLS, TTFB, and transfer size are Lighthouse mobile lab values.",
+        "INP is recorded from Lighthouse when present; otherwise Total Blocking Time is stored as the lab interactivity proxy, matching the 1.3 production baseline method."
+      ]
+    }
+  ]
+}

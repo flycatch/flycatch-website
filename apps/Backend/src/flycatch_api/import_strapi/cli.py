@@ -10,6 +10,58 @@ from pathlib import Path
 
 from flycatch_api.db import SessionLocal
 from flycatch_api.import_strapi.client import StrapiClient
+from flycatch_api.import_strapi.fixture_client import FixtureStrapiClient
+
+
+class _DryRunQuery:
+    def filter(self, *args: object, **kwargs: object) -> _DryRunQuery:
+        return self
+
+    def filter_by(self, **kwargs: object) -> _DryRunQuery:
+        return self
+
+    def order_by(self, *args: object) -> _DryRunQuery:
+        return self
+
+    def options(self, *args: object) -> _DryRunQuery:
+        return self
+
+    def first(self) -> None:
+        return None
+
+    def one_or_none(self) -> None:
+        return None
+
+    def all(self) -> list[object]:
+        return []
+
+    def count(self) -> int:
+        return 0
+
+
+class DryRunSession:
+    """Query stub so rehearsal mode never opens a database connection."""
+
+    def query(self, *args: object, **kwargs: object) -> _DryRunQuery:
+        return _DryRunQuery()
+
+    def add(self, *args: object, **kwargs: object) -> None:
+        return None
+
+    def delete(self, *args: object, **kwargs: object) -> None:
+        return None
+
+    def flush(self, *args: object, **kwargs: object) -> None:
+        return None
+
+    def commit(self) -> None:
+        return None
+
+    def rollback(self) -> None:
+        return None
+
+    def close(self) -> None:
+        return None
 from flycatch_api.import_strapi.context import ImportContext
 from flycatch_api.import_strapi.editorial import (
     import_blogs,
@@ -26,7 +78,6 @@ from flycatch_api.import_strapi.leads import (
     import_employee_testimonials,
     import_memberships,
     import_openings,
-    import_subscriptions,
 )
 from flycatch_api.import_strapi.media import MediaImporter
 from flycatch_api.import_strapi.pages import (
@@ -80,7 +131,6 @@ RUNNERS: dict[str, Callable[[ImportContext], object]] = {
     "downloads": import_downloads,
     "memberships": import_memberships,
     "contacts": import_contacts,
-    "subscriptions": import_subscriptions,
     "solution-details": import_solution_details,
     "solution-products": import_solution_products,
     "solutions": import_solutions,
@@ -118,8 +168,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--publication-state",
         choices=("preview", "live"),
-        default="preview",
-        help="Strapi publicationState (preview includes drafts).",
+        default="live",
+        help="Strapi publicationState. Default live so unpublished drafts are not imported.",
     )
     parser.add_argument(
         "--id-map",
@@ -133,7 +183,29 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Enable debug logging.",
     )
+    parser.add_argument(
+        "--report",
+        type=Path,
+        default=None,
+        help="Write a JSON rehearsal/import report to this path.",
+    )
+    parser.add_argument(
+        "--from-dir",
+        type=Path,
+        default=None,
+        help="Import from local Strapi fixture JSON instead of STRAPI_API_URL.",
+    )
     return parser
+
+
+def resolve_steps(only: str) -> list[str]:
+    selected = {part.strip() for part in only.split(",") if part.strip()}
+    if not selected:
+        return list(IMPORT_ORDER)
+    unknown = selected - set(RUNNERS)
+    if unknown:
+        raise ValueError(f"Unknown --only steps: {', '.join(sorted(unknown))}")
+    return [step for step in IMPORT_ORDER if step in selected]
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -144,45 +216,61 @@ def main(argv: list[str] | None = None) -> None:
         format="%(levelname)s %(message)s",
     )
 
+    raw_fixtures = args.from_dir or os.environ.get("STRAPI_FIXTURES_DIR", "").strip()
+    fixture_dir = Path(raw_fixtures) if raw_fixtures else None
     api_url = os.environ.get("STRAPI_API_URL", "").strip()
     token = os.environ.get("STRAPI_API_TOKEN", "").strip()
     image_base = os.environ.get("STRAPI_IMAGE_BASE_URL", "").strip() or None
-    if not api_url or not token:
+    if fixture_dir is None and (not api_url or not token):
         print(
-            "STRAPI_API_URL and STRAPI_API_TOKEN environment variables are required.",
+            "Pass --from-dir for local fixtures, or set STRAPI_API_URL and STRAPI_API_TOKEN.",
             file=sys.stderr,
         )
         raise SystemExit(2)
 
-    only = {part.strip() for part in args.only.split(",") if part.strip()}
-    if only:
-        unknown = only - set(RUNNERS)
-        if unknown:
-            print(f"Unknown --only steps: {', '.join(sorted(unknown))}", file=sys.stderr)
-            raise SystemExit(2)
-        steps = [step for step in IMPORT_ORDER if step in only]
-    else:
-        steps = list(IMPORT_ORDER)
-
-    db = SessionLocal()
     try:
-        with StrapiClient(
-            api_url,
-            token,
-            image_base_url=image_base,
-            publication_state=args.publication_state,
-        ) as client:
+        steps = resolve_steps(args.only)
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        raise SystemExit(2)
+
+    db = DryRunSession() if args.dry_run else SessionLocal()
+    try:
+        client_cm = (
+            FixtureStrapiClient(fixture_dir)
+            if fixture_dir
+            else StrapiClient(
+                api_url,
+                token,
+                image_base_url=image_base,
+                publication_state=args.publication_state,
+            )
+        )
+        with client_cm as client:
             media = MediaImporter(client, dry_run=args.dry_run)
             ctx = ImportContext(db=db, client=client, media=media, dry_run=args.dry_run)
             if args.id_map and args.id_map.exists():
                 ctx.id_map.load_dict(json.loads(args.id_map.read_text()))
                 logger.info("Loaded id map from %s", args.id_map)
 
+            step_reports: list[dict[str, object]] = []
             for step in steps:
                 logger.info("=== Importing %s ===", step)
                 runner = RUNNERS[step]
                 stats = runner(ctx)
                 logger.info("%s: %s", step, getattr(stats, "summary", lambda: stats)())
+                step_reports.append(
+                    {
+                        "step": step,
+                        "created": getattr(stats, "created", 0),
+                        "updated": getattr(stats, "updated", 0),
+                        "skipped": getattr(stats, "skipped", 0),
+                        "mapped": getattr(stats, "mapped", getattr(stats, "created", 0)
+                        + getattr(stats, "updated", 0)),
+                        "errors": list(getattr(stats, "errors", [])),
+                        "unhandled_blocks": dict(getattr(stats, "unhandled_blocks", {})),
+                    }
+                )
                 if not args.dry_run:
                     db.commit()
 
@@ -190,6 +278,25 @@ def main(argv: list[str] | None = None) -> None:
                 args.id_map.write_text(json.dumps(ctx.id_map.to_dict(), indent=2, sort_keys=True))
                 logger.info("Wrote id map to %s", args.id_map)
 
+            report = {
+                "mode": "dry-run" if args.dry_run else "applied",
+                "publication_state": args.publication_state,
+                "steps": step_reports,
+                "totals": {
+                    "created": ctx.stats.created,
+                    "updated": ctx.stats.updated,
+                    "skipped": ctx.stats.skipped,
+                    "mapped": ctx.stats.mapped,
+                    "errors": len(ctx.stats.errors),
+                    "unhandled_blocks": dict(ctx.stats.unhandled_blocks),
+                    "media_uploaded": media.uploaded,
+                    "media_skipped": media.skipped,
+                },
+            }
+            print(json.dumps(report, indent=2))
+            if args.report:
+                args.report.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
+                logger.info("Wrote report to %s", args.report)
             print(
                 f"Import complete ({'dry-run' if args.dry_run else 'applied'}): "
                 f"{ctx.stats.summary()}; media uploaded={media.uploaded} skipped={media.skipped}"

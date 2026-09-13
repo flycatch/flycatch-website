@@ -1,0 +1,21 @@
+{
+  "data": [
+    {
+      "id": 70,
+      "attributes": {
+        "flycatch_saudi_arabia_banner_title": "Saudi banner",
+        "banner_explore_text": "Explore",
+        "services_title": "Services",
+        "flycatch_saudi_arabia_banner_image": {
+          "data": {
+            "id": 88,
+            "attributes": {"url": "/uploads/saudi-banner.png", "mime": "image/png", "name": "saudi-banner.png"}
+          }
+        },
+        "publishedAt": "2024-04-01T00:00:00.000Z",
+        "createdAt": "2024-04-01T00:00:00.000Z"
+      }
+    }
+  ],
+  "meta": {"pagination": {"page": 1, "pageSize": 100, "pageCount": 1, "total": 1}}
+}

@@ -20,13 +20,19 @@ def test_solution_product_crud_order_and_slug(client, bootstrapped):
     created = client.post(
         "/api/v1/admin/solution-products",
         headers=headers,
-        json={"product_title": "Analytics", "product_tag": "Data", "order": 2},
+        json={
+            "product_title": "Analytics",
+            "product_tag": "Data",
+            "order": 2,
+            "seo": {"title": "Analytics SEO", "canonical_url": "https://www.flycatchtech.com/solutions/analytics"},
+        },
     )
     assert created.status_code == 201, created.text
     body = created.json()
     assert body["status"] == "draft"
     assert body["slug"] == "analytics"
     assert body["order"] == 2
+    assert body["seo"]["title"] == "Analytics SEO"
     product_id = body["id"]
 
     negative = client.post(

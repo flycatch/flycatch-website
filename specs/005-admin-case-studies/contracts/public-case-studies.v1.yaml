@@ -194,6 +194,7 @@ components:
         - industries
         - categories
         - technologies
+        - seo
       properties:
         heading:
           type: string
@@ -232,6 +233,39 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PublicTechnology'
+        seo:
+          $ref: '#/components/schemas/ContentSeo'
+    ContentSeo:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          default: ''
+          maxLength: 200
+        description:
+          type: string
+          default: ''
+          maxLength: 500
+        canonical_url:
+          type: string
+          default: ''
+          maxLength: 500
+        meta_title:
+          type: string
+          default: ''
+          maxLength: 200
+        h1_tag:
+          type: string
+          default: ''
+          maxLength: 200
+        image_alt:
+          type: string
+          default: ''
+          maxLength: 200
+        image_key:
+          type: string
+          nullable: true
   responses:
     CaseStudyNotFound:
       description: Unknown or unpublished case study

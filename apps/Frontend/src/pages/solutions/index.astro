@@ -1,0 +1,94 @@
+---
+export const prerender = true;
+
+import InteriorLayout from '../../layouts/InteriorLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import SectionState from '../../components/SectionState.astro';
+import OptimizedImage from '../../components/OptimizedImage.astro';
+import PageHero from '../../components/PageHero.astro';
+import HomeCta from '../../components/HomeCta.astro';
+import { imageAlt } from '../../lib/image';
+import {
+  loadPublishedSolutionDetails,
+  loadPublishedSolutionProducts,
+  loadPublishedSolutionsIndex,
+  publicMediaUrl,
+} from '../../lib/public-api';
+import { PRODUCTION_SOLUTION_SLUGS } from '../../lib/page-catalog';
+import {
+  buildCanonicalUrl,
+  fallbackMetadata,
+  metadataFallbackForPath,
+  metadataFromContentSeo,
+  publicSiteSettings,
+} from '../../lib/metadata';
+import { t } from '../../lib/i18n';
+
+const [indexResult, productsResult, detailsResult] = await Promise.all([
+  loadPublishedSolutionsIndex(),
+  loadPublishedSolutionProducts(),
+  loadPublishedSolutionDetails(),
+]);
+const page = indexResult.items[0] ?? null;
+const failed = indexResult.error && !page;
+const siteSettings = publicSiteSettings();
+const path = '/solutions';
+const metadata = page
+  ? {
+      ...metadataFromContentSeo(page.seo, siteSettings, metadataFallbackForPath(path)),
+      canonical: buildCanonicalUrl(siteSettings.canonical_origin, path),
+    }
+  : fallbackMetadata(
+      path,
+      t('page.solutions.title'),
+      failed ? t('home.error') : t('page.solutions.description'),
+    );
+metadata.indexable = !failed;
+const heading = page?.seo.h1_tag.trim() || page?.banner_title || t('page.solutions.title');
+const banner = page ? publicMediaUrl(page.banner_image_key) : null;
+const products = [...productsResult.items].sort((a, b) => a.order - b.order);
+const details = detailsResult.items;
+const listedSlugs = new Set([...products.map((item) => item.slug), ...details.map((item) => item.slug)]);
+---
+<InteriorLayout title={metadata.title} metadata={metadata}>
+  <SiteHeader tone="dark" showBreadcrumbs={false} />
+  <main id="main" class="page-main page-main-flush solutions-page" data-api-origin={indexResult.origin}>
+    <PageHero heading={heading} image={banner} alt={imageAlt(page?.seo.image_alt, heading)} fullHeight />
+    <article class="container">
+      <SectionState error={failed} empty={!failed && !page && products.length === 0 && details.length === 0} />
+      <h2 hidden={!page?.section_title}>{page?.section_title}</h2>
+      <ul class="solution-products">
+        {products.map((item) => (
+          <li class:list={['solution-product', { 'image-left': !item.card_image_on_right }]}>
+            <div class="solution-product-copy">
+              <p class="solution-product-tag">{item.product_tag}</p>
+              <h3>{item.product_title}</h3>
+              <div set:html={item.product_description} />
+              <a class="btn" href={`/solutions/${item.slug}`}>{t('home.read_more')}<img src="/icon-arrow-right.svg" width="24" height="24" alt="" /></a>
+            </div>
+            {item.product_card_image_key && <OptimizedImage src={publicMediaUrl(item.product_card_image_key)} alt={item.product_title} width={650} height={600} sizes="(max-width: 768px) 100vw, 50vw" />}
+          </li>
+        ))}
+        {details.filter((item) => !products.some(product => product.slug === item.slug)).map((item) => (
+          <li class="solution-product">
+            <div class="solution-product-copy"><h3>{item.title}</h3>
+            <a class="btn" href={`/solutions/${item.slug}`}>{t('home.read_more')}</a></div>
+            {item.banner?.image_key && <OptimizedImage src={publicMediaUrl(item.banner.image_key)} alt={item.title} width={650} height={600} sizes="(max-width: 768px) 100vw, 50vw" />}
+          </li>
+        ))}
+      </ul>
+      {listedSlugs.size === 0 && (
+        <ul>
+          {PRODUCTION_SOLUTION_SLUGS.map((slug) => (
+            <li>
+              <a href={`/solutions/${slug}`}>{t(`page.solutions.slug.${slug}`)}</a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </article>
+    <HomeCta />
+  </main>
+  <SiteFooter />
+</InteriorLayout>

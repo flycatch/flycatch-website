@@ -1,0 +1,17 @@
+---
+import { t } from '../lib/i18n';
+import OptimizedImage from './OptimizedImage.astro';
+interface Props { variant?: 'intro' | 'closing'; }
+const { variant = 'intro' } = Astro.props;
+---
+<section class:list={['service-callout', 'service-callout-' + variant]}>
+  <div class="container service-callout-grid">
+    <div>
+      <p>{t('page.service_callout.' + variant + '.eyebrow')}</p>
+      <h2>{t('page.service_callout.' + variant + '.title')}</h2>
+      {variant === 'intro' && <p>{t('page.service_callout.intro.body')}</p>}
+      <a class="btn" href="/contact-us">{t('home.contact_action')}<img src="/icon-arrow-right.svg" width="24" height="24" alt="" /></a>
+    </div>
+    <OptimizedImage src={variant === 'intro' ? '/developmentContactIcon.webp' : '/scaleBusiness.webp'} alt="" width={600} height={600} sizes="(max-width: 768px) 100vw, 50vw" />
+  </div>
+</section>

@@ -1,6 +1,7 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Response, UploadFile, status
+from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
 from flycatch_api.api.bulk_routes import attach_bulk_routes
@@ -21,9 +22,11 @@ from flycatch_api.services.catalog_service import (
     news_category_service,
     news_service,
     opening_service,
+    privacy_policy_service,
     resource_category_service,
     resource_service,
     subscription_service,
+    terms_service,
 )
 from flycatch_api.services.industry_service import PER_PAGE
 
@@ -317,15 +320,27 @@ admin_subscriptions = admin_crud(
     svc=subscription_service,
     id_name="subscription_id",
 )
-
-public_applications = public_uuid(
-    prefix="/public/applications",
-    tags="public-applications",
-    list_model=public.PublicApplicationList,
-    detail_model=public.PublicApplication,
-    svc=application_service,
-    id_name="application_id",
+admin_privacy_policies = admin_crud(
+    prefix="/admin/privacy-policies",
+    tags="admin-privacy-policies",
+    resource="privacy_policies",
+    list_model=admin.PrivacyPolicyList,
+    detail_model=admin.PrivacyPolicy,
+    write_model=admin.PrivacyPolicyWrite,
+    svc=privacy_policy_service,
+    id_name="policy_id",
 )
+admin_terms = admin_crud(
+    prefix="/admin/terms",
+    tags="admin-terms",
+    resource="terms",
+    list_model=admin.TermsList,
+    detail_model=admin.Terms,
+    write_model=admin.TermsWrite,
+    svc=terms_service,
+    id_name="terms_id",
+)
+
 public_openings = public_slug(
     prefix="/public/openings",
     tags="public-openings",
@@ -394,14 +409,6 @@ public_memberships = public_uuid(
     svc=membership_service,
     id_name="membership_id",
 )
-public_contacts = public_uuid(
-    prefix="/public/contacts",
-    tags="public-contacts",
-    list_model=public.PublicContactList,
-    detail_model=public.PublicContact,
-    svc=contact_service,
-    id_name="contact_id",
-)
 public_downloads = public_uuid(
     prefix="/public/downloads",
     tags="public-downloads",
@@ -410,6 +417,22 @@ public_downloads = public_uuid(
     svc=download_service,
     id_name="download_id",
 )
+
+
+@public_downloads.post(
+    "/{download_id}/requests",
+    response_model=public.PublicDownloadRequest,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_public_download_request(
+    download_id: UUID,
+    payload: public.PublicDownloadRequestWrite,
+    db: Session = Depends(get_db),
+):
+    try:
+        return download_service.request(db, download_id, payload)
+    except CatalogError as error:
+        _raise(error)
 public_flycatch_saudi_arabia = public_uuid(
     prefix="/public/flycatch-saudi-arabia",
     tags="public-flycatch-saudi-arabia",
@@ -418,6 +441,92 @@ public_flycatch_saudi_arabia = public_uuid(
     svc=flycatch_saudi_arabia_service,
     id_name="item_id",
 )
+public_contacts = APIRouter(tags=["public-contacts"])
+
+
+def _submit_public_contact(payload: public.PublicContactWrite, db: Session):
+    try:
+        return contact_service.submit(db, payload)
+    except CatalogError as error:
+        _raise(error)
+
+
+@public_contacts.post(
+    "/public/contacts",
+    response_model=public.PublicContact,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_public_contact(payload: public.PublicContactWrite, db: Session = Depends(get_db)):
+    return _submit_public_contact(payload, db)
+
+
+@public_contacts.post(
+    "/public/forms/contact/submissions",
+    response_model=public.PublicContact,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_public_contact_form(payload: public.PublicContactWrite, db: Session = Depends(get_db)):
+    return _submit_public_contact(payload, db)
+
+
+public_applications = APIRouter(tags=["public-applications"])
+
+
+@public_applications.post(
+    "/public/applications",
+    response_model=public.PublicApplication,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_public_application(
+    name: str = Form(...),
+    last_name: str = Form(...),
+    email: str = Form(...),
+    phone: str = Form(...),
+    additional_info: str = Form(""),
+    opening_slug: str = Form(""),
+    website: str = Form(""),
+    recaptcha_token: str = Form(""),
+    current_ctc: float = Form(0),
+    expected_ctc: float = Form(0),
+    notice_period: float = Form(0),
+    experience: float = Form(0),
+    resume: UploadFile = File(...),
+    db: Session = Depends(get_db),
+):
+    try:
+        payload = public.PublicApplicationWrite(
+            name=name,
+            last_name=last_name,
+            email=email,
+            phone=phone,
+            additional_info=additional_info,
+            opening_slug=opening_slug,
+            website=website,
+            recaptcha_token=recaptcha_token,
+            current_ctc=current_ctc,
+            expected_ctc=expected_ctc,
+            notice_period=notice_period,
+            experience=experience,
+        )
+    except ValidationError as error:
+        fields = {
+            err["loc"][-1]: {"message_key": "admin.field.invalid"}
+            for err in error.errors()
+            if err.get("loc")
+        }
+        raise HTTPException(status_code=422, detail={"fields": fields})
+    try:
+        return application_service.submit(
+            db,
+            payload,
+            resume_name=resume.filename,
+            resume_type=resume.content_type,
+            resume_data=await resume.read(),
+        )
+    except CatalogError as error:
+        _raise(error)
+
+
 public_subscriptions = public_uuid(
     prefix="/public/subscriptions",
     tags="public-subscriptions",
@@ -425,6 +534,20 @@ public_subscriptions = public_uuid(
     detail_model=public.PublicSubscription,
     svc=subscription_service,
     id_name="subscription_id",
+)
+public_privacy_policies = public_slug(
+    prefix="/public/privacy-policies",
+    tags="public-privacy-policies",
+    list_model=public.PublicPrivacyPolicyList,
+    detail_model=public.PublicPrivacyPolicy,
+    svc=privacy_policy_service,
+)
+public_terms = public_slug(
+    prefix="/public/terms",
+    tags="public-terms",
+    list_model=public.PublicTermsList,
+    detail_model=public.PublicTerms,
+    svc=terms_service,
 )
 
 

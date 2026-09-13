@@ -1,7 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 
 from flycatch_api.schemas.admin_homes import ContentSeo, HomeFaq, HomeService
-from flycatch_api.schemas.public_case_studies import PublicCaseStudyDetail
+from flycatch_api.schemas.public_case_studies import PublicCaseStudySummary
 
 
 class PublicHome(BaseModel):
@@ -11,7 +11,7 @@ class PublicHome(BaseModel):
     video_key: str | None
     banner_title: str
     seo: ContentSeo
-    case_studies: list[PublicCaseStudyDetail]
+    case_studies: list[PublicCaseStudySummary]
     services: list[HomeService]
     banner_explore_text: str
     faq_title: str

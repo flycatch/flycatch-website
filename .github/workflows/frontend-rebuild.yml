@@ -1,0 +1,34 @@
+name: Frontend rebuild
+
+on:
+  repository_dispatch:
+    types: [frontend-rebuild]
+  workflow_dispatch:
+
+jobs:
+  rebuild-frontend:
+    if: github.ref_name == 'dev' || github.event_name == 'repository_dispatch' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.client_payload.ref || github.ref }}
+          token: ${{ secrets.GITOPS_PUSH_TOKEN || secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install kustomize
+        run: |
+          curl -sL https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.6.0/kustomize_v5.6.0_linux_amd64.tar.gz | tar xz
+          sudo mv kustomize /usr/local/bin/
+      - uses: docker/setup-buildx-action@v3
+      - name: Rebuild and push frontend
+        env:
+          HARBOR_USERNAME: ${{ secrets.HARBOR_USERNAME }}
+          HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}
+          PUBLIC_ORIGIN: https://flycatch-website-dev.k3s.flycatchtech.in
+          PUBLIC_ENVIRONMENT: development
+          API_ORIGIN: https://flycatch-website-dev.k3s.flycatchtech.in
+        run: bash deployment/k8s/scripts/rebuild-frontend-dev.sh

@@ -1,0 +1,35 @@
+---
+export const prerender = true;
+
+import InteriorLayout from '../layouts/InteriorLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import ContactForm from '../components/ContactForm.astro';
+import HomeCta from '../components/HomeCta.astro';
+import { fallbackMetadata } from '../lib/metadata';
+import { t } from '../lib/i18n';
+
+const metadata = fallbackMetadata(
+  '/contact-us',
+  t('page.contact.title'),
+  t('page.contact.description'),
+);
+metadata.indexable = true;
+---
+<InteriorLayout title={metadata.title} metadata={metadata}>
+  <SiteHeader showBreadcrumbs={false} />
+  <main id="main" class="page-main">
+    <div class="container contact-layout">
+      <div class="contact-intro">
+      <h1>{t('page.contact.title')}</h1>
+      <p class="lede">{t('page.contact.intro')}</p>
+      <p>
+        <a href="mailto:hello@flycatchtech.com">{t('page.contact.email')}</a>
+      </p>
+      </div>
+      <ContactForm />
+    </div>
+    <HomeCta />
+  </main>
+  <SiteFooter />
+</InteriorLayout>

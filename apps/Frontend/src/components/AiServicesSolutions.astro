@@ -1,4 +1,7 @@
 ---
+import OptimizedImage from './OptimizedImage.astro';
+import { imageAlt } from '../lib/image';
+import { implementedPublicHref } from '../lib/nav';
 import { publicMediaUrl } from '../lib/public-api';
 import type { PublicAiService } from '../lib/public-api';
 
@@ -26,10 +29,11 @@ const show = Boolean(title || description || solutions.length);
           const overlayBody = (section?.description ?? '').trim();
           const label = overlayTitle || solution.title.trim() || '';
           const showHover = Boolean(overlayTitle || overlayBody);
-          const href = solution.slug.trim() ? `/solutions/${solution.slug}` : '';
-          return (
-            <a class="ai-solution-card" href={href || undefined}>{image ? (
-                <img src={image} alt="" width="283" height="458" loading="lazy" />
+          const href = implementedPublicHref(solution.slug.trim() ? `/solutions/${solution.slug}` : '');
+          const cardInner = (
+            <>
+              {image ? (
+                <OptimizedImage src={image} alt={imageAlt(page.seo.image_alt, label || page.solutions_title)} width={283} height={458} sizes="(max-width: 768px) 80vw, 283px" />
               ) : (
                 <span class="ai-solution-fallback"></span>
               )}
@@ -39,7 +43,12 @@ const show = Boolean(title || description || solutions.length);
                 <span class="ai-solution-hover-title" hidden={!overlayTitle}>{overlayTitle}</span>
                 <span class="ai-solution-hover-body" hidden={!overlayBody}>{overlayBody}</span>
               </span>
-            </a>
+            </>
+          );
+          return href ? (
+            <a class="ai-solution-card" href={href}>{cardInner}</a>
+          ) : (
+            <div class="ai-solution-card">{cardInner}</div>
           );
         })}
       </div>

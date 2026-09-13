@@ -19,6 +19,7 @@ import MultiSelect from './MultiSelect';
 import FormPageHeader from './FormPageHeader';
 import MediaField from './MediaField';
 import RichTextEditor from './RichTextEditor';
+import SeoFields, { emptySeo, seoValue, type ContentSeoValue } from './SeoFields';
 import { adminListHref } from '../lib/admin-routes';
 import { t } from '../lib/i18n';
 
@@ -49,6 +50,8 @@ export default function CaseStudyForm({ caseStudyId, onCancel, onSaved }: Props)
   const [industryIds, setIndustryIds] = useState<string[]>([]);
   const [categoryIds, setCategoryIds] = useState<string[]>([]);
   const [technologyIds, setTechnologyIds] = useState<string[]>([]);
+  const [seo, setSeo] = useState<ContentSeoValue>(emptySeo);
+  const [seoImageFile, setSeoImageFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
@@ -81,6 +84,7 @@ export default function CaseStudyForm({ caseStudyId, onCancel, onSaved }: Props)
         setCategoryIds(item.category_ids);
         const publishedIds = new Set(nextTechnologies.map((row) => row.id));
         setTechnologyIds(item.technology_ids.filter((id) => publishedIds.has(id)));
+        setSeo(seoValue(item.seo));
       }
       setReady(true);
     }
@@ -113,6 +117,7 @@ export default function CaseStudyForm({ caseStudyId, onCancel, onSaved }: Props)
       if (imageFile) {
         nextImageKey = (await uploadMedia(imageFile)).key;
       }
+      const nextSeoImage = seoImageFile ? (await uploadMedia(seoImageFile)).key : seo.image_key;
       const payload: CaseStudyWrite = {
         heading: heading.trim(),
         slug: nextSlug,
@@ -127,6 +132,7 @@ export default function CaseStudyForm({ caseStudyId, onCancel, onSaved }: Props)
         industry_ids: industryIds,
         category_ids: categoryIds,
         technology_ids: technologyIds,
+        seo: { ...seo, image_key: nextSeoImage },
       };
       if (caseStudyId) await updateCaseStudy(caseStudyId, payload);
       else await createCaseStudy(payload);
@@ -259,6 +265,7 @@ export default function CaseStudyForm({ caseStudyId, onCancel, onSaved }: Props)
           {t('admin.case_studies.field.date')}
           <input type="date" value={date} onChange={(event) => setDate(event.target.value)} />
         </label>
+        <SeoFields value={seo} imageFile={seoImageFile} onChange={setSeo} onImageFile={setSeoImageFile} />
         {fieldError && (
           <p className="alert alert-error error" role="alert">
             {fieldError}

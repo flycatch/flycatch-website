@@ -6,6 +6,7 @@ from datetime import datetime
 from sqlalchemy import Boolean, DateTime, Enum, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.types import JSON
 
 from flycatch_api.db import Base
 from flycatch_api.models.case_study import ContentStatus
@@ -24,6 +25,7 @@ class SolutionProduct(Base):
     card_image_on_right: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     banner_image_on_right: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     slug: Mapped[str] = mapped_column(String(128), unique=True, nullable=False)
+    seo: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
     order: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     status: Mapped[ContentStatus] = mapped_column(
         Enum(ContentStatus, name="content_status", create_type=False),

@@ -1,0 +1,20 @@
+{
+  "data": [
+    {
+      "id": 60,
+      "attributes": {
+        "slug": "ai-services",
+        "banner_title": "AI Services",
+        "solutions_sections": {
+          "data": [
+            {"id": 2, "attributes": {"slug": "flyGrid-ai", "title": "FlyGrid ai"}}
+          ]
+        },
+        "publishedAt": "2024-03-01T00:00:00.000Z",
+        "createdAt": "2024-03-01T00:00:00.000Z",
+        "updatedAt": "2024-03-01T00:00:00.000Z"
+      }
+    }
+  ],
+  "meta": {"pagination": {"page": 1, "pageSize": 100, "pageCount": 1, "total": 1}}
+}

@@ -1,4 +1,6 @@
 ---
+import OptimizedImage from './OptimizedImage.astro';
+import { imageAlt } from '../lib/image';
 import { t } from '../lib/i18n';
 import { publicMediaUrl } from '../lib/public-api';
 import type { PublicCaseStudySummary } from '../lib/public-api';
@@ -55,12 +57,12 @@ const hideOnHome = home && visible.length === 0;
               <article class="case-card">
                 {image ? (
                   <div class="media-frame case-media">
-                    <img
+                    <OptimizedImage
                       src={image}
-                      alt={study.image_alt || study.heading}
-                      width="581"
-                      height="475"
-                      loading="lazy"
+                      alt={imageAlt(study.image_alt, study.heading)}
+                      width={581}
+                      height={475}
+                      sizes="(max-width: 768px) 100vw, 581px"
                     />
                   </div>
                 ) : (
@@ -95,12 +97,12 @@ const hideOnHome = home && visible.length === 0;
             <article class="case-card">
               {image ? (
                 <div class="media-frame">
-                  <img
+                  <OptimizedImage
                     src={image}
-                    alt={study.image_alt || study.heading}
-                    width="581"
-                    height="475"
-                    loading="lazy"
+                    alt={imageAlt(study.image_alt, study.heading)}
+                    width={581}
+                    height={475}
+                    sizes="(max-width: 768px) 100vw, 581px"
                   />
                 </div>
               ) : (

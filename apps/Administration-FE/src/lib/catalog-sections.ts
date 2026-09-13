@@ -370,6 +370,7 @@ export const CATALOG_SECTIONS: CatalogSection[] = [
       },
       { kind: 'text', key: 'banner_explore_text', labelKey: 'banner_explore_text' },
       { kind: 'text', key: 'services_title', labelKey: 'services_title' },
+      { kind: 'media', key: 'banner_image_key', labelKey: 'banner_image' },
       {
         kind: 'media',
         key: 'video_key',
@@ -396,6 +397,46 @@ export const CATALOG_SECTIONS: CatalogSection[] = [
     fields: [
       { kind: 'email', key: 'email', labelKey: 'email', required: true },
       { kind: 'checkbox', key: 'active', labelKey: 'active' },
+    ],
+  },
+  {
+    resource: 'privacy_policies',
+    segment: 'privacy-policies',
+    listView: 'privacy_policies',
+    formView: 'privacy_policy_form',
+    ns: 'admin.privacy_policies',
+    path: '/admin/privacy-policies',
+    idParam: 'policy_id',
+    columns: [
+      { key: 'title', labelKey: 'field.title', kind: 'text' },
+      { key: 'slug', labelKey: 'slug', kind: 'text' },
+      { key: 'state', labelKey: 'state', kind: 'state' },
+    ],
+    fields: [
+      { kind: 'text', key: 'title', labelKey: 'field.title', required: true },
+      { kind: 'slug', key: 'slug', labelKey: 'slug', fromKey: 'title', required: true },
+      { kind: 'richtext', key: 'body', labelKey: 'body' },
+      { kind: 'seo' },
+    ],
+  },
+  {
+    resource: 'terms',
+    segment: 'terms',
+    listView: 'terms',
+    formView: 'terms_form',
+    ns: 'admin.terms',
+    path: '/admin/terms',
+    idParam: 'terms_id',
+    columns: [
+      { key: 'title', labelKey: 'field.title', kind: 'text' },
+      { key: 'slug', labelKey: 'slug', kind: 'text' },
+      { key: 'state', labelKey: 'state', kind: 'state' },
+    ],
+    fields: [
+      { kind: 'text', key: 'title', labelKey: 'field.title', required: true },
+      { kind: 'slug', key: 'slug', labelKey: 'slug', fromKey: 'title', required: true },
+      { kind: 'richtext', key: 'body', labelKey: 'body' },
+      { kind: 'seo' },
     ],
   },
 ];

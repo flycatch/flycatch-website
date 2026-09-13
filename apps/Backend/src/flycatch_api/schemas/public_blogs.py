@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from flycatch_api.schemas.admin_homes import ContentSeo
+
 
 class PublicAuthor(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -69,6 +71,7 @@ class PublicBlogDetail(BaseModel):
     description: str
     body: str
     reading_time: int
+    created_at: datetime
     image_key: str | None
     image_alt: str
     canonical_url: str
@@ -79,3 +82,4 @@ class PublicBlogDetail(BaseModel):
     content_available_in: list[str]
     authors: list[PublicAuthor]
     categories: list[PublicCategory]
+    seo: ContentSeo

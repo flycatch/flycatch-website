@@ -133,7 +133,7 @@ def public_home(row: Home) -> PublicHome:
         banner_title=row.banner_title,
         seo=ContentSeo.model_validate(row.seo or {}),
         case_studies=[
-            _case_studies._public_detail(link.case_study)
+            _case_studies._public_summary(link.case_study)
             for link in row.case_study_links
             if link.case_study and link.case_study.status == ContentStatus.publish
         ],

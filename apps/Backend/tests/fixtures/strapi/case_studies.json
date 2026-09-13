@@ -1,0 +1,25 @@
+{
+  "data": [
+    {
+      "id": 40,
+      "attributes": {
+        "heading": "Retail platform",
+        "slug": "a-Social-Case",
+        "description": "How we shipped it",
+        "body": "Details",
+        "image_alt": "Case hero",
+        "canonical_url": "https://www.flycatchtech.com/case-studies/a-Social-Case",
+        "seo": {
+          "title": "Retail SEO title",
+          "description": "Retail SEO description",
+          "canonical_url": "https://www.flycatchtech.com/case-studies/a-Social-Case",
+          "image_alt": "Case hero"
+        },
+        "publishedAt": "2024-02-01T00:00:00.000Z",
+        "createdAt": "2024-02-01T00:00:00.000Z",
+        "updatedAt": "2024-02-01T00:00:00.000Z"
+      }
+    }
+  ],
+  "meta": {"pagination": {"page": 1, "pageSize": 100, "pageCount": 1, "total": 1}}
+}

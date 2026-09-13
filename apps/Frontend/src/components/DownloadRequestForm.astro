@@ -1,0 +1,41 @@
+---
+import FormExtras from './FormExtras.astro';
+import { t } from '../lib/i18n';
+
+interface Props {
+  downloadId: string;
+  downloadName: string;
+}
+
+const { downloadId, downloadName } = Astro.props;
+const submitted = Astro.url.searchParams.get('submitted') === 'download';
+const failed = Astro.url.searchParams.get('form_error') === 'download';
+const file = Astro.url.searchParams.get('file');
+---
+<form class="public-form" action="/api/forms/download" method="post" data-public-form="download" novalidate>
+  <h2>{t('form.download.title')} — {downloadName}</h2>
+  <p class="form-status" data-form-status role="status" aria-live="polite">
+    {submitted ? t('form.success.download') : ''}
+    {failed ? t('form.error.generic') : ''}
+  </p>
+  {submitted && file && (
+    <p>
+      <a class="btn" href={`/api/v1/public/media/${encodeURIComponent(file)}`}>{t('page.resources.download')}</a>
+    </p>
+  )}
+  <input type="hidden" name="download_id" value={downloadId} />
+  <label>
+    {t('form.first_name')}
+    <input type="text" name="name" autocomplete="name" required />
+  </label>
+  <label>
+    {t('form.email')}
+    <input type="email" name="email" autocomplete="email" required />
+  </label>
+  <label>
+    {t('form.company')}
+    <input type="text" name="company" autocomplete="organization" />
+  </label>
+  <FormExtras returnTo="/company/resources" idPrefix={`download-${downloadId.slice(0, 8)}`} />
+  <button type="submit">{t('form.download.submit')}</button>
+</form>

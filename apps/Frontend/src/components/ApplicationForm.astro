@@ -1,0 +1,46 @@
+---
+import FormExtras from './FormExtras.astro';
+import { t } from '../lib/i18n';
+
+interface Props {
+  openingSlug: string;
+  returnTo: string;
+}
+
+const { openingSlug, returnTo } = Astro.props;
+const submitted = Astro.url.searchParams.get('submitted') === 'application';
+const failed = Astro.url.searchParams.get('form_error') === 'application';
+---
+<form class="public-form" action="/api/forms/application" method="post" enctype="multipart/form-data" data-public-form="application" novalidate>
+  <p class="form-status" data-form-status role="status" aria-live="polite">
+    {submitted ? t('form.success.application') : ''}
+    {failed ? t('form.error.generic') : ''}
+  </p>
+  <input type="hidden" name="opening_slug" value={openingSlug} />
+  <label>
+    {t('form.first_name')}
+    <input type="text" name="name" autocomplete="given-name" required />
+  </label>
+  <label>
+    {t('form.last_name')}
+    <input type="text" name="last_name" autocomplete="family-name" required />
+  </label>
+  <label>
+    {t('form.email')}
+    <input type="email" name="email" autocomplete="email" required />
+  </label>
+  <label>
+    {t('form.phone')}
+    <input type="tel" name="phone" autocomplete="tel" required />
+  </label>
+  <label>
+    {t('form.details')}
+    <textarea name="additional_info" rows="4"></textarea>
+  </label>
+  <label>
+    {t('form.resume')}
+    <input type="file" name="resume" accept=".pdf,.doc,.docx,application/pdf" required />
+  </label>
+  <FormExtras returnTo={returnTo} />
+  <button type="submit">{t('form.apply')}</button>
+</form>

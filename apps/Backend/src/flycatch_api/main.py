@@ -4,6 +4,8 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 
 from flycatch_api.config import settings
+from flycatch_api.security.rate_limit import public_write_rate_limit
+from flycatch_api.services.frontend_rebuild import maybe_request_frontend_rebuild
 from flycatch_api.api import (
     admin_ai_services,
     admin_auth,
@@ -70,6 +72,13 @@ async def sqlalchemy_exception_handler(request: Request, _exc: SQLAlchemyError):
 
 
 @app.middleware("http")
+async def frontend_rebuild_on_publish(request: Request, call_next):
+    response = await call_next(request)
+    maybe_request_frontend_rebuild(request.method, request.url.path, response.status_code)
+    return response
+
+
+@app.middleware("http")
 async def security_headers(request: Request, call_next):
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
@@ -83,9 +92,11 @@ async def security_headers(request: Request, call_next):
     return response
 
 
+app.middleware("http")(public_write_rate_limit)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.allowed_cors_origins(),
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -132,6 +143,8 @@ app.include_router(catalog.admin_contacts, prefix="/api/v1")
 app.include_router(catalog.admin_downloads, prefix="/api/v1")
 app.include_router(catalog.admin_flycatch_saudi_arabia, prefix="/api/v1")
 app.include_router(catalog.admin_subscriptions, prefix="/api/v1")
+app.include_router(catalog.admin_privacy_policies, prefix="/api/v1")
+app.include_router(catalog.admin_terms, prefix="/api/v1")
 app.include_router(admin_media.router, prefix="/api/v1")
 app.include_router(publish.router, prefix="/api/v1")
 app.include_router(public_blogs.router, prefix="/api/v1")
@@ -156,7 +169,6 @@ app.include_router(landing_pages.public_application_modernization, prefix="/api/
 app.include_router(landing_pages.public_mobile_application_development, prefix="/api/v1")
 app.include_router(landing_pages.public_user_centered_design, prefix="/api/v1")
 app.include_router(landing_pages.public_overview, prefix="/api/v1")
-app.include_router(catalog.public_applications, prefix="/api/v1")
 app.include_router(catalog.public_openings, prefix="/api/v1")
 app.include_router(catalog.public_employee_testimonials, prefix="/api/v1")
 app.include_router(catalog.public_email_configuration, prefix="/api/v1")
@@ -167,9 +179,12 @@ app.include_router(catalog.public_resource_categories, prefix="/api/v1")
 app.include_router(catalog.public_resources, prefix="/api/v1")
 app.include_router(catalog.public_memberships, prefix="/api/v1")
 app.include_router(catalog.public_contacts, prefix="/api/v1")
+app.include_router(catalog.public_applications, prefix="/api/v1")
 app.include_router(catalog.public_downloads, prefix="/api/v1")
 app.include_router(catalog.public_flycatch_saudi_arabia, prefix="/api/v1")
 app.include_router(catalog.public_subscriptions, prefix="/api/v1")
+app.include_router(catalog.public_privacy_policies, prefix="/api/v1")
+app.include_router(catalog.public_terms, prefix="/api/v1")
 app.include_router(public_media.router, prefix="/api/v1")
 app.include_router(stubs.router, prefix="/api/v1")
 

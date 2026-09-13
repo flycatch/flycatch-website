@@ -60,6 +60,36 @@ paths:
                 $ref: '#/components/schemas/PublicDownload'
         '404':
           $ref: '#/components/responses/PublicNotFound'
+  /public/downloads/{download_id}/requests:
+    post:
+      operationId: createPublicDownloadRequest
+      summary: Record a gated download request and return the file reference
+      tags: [public]
+      security: []
+      parameters:
+        - name: download_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicDownloadRequestWrite'
+      responses:
+        '201':
+          description: Request stored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicDownloadRequest'
+        '404':
+          $ref: '#/components/responses/PublicNotFound'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
 components:
   schemas:
 
@@ -70,6 +100,27 @@ components:
       properties:
         id: { type: string, format: uuid }
         name: { type: string }
+        company: { type: string }
+        file_key: { type: string }
+    PublicDownloadRequestWrite:
+      type: object
+      additionalProperties: false
+      required: [name, email]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 120 }
+        email: { type: string, format: email }
+        company: { type: string, maxLength: 200 }
+        website: { type: string, maxLength: 200, description: Honeypot; must be empty }
+        recaptcha_token: { type: string }
+    PublicDownloadRequest:
+      type: object
+      additionalProperties: false
+      required: [id, download_id, name, email, company, file_key]
+      properties:
+        id: { type: string, format: uuid }
+        download_id: { type: string, format: uuid }
+        name: { type: string }
+        email: { type: string, format: email }
         company: { type: string }
         file_key: { type: string }
     PublicDownloadList:
@@ -100,3 +151,20 @@ components:
                 const: not_found
               message_key:
                 type: string
+    FieldErrors:
+      description: Field-level validation errors
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required: [fields]
+            properties:
+              fields:
+                type: object
+                additionalProperties:
+                  type: object
+                  additionalProperties: false
+                  required: [message_key]
+                  properties:
+                    message_key: { type: string }

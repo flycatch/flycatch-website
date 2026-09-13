@@ -1,0 +1,15 @@
+---
+import { t } from '../lib/i18n';
+import OptimizedImage from './OptimizedImage.astro';
+const stats = ['years', 'projects', 'customers', 'associates'];
+---
+<section class="service-minds">
+  <OptimizedImage class="service-minds-image" src="/ai-services/minds-globe.png" alt="" width={1512} height={672} sizes="100vw" />
+  <div class="container">
+    <h2>{t('page.ai_services.minds_title')}</h2>
+    <p>{t('page.ai_services.minds_body')}</p>
+    <ul>
+      {stats.map(key => <li><strong>{t('home.minds_stat.' + key + '.value')}</strong><span>{t('home.minds_stat.' + key + '.label')}</span></li>)}
+    </ul>
+  </div>
+</section>

@@ -1,4 +1,6 @@
 ---
+import OptimizedImage from './OptimizedImage.astro';
+import { imageAlt } from '../lib/image';
 import { t } from '../lib/i18n';
 import { publicMediaUrl } from '../lib/public-api';
 import type { PublicClientTestimonial } from '../lib/public-api';
@@ -24,7 +26,7 @@ const role = roleParts.join(', ');
   <div class="container">
     {!featured && (
       <>
-        <h2 class="stories-hashtag"># {t('home.success_stories')}</h2>
+        <h2 class="stories-hashtag">{t('home.success_stories')}</h2>
         <SectionState error={error} empty={!error} />
       </>
     )}
@@ -33,13 +35,12 @@ const role = roleParts.join(', ');
         <div class="stories-left">
           {imageSrc && (
             <div class="stories-photo">
-              <img
+              <OptimizedImage
                 src={imageSrc}
-                alt={featured.alt_text || featured.client_name}
-                width="150"
-                height="150"
-                loading="lazy"
-                decoding="async"
+                alt={imageAlt(featured.alt_text, featured.client_name)}
+                width={150}
+                height={150}
+                sizes="150px"
               />
             </div>
           )}
@@ -60,7 +61,7 @@ const role = roleParts.join(', ');
           )}
         </div>
         <div class="stories-right">
-          <h2 class="stories-hashtag"># {t('home.success_stories')}</h2>
+          <h2 class="stories-hashtag">{t('home.success_stories')}</h2>
           {featured.title && <p class="stories-title">{featured.title}</p>}
           {featured.review && <p class="stories-review">{featured.review}</p>}
           <div class="stories-byline stories-byline-mobile">

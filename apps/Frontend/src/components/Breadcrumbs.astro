@@ -1,0 +1,33 @@
+---
+import { breadcrumbTrail } from '../lib/breadcrumbs';
+import { normalizePublicPath } from '../lib/route-registry';
+import { t } from '../lib/i18n';
+
+interface Props {
+  path?: string;
+  currentLabel?: string;
+}
+
+const { path = Astro.url.pathname, currentLabel } = Astro.props;
+const items = breadcrumbTrail(normalizePublicPath(path), currentLabel);
+---
+{items.length > 0 && (
+  <nav class="breadcrumbs" aria-label={t('site.breadcrumbs')}>
+    <div class="container">
+      <ol class="breadcrumb-list">
+        {items.map((item, index) => {
+          const last = index === items.length - 1;
+          return (
+            <li>
+              {last ? (
+                <span aria-current="page">{item.label}</span>
+              ) : (
+                <a href={item.path}>{item.label}</a>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  </nav>
+)}

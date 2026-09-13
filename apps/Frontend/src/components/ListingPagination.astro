@@ -1,0 +1,34 @@
+---
+import { listingPageHref, type PageWindow } from '../lib/pagination';
+import { t } from '../lib/i18n';
+
+interface Props {
+  basePath: string;
+  window: PageWindow<unknown>;
+}
+
+const { basePath, window: pageWindow } = Astro.props;
+const links = [
+  ...(pageWindow.hasPrevious
+    ? [{ href: listingPageHref(basePath, pageWindow.page - 1), label: t('listing.previous'), current: false }]
+    : []),
+  ...Array.from({ length: pageWindow.pageCount }, (_, index) => {
+    const page = index + 1;
+    return {
+      href: listingPageHref(basePath, page),
+      label: t('listing.page', { page }),
+      current: page === pageWindow.page,
+    };
+  }),
+  ...(pageWindow.hasNext
+    ? [{ href: listingPageHref(basePath, pageWindow.page + 1), label: t('listing.next'), current: false }]
+    : []),
+];
+---
+{pageWindow.pageCount > 1 && (
+  <nav class="listing-pagination" aria-label={t('listing.pagination')}>
+    {links.map((link) => (
+      <a href={link.href} aria-current={link.current ? 'page' : undefined}>{link.label}</a>
+    ))}
+  </nav>
+)}

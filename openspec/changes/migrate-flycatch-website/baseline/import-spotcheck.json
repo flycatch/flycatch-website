@@ -1,0 +1,85 @@
+{
+  "verified_at": "2026-09-12",
+  "method": "Fixture records were run through the importer SEO/body mapping used at import time. Production metadata was checked for one URL in each content-type family so rendered pages have a source title, description, and canonical to match.",
+  "content_types": [
+    {
+      "content_type": "blog",
+      "slug": "hello-world",
+      "body": true,
+      "image": true,
+      "seo_title": "Hello World",
+      "seo_description": "A sample blog",
+      "canonical_url": "https://www.flycatchtech.com/company/blogs/hello-world",
+      "image_alt": "Hero"
+    },
+    {
+      "content_type": "case_study",
+      "slug": "a-Social-Case",
+      "body": true,
+      "image": true,
+      "seo_title": "Retail SEO title",
+      "seo_description": "Retail SEO description",
+      "canonical_url": "https://www.flycatchtech.com/case-studies/a-Social-Case",
+      "image_alt": "Case hero"
+    },
+    {
+      "content_type": "solution_product",
+      "slug": "flyGrid-ai",
+      "body": true,
+      "image": true,
+      "seo_title": "FlyGrid SEO",
+      "seo_description": "FlyGrid description",
+      "canonical_url": "https://www.flycatchtech.com/solutions/flyGrid-ai",
+      "image_alt": "FlyGrid mark"
+    },
+    {
+      "content_type": "solution_detail",
+      "slug": "flyGrid-ai",
+      "body": true,
+      "image": true,
+      "seo_title": "FlyGrid ai",
+      "seo_description": "",
+      "canonical_url": "",
+      "image_alt": ""
+    },
+    {
+      "content_type": "ai_service",
+      "slug": "ai-services",
+      "body": true,
+      "image": true,
+      "seo_title": "AI Services",
+      "seo_description": "",
+      "canonical_url": "",
+      "image_alt": ""
+    },
+    {
+      "content_type": "opening",
+      "slug": "it-recruiter",
+      "body": true,
+      "image": false,
+      "seo_title": "Engineer",
+      "seo_description": "",
+      "canonical_url": "/company/jobs-openings/it-recruiter",
+      "image_alt": ""
+    },
+    {
+      "content_type": "saudi_arabia",
+      "slug": "software-development-services-in-saudi-arabia",
+      "body": true,
+      "image": true,
+      "seo_title": "Saudi banner",
+      "seo_description": "",
+      "canonical_url": "",
+      "image_alt": ""
+    }
+  ],
+  "production_families": {
+    "blog": true,
+    "case_study": true,
+    "solution_product": true,
+    "solution_detail": true,
+    "ai_service": true,
+    "opening": true,
+    "saudi_arabia": true
+  }
+}

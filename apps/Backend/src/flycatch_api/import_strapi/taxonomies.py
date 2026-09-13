@@ -10,9 +10,10 @@ from flycatch_api.import_strapi.client import relation_list, relation_one
 from flycatch_api.import_strapi.context import ImportContext, ImportStats
 from flycatch_api.import_strapi.populate import POPULATE
 from flycatch_api.import_strapi.status import (
+    SlugCollisionError,
     as_text,
     content_status,
-    ensure_slug,
+    editorial_author_name,
     parse_datetime,
     truncate,
 )
@@ -283,13 +284,8 @@ def import_authors_from_blogs(ctx: ImportContext) -> ImportStats:
         for entity in ctx.client.list_all("blogs", populate=POPULATE["blogs"]):
             author = relation_one(entity.get("author"))
             writer_images = ctx.media.import_many(entity.get("writer_image"))
-            name = ""
-            strapi_id = None
-            if author:
-                name = as_text(author.get("username") or author.get("name") or author.get("email"))
-                strapi_id = author.get("id")
-            if not name:
-                name = as_text(entity.get("author_name"))
+            name = editorial_author_name(entity, author)
+            strapi_id = author.get("id") if author else None
             name = truncate(name, 120)
             if not name or name in seen:
                 continue
@@ -371,15 +367,28 @@ def resolve_category_ids(ctx: ImportContext, value, *, collection: str, model: t
     return ids
 
 
+def claim_existing_slug(ctx: ImportContext, collection: str, entity: dict, existing) -> bool:
+    """Return False when another Strapi row already owns this slug."""
+    if existing is None:
+        return True
+    owner = ctx.id_map.owner(collection, existing.id)
+    entity_id = entity.get("id")
+    if owner is not None and entity_id is not None and int(owner) != int(entity_id):
+        ctx.record_error(
+            collection,
+            f"slug collision {getattr(existing, 'slug', '')!r}: "
+            f"strapi {entity_id} vs existing {owner}",
+        )
+        ctx.stats.skipped += 1
+        return False
+    return True
+
+
 def unique_slug(db: Session, model: type, slug: str, *, exclude_id=None) -> str:
-    base = ensure_slug(slug, "item")
-    candidate = base
-    n = 2
-    while True:
-        query = db.query(model).filter(model.slug == candidate)
-        if exclude_id is not None:
-            query = query.filter(model.id != exclude_id)
-        if query.first() is None:
-            return candidate
-        candidate = truncate(f"{base}-{n}", 128)
-        n += 1
+    query = db.query(model).filter(model.slug == slug)
+    if exclude_id is not None:
+        query = query.filter(model.id != exclude_id)
+    existing = query.first()
+    if existing is not None:
+        raise SlugCollisionError(f"slug {slug!r} already exists")
+    return slug

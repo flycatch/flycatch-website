@@ -3,6 +3,7 @@ export type {
   HomeFaq,
   HomeService,
   PublicCaseStudy,
+  PublicCaseStudySummary,
   PublicHome,
   PublicNamedItem,
   PublicTechnology,

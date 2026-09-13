@@ -1,4 +1,6 @@
 ---
+import OptimizedImage from './OptimizedImage.astro';
+import { imageAlt } from '../lib/image';
 import { publicMediaUrl } from '../lib/public-api';
 import type { PublicAiService } from '../lib/public-api';
 
@@ -11,12 +13,14 @@ const banner = publicMediaUrl(page.banner_image_key);
 const heading = page.banner_title.trim();
 ---
 <section class="ai-hero" aria-labelledby="ai-heading">{banner ? (
-    <img
+    <OptimizedImage
       class="ai-hero-media"
       src={banner}
-      alt={page.seo.image_alt || page.banner_title}
-      width="1512"
-      height="982"
+      alt={imageAlt(page.seo.image_alt, page.banner_title)}
+      width={1200}
+      height={780}
+      sizes="100vw"
+      priority
     />
   ) : (
     <div class="ai-hero-media ai-hero-fallback"></div>

@@ -52,11 +52,14 @@
         },
         "writer_image": {"data": null},
         "image_alt": "Hero",
+        "full_name": "alice",
+        "designation": "Editor",
+        "bio": "Writes about engineering",
         "facebook": "",
         "linkedin": "",
         "twitter": "",
         "instagram": "",
-        "canonical_url": ""
+        "canonical_url": "https://www.flycatchtech.com/company/blogs/hello-world"
       }
     }
   ],

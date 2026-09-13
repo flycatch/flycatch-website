@@ -21,7 +21,7 @@ describe('seo metadata helper', () => {
       },
     );
     expect(metadata.canonical).toBe('http://localhost:8080/');
-    expect(metadata.socialImageUrl).toBeNull();
+    expect(metadata.socialImageUrl).toBe('http://localhost:8080/opengraph-image.jpg');
   });
 
   it('prefers SEO meta title then page name', () => {

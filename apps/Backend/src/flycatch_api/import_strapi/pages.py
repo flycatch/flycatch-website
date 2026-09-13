@@ -16,6 +16,7 @@ from flycatch_api.import_strapi.mappers import (
 )
 from flycatch_api.import_strapi.populate import POPULATE
 from flycatch_api.import_strapi.status import (
+    SlugCollisionError,
     as_bool,
     as_int,
     as_text,
@@ -25,8 +26,8 @@ from flycatch_api.import_strapi.status import (
     parse_datetime,
     truncate,
 )
-from flycatch_api.import_strapi.taxonomies import unique_slug
-from flycatch_api.models.ai_service import AiService
+from flycatch_api.import_strapi.taxonomies import claim_existing_slug, unique_slug
+from flycatch_api.models.ai_service import AiService, AiServiceSolution
 from flycatch_api.models.catalog import FlycatchSaudiArabia
 from flycatch_api.models.cloud_service import CloudService
 from flycatch_api.models.data_analytics import DataAnalytics
@@ -84,7 +85,10 @@ def import_homes(ctx: ImportContext) -> ImportStats:
         for rel in relation_list(entity.get("case_studies") or entity.get("caseStudies")):
             mapped = ctx.id_map.get("case-studies", rel.get("id"))
             if mapped is None:
-                slug = ensure_slug(rel.get("slug"), as_text(rel.get("heading") or rel.get("title") or ""))
+                slug = ensure_slug(
+                    rel.get("slug"),
+                    as_text(rel.get("heading") or rel.get("title") or ""),
+                )
                 if slug:
                     from flycatch_api.models.case_study import CaseStudy
 
@@ -279,6 +283,22 @@ def import_solution_products(ctx: ImportContext) -> ImportStats:
                 card_image_on_right=as_bool(entity.get("card_image_on_right")),
                 banner_image_on_right=as_bool(entity.get("banner_image_on_right")),
                 order=as_int(entity.get("order")),
+                seo=map_seo(
+                    entity.get("seo"),
+                    image_key=ctx.media.import_field(
+                        (entity.get("seo") or {}).get("image")
+                        if isinstance(entity.get("seo"), dict)
+                        else None
+                    ),
+                    fallback={
+                        "title": title,
+                        "description": entity.get("product_description")
+                        if not isinstance(entity.get("product_description"), list)
+                        else "",
+                        "canonical_url": entity.get("canonical_url"),
+                        "image_alt": entity.get("image_alt"),
+                    },
+                ),
                 status=status,
             )
             if ctx.dry_run:
@@ -294,6 +314,8 @@ def import_solution_products(ctx: ImportContext) -> ImportStats:
             existing = (
                 ctx.db.query(SolutionProduct).filter(SolutionProduct.slug == slug_base).first()
             )
+            if not claim_existing_slug(ctx, "products", entity, existing):
+                continue
             if existing:
                 for key, value in fields.items():
                     setattr(existing, key, value)
@@ -301,7 +323,12 @@ def import_solution_products(ctx: ImportContext) -> ImportStats:
                 ctx.id_map.set("products", entity.get("id"), existing.id)
                 local.updated += 1
             else:
-                slug = unique_slug(ctx.db, SolutionProduct, slug_base)
+                try:
+                    slug = unique_slug(ctx.db, SolutionProduct, slug_base)
+                except SlugCollisionError as exc:
+                    ctx.record_error("products", str(exc))
+                    local.skipped += 1
+                    continue
                 row = SolutionProduct(
                     id=uuid4(), slug=slug, created_at=created_at, updated_at=updated_at, **fields
                 )
@@ -336,6 +363,8 @@ def _upsert_by_slug(
             local_inc_created(ctx)
         return
     existing = ctx.db.query(model).filter(model.slug == slug_base).first()
+    if not claim_existing_slug(ctx, collection, entity, existing):
+        return
     if existing:
         for key, value in fields.items():
             setattr(existing, key, value)
@@ -344,7 +373,12 @@ def _upsert_by_slug(
         ctx.id_map.set(collection, entity.get("id"), existing.id)
         ctx.stats.updated += 1
         return
-    slug = unique_slug(ctx.db, model, slug_base)
+    try:
+        slug = unique_slug(ctx.db, model, slug_base)
+    except SlugCollisionError as exc:
+        ctx.record_error(collection, str(exc))
+        ctx.stats.skipped += 1
+        return
     kwargs = dict(fields)
     kwargs["slug"] = slug
     kwargs["created_at"] = created_at
@@ -422,6 +456,47 @@ def _landing_common(ctx: ImportContext, entity: dict) -> tuple[dict, str, dateti
     return fields, slug_base, created_at, updated_at
 
 
+def _link_ai_service_solutions(ctx: ImportContext, row: AiService, entity: dict) -> None:
+    refs = relation_list(entity.get("solutions_sections") or entity.get("solution_details"))
+    if ctx.dry_run:
+        for rel in refs:
+            slug = as_text(rel.get("slug"))
+            mapped = ctx.id_map.get("solution-details", rel.get("id"))
+            if mapped is None and slug:
+                existing = ctx.db.query(SolutionDetail).filter(SolutionDetail.slug == slug).first()
+                mapped = existing.id if existing else None
+            if mapped is None:
+                ctx.warnings.append(
+                    f"ai-services: unmatched solution {rel.get('id')} slug={slug!r}"
+                )
+        return
+    row.solution_links.clear()
+    position = 0
+    for rel in refs:
+        mapped = ctx.id_map.get("solution-details", rel.get("id"))
+        if mapped is None:
+            slug = as_text(rel.get("slug"))
+            if slug:
+                existing = ctx.db.query(SolutionDetail).filter(SolutionDetail.slug == slug).first()
+                mapped = existing.id if existing else None
+                if mapped:
+                    ctx.id_map.set("solution-details", rel.get("id"), mapped)
+        if mapped is None:
+            ctx.record_error(
+                "ai-services",
+                f"unmatched solution {rel.get('id')} slug={rel.get('slug')!r}",
+            )
+            continue
+        row.solution_links.append(
+            AiServiceSolution(
+                ai_service_id=row.id,
+                solution_detail_id=mapped,
+                position=position,
+            )
+        )
+        position += 1
+
+
 def import_ai_services(ctx: ImportContext) -> ImportStats:
     local = ImportStats()
     before = ctx.stats
@@ -461,7 +536,12 @@ def import_ai_services(ctx: ImportContext) -> ImportStats:
                 ),
                 faq_title=truncate(entity.get("faq_title") or "", 200),
                 faq_description=sanitize_html(as_text(entity.get("faq_description"))),
-                faq_accordion=map_accordion(ctx, entity.get("faq_accordion") or entity.get("faqs")),
+                faq_accordion=map_accordion(
+                    ctx,
+                    entity.get("faq_accordion")
+                    or entity.get("faq_accordian")
+                    or entity.get("faqs"),
+                ),
                 seo=map_seo(entity.get("seo")),
                 status=content_status(entity),
             )
@@ -475,6 +555,9 @@ def import_ai_services(ctx: ImportContext) -> ImportStats:
                 created_at=created_at,
                 updated_at=updated_at,
             )
+            row = ctx.db.query(AiService).filter(AiService.slug == slug_base).first()
+            if row is not None:
+                _link_ai_service_solutions(ctx, row, entity)
     except Exception as exc:  # noqa: BLE001
         ctx.record_error("ai-services", str(exc))
     before.merge(local)
@@ -830,6 +913,9 @@ def import_flycatch_saudi_arabia(ctx: ImportContext) -> ImportStats:
         )
         # Adapt home services shape → saudi service_section list of dicts as-is
         video_key = ctx.media.import_field(entity.get("video_file"))
+        banner_image_key = ctx.media.import_field(
+            entity.get("flycatch_saudi_arabia_banner_image") or entity.get("banner_image")
+        )
         status = content_status(entity)
         created_at = parse_datetime(entity.get("createdAt"))
         fields = dict(
@@ -842,8 +928,9 @@ def import_flycatch_saudi_arabia(ctx: ImportContext) -> ImportStats:
             service_section=service_section,
             banner_explore_text=truncate(entity.get("banner_explore_text") or "", 200),
             services_title=truncate(entity.get("services_title") or "", 200),
+            banner_image_key=banner_image_key,
             video_key=video_key,
-            seo=map_seo(entity.get("seo")),
+            seo=map_seo(entity.get("seo"), image_key=banner_image_key),
             status=status,
         )
         if ctx.dry_run:

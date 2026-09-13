@@ -15,11 +15,67 @@
 	}
 }
 
+# Keep the visitor Host so Astro origin checks and absolute URLs
+# match the gateway, not frontend:4321.
+(frontend_upstream) {
+	reverse_proxy frontend:4321 {
+		header_up Host {http.request.hostport}
+	}
+}
+
 :{$GATEWAY_PORT:8080} {
 	import base_security
 
+	@apex host flycatchtech.com
+	redir @apex https://www.flycatchtech.com{uri} 301
+
+	@insecure_canonical {
+		protocol http
+		host www.flycatchtech.com flycatchtech.com
+	}
+	redir @insecure_canonical https://www.flycatchtech.com{uri} 301
+
+	@trailing_slash {
+		path_regexp slash ^(.+)/$
+		not path /admin/
+	}
+	redir @trailing_slash {re.slash.1} 301
+
+	redir /services/hybrid-cloud /services/cloud-migration 301
+	redir /services/cloud-security /services/cloud-migration 301
+	redir /services/cloud-optimization /services/cloud-migration 301
+	redir /services/data-management-strategy /services/data-migration 301
+	redir /services/data-engineering /services/data-migration 301
+	redir /services/devops-consultation /services/devOps-consultation 301
+	redir /solutions/flygrid-ai /solutions/flyGrid-ai 301
+	redir /solutions/doctcare-ai /solutions/doctCare-ai 301
+	redir /solutions/talkshop-ai /solutions/talkShop-ai 301
+	redir /solutions/docsis-ai /solutions/docSis-ai 301
+	redir /company / 301
+	redir /en / 301
+	@legacy_locale path_regexp locale ^/en/(.*)$
+	redir @legacy_locale /{re.locale.1} 301
+
 	# Keep /admin on the Administration FE (never the public site)
 	redir /admin /admin/ 308
+
+	# Fingerprinted frontend assets
+	handle /_astro/* {
+		header Cache-Control "public, max-age=31536000, immutable"
+		import frontend_upstream
+	}
+
+	# CMS media — address changes when the asset is replaced
+	handle /api/v1/public/media/* {
+		header Cache-Control "public, max-age=31536000, immutable"
+		reverse_proxy backend:8000
+	}
+
+	# Public form posts stay on the site, then the Frontend proxies to the CMS
+	handle /api/forms* {
+		header Cache-Control "no-store"
+		import frontend_upstream
+	}
 
 	# Backend API
 	handle /api/* {
@@ -54,7 +110,8 @@
 	# so script-src needs 'unsafe-inline' (same as /admin*). Styles may be
 	# inlined or served from /_astro/*.css.
 	handle {
-		header Content-Security-Policy "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; media-src 'self'; connect-src 'self'"
-		reverse_proxy frontend:4321
+		header Cache-Control "public, max-age=60, stale-while-revalidate=600"
+		header Content-Security-Policy "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://www.googletagmanager.com https://www.google-analytics.com; media-src 'self'; connect-src 'self' https://www.google.com https://www.googletagmanager.com https://www.google-analytics.com; frame-src https://www.google.com"
+		import frontend_upstream
 	}
 }

@@ -44,6 +44,8 @@ const required = [
   'admin-downloads.v1.ts',
   'admin-flycatch-saudi-arabia.v1.ts',
   'admin-subscriptions.v1.ts',
+  'admin-privacy-policies.v1.ts',
+  'admin-terms.v1.ts',
 ];
 
 let failed = false;

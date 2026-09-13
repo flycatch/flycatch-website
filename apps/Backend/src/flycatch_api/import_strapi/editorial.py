@@ -6,10 +6,12 @@ from flycatch_api.import_strapi.client import relation_list, relation_one
 from flycatch_api.import_strapi.context import ImportContext, ImportStats
 from flycatch_api.import_strapi.populate import POPULATE
 from flycatch_api.import_strapi.status import (
+    SlugCollisionError,
     as_int,
     as_text,
     blog_status,
     content_status,
+    editorial_author_name,
     ensure_slug,
     map_seo,
     parse_date,
@@ -17,6 +19,7 @@ from flycatch_api.import_strapi.status import (
     truncate,
 )
 from flycatch_api.import_strapi.taxonomies import (
+    claim_existing_slug,
     ensure_author,
     ensure_technology_named,
     resolve_category_ids,
@@ -71,15 +74,13 @@ def _import_blog(ctx: ImportContext, entity: dict) -> None:
     author_ids: list = []
     author = relation_one(entity.get("author"))
     writer_images = ctx.media.import_many(entity.get("writer_image"))
-    author_name = ""
-    if author:
-        author_name = as_text(author.get("username") or author.get("name") or author.get("email"))
-    if not author_name:
-        author_name = as_text(entity.get("author_name"))
+    author_name = editorial_author_name(entity, author)
     if author_name:
         row_author = ensure_author(
             ctx,
             name=author_name,
+            bio=as_text(entity.get("bio")),
+            designation=as_text(entity.get("designation")),
             image_keys=writer_images,
             status=ContentStatus.publish,
             strapi_id=author.get("id") if author else None,
@@ -89,6 +90,16 @@ def _import_blog(ctx: ImportContext, entity: dict) -> None:
 
     category_ids = resolve_category_ids(
         ctx, entity.get("categories"), collection="categories", model=Category
+    )
+    seo = map_seo(
+        entity.get("seo"),
+        image_key=image_key,
+        fallback={
+            "title": title,
+            "description": entity.get("description"),
+            "canonical_url": entity.get("canonical_url"),
+            "image_alt": entity.get("image_alt"),
+        },
     )
 
     if ctx.dry_run:
@@ -106,6 +117,8 @@ def _import_blog(ctx: ImportContext, entity: dict) -> None:
         mapped = ctx.id_map.get("blogs", entity.get("id"))
         if mapped:
             existing = ctx.db.query(Blog).filter(Blog.id == mapped).first()
+    if not claim_existing_slug(ctx, "blogs", entity, existing):
+        return
 
     if existing:
         row = existing
@@ -115,8 +128,9 @@ def _import_blog(ctx: ImportContext, entity: dict) -> None:
         row.status = status
         row.reading_time = as_int(entity.get("reading_time"))
         row.image_key = image_key
-        row.image_alt = truncate(entity.get("image_alt") or "", 200)
-        row.canonical_url = truncate(entity.get("canonical_url") or "", 500)
+        row.image_alt = seo["image_alt"]
+        row.canonical_url = seo["canonical_url"]
+        row.seo = seo
         row.facebook = truncate(entity.get("facebook") or "", 500)
         row.linkedin = truncate(entity.get("linkedin") or "", 500)
         row.twitter = truncate(entity.get("twitter") or "", 500)
@@ -127,7 +141,12 @@ def _import_blog(ctx: ImportContext, entity: dict) -> None:
         row.category_links.clear()
         ctx.stats.updated += 1
     else:
-        slug = unique_slug(ctx.db, Blog, slug_base)
+        try:
+            slug = unique_slug(ctx.db, Blog, slug_base)
+        except SlugCollisionError as exc:
+            ctx.record_error("blogs", str(exc))
+            ctx.stats.skipped += 1
+            return
         row = Blog(
             id=uuid4(),
             title=title,
@@ -137,8 +156,9 @@ def _import_blog(ctx: ImportContext, entity: dict) -> None:
             status=status,
             reading_time=as_int(entity.get("reading_time")),
             image_key=image_key,
-            image_alt=truncate(entity.get("image_alt") or "", 200),
-            canonical_url=truncate(entity.get("canonical_url") or "", 500),
+            image_alt=seo["image_alt"],
+            canonical_url=seo["canonical_url"],
+            seo=seo,
             facebook=truncate(entity.get("facebook") or "", 500),
             linkedin=truncate(entity.get("linkedin") or "", 500),
             twitter=truncate(entity.get("twitter") or "", 500),
@@ -212,6 +232,17 @@ def _import_case_study(ctx: ImportContext, entity: dict) -> None:
         if row_tech:
             tech_ids.append(row_tech.id)
 
+    seo = map_seo(
+        entity.get("seo"),
+        image_key=image_key,
+        fallback={
+            "title": heading,
+            "description": entity.get("description"),
+            "canonical_url": entity.get("canonical_url"),
+            "image_alt": entity.get("image_alt"),
+        },
+    )
+
     if ctx.dry_run:
         existing = ctx.db.query(CaseStudy).filter(CaseStudy.slug == slug_base).first()
         ctx.id_map.set("case-studies", entity.get("id"), existing.id if existing else uuid4())
@@ -222,6 +253,8 @@ def _import_case_study(ctx: ImportContext, entity: dict) -> None:
         return
 
     existing = ctx.db.query(CaseStudy).filter(CaseStudy.slug == slug_base).first()
+    if not claim_existing_slug(ctx, "case-studies", entity, existing):
+        return
     if existing:
         row = existing
         row.heading = heading
@@ -232,7 +265,8 @@ def _import_case_study(ctx: ImportContext, entity: dict) -> None:
         row.occurred_on = parse_date(entity.get("occurred_on") or entity.get("date"))
         row.status = status
         row.image_key = image_key
-        row.image_alt = truncate(entity.get("image_alt") or "", 200)
+        row.image_alt = seo["image_alt"]
+        row.seo = seo
         row.content_available_in = entity.get("content_available_in") or []
         row.updated_at = updated_at
         row.industry_links.clear()
@@ -240,7 +274,12 @@ def _import_case_study(ctx: ImportContext, entity: dict) -> None:
         row.technology_links.clear()
         ctx.stats.updated += 1
     else:
-        slug = unique_slug(ctx.db, CaseStudy, slug_base)
+        try:
+            slug = unique_slug(ctx.db, CaseStudy, slug_base)
+        except SlugCollisionError as exc:
+            ctx.record_error("case-studies", str(exc))
+            ctx.stats.skipped += 1
+            return
         row = CaseStudy(
             id=uuid4(),
             heading=heading,
@@ -252,7 +291,8 @@ def _import_case_study(ctx: ImportContext, entity: dict) -> None:
             occurred_on=parse_date(entity.get("occurred_on") or entity.get("date")),
             status=status,
             image_key=image_key,
-            image_alt=truncate(entity.get("image_alt") or "", 200),
+            image_alt=seo["image_alt"],
+            seo=seo,
             content_available_in=entity.get("content_available_in") or [],
             created_at=created_at,
             updated_at=updated_at,
@@ -300,11 +340,20 @@ def _import_news(ctx: ImportContext, entity: dict) -> None:
     status = content_status(entity)
     created_at = parse_datetime(entity.get("createdAt"))
     updated_at = parse_datetime(entity.get("updatedAt"), created_at)
-    seo = map_seo(entity.get("seo"))
+    seo = map_seo(
+        entity.get("seo"),
+        image_key=image_key,
+        fallback={
+            "title": title,
+            "description": entity.get("description"),
+            "canonical_url": entity.get("canonical_url"),
+            "image_alt": entity.get("image_alt"),
+        },
+    )
 
     author_ids = []
     for author in relation_list(entity.get("author") or entity.get("authors")):
-        name = as_text(author.get("username") or author.get("name") or author.get("email"))
+        name = editorial_author_name(entity, author)
         row_author = ensure_author(
             ctx, name=name, status=ContentStatus.publish, strapi_id=author.get("id")
         )
@@ -328,6 +377,8 @@ def _import_news(ctx: ImportContext, entity: dict) -> None:
         return
 
     existing = ctx.db.query(News).filter(News.slug == slug_base).first()
+    if not claim_existing_slug(ctx, "news", entity, existing):
+        return
     if existing:
         row = existing
         row.title = title
@@ -348,7 +399,12 @@ def _import_news(ctx: ImportContext, entity: dict) -> None:
         row.author_links.clear()
         ctx.stats.updated += 1
     else:
-        slug = unique_slug(ctx.db, News, slug_base)
+        try:
+            slug = unique_slug(ctx.db, News, slug_base)
+        except SlugCollisionError as exc:
+            ctx.record_error("news", str(exc))
+            ctx.stats.skipped += 1
+            return
         row = News(
             id=uuid4(),
             title=title,
@@ -405,7 +461,16 @@ def _import_resource(ctx: ImportContext, entity: dict) -> None:
     status = content_status(entity)
     created_at = parse_datetime(entity.get("createdAt"))
     updated_at = parse_datetime(entity.get("updatedAt"), created_at)
-    seo = map_seo(entity.get("seo"))
+    seo = map_seo(
+        entity.get("seo"),
+        image_key=image_key,
+        fallback={
+            "title": title,
+            "description": entity.get("description"),
+            "canonical_url": entity.get("canonical_url"),
+            "image_alt": entity.get("image_alt"),
+        },
+    )
     category_ids = resolve_category_ids(
         ctx, entity.get("categories"), collection="resource-categories", model=ResourceCategory
     )
@@ -420,6 +485,8 @@ def _import_resource(ctx: ImportContext, entity: dict) -> None:
         return
 
     existing = ctx.db.query(Resource).filter(Resource.slug == slug_base).first()
+    if not claim_existing_slug(ctx, "resources", entity, existing):
+        return
     if existing:
         row = existing
         row.title = title
@@ -433,7 +500,12 @@ def _import_resource(ctx: ImportContext, entity: dict) -> None:
         row.category_links.clear()
         ctx.stats.updated += 1
     else:
-        slug = unique_slug(ctx.db, Resource, slug_base)
+        try:
+            slug = unique_slug(ctx.db, Resource, slug_base)
+        except SlugCollisionError as exc:
+            ctx.record_error("resources", str(exc))
+            ctx.stats.skipped += 1
+            return
         row = Resource(
             id=uuid4(),
             title=title,

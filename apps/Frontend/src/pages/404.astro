@@ -1,7 +1,7 @@
 ---
 export const prerender = true;
 
-import BaseLayout from '../layouts/BaseLayout.astro';
+import InteriorLayout from '../layouts/InteriorLayout.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import { publicSiteSettings } from '../lib/metadata';
@@ -16,11 +16,11 @@ const metadata: PageMetadata = {
   socialTitle: t('page.not_found.title'),
   socialDescription: t('page.not_found.body'),
   socialImageKey: null,
-  socialImageUrl: null,
+  socialImageUrl: `${siteSettings.canonical_origin.replace(/\/$/, '')}/opengraph-image.jpg`,
   indexable: false,
 };
 ---
-<BaseLayout title={metadata.title} metadata={metadata}>
+<InteriorLayout title={metadata.title} metadata={metadata}>
   <SiteHeader />
   <main id="main" class="page-main">
     <div class="container">
@@ -30,4 +30,4 @@ const metadata: PageMetadata = {
     </div>
   </main>
   <SiteFooter />
-</BaseLayout>
+</InteriorLayout>

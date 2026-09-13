@@ -34,6 +34,7 @@ export type PublicCaseStudySummary = {
 export type PublicCaseStudy = PublicCaseStudySummary & {
   body: string;
   content_available_in: string[];
+  seo: ContentSeo;
 };
 
 export type HomeService = {
@@ -53,7 +54,7 @@ export type PublicHome = {
   video_key: string | null;
   banner_title: string;
   seo: ContentSeo;
-  case_studies: PublicCaseStudy[];
+  case_studies: PublicCaseStudySummary[];
   services: HomeService[];
   banner_explore_text: string;
   faq_title: string;
@@ -111,6 +112,7 @@ export type PublicBlogDetail = {
   description: string;
   body: string;
   reading_time: number;
+  created_at?: string | null;
   image_key: string | null;
   image_alt: string;
   canonical_url: string;
@@ -121,6 +123,7 @@ export type PublicBlogDetail = {
   content_available_in: string[];
   authors: PublicAuthor[];
   categories: PublicCategory[];
+  seo: ContentSeo;
 };
 
 export type PublicOverviewSummary = {
@@ -245,15 +248,42 @@ export function absoluteMediaUrl(origin: string, key: string | null | undefined)
   return `${origin.replace(/\/$/, '')}${path}`;
 }
 
+const cmsRequestCache = new Map<
+  string,
+  Promise<{ data: unknown; error: boolean; origin: string }>
+>();
+const cmsFetchedUrls: string[] = [];
+
+/** Drop in-render CMS memoization. Tests must call this when they stub `fetch`. */
+export function resetPublicApiCache(): void {
+  cmsRequestCache.clear();
+  cmsFetchedUrls.length = 0;
+}
+
+/** URLs that actually hit the network during the current cache window. */
+export function publicApiFetchedUrls(): string[] {
+  return [...cmsFetchedUrls];
+}
+
 async function getJson<T>(path: string): Promise<{ data: T | null; error: boolean; origin: string }> {
   const origin = apiOrigin();
-  try {
-    const response = await fetch(`${fetchOrigin()}${path}`);
-    if (!response.ok) return { data: null, error: true, origin };
-    return { data: (await response.json()) as T, error: false, origin };
-  } catch {
-    return { data: null, error: true, origin };
+  const url = `${fetchOrigin()}${path}`;
+  const cached = cmsRequestCache.get(url);
+  if (cached) {
+    return cached as Promise<{ data: T | null; error: boolean; origin: string }>;
   }
+  const pending = (async () => {
+    cmsFetchedUrls.push(url);
+    try {
+      const response = await fetch(url);
+      if (!response.ok) return { data: null, error: true, origin };
+      return { data: (await response.json()) as T, error: false, origin };
+    } catch {
+      return { data: null, error: true, origin };
+    }
+  })();
+  cmsRequestCache.set(url, pending);
+  return pending as Promise<{ data: T | null; error: boolean; origin: string }>;
 }
 
 type Paginated<T> = {
@@ -263,15 +293,31 @@ type Paginated<T> = {
   total?: number;
 };
 
-async function loadPaginated<T>(path: string): Promise<PublicListResult<T>> {
+export type PublicListOptions = {
+  /** Stop after this many items and request only as many pages as needed. */
+  maxItems?: number;
+};
+
+const PUBLIC_LIST_PAGE_SIZE = 10;
+
+async function loadPaginated<T>(
+  path: string,
+  options: PublicListOptions = {},
+): Promise<PublicListResult<T>> {
   const origin = apiOrigin();
   const items: T[] = [];
+  const maxItems = options.maxItems;
+  const perPage =
+    maxItems !== undefined
+      ? Math.min(PUBLIC_LIST_PAGE_SIZE, Math.max(1, maxItems))
+      : PUBLIC_LIST_PAGE_SIZE;
   let page = 1;
   let total = Number.POSITIVE_INFINITY;
-  while ((page - 1) * 10 < total) {
+  while ((page - 1) * perPage < total) {
+    if (maxItems !== undefined && items.length >= maxItems) break;
     const separator = path.includes('?') ? '&' : '?';
     const { data, error } = await getJson<Paginated<T>>(
-      `${path}${separator}page=${page}&per_page=10`,
+      `${path}${separator}page=${page}&per_page=${perPage}`,
     );
     if (error || !data) return { items, error: true, origin };
     const batch = Array.isArray(data.items) ? data.items : [];
@@ -281,7 +327,11 @@ async function loadPaginated<T>(path: string): Promise<PublicListResult<T>> {
     page += 1;
     if (page > 100) break;
   }
-  return { items, error: false, origin };
+  return {
+    items: maxItems !== undefined ? items.slice(0, maxItems) : items,
+    error: false,
+    origin,
+  };
 }
 
 export async function loadPublishedHomes(): Promise<PublicListResult<PublicHome>> {
@@ -309,14 +359,35 @@ export async function loadPublishedClientTestimonials(): Promise<
   return { items: [...items].sort((a, b) => a.order - b.order), error: false, origin };
 }
 
-export async function loadPublishedBlogs(): Promise<PublicListResult<PublicBlogSummary>> {
-  return loadPaginated<PublicBlogSummary>('/api/v1/public/blogs');
+export async function loadPublishedBlogs(
+  options: PublicListOptions = {},
+): Promise<PublicListResult<PublicBlogSummary>> {
+  return loadPaginated<PublicBlogSummary>('/api/v1/public/blogs', options);
+}
+
+/** Imports that ran before the blog slug column was widened stored 128 characters. */
+export const LEGACY_BLOG_SLUG_LIMIT = 128;
+
+export function publishedBlogSlugCandidates(slug: string): string[] {
+  const normalized = slug.trim();
+  if (normalized.length <= LEGACY_BLOG_SLUG_LIMIT) {
+    return [normalized];
+  }
+  return [normalized, normalized.slice(0, LEGACY_BLOG_SLUG_LIMIT)];
 }
 
 export async function loadPublishedBlog(slug: string): Promise<PublicItemResult<PublicBlogDetail>> {
-  return getJson<PublicBlogDetail>(`/api/v1/public/blogs/${encodeURIComponent(slug)}`).then(
-    ({ data, error, origin }) => ({ item: data, error, origin }),
-  );
+  let last: PublicItemResult<PublicBlogDetail> = { item: null, error: true, origin: apiOrigin() };
+  for (const candidate of publishedBlogSlugCandidates(slug)) {
+    const result = await getJson<PublicBlogDetail>(
+      `/api/v1/public/blogs/${encodeURIComponent(candidate)}`,
+    );
+    last = { item: result.data, error: result.error, origin: result.origin };
+    if (result.data) {
+      return last;
+    }
+  }
+  return last;
 }
 
 export async function loadPublishedCaseStudies(): Promise<PublicListResult<PublicCaseStudySummary>> {
@@ -353,4 +424,319 @@ export async function loadPublishedAiService(
   return getJson<PublicAiService>(`/api/v1/public/ai-services/${encodeURIComponent(slug)}`).then(
     ({ data, error, origin }) => ({ item: data, error, origin }),
   );
+}
+
+export type PublicLanding = {
+  slug: string;
+  banner_title: string;
+  banner_image_key: string | null;
+  introduction_title: string;
+  introduction_first_paragraph: string;
+  introduction_second_paragraph: string;
+  introduction_third_paragraph?: string;
+  accordion?: PublicAccordionItem[];
+  offering_image_key?: string | null;
+  offering_title?: string;
+  offering_description?: string;
+  experience_title?: string;
+  experience_accordion?: PublicAccordionItem[];
+  experience_image_key?: string | null;
+  experience_description?: string;
+  outcomes_image_key?: string | null;
+  outcomes_title?: string;
+  outcomes_description?: string;
+  banner_tag_line?: string;
+  faq_title?: string;
+  faq_description?: string;
+  faq_accordion?: PublicAccordionItem[];
+  seo: ContentSeo;
+};
+
+export type PublicNamedPage = Omit<PublicLanding, 'slug'> & {
+  page_name: string;
+};
+
+export type PublicSolutionIndex = {
+  banner_image_key: string | null;
+  banner_title: string;
+  section_title: string;
+  seo: ContentSeo;
+};
+
+export type PublicSolutionProductSummary = {
+  slug: string;
+  product_title: string;
+  product_description: string;
+  product_tag: string;
+  product_logo_key: string | null;
+  product_card_image_key: string | null;
+  card_image_on_right: boolean;
+  order: number;
+};
+
+export type PublicSolutionProduct = PublicSolutionProductSummary & {
+  product_banner_image_key: string | null;
+  banner_image_on_right: boolean;
+  seo: ContentSeo;
+};
+
+export type PublicSolutionDetailPage = {
+  title: string;
+  slug: string;
+  banner: PublicSolutionBanner;
+  introduction: PublicSolutionIntroduction & {
+    items?: { title: string; order: number; color: string }[];
+    icon_keys?: string[];
+    sub_description?: string;
+    image_key?: string | null;
+  };
+  challenges?: {
+    name: string;
+    description: string;
+    image_key: string | null;
+    items: { title: string; order: number; color: string }[];
+  };
+  benefits?: {
+    description: string;
+    items: { title: string; order: number; color: string }[];
+  };
+  solutions_section: PublicSolutionsSection;
+  cta?: { title: string; description: string; button_name: string };
+  seo: ContentSeo;
+};
+
+export type PublicOpeningSummary = {
+  job_id: string;
+  role: string;
+  slug: string;
+  experience: string;
+  location: string;
+  job_type: string;
+  job_status: string;
+  specialization: string;
+  body: string;
+  exp_date: string | null;
+};
+
+export type PublicEmployeeTestimonial = {
+  name: string;
+  designation: string;
+  review: string;
+  image_key: string | null;
+  order: number;
+};
+
+export type PublicNewsSummary = {
+  title: string;
+  slug: string;
+  description: string;
+  image_key: string | null;
+  reading_time: number;
+  button_name: string;
+};
+
+export type PublicNews = PublicNewsSummary & {
+  body: string;
+  seo: ContentSeo;
+};
+
+export type PublicResource = {
+  title: string;
+  slug: string;
+  image_key: string | null;
+  reading_time: number;
+  button_name: string;
+  pdf_key: string | null;
+  seo: ContentSeo;
+};
+
+export type PublicMembership = {
+  id: string;
+  title: string;
+  description: string;
+  images: { image_key: string | null; alt: string }[];
+  seo: ContentSeo;
+};
+
+export type PublicLegalPage = {
+  title: string;
+  slug: string;
+  body: string;
+  seo: ContentSeo;
+};
+
+export type PublicSaudiPage = {
+  id: string;
+  banner_title: string;
+  service_section: {
+    image_key: string | null;
+    types_title: string;
+    contents: string;
+    links: string;
+  }[];
+  banner_explore_text: string;
+  services_title: string;
+  banner_image_key: string | null;
+  video_key: string | null;
+  seo: ContentSeo;
+};
+
+async function loadFirstOrSlug<T extends { slug?: string }>(
+  prefix: string,
+  preferredSlug?: string,
+): Promise<PublicItemResult<T>> {
+  if (preferredSlug) {
+    const exact = await getJson<T>(`${prefix}/${encodeURIComponent(preferredSlug)}`);
+    if (exact.data) return { item: exact.data, error: false, origin: exact.origin };
+  }
+  const listed = await getJson<Paginated<T> | T[]>(prefix);
+  const items = Array.isArray(listed.data)
+    ? listed.data
+    : Array.isArray(listed.data?.items)
+      ? listed.data.items
+      : [];
+  const match =
+    (preferredSlug ? items.find((item) => item.slug === preferredSlug) : undefined) ?? items[0];
+  if (!match?.slug) return { item: null, error: listed.error, origin: listed.origin };
+  if (match && 'banner_title' in match && 'introduction_first_paragraph' in match) {
+    return { item: match as T, error: false, origin: listed.origin };
+  }
+  return getJson<T>(`${prefix}/${encodeURIComponent(match.slug)}`).then(({ data, error, origin }) => ({
+    item: data,
+    error,
+    origin,
+  }));
+}
+
+export async function loadPublishedLanding(
+  prefix: string,
+  preferredSlug?: string,
+): Promise<PublicItemResult<PublicLanding>> {
+  return loadFirstOrSlug<PublicLanding>(prefix, preferredSlug);
+}
+
+export async function loadPublishedNamedPage(
+  prefix: string,
+  pageName: string,
+): Promise<PublicItemResult<PublicNamedPage>> {
+  const exact = await getJson<PublicNamedPage>(`${prefix}/${encodeURIComponent(pageName)}`);
+  if (exact.data) return { item: exact.data, error: false, origin: exact.origin };
+  const listed = await getJson<Paginated<PublicNamedPage>>(prefix);
+  const items = Array.isArray(listed.data?.items) ? listed.data.items : [];
+  const match = items.find((item) => item.page_name === pageName) ?? items[0];
+  if (!match) return { item: null, error: listed.error, origin: listed.origin };
+  if ('introduction_first_paragraph' in match) {
+    return { item: match, error: false, origin: listed.origin };
+  }
+  return getJson<PublicNamedPage>(`${prefix}/${encodeURIComponent(match.page_name)}`).then(
+    ({ data, error, origin }) => ({ item: data, error, origin }),
+  );
+}
+
+export async function loadPublishedSolutionsIndex(): Promise<PublicListResult<PublicSolutionIndex>> {
+  const { data, error, origin } = await getJson<{ items?: PublicSolutionIndex[] }>(
+    '/api/v1/public/solutions',
+  );
+  return { items: Array.isArray(data?.items) ? data.items : [], error, origin };
+}
+
+export async function loadPublishedSolutionProducts(): Promise<
+  PublicListResult<PublicSolutionProductSummary>
+> {
+  return loadPaginated<PublicSolutionProductSummary>('/api/v1/public/solution-products');
+}
+
+export async function loadPublishedSolutionProduct(
+  slug: string,
+): Promise<PublicItemResult<PublicSolutionProduct>> {
+  return getJson<PublicSolutionProduct>(
+    `/api/v1/public/solution-products/${encodeURIComponent(slug)}`,
+  ).then(({ data, error, origin }) => ({ item: data, error, origin }));
+}
+
+export async function loadPublishedSolutionDetails(): Promise<
+  PublicListResult<PublicSolutionDetail>
+> {
+  return loadPaginated<PublicSolutionDetail>('/api/v1/public/solution-details');
+}
+
+export async function loadPublishedSolutionDetailPage(
+  slug: string,
+): Promise<PublicItemResult<PublicSolutionDetailPage>> {
+  return getJson<PublicSolutionDetailPage>(
+    `/api/v1/public/solution-details/${encodeURIComponent(slug)}`,
+  ).then(({ data, error, origin }) => ({ item: data, error, origin }));
+}
+
+export async function loadPublishedOpenings(): Promise<PublicListResult<PublicOpeningSummary>> {
+  return loadPaginated<PublicOpeningSummary>('/api/v1/public/openings');
+}
+
+export async function loadPublishedOpening(
+  slug: string,
+): Promise<PublicItemResult<PublicOpeningSummary>> {
+  return getJson<PublicOpeningSummary>(`/api/v1/public/openings/${encodeURIComponent(slug)}`).then(
+    ({ data, error, origin }) => ({ item: data, error, origin }),
+  );
+}
+
+export async function loadPublishedEmployeeTestimonials(): Promise<
+  PublicListResult<PublicEmployeeTestimonial>
+> {
+  const { data, error, origin } = await getJson<{ items?: PublicEmployeeTestimonial[] }>(
+    '/api/v1/public/employee-testimonials',
+  );
+  const items = Array.isArray(data?.items) ? data.items : [];
+  return { items: [...items].sort((a, b) => a.order - b.order), error, origin };
+}
+
+export async function loadPublishedNews(): Promise<PublicListResult<PublicNewsSummary>> {
+  return loadPaginated<PublicNewsSummary>('/api/v1/public/news');
+}
+
+export async function loadPublishedNewsItem(slug: string): Promise<PublicItemResult<PublicNews>> {
+  return getJson<PublicNews>(`/api/v1/public/news/${encodeURIComponent(slug)}`).then(
+    ({ data, error, origin }) => ({ item: data, error, origin }),
+  );
+}
+
+export type PublicDownload = {
+  id: string;
+  name: string;
+  company: string;
+};
+
+export async function loadPublishedDownloads(): Promise<PublicListResult<PublicDownload>> {
+  return loadPaginated<PublicDownload>('/api/v1/public/downloads');
+}
+
+export async function loadPublishedResources(): Promise<PublicListResult<PublicResource>> {
+  return loadPaginated<PublicResource>('/api/v1/public/resources');
+}
+
+export async function loadPublishedResource(slug: string): Promise<PublicItemResult<PublicResource>> {
+  return getJson<PublicResource>(`/api/v1/public/resources/${encodeURIComponent(slug)}`).then(
+    ({ data, error, origin }) => ({ item: data, error, origin }),
+  );
+}
+
+export async function loadPublishedMemberships(): Promise<PublicListResult<PublicMembership>> {
+  return loadPaginated<PublicMembership>('/api/v1/public/memberships');
+}
+
+export async function loadPublishedLegalPage(
+  kind: 'privacy-policies' | 'terms',
+  slug: string,
+): Promise<PublicItemResult<PublicLegalPage>> {
+  const exact = await getJson<PublicLegalPage>(
+    `/api/v1/public/${kind}/${encodeURIComponent(slug)}`,
+  );
+  if (exact.data) return { item: exact.data, error: false, origin: exact.origin };
+  const listed = await loadPaginated<PublicLegalPage>(`/api/v1/public/${kind}`);
+  const match = listed.items.find((item) => item.slug === slug) ?? listed.items[0] ?? null;
+  return { item: match, error: listed.error, origin: listed.origin };
+}
+
+export async function loadPublishedSaudiPages(): Promise<PublicListResult<PublicSaudiPage>> {
+  return loadPaginated<PublicSaudiPage>('/api/v1/public/flycatch-saudi-arabia');
 }

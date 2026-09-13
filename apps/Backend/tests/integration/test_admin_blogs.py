@@ -77,11 +77,19 @@ def test_author_category_and_blog_crud(client, bootstrapped):
             "reading_time": 4,
             "author_ids": [author_id],
             "category_ids": [category_id],
+            "seo": {
+                "title": "SEO Title",
+                "description": "SEO Description",
+                "canonical_url": "https://www.flycatchtech.com/company/blogs/first-post",
+                "image_alt": "Hero",
+            },
         },
     )
     assert created.status_code == 201
     blog = created.json()
     assert blog["slug"] == "first-post"
+    assert blog["seo"]["title"] == "SEO Title"
+    assert blog["seo"]["canonical_url"].endswith("/company/blogs/first-post")
     assert blog["status"] == "draft"
     assert blog["content_available_in"] == ["en"]
     assert blog["author_ids"] == [author_id]

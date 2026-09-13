@@ -85,11 +85,10 @@ POPULATE: dict[str, str | dict[str, Any]] = {
         "ai_expertise_image": True,
         "seo": True,
         "industry_section": {"populate": {"industry_images": True}},
-        "solutions_sections": {
-            "populate": {"solutions_section": {"populate": {"solutions_images": True}}}
-        },
+        "solutions_sections": True,
         "ai_expertise_accordian": True,
         "faq_accordion": True,
+        "faq_accordian": True,
         "faqs": True,
     },
     "cloud-services": {
@@ -162,6 +161,17 @@ POPULATE: dict[str, str | dict[str, Any]] = {
     },
 }
 
+# Live controllers that return a bare JSON array instead of {data, meta}.
+BARE_ARRAY_COLLECTIONS: frozenset[str] = frozenset(
+    {
+        "client-testimonials",
+        "employee-testimonials",
+        "downloads",
+        "homepages",
+        "homepage-seo",
+    }
+)
+
 # Logical import step names → Strapi collection path(s)
 STEP_COLLECTIONS: dict[str, list[str]] = {
     "categories": ["categories"],
@@ -183,7 +193,6 @@ STEP_COLLECTIONS: dict[str, list[str]] = {
     "downloads": ["downloads"],
     "memberships": ["awards"],
     "contacts": ["contacts"],
-    "subscriptions": ["subscriptions"],
     "homes": ["homepages", "homepage-seo"],
     "solutions": ["solutions"],
     "solution-details": ["solution-details"],
@@ -222,7 +231,6 @@ IMPORT_ORDER: list[str] = [
     "downloads",
     "memberships",
     "contacts",
-    "subscriptions",
     "solution-details",
     "solution-products",
     "solutions",

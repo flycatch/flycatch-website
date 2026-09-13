@@ -7,6 +7,7 @@ from flycatch_api.import_strapi.context import ImportContext, ImportStats
 from flycatch_api.import_strapi.editorial import local_inc_created, local_inc_updated
 from flycatch_api.import_strapi.populate import POPULATE
 from flycatch_api.import_strapi.status import (
+    SlugCollisionError,
     as_bool,
     as_float,
     as_int,
@@ -18,7 +19,7 @@ from flycatch_api.import_strapi.status import (
     parse_datetime,
     truncate,
 )
-from flycatch_api.import_strapi.taxonomies import unique_slug
+from flycatch_api.import_strapi.taxonomies import claim_existing_slug, unique_slug
 from flycatch_api.models.catalog import (
     Application,
     Contact,
@@ -232,6 +233,8 @@ def import_openings(ctx: ImportContext) -> ImportStats:
                     local_inc_created(ctx)
                 continue
             existing = ctx.db.query(Opening).filter(Opening.slug == slug_base).first()
+            if not claim_existing_slug(ctx, "openings", entity, existing):
+                continue
             fields = dict(
                 job_id=truncate(entity.get("job_id") or entity.get("jobId") or slug_base, 80),
                 exp_date=parse_date(entity.get("exp_date") or entity.get("expiry_date")),
@@ -252,7 +255,12 @@ def import_openings(ctx: ImportContext) -> ImportStats:
                 ctx.id_map.set("openings", entity.get("id"), existing.id)
                 local.updated += 1
             else:
-                slug = unique_slug(ctx.db, Opening, slug_base)
+                try:
+                    slug = unique_slug(ctx.db, Opening, slug_base)
+                except SlugCollisionError as exc:
+                    ctx.record_error("openings", str(exc))
+                    local.skipped += 1
+                    continue
                 row = Opening(id=uuid4(), slug=slug, created_at=created_at, **fields)
                 ctx.db.add(row)
                 ctx.db.flush()

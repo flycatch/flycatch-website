@@ -8,6 +8,30 @@ from flycatch_api.services.text import sanitize_html
 
 MediaResolver = Callable[[dict[str, Any]], str | None]
 
+KNOWN_BLOCK_TYPES = frozenset(
+    {"paragraph", "heading", "quote", "code", "list", "list-item", "image", "link", "text"}
+)
+
+
+def unknown_block_types(blocks: Any) -> list[str]:
+    found: list[str] = []
+    if not isinstance(blocks, list):
+        return found
+
+    def walk(nodes: list[Any]) -> None:
+        for node in nodes:
+            if not isinstance(node, dict):
+                continue
+            block_type = node.get("type")
+            if block_type and block_type not in KNOWN_BLOCK_TYPES:
+                found.append(str(block_type))
+            children = node.get("children")
+            if isinstance(children, list):
+                walk(children)
+
+    walk(blocks)
+    return found
+
 
 def blocks_to_html(blocks: Any, *, resolve_media: MediaResolver | None = None) -> str:
     """Convert Strapi Blocks JSON (or plain string) into Quill-friendly HTML."""

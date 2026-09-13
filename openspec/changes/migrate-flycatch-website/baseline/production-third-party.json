@@ -1,0 +1,103 @@
+{
+  "captured_at": "2026-09-12T03:45:00+00:00",
+  "method": "Inspected production HTML script tags, Content-Security-Policy-Report-Only, and the published GTM container at https://www.googletagmanager.com/gtm.js?id=GTM-5SK96WK (362,371 bytes).",
+  "html_pages_sampled": [
+    "https://www.flycatchtech.com/",
+    "https://www.flycatchtech.com/contact-us",
+    "https://www.flycatchtech.com/company/about-us",
+    "https://www.flycatchtech.com/company/jobs-openings/it-recruiter"
+  ],
+  "observed_in_html": [
+    {
+      "id": "next-runtime",
+      "kind": "first-party",
+      "evidence": "33 /_next/static/chunks/*.js tags on the home page, including polyfills-42372ed130431b0a.js",
+      "hosts": ["www.flycatchtech.com"],
+      "decision": "drop",
+      "notes": "Replaced by the Astro frontend. Not a third-party tag; listed so the HTML script inventory is complete."
+    },
+    {
+      "id": "gtm",
+      "kind": "tag-manager",
+      "evidence": "Inline GTM bootstrap plus identifier GTM-5SK96WK present in production HTML",
+      "hosts": ["www.googletagmanager.com"],
+      "decision": "retain",
+      "identifier": "GTM-5SK96WK"
+    }
+  ],
+  "injected_by_gtm_container": [
+    {
+      "id": "ga4",
+      "kind": "analytics",
+      "evidence": "G-G8VWZ0924F present in gtm.js",
+      "hosts": ["www.google-analytics.com", "*.google-analytics.com", "*.analytics.google.com"],
+      "decision": "retain",
+      "identifier": "G-G8VWZ0924F"
+    },
+    {
+      "id": "hotjar",
+      "kind": "session-replay",
+      "evidence": "site 1872525 and hotjar host strings present in gtm.js",
+      "hosts": ["static.hotjar.com", "script.hotjar.com"],
+      "decision": "drop",
+      "identifier": "1872525",
+      "notes": "Dropped on 2026-09-13. Do not add Hotjar hosts to the enforcing CSP."
+    },
+    {
+      "id": "drift",
+      "kind": "chat",
+      "evidence": "p3d94p49we9d and drift host strings present in gtm.js",
+      "hosts": ["js.driftt.com", "drift.com"],
+      "decision": "drop",
+      "identifier": "p3d94p49we9d",
+      "notes": "Dropped on 2026-09-13. Do not add Drift hosts to the enforcing CSP."
+    },
+    {
+      "id": "universal-analytics",
+      "kind": "analytics",
+      "evidence": "UA-170193189-1 present in gtm.js",
+      "hosts": ["www.google-analytics.com"],
+      "decision": "drop",
+      "identifier": "UA-170193189-1",
+      "notes": "Universal Analytics stopped processing data in July 2023."
+    }
+  ],
+  "loaded_on_demand_by_page_js": [
+    {
+      "id": "recaptcha-v2",
+      "kind": "bot-protection",
+      "evidence": "contact-us page bundle calls window.grecaptcha and embeds siteKey 6LdGw5kqAAAAAHDPmQSzayLL4cTdXUL_-9Lw_dIt; CSP allows www.google.com and www.gstatic.com",
+      "hosts": ["www.google.com", "www.gstatic.com"],
+      "decision": "retain",
+      "identifier": "6LdGw5kqAAAAAHDPmQSzayLL4cTdXUL_-9Lw_dIt"
+    }
+  ],
+  "csp_report_only": {
+    "enforcing": false,
+    "header": "Content-Security-Policy-Report-Only",
+    "allowed_script_hosts": [
+      "'self'",
+      "https://www.googletagmanager.com",
+      "https://www.google.com",
+      "https://www.gstatic.com"
+    ],
+    "missing_hosts_for_observed_tags": [
+      "static.hotjar.com",
+      "script.hotjar.com",
+      "js.driftt.com"
+    ],
+    "legacy_cms_hosts": [
+      "https://cms.flycatchtech.com",
+      "https://fly-strapi.flycatchtech.in"
+    ]
+  },
+  "not_observed": [
+    "Meta Pixel",
+    "LinkedIn Insight",
+    "Microsoft Clarity",
+    "HubSpot",
+    "Intercom",
+    "Segment",
+    "Mixpanel"
+  ]
+}

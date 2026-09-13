@@ -1,5 +1,7 @@
 from pydantic import BaseModel, ConfigDict, Field
 
+from flycatch_api.schemas.admin_homes import ContentSeo
+
 
 class PublicSolutionProductSummary(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -36,3 +38,4 @@ class PublicSolutionProduct(BaseModel):
     banner_image_on_right: bool
     slug: str
     order: int
+    seo: ContentSeo

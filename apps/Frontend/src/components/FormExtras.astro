@@ -1,0 +1,23 @@
+---
+import { t } from '../lib/i18n';
+
+interface Props {
+  returnTo: string;
+  idPrefix?: string;
+}
+
+const { returnTo, idPrefix = 'form' } = Astro.props;
+const siteKey = import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY || '';
+const honeypotId = `${idPrefix}-website`;
+---
+<input type="hidden" name="return_to" value={returnTo} />
+<div class="form-honeypot" aria-hidden="true">
+  <label for={honeypotId}>{t('form.honeypot')}</label>
+  <input id={honeypotId} type="text" name="website" tabindex="-1" autocomplete="off" />
+</div>
+{siteKey && (
+  <div class="form-recaptcha">
+    <input type="hidden" name="recaptcha_token" />
+    <div class="g-recaptcha" data-sitekey={siteKey}></div>
+  </div>
+)}

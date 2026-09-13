@@ -98,6 +98,7 @@ def test_public_list_and_detail_are_unauthenticated(client, bootstrapped):
     assert post["slug"] == "public-post"
     assert post["body"] == "<p>Hello public</p>"
     assert post["canonical_url"] == "https://example.com/blog/public-post"
+    assert post["created_at"]
     assert post["content_available_in"] == ["en"]
     assert "status" not in post
     assert "author_ids" not in post
@@ -120,6 +121,21 @@ def test_drafts_are_hidden_from_public_list_and_detail(client, bootstrapped):
     missing = client.get("/api/v1/public/blogs/hidden-draft")
     assert missing.status_code == 404
     assert missing.json() == {"code": "not_found", "message_key": "public.blogs.not_found"}
+
+
+def test_public_detail_resolves_legacy_truncated_slug(client, bootstrapped):
+    headers = _admin(client, bootstrapped)
+    full_slug = (
+        "explore-practical-cloud-migration-strategies-that-enhance-scalability-"
+        "security-and-performance-learn-how-to-plan-execute-and-optimize-your-move-to-the-cloud"
+    )
+    truncated = full_slug[:128]
+    created = _create_blog(client, headers, title="Long slug", slug=truncated, status="publish")
+    assert created.status_code == 201
+
+    detail = client.get(f"/api/v1/public/blogs/{full_slug}")
+    assert detail.status_code == 200
+    assert detail.json()["slug"] == truncated
 
 
 def test_public_search_matches_published_only(client, bootstrapped):

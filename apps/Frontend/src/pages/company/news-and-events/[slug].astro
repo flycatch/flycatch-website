@@ -1,0 +1,61 @@
+---
+export const prerender = true;
+
+import InteriorLayout from '../../../layouts/InteriorLayout.astro';
+import SiteHeader from '../../../components/SiteHeader.astro';
+import SiteFooter from '../../../components/SiteFooter.astro';
+import SectionState from '../../../components/SectionState.astro';
+import OptimizedImage from '../../../components/OptimizedImage.astro';
+import { imageAlt } from '../../../lib/image';
+import { loadPublishedNewsItem, publicMediaUrl } from '../../../lib/public-api';
+import { newsStaticPaths } from '../../../lib/static-paths';
+import {
+  buildCanonicalUrl,
+  fallbackMetadata,
+  metadataFallbackForPath,
+  metadataFromContentSeo,
+  publicSiteSettings,
+} from '../../../lib/metadata';
+import { t } from '../../../lib/i18n';
+
+export function getStaticPaths() {
+  return newsStaticPaths();
+}
+
+const slug = Astro.params.slug ?? '';
+const result = await loadPublishedNewsItem(slug);
+const item = result.item;
+if (!item) {
+  Astro.response.status = 404;
+}
+const siteSettings = publicSiteSettings();
+const path = `/company/news-and-events/${item?.slug ?? slug}`;
+const metadata = item
+  ? {
+      ...metadataFromContentSeo(item.seo, siteSettings, metadataFallbackForPath(path, item.title)),
+      canonical: buildCanonicalUrl(siteSettings.canonical_origin, path),
+    }
+  : fallbackMetadata(path, t('page.news.title'), result.error ? t('home.error') : t('page.news.not_found'));
+const image = item ? publicMediaUrl(item.image_key) : null;
+---
+<InteriorLayout title={metadata.title} metadata={metadata} breadcrumbLabel={item?.title}>
+  <SiteHeader breadcrumbLabel={item?.title} />
+  <main id="main" class="page-main" data-api-origin={result.origin}>
+    <article class="container">
+      <SectionState error={result.error} empty={!result.error && !item} />
+      {item ? (
+        <div>
+          <h1>{item.seo.h1_tag.trim() || item.title}</h1>
+          <p class="lede">{item.description}</p>
+          <div class="media-frame" hidden={!image}>
+            {image && <OptimizedImage src={image} alt={imageAlt(item.seo.image_alt, item.title)} width={1192} height={640} sizes="(max-width: 768px) 100vw, 1192px" priority />}
+          </div>
+          <div class="body-region" set:html={item.body} />
+        </div>
+      ) : (
+        <h1>{t('page.news.not_found')}</h1>
+      )}
+    </article>
+  </main>
+  <SiteFooter />
+</InteriorLayout>

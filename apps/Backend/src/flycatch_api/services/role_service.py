@@ -69,6 +69,8 @@ CONTENT_RESOURCES: tuple[RoleResource, ...] = (
     RoleResource(id="downloads", type="downloads", slug="default"),
     RoleResource(id="flycatch_saudi_arabia", type="flycatch_saudi_arabia", slug="default"),
     RoleResource(id="subscriptions", type="subscriptions", slug="default"),
+    RoleResource(id="privacy_policies", type="privacy_policies", slug="default"),
+    RoleResource(id="terms", type="terms", slug="default"),
 )
 DEFAULT_RESOURCES: tuple[RoleResource, ...] = (
     RoleResource(id="site_settings", type="site_settings", slug="default"),

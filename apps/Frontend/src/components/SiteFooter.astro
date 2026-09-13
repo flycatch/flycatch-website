@@ -1,13 +1,15 @@
 ---
 import { t } from '../lib/i18n';
-import { footerCompany, footerOthers, footerServices, socialLinks } from '../lib/nav';
+import { footerCompany, footerGlobal, footerLegal, footerOthers, footerServices, socialLinks } from '../lib/nav';
+
+const currentPath = Astro.url.pathname === '/' ? '/' : Astro.url.pathname;
 ---
 <footer class="site-footer">
   <div class="container">
     <div class="footer-top">
       <h2 class="type-section subscribe-title">{t('footer.subscribe_title')}</h2>
       <p class="subscribe-body">{t('footer.subscribe_body')}</p>
-      <form class="footer-subscribe" data-footer-subscribe novalidate>
+      <form class="footer-subscribe" action="/api/forms/newsletter" method="post" data-public-form="newsletter" data-footer-subscribe>
         <label class="visually-hidden" for="footer-subscribe-email">{t('footer.email_label')}</label>
         <input
           id="footer-subscribe-email"
@@ -18,6 +20,11 @@ import { footerCompany, footerOthers, footerServices, socialLinks } from '../lib
           required
           placeholder={t('footer.subscribe_placeholder')}
         />
+        <div class="form-honeypot" aria-hidden="true">
+          <label for="footer-website">{t('form.honeypot')}</label>
+          <input id="footer-website" type="text" name="website" tabindex="-1" autocomplete="off" />
+        </div>
+        <input type="hidden" name="return_to" value={currentPath} />
         <button
           class="footer-subscribe-btn"
           type="submit"
@@ -34,6 +41,7 @@ import { footerCompany, footerOthers, footerServices, socialLinks } from '../lib
       </form>
     </div>
     <div class="footer-grid">
+      {footerCompany.length > 0 && (
       <nav class="footer-col" aria-labelledby="footer-company">
         <h2 id="footer-company">{t('footer.company')}</h2>
         <ul>
@@ -42,6 +50,8 @@ import { footerCompany, footerOthers, footerServices, socialLinks } from '../lib
           ))}
         </ul>
       </nav>
+      )}
+      {footerServices.length > 0 && (
       <nav class="footer-col" aria-labelledby="footer-services">
         <h2 id="footer-services">{t('footer.services')}</h2>
         <ul>
@@ -50,6 +60,8 @@ import { footerCompany, footerOthers, footerServices, socialLinks } from '../lib
           ))}
         </ul>
       </nav>
+      )}
+      {footerOthers.length > 0 && (
       <nav class="footer-col" aria-labelledby="footer-others">
         <h2 id="footer-others">{t('footer.others')}</h2>
         <ul>
@@ -58,22 +70,30 @@ import { footerCompany, footerOthers, footerServices, socialLinks } from '../lib
           ))}
         </ul>
       </nav>
+      )}
+      {footerGlobal.length > 0 && (
       <nav class="footer-col" aria-labelledby="footer-global">
         <h2 id="footer-global">{t('footer.global')}</h2>
         <ul>
-          <li>
-            <a href="/software-development-services-in-saudi-arabia">{t('footer.saudi')}</a>
-          </li>
+          {footerGlobal.map((link) => (
+            <li><a href={link.href}>{t(link.labelKey)}</a></li>
+          ))}
         </ul>
       </nav>
+      )}
     </div>
     <div class="footer-bottom">
       <p class="footer-copyright">{t('site.footer.copyright')}</p>
+      {footerLegal.length > 0 && (
       <div class="legal-links">
-        <a href="/privacy-policy">{t('footer.privacy')}</a>
-        <span aria-hidden="true">|</span>
-        <a href="/terms-and-conditions">{t('footer.terms')}</a>
+        {footerLegal.map((link, index) => (
+          <>
+            {index > 0 && <span aria-hidden="true">|</span>}
+            <a href={link.href}>{t(link.labelKey)}</a>
+          </>
+        ))}
       </div>
+      )}
       <nav class="footer-social" aria-label={t('footer.social')}>
         <a href={socialLinks[0].href} rel="noopener noreferrer" aria-label={t(socialLinks[0].labelKey)}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -96,4 +116,4 @@ import { footerCompany, footerOthers, footerServices, socialLinks } from '../lib
     </div>
   </div>
 </footer>
-<script src="../scripts/footer-subscribe.ts"></script>
+<script src="../scripts/public-forms.ts"></script>

@@ -8,6 +8,23 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from flycatch_api.schemas.admin_homes import ContentSeo
 
 
+class PublicApplicationWrite(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(min_length=1, max_length=120)
+    last_name: str = Field(min_length=1, max_length=120)
+    email: EmailStr
+    phone: str = Field(min_length=1, max_length=40)
+    additional_info: str = ""
+    opening_slug: str = ""
+    website: str = Field(default="", max_length=200)
+    recaptcha_token: str = ""
+    current_ctc: float = Field(default=0, ge=0)
+    expected_ctc: float = Field(default=0, ge=0)
+    notice_period: float = Field(default=0, ge=0)
+    experience: float = Field(default=0, ge=0)
+
+
 class PublicApplication(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -243,6 +260,22 @@ class PublicMembershipList(BaseModel):
     total: int = Field(ge=0)
 
 
+class PublicContactWrite(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(min_length=1, max_length=120)
+    last_name: str = Field(min_length=1, max_length=120)
+    email: EmailStr
+    country: str = Field(default="", max_length=120)
+    phone: str = Field(min_length=1, max_length=40)
+    subject: str = Field(default="", max_length=200)
+    details: str = ""
+    contact_type: str = Field(default="", max_length=120)
+    company_name: str = Field(default="", max_length=200)
+    website: str = Field(default="", max_length=200)
+    recaptcha_token: str = ""
+
+
 class PublicContact(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -277,6 +310,27 @@ class PublicDownload(BaseModel):
     file_key: str
 
 
+class PublicDownloadRequestWrite(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(min_length=1, max_length=120)
+    email: EmailStr
+    company: str = Field(default="", max_length=200)
+    website: str = Field(default="", max_length=200)
+    recaptcha_token: str = ""
+
+
+class PublicDownloadRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: UUID
+    download_id: UUID
+    name: str
+    email: EmailStr
+    company: str
+    file_key: str
+
+
 class PublicDownloadList(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -303,6 +357,7 @@ class PublicFlycatchSaudiArabia(BaseModel):
     service_section: list[PublicServiceSectionItem]
     banner_explore_text: str
     services_title: str
+    banner_image_key: str | None = None
     video_key: str | None = None
     seo: ContentSeo
 
@@ -316,10 +371,36 @@ class PublicFlycatchSaudiArabiaList(BaseModel):
     total: int = Field(ge=0)
 
 
+class PublicLegalPage(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    title: str
+    slug: str
+    body: str
+    seo: ContentSeo
+
+
+class PublicLegalPageList(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    items: list[PublicLegalPage]
+    page: int = Field(ge=1)
+    per_page: int = Field(ge=1)
+    total: int = Field(ge=0)
+
+
+PublicPrivacyPolicy = PublicLegalPage
+PublicPrivacyPolicyList = PublicLegalPageList
+PublicTerms = PublicLegalPage
+PublicTermsList = PublicLegalPageList
+
+
 class PublicSubscriptionWrite(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     email: EmailStr
+    website: str = Field(default="", max_length=200)
+    recaptcha_token: str = ""
 
 
 class PublicSubscription(BaseModel):

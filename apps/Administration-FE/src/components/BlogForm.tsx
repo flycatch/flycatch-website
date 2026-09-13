@@ -17,6 +17,7 @@ import MultiSelect from './MultiSelect';
 import FormPageHeader from './FormPageHeader';
 import MediaField from './MediaField';
 import RichTextEditor from './RichTextEditor';
+import SeoFields, { emptySeo, seoValue, type ContentSeoValue } from './SeoFields';
 import { adminListHref } from '../lib/admin-routes';
 import { t } from '../lib/i18n';
 
@@ -46,6 +47,8 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
   const [linkedin, setLinkedin] = useState('');
   const [twitter, setTwitter] = useState('');
   const [instagram, setInstagram] = useState('');
+  const [seo, setSeo] = useState<ContentSeoValue>(emptySeo);
+  const [seoImageFile, setSeoImageFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
@@ -74,6 +77,7 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
         setLinkedin(blog.linkedin);
         setTwitter(blog.twitter);
         setInstagram(blog.instagram);
+        setSeo(seoValue(blog.seo));
       }
       setReady(true);
     }
@@ -106,6 +110,7 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
       if (imageFile) {
         nextImageKey = (await uploadMedia(imageFile)).key;
       }
+      const nextSeoImage = seoImageFile ? (await uploadMedia(seoImageFile)).key : seo.image_key;
       const payload: BlogWrite = {
         title: title.trim(),
         slug: nextSlug,
@@ -122,6 +127,7 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
         instagram: instagram.trim(),
         author_ids: authorIds,
         category_ids: categoryIds,
+        seo: { ...seo, image_key: nextSeoImage },
       };
       if (blogId) await updateBlog(blogId, payload);
       else await createBlog(payload);
@@ -255,6 +261,7 @@ export default function BlogForm({ blogId, onCancel, onSaved }: Props) {
           {t('admin.blogs.field.instagram')}
           <input value={instagram} onChange={(event) => setInstagram(event.target.value)} />
         </label>
+        <SeoFields value={seo} imageFile={seoImageFile} onChange={setSeo} onImageFile={setSeoImageFile} />
         {fieldError && (
           <p className="alert alert-error error" role="alert">
             {fieldError}

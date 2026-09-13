@@ -27,6 +27,27 @@ paths:
                 $ref: '#/components/schemas/PublicSubscription'
         '422':
           $ref: '#/components/responses/FieldErrors'
+  /public/newsletter/signup:
+    post:
+      operationId: createPublicNewsletterSignup
+      summary: Visitor newsletter subscribe via the legacy stub path
+      tags: [public]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicSubscriptionWrite'
+      responses:
+        '201':
+          description: Created subscription
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicSubscription'
+        '422':
+          $ref: '#/components/responses/FieldErrors'
     get:
       operationId: listPublicSubscriptions
       summary: List published records
@@ -88,6 +109,8 @@ components:
       required: [email]
       properties:
         email: { type: string, format: email }
+        website: { type: string, maxLength: 200, description: Honeypot; must be empty }
+        recaptcha_token: { type: string }
 
     PublicSubscription:
       type: object

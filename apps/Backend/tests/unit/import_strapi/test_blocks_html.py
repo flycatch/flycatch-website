@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from flycatch_api.import_strapi.blocks_html import blocks_to_html
+from flycatch_api.import_strapi.blocks_html import blocks_to_html, unknown_block_types
 
 
 def test_blocks_to_html_paragraph_and_marks():
@@ -50,6 +50,15 @@ def test_blocks_to_html_image_uses_media_resolver():
     assert 'src="media:abc123.png"' in html
     assert 'data-media-key="abc123.png"' in html
     assert 'alt="Alt"' in html
+
+
+def test_unknown_block_types_are_reported():
+    blocks = [
+        {"type": "paragraph", "children": [{"type": "text", "text": "ok"}]},
+        {"type": "widget", "children": [{"type": "text", "text": "x"}]},
+    ]
+    assert unknown_block_types(blocks) == ["widget"]
+    assert unknown_block_types("<p>plain</p>") == []
 
 
 def test_blocks_to_html_plain_string_and_script_stripped():

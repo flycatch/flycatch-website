@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from flycatch_api.models.blog import BlogStatus
 from flycatch_api.models.case_study import ContentStatus
+from flycatch_api.schemas.admin_homes import ContentSeo
 
 
 class Author(BaseModel):
@@ -97,13 +98,14 @@ class BlogDetail(BaseModel):
     category_ids: list[UUID]
     authors: list[Author]
     categories: list[Category]
+    seo: ContentSeo
 
 
 class BlogWrite(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     title: str = Field(min_length=1, max_length=200)
-    slug: str = Field(min_length=1, max_length=128)
+    slug: str = Field(min_length=1, max_length=255)
     description: str = ""
     body: str = ""
     status: BlogStatus = BlogStatus.draft
@@ -117,6 +119,7 @@ class BlogWrite(BaseModel):
     instagram: str = ""
     author_ids: list[UUID] = Field(default_factory=list)
     category_ids: list[UUID] = Field(default_factory=list)
+    seo: ContentSeo = Field(default_factory=ContentSeo)
 
 
 class MediaObject(BaseModel):

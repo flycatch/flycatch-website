@@ -20,7 +20,7 @@ class StrapiClient:
         token: str,
         *,
         image_base_url: str | None = None,
-        publication_state: str = "preview",
+        publication_state: str = "live",
         timeout: float = 60.0,
     ) -> None:
         self.api_url = api_url.rstrip("/")
@@ -30,6 +30,7 @@ class StrapiClient:
             base_url=self.api_url + "/",
             headers={"Authorization": f"Bearer {token}", "Accept": "application/json"},
             timeout=timeout,
+            follow_redirects=True,
         )
 
     def close(self) -> None:

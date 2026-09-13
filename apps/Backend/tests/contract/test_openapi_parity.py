@@ -68,6 +68,10 @@ CONTRACT_FILES = [
     SPECS / "035-admin-flycatch-saudi-arabia" / "contracts" / "public-flycatch-saudi-arabia.v1.yaml",
     SPECS / "036-admin-subscriptions" / "contracts" / "admin-subscriptions.v1.yaml",
     SPECS / "036-admin-subscriptions" / "contracts" / "public-subscriptions.v1.yaml",
+    SPECS / "037-admin-privacy-policies" / "contracts" / "admin-privacy-policies.v1.yaml",
+    SPECS / "037-admin-privacy-policies" / "contracts" / "public-privacy-policies.v1.yaml",
+    SPECS / "038-admin-terms" / "contracts" / "admin-terms.v1.yaml",
+    SPECS / "038-admin-terms" / "contracts" / "public-terms.v1.yaml",
 ];
 
 
@@ -82,14 +86,14 @@ def _contract_paths() -> set[str]:
 
 def test_openapi_served():
     client = TestClient(app)
-    response = client.get("/openapi.json")
+    response = client.get("/api/openapi.json")
     assert response.status_code == 200
     assert "Flycatch API" in response.json()["info"]["title"]
 
 
 def test_openapi_includes_contract_paths():
     client = TestClient(app)
-    served = client.get("/openapi.json").json()
+    served = client.get("/api/openapi.json").json()
     served_paths = set(served.get("paths", {}))
     for path in _contract_paths():
         assert f"/api/v1{path}" in served_paths, f"missing {path}"

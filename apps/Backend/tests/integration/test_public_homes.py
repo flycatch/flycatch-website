@@ -97,7 +97,8 @@ def test_public_homes_are_published_only(client, bootstrapped):
     assert study["slug"] == "live-study"
     assert study["short_heading"] == "Live"
     assert study["description"] == "A published win"
-    assert study["body"] == "<p>Full story</p>"
+    assert "body" not in study
+    assert "seo" not in study
     assert study["industries"] == [{"name": "Retail"}]
     assert study["categories"] == [{"name": "Commerce"}]
     assert study["technologies"][0]["name"] == "Python"

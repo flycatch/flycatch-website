@@ -4,6 +4,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 from flycatch_api.models.case_study import ContentStatus
+from flycatch_api.schemas.admin_homes import ContentSeo
 
 
 class SolutionProduct(BaseModel):
@@ -22,6 +23,7 @@ class SolutionProduct(BaseModel):
     order: int
     status: ContentStatus
     created_at: datetime
+    seo: ContentSeo
 
 
 class SolutionProductSummary(BaseModel):
@@ -57,3 +59,4 @@ class SolutionProductWrite(BaseModel):
     slug: str = Field(default="", max_length=128)
     order: int = Field(default=0, ge=0)
     status: ContentStatus = ContentStatus.draft
+    seo: ContentSeo = Field(default_factory=ContentSeo)

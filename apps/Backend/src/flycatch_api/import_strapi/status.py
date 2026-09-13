@@ -109,28 +109,55 @@ def as_bool(value: Any, default: bool = False) -> bool:
     return default
 
 
+class SlugCollisionError(ValueError):
+    """Two source entries would write the same target slug."""
+
+
 def ensure_slug(value: Any, fallback: str, *, warnings: list[str] | None = None) -> str:
-    raw = as_text(value).strip() or fallback
-    slug = slugify(raw) or slugify(fallback) or "item"
-    if slug != raw and warnings is not None:
-        warnings.append(f"slugified {raw!r} → {slug!r}")
-    return truncate(slug, 128)
+    raw = as_text(value).strip()
+    if raw:
+        # Preserve the source slug exactly, including mixed case.
+        return truncate(raw, 255)
+    generated = slugify(as_text(fallback)) or "item"
+    if warnings is not None:
+        warnings.append(f"generated slug {generated!r} from fallback {fallback!r}")
+    return truncate(generated, 255)
 
 
-def map_seo(value: Any, *, image_key: str | None = None) -> dict[str, Any]:
+def map_seo(
+    value: Any,
+    *,
+    image_key: str | None = None,
+    fallback: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     seo = value if isinstance(value, dict) else {}
     # Component may be wrapped
     if "data" in seo and isinstance(seo.get("data"), dict):
         seo = unwrap_attrs(seo["data"])
+    extra = fallback or {}
+    title = seo.get("title") or seo.get("meta_title") or extra.get("title") or ""
+    description = seo.get("description") or extra.get("description") or ""
+    canonical = seo.get("canonical_url") or extra.get("canonical_url") or ""
+    image_alt = seo.get("image_alt") or extra.get("image_alt") or ""
     return {
-        "title": truncate(seo.get("title") or seo.get("meta_title") or "", 200),
-        "description": truncate(seo.get("description") or "", 500),
-        "canonical_url": truncate(seo.get("canonical_url") or "", 500),
-        "meta_title": truncate(seo.get("meta_title") or seo.get("title") or "", 200),
-        "h1_tag": truncate(seo.get("h1_tag") or "", 200),
-        "image_alt": truncate(seo.get("image_alt") or "", 200),
-        "image_key": image_key,
+        "title": truncate(title, 200),
+        "description": truncate(description, 500),
+        "canonical_url": truncate(canonical, 500),
+        "meta_title": truncate(seo.get("meta_title") or title, 200),
+        "h1_tag": truncate(seo.get("h1_tag") or extra.get("h1_tag") or "", 200),
+        "image_alt": truncate(image_alt, 200),
+        "image_key": image_key or extra.get("image_key"),
     }
+
+
+def editorial_author_name(entity: dict[str, Any], author: dict[str, Any] | None) -> str:
+    """Public byline only — never staff account fields such as email."""
+    name = as_text(entity.get("full_name") or entity.get("author_name"))
+    if name:
+        return name
+    if not author:
+        return ""
+    return as_text(author.get("username") or author.get("name"))
 
 
 def unwrap_attrs(raw: Any) -> dict[str, Any]:
@@ -162,6 +189,12 @@ class IdMap:
         if strapi_id is None:
             return None
         return self._data.get(collection, {}).get(int(strapi_id))
+
+    def owner(self, collection: str, local_id: UUID) -> int | None:
+        for strapi_id, mapped in self._data.get(collection, {}).items():
+            if mapped == local_id:
+                return strapi_id
+        return None
 
     def to_dict(self) -> dict[str, dict[str, str]]:
         return {

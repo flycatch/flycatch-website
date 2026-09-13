@@ -1,0 +1,98 @@
+---
+export const prerender = true;
+
+import InteriorLayout from '../../../layouts/InteriorLayout.astro';
+import SiteHeader from '../../../components/SiteHeader.astro';
+import SiteFooter from '../../../components/SiteFooter.astro';
+import SectionState from '../../../components/SectionState.astro';
+import OptimizedImage from '../../../components/OptimizedImage.astro';
+import { imageAlt } from '../../../lib/image';
+import { loadPublishedBlog, publicMediaUrl } from '../../../lib/public-api';
+import { fallbackMetadata, metadataFromBlog, publicSiteSettings } from '../../../lib/metadata';
+import { blogStructuredData } from '../../../lib/json-ld';
+import { t } from '../../../lib/i18n';
+import { blogStaticPaths } from '../../../lib/static-paths';
+
+export function getStaticPaths() {
+  return blogStaticPaths();
+}
+
+const { slug } = Astro.params;
+if (!slug) throw new Error('Blog slug missing');
+
+const siteSettings = publicSiteSettings();
+const result = await loadPublishedBlog(slug);
+const blog = result.item;
+if (!blog) {
+  Astro.response.status = 404;
+}
+const path = `/company/blogs/${blog?.slug ?? slug}`;
+const metadata = blog
+  ? metadataFromBlog(blog, siteSettings, path)
+  : fallbackMetadata(
+      path,
+      t('nav.blogs'),
+      result.error ? t('home.error') : t('blog.not_found'),
+    );
+const structuredData = blog ? blogStructuredData(blog, metadata, siteSettings) : [];
+const image = blog ? publicMediaUrl(blog.image_key) : null;
+const author = blog?.authors[0];
+const authorImage = author?.writer_image_keys[0] ? publicMediaUrl(author.writer_image_keys[0]) : null;
+
+function formatBlogDate(iso?: string | null): string {
+  if (!iso) return '';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return '';
+  const day = date.getUTCDate();
+  const suffix =
+    day % 10 === 1 && day !== 11 ? 'st' : day % 10 === 2 && day !== 12 ? 'nd' : day % 10 === 3 && day !== 13 ? 'rd' : 'th';
+  const month = date.toLocaleString('en-GB', { month: 'long', timeZone: 'UTC' });
+  return `${day}${suffix} ${month} ${date.getUTCFullYear()}`;
+}
+
+const publishedOn = formatBlogDate(blog?.created_at);
+---
+<InteriorLayout title={metadata.title} metadata={metadata} structuredData={structuredData} breadcrumbLabel={blog?.title}>
+  <SiteHeader breadcrumbLabel={blog?.title} showBreadcrumbs={false} />
+  <main id="main" class="page-main article-page" data-api-origin={result.origin}>
+    <article class="container article">
+      <SectionState error={result.error} empty={!result.error && !blog} />{blog ? (
+        <div class="article-detail">
+          <a class="article-back" href="/company/blogs">
+            <svg viewBox="64 64 896 896" width="1.2em" height="1.2em" fill="currentColor" aria-hidden="true">
+              <path d="M872 474H286.9l350.2-304c5.6-4.9 2.2-14-5.2-14h-88.5c-3.9 0-7.6 1.4-10.5 3.9L155 487.8a31.96 31.96 0 000 48.3L535.1 866c1.5 1.3 3.3 2 5.2 2h91.5c7.4 0 10.8-9.2 5.2-14L286.9 550H872c4.4 0 8-3.6 8-8v-60c0-4.4-3.6-8-8-8z"></path>
+            </svg>
+            {t('blog.back')}
+          </a>
+          <h1 class="article-title">{blog.title}</h1>
+          {author && (
+            <p class="article-author">
+              {authorImage ? (
+                <img class="article-author-photo" src={authorImage} alt="" width="55" height="55" />
+              ) : (
+                <span class="article-author-fallback" aria-hidden="true"></span>
+              )}
+              <span>{author.name}</span>
+            </p>
+          )}
+          <p class="article-meta">
+            <span>{t('blog.min_read', { minutes: blog.reading_time })}</span>
+            {publishedOn && <span>| {publishedOn}</span>}
+          </p>
+          <div class="article-hero media-frame" hidden={!image}>{image && <OptimizedImage src={image} alt={imageAlt(blog.image_alt, blog.title)} width={1192} height={640} sizes="(max-width: 768px) 100vw, 1192px" priority />}</div>
+          <div class="body-region article-body" set:html={blog.body} />
+          {blog.categories.length > 0 && (
+            <ul class="article-tags">
+              {blog.categories.map((category) => (
+                <li class="article-tag">{category.name}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      ) : (
+        <h1>{t('blog.not_found')}</h1>
+      )}
+    </article>
+  </main>
+  <SiteFooter />
+</InteriorLayout>

@@ -1,0 +1,69 @@
+---
+export const prerender = true;
+
+import InteriorLayout from '../layouts/InteriorLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import SectionState from '../components/SectionState.astro';
+import OptimizedImage from '../components/OptimizedImage.astro';
+import { imageAlt } from '../lib/image';
+import { loadPublishedSaudiPages, publicMediaUrl } from '../lib/public-api';
+import {
+  buildCanonicalUrl,
+  fallbackMetadata,
+  metadataFallbackForPath,
+  metadataFromContentSeo,
+  publicSiteSettings,
+} from '../lib/metadata';
+import { t } from '../lib/i18n';
+
+const listed = await loadPublishedSaudiPages();
+const page = listed.items[0] ?? null;
+const siteSettings = publicSiteSettings();
+const path = '/software-development-services-in-saudi-arabia';
+const metadata = page
+  ? {
+      ...metadataFromContentSeo(page.seo, siteSettings, metadataFallbackForPath(path)),
+      canonical: buildCanonicalUrl(siteSettings.canonical_origin, path),
+    }
+  : fallbackMetadata(
+      path,
+      t('page.saudi.title'),
+      listed.error ? t('home.error') : t('page.saudi.description'),
+    );
+metadata.indexable = !listed.error;
+const heading = page?.seo.h1_tag.trim() || page?.banner_title || t('page.saudi.title');
+const banner = page ? publicMediaUrl(page.banner_image_key) : null;
+---
+<InteriorLayout title={metadata.title} metadata={metadata}>
+  <SiteHeader />
+  <main id="main" class="page-main" data-api-origin={listed.origin}>
+    <article class="container">
+      <SectionState error={listed.error} empty={!listed.error && !page} />
+      <h1>{heading}</h1>
+      <div class="media-frame" hidden={!banner}>
+        {banner && <OptimizedImage src={banner} alt={imageAlt(page?.seo.image_alt, heading)} width={1192} height={640} sizes="100vw" priority />}
+      </div>
+      {page && (
+        <div>
+          <p class="lede">{page.banner_explore_text}</p>
+          <h2 hidden={!page.services_title}>{page.services_title}</h2>
+          <ul>
+            {page.service_section.map((item) => {
+              const image = publicMediaUrl(item.image_key);
+              return (
+                <li>
+                  {image && <OptimizedImage src={image} alt={imageAlt(item.types_title, heading)} width={360} height={220} sizes="(max-width: 768px) 100vw, 360px" />}
+                  <h3>{item.types_title}</h3>
+                  <div class="body-region" set:html={item.contents} />
+                  {item.links && <a href={item.links}>{t('home.know_more')}</a>}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+    </article>
+  </main>
+  <SiteFooter />
+</InteriorLayout>

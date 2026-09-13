@@ -79,6 +79,10 @@ export type AdminView =
   | 'flycatch_saudi_arabia_form'
   | 'subscriptions'
   | 'subscription_form'
+  | 'privacy_policies'
+  | 'privacy_policy_form'
+  | 'terms'
+  | 'terms_form'
   | 'roles'
   | 'role_form';
 
@@ -166,6 +170,8 @@ const LIST_HREF: Record<string, string> = {
   downloads: '/admin/downloads/',
   flycatch_saudi_arabia: '/admin/flycatch-saudi-arabia/',
   subscriptions: '/admin/subscriptions/',
+  privacy_policies: '/admin/privacy-policies/',
+  terms: '/admin/terms/',
   roles: '/admin/roles/',
 };
 

@@ -1,5 +1,7 @@
 ---
+import OptimizedImage from './OptimizedImage.astro';
 import { t } from '../lib/i18n';
+import { implementedPublicHref } from '../lib/nav';
 import { publicMediaUrl } from '../lib/public-api';
 import type { HomeService } from '../lib/public-api';
 
@@ -29,14 +31,15 @@ function serviceHref(raw: string): string {
     {services.map((service, index) => {
       const image = publicMediaUrl(service.services_image_key);
       return image ? (
-        <img
-          data-service-index={index}
-          class:list={[{ 'is-active': index === 0 }]}
+        <OptimizedImage
+          data-service-index={String(index)}
+          class={index === 0 ? 'is-active' : undefined}
           src={image}
           alt=""
-          width="1920"
-          height="1080"
-          loading={index === 0 ? 'eager' : 'lazy'}
+          width={1920}
+          height={1080}
+          sizes="100vw"
+          priority={index === 0}
         />
       ) : (
         <div
@@ -71,7 +74,7 @@ function serviceHref(raw: string): string {
         </div>
         <div class="services-detail" aria-live="polite">
           {services.map((service, index) => {
-            const href = serviceHref(service.our_services_links);
+            const href = implementedPublicHref(serviceHref(service.our_services_links));
             return (
               <article
                 class:list={['services-detail-item', { 'is-active': index === 0 }]}

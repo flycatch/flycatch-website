@@ -1,0 +1,15 @@
+{
+  "data": [
+    {
+      "id": 2,
+      "attributes": {
+        "title": "FlyGrid ai",
+        "slug": "flyGrid-ai",
+        "publishedAt": "2024-03-01T00:00:00.000Z",
+        "createdAt": "2024-03-01T00:00:00.000Z",
+        "updatedAt": "2024-03-01T00:00:00.000Z"
+      }
+    }
+  ],
+  "meta": {"pagination": {"page": 1, "pageSize": 100, "pageCount": 1, "total": 1}}
+}

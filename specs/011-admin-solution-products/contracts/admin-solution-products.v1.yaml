@@ -191,6 +191,7 @@ components:
         - order
         - status
         - created_at
+        - seo
       properties:
         id: { type: string, format: uuid }
         product_title: { type: string }
@@ -205,6 +206,7 @@ components:
         order: { type: integer, minimum: 0 }
         status: { $ref: '#/components/schemas/ContentStatus' }
         created_at: { type: string, format: date-time }
+        seo: { $ref: '#/components/schemas/ContentSeo' }
     SolutionProductSummary:
       type: object
       additionalProperties: false
@@ -244,6 +246,18 @@ components:
         status:
           $ref: '#/components/schemas/ContentStatus'
           default: draft
+        seo: { $ref: '#/components/schemas/ContentSeo' }
+    ContentSeo:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, default: '', maxLength: 200 }
+        description: { type: string, default: '', maxLength: 500 }
+        canonical_url: { type: string, default: '', maxLength: 500 }
+        meta_title: { type: string, default: '', maxLength: 200 }
+        h1_tag: { type: string, default: '', maxLength: 200 }
+        image_alt: { type: string, default: '', maxLength: 200 }
+        image_key: { type: string, nullable: true }
     FieldErrorDetail:
       type: object
       additionalProperties: false

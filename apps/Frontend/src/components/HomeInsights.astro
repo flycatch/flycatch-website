@@ -1,4 +1,6 @@
 ---
+import OptimizedImage from './OptimizedImage.astro';
+import { imageAlt } from '../lib/image';
 import { t } from '../lib/i18n';
 import { publicMediaUrl } from '../lib/public-api';
 import type { PublicBlogSummary } from '../lib/public-api';
@@ -9,9 +11,10 @@ interface Props {
   error?: boolean;
   limit?: number;
   home?: boolean;
+  standalone?: boolean;
 }
 
-const { blogs, error = false, limit = 3, home = false } = Astro.props;
+const { blogs, error = false, limit = 3, home = false, standalone = false } = Astro.props;
 const featured = limit > 0 ? blogs.slice(0, limit) : blogs;
 const months = [
   'Jan',
@@ -38,7 +41,7 @@ const hideOnHome = home && featured.length === 0;
 {!hideOnHome && (
 <section class="section section-muted" id="insights">
   <div class="container">
-    <h2 class="type-section">{t('home.insights')}</h2>
+    {!standalone && <h2 class="type-section">{t('home.insights')}</h2>}
     <SectionState error={error} empty={!home && !error && featured.length === 0} />
     {featured.length > 0 && (
       <div class="insight-grid">
@@ -47,10 +50,10 @@ const hideOnHome = home && featured.length === 0;
           const created = formatCreatedDate(blog.created_at);
           return (
             <article class="insight-card">
-              <a href={`/blogs/${blog.slug}`}>
+              <a href={`/company/blogs/${blog.slug}`}>
                 {image ? (
                   <div class="media-frame">
-                    <img src={image} alt={blog.image_alt || blog.title} width="377" height="244" loading="lazy" />
+                    <OptimizedImage src={image} alt={imageAlt(blog.image_alt, blog.title)} width={377} height={244} sizes="(max-width: 768px) 100vw, 377px" />
                   </div>
                 ) : (
                   <div class="media-frame"></div>
@@ -74,12 +77,12 @@ const hideOnHome = home && featured.length === 0;
         })}
       </div>
     )}
-    <p class="insights-actions">
+    {!standalone && <p class="insights-actions">
       <a class="btn" href="/company/blogs">
         {t('home.view_insights')}
         <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
       </a>
-    </p>
+    </p>}
   </div>
 </section>
 )}

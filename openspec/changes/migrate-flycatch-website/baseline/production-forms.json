@@ -1,0 +1,84 @@
+{
+  "captured_at": "2026-09-12T03:45:00+00:00",
+  "method": "Fetched production HTML (zero <form> elements site-wide) and inspected the contact-us, jobs-openings, and layout JS bundles plus API path constants.",
+  "site_wide": {
+    "native_form_elements": 0,
+    "submission_model": "React state plus programmatic POST from the browser to Strapi"
+  },
+  "forms": [
+    {
+      "id": "contact",
+      "locations": ["/contact-us"],
+      "element": "none — client component, not a <form>",
+      "variants": [
+        {
+          "contact_type": "PARTNERSHIP",
+          "wire_value": "partnership",
+          "required_ui_fields": ["firstName", "lastName", "email", "phoneNo", "companyName", "tellUsMore"]
+        },
+        {
+          "contact_type": "GENERAL_ENQUIRY",
+          "wire_value": "general",
+          "required_ui_fields": ["firstName", "lastName", "email", "phoneNo", "subject"]
+        },
+        {
+          "contact_type": "GET_A_QUOTE",
+          "wire_value": "quotes",
+          "required_ui_fields": ["firstName", "lastName", "email", "phoneNo", "tellUsMore"]
+        }
+      ],
+      "fields": [
+        {"ui": "firstName", "api": "name", "required": true},
+        {"ui": "lastName", "api": "last_name", "required": true},
+        {"ui": "email", "api": "email", "required": true, "validation": "single-regex email"},
+        {"ui": "phoneNo", "api": "phone_no", "required": true, "notes": "country-code selector"},
+        {"ui": "tellUsMore", "api": "details", "required": "variant-dependent"},
+        {"ui": "companyName", "api": "company_name", "required": "partnership only"},
+        {"ui": "subject", "api": "subject", "required": "general enquiry only"},
+        {"ui": "recaptchaToken", "api": "recaptchaToken", "required": true}
+      ],
+      "endpoint": "POST https://cms.flycatchtech.com/api/contacts/",
+      "bot_protection": {
+        "provider": "reCAPTCHA v2 checkbox",
+        "site_key": "6LdGw5kqAAAAAHDPmQSzayLL4cTdXUL_-9Lw_dIt",
+        "honeypot": false
+      }
+    },
+    {
+      "id": "job_application",
+      "locations": ["/company/jobs-openings/<slug>"],
+      "element": "none — drawer UI, not a <form>",
+      "fields": [
+        "contact fields (name, email, phone)",
+        "tell us more",
+        "résumé file upload"
+      ],
+      "endpoint": "POST https://cms.flycatchtech.com/api/applications/",
+      "bot_protection": {
+        "provider": "reCAPTCHA (same GTM/CSP allowance as contact)",
+        "honeypot": false
+      },
+      "notes": "Layout bundle defines POST_JOB_APPLICATIONS:/applications/. Detail-page chunk itself is thin; the drawer is loaded from shared modules."
+    },
+    {
+      "id": "newsletter",
+      "locations": ["footer of every page"],
+      "element": "none — one email field without name, id, or type=email",
+      "fields": [
+        {"ui": "email", "api": "email", "required": true}
+      ],
+      "endpoint": "POST https://cms.flycatchtech.com/api/subscriptions/subscribe",
+      "bot_protection": {
+        "provider": "none",
+        "honeypot": false
+      }
+    }
+  ],
+  "not_a_visitor_form": [
+    {
+      "id": "downloads",
+      "endpoint": "GET https://cms.flycatchtech.com/api/downloads",
+      "notes": "Resources page fetches the downloads collection. No visitor submission form was observed in the resources bundle. The new site still needs a gated-download request flow (task 9.4) because production currently exposes the collection as a public read."
+    }
+  ]
+}

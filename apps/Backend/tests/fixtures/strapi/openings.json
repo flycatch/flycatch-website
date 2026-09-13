@@ -1,0 +1,15 @@
+{
+  "data": [
+    {
+      "id": 80,
+      "attributes": {
+        "role": "Engineer",
+        "slug": "it-recruiter",
+        "body": "Join us",
+        "publishedAt": "2024-05-01T00:00:00.000Z",
+        "createdAt": "2024-05-01T00:00:00.000Z"
+      }
+    }
+  ],
+  "meta": {"pagination": {"page": 1, "pageSize": 100, "pageCount": 1, "total": 1}}
+}

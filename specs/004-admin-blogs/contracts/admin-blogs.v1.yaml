@@ -730,6 +730,7 @@ components:
         - category_ids
         - authors
         - categories
+        - seo
       properties:
         id:
           type: string
@@ -783,6 +784,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Category'
+        seo:
+          $ref: '#/components/schemas/ContentSeo'
     BlogWrite:
       type: object
       additionalProperties: false
@@ -795,7 +798,7 @@ components:
         slug:
           type: string
           minLength: 1
-          maxLength: 128
+          maxLength: 255
         description:
           type: string
           default: ''
@@ -841,6 +844,39 @@ components:
             type: string
             format: uuid
           default: []
+        seo:
+          $ref: '#/components/schemas/ContentSeo'
+    ContentSeo:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          default: ''
+          maxLength: 200
+        description:
+          type: string
+          default: ''
+          maxLength: 500
+        canonical_url:
+          type: string
+          default: ''
+          maxLength: 500
+        meta_title:
+          type: string
+          default: ''
+          maxLength: 200
+        h1_tag:
+          type: string
+          default: ''
+          maxLength: 200
+        image_alt:
+          type: string
+          default: ''
+          maxLength: 200
+        image_key:
+          type: string
+          nullable: true
     MediaObject:
       type: object
       additionalProperties: false

@@ -1,0 +1,60 @@
+{
+  "environment": "disposable local Postgres 55432 + MinIO 19000",
+  "publication_state": "live",
+  "import_totals": {
+    "created": 282,
+    "updated": 0,
+    "skipped": 0,
+    "errors": 0,
+    "media_uploaded": 395
+  },
+  "counts": [
+    {"collection": "blogs", "strapi_estimate": 82, "imported": 82, "status": "match"},
+    {"collection": "case_studies", "strapi_estimate": 20, "imported": 20, "status": "match"},
+    {"collection": "technologies", "strapi_estimate": 40, "imported": 40, "status": "match"},
+    {"collection": "client_logos", "strapi_estimate": 26, "imported": 26, "status": "match"},
+    {"collection": "categories", "strapi_estimate": 17, "imported": 17, "status": "match"},
+    {"collection": "industries", "strapi_estimate": 11, "imported": 11, "status": "match"},
+    {"collection": "news_categories", "strapi_estimate": 8, "imported": 8, "status": "match"},
+    {
+      "collection": "news",
+      "strapi_estimate": 6,
+      "imported": 5,
+      "status": "explained",
+      "reason": "publicationState=live omits one unpublished news entry"
+    },
+    {"collection": "resources", "strapi_estimate": 6, "imported": 6, "status": "match"},
+    {"collection": "client_testimonials", "strapi_estimate": 6, "imported": 6, "status": "match"},
+    {"collection": "employee_testimonials", "strapi_estimate": 4, "imported": 4, "status": "match"},
+    {"collection": "solution_details", "strapi_estimate": 4, "imported": 4, "status": "match"},
+    {"collection": "openings", "strapi_estimate": 2, "imported": 2, "status": "match"},
+    {
+      "collection": "media",
+      "strapi_estimate": 1119,
+      "imported": 395,
+      "status": "explained",
+      "reason": "importer transfers media referenced by mapped records, not the unused remainder of the public media library"
+    },
+    {
+      "collection": "authors",
+      "strapi_estimate": 6,
+      "imported": 7,
+      "status": "explained",
+      "reason": "news created a second Sabana author ('sabana') in addition to 'Sabana Ashmi A' from blogs"
+    },
+    {
+      "collection": "applications",
+      "strapi_estimate": 0,
+      "imported": 0,
+      "status": "explained",
+      "reason": "no published application records in live"
+    },
+    {
+      "collection": "contacts",
+      "strapi_estimate": 0,
+      "imported": 0,
+      "status": "explained",
+      "reason": "no published contact records in live"
+    }
+  ]
+}

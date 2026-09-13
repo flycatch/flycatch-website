@@ -1,0 +1,116 @@
+{
+  "captured_at": "2026-09-12T04:00:40.019722+00:00",
+  "method": "Local Lighthouse 12.8.2 against live production, mobile emulation. Figures are lab, not CrUX field data.",
+  "pages": [
+    {
+      "id": "home",
+      "url": "https://www.flycatchtech.com/",
+      "requested_url": "https://www.flycatchtech.com/",
+      "final_url": "https://www.flycatchtech.com/",
+      "strategy": "mobile",
+      "source": "lighthouse@12.8.2 headless Chrome, form-factor=mobile",
+      "lab": {
+        "lcp_ms": 3978.932500000002,
+        "inp_ms": 16,
+        "cls": 0,
+        "ttfb_ms": 148.9179999999999,
+        "tbt_ms": 492.5000000000009,
+        "transfer_size_bytes": 3687632,
+        "performance_score": 0.66,
+        "inp_source": "event-timing-lab-click"
+      },
+      "notes": [
+        "LCP, CLS, TTFB, and transfer size are Lighthouse 12.8.2 mobile lab values.",
+        "INP is recorded from Event Timing when a click produced an entry; otherwise Total Blocking Time is stored as the lab interactivity proxy because PSI/CrUX field INP was unavailable (429 quota)."
+      ]
+    },
+    {
+      "id": "service",
+      "url": "https://www.flycatchtech.com/services/ai-services",
+      "requested_url": "https://www.flycatchtech.com/services/ai-services",
+      "final_url": "https://www.flycatchtech.com/services/ai-services",
+      "strategy": "mobile",
+      "source": "lighthouse@12.8.2 headless Chrome, form-factor=mobile",
+      "lab": {
+        "lcp_ms": 9855.988000000001,
+        "inp_ms": 167.5,
+        "cls": 0,
+        "ttfb_ms": 231.76299999999998,
+        "tbt_ms": 167.5,
+        "transfer_size_bytes": 1955298,
+        "performance_score": 0.57,
+        "inp_source": "tbt-lab-proxy-event-timing-unavailable"
+      },
+      "notes": [
+        "LCP, CLS, TTFB, and transfer size are Lighthouse 12.8.2 mobile lab values.",
+        "INP is recorded from Event Timing when a click produced an entry; otherwise Total Blocking Time is stored as the lab interactivity proxy because PSI/CrUX field INP was unavailable (429 quota)."
+      ]
+    },
+    {
+      "id": "solution",
+      "url": "https://www.flycatchtech.com/solutions/flyGrid-ai",
+      "requested_url": "https://www.flycatchtech.com/solutions/flyGrid-ai",
+      "final_url": "https://www.flycatchtech.com/solutions/flyGrid-ai",
+      "strategy": "mobile",
+      "source": "lighthouse@12.8.2 headless Chrome, form-factor=mobile",
+      "lab": {
+        "lcp_ms": 10964.853600000002,
+        "inp_ms": 16,
+        "cls": 0,
+        "ttfb_ms": 167.814,
+        "tbt_ms": 223,
+        "transfer_size_bytes": 1934684,
+        "performance_score": 0.57,
+        "inp_source": "event-timing-lab-click"
+      },
+      "notes": [
+        "LCP, CLS, TTFB, and transfer size are Lighthouse 12.8.2 mobile lab values.",
+        "INP is recorded from Event Timing when a click produced an entry; otherwise Total Blocking Time is stored as the lab interactivity proxy because PSI/CrUX field INP was unavailable (429 quota)."
+      ]
+    },
+    {
+      "id": "case_study",
+      "url": "https://www.flycatchtech.com/case-studies/a-social-e-commerce-platform-for-medallion-retailers",
+      "requested_url": "https://www.flycatchtech.com/case-studies/a-social-e-commerce-platform-for-medallion-retailers",
+      "final_url": "https://www.flycatchtech.com/case-studies/a-social-e-commerce-platform-for-medallion-retailers",
+      "strategy": "mobile",
+      "source": "lighthouse@12.8.2 headless Chrome, form-factor=mobile",
+      "lab": {
+        "lcp_ms": 13580.378499999997,
+        "inp_ms": 16,
+        "cls": 0,
+        "ttfb_ms": 159.44500000000002,
+        "tbt_ms": 214,
+        "transfer_size_bytes": 2054997,
+        "performance_score": 0.57,
+        "inp_source": "event-timing-lab-click"
+      },
+      "notes": [
+        "LCP, CLS, TTFB, and transfer size are Lighthouse 12.8.2 mobile lab values.",
+        "INP is recorded from Event Timing when a click produced an entry; otherwise Total Blocking Time is stored as the lab interactivity proxy because PSI/CrUX field INP was unavailable (429 quota)."
+      ]
+    },
+    {
+      "id": "blog",
+      "url": "https://www.flycatchtech.com/company/blogs/how-kubernetes-help-your-growing-business",
+      "requested_url": "https://www.flycatchtech.com/company/blogs/how-kubernetes-help-your-growing-business",
+      "final_url": "https://www.flycatchtech.com/company/blogs/how-kubernetes-help-your-growing-business",
+      "strategy": "mobile",
+      "source": "lighthouse@12.8.2 headless Chrome, form-factor=mobile",
+      "lab": {
+        "lcp_ms": 11888.195499999998,
+        "inp_ms": 213,
+        "cls": 0,
+        "ttfb_ms": 179.787,
+        "tbt_ms": 213,
+        "transfer_size_bytes": 2300407,
+        "performance_score": 0.62,
+        "inp_source": "tbt-lab-proxy-event-timing-unavailable"
+      },
+      "notes": [
+        "LCP, CLS, TTFB, and transfer size are Lighthouse 12.8.2 mobile lab values.",
+        "INP is recorded from Event Timing when a click produced an entry; otherwise Total Blocking Time is stored as the lab interactivity proxy because PSI/CrUX field INP was unavailable (429 quota)."
+      ]
+    }
+  ]
+}

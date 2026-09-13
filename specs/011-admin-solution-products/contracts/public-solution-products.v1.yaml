@@ -83,6 +83,7 @@ components:
         - banner_image_on_right
         - slug
         - order
+        - seo
       properties:
         product_title: { type: string }
         product_description: { type: string }
@@ -94,3 +95,15 @@ components:
         banner_image_on_right: { type: boolean }
         slug: { type: string }
         order: { type: integer, minimum: 0 }
+        seo: { $ref: '#/components/schemas/ContentSeo' }
+    ContentSeo:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, default: '', maxLength: 200 }
+        description: { type: string, default: '', maxLength: 500 }
+        canonical_url: { type: string, default: '', maxLength: 500 }
+        meta_title: { type: string, default: '', maxLength: 200 }
+        h1_tag: { type: string, default: '', maxLength: 200 }
+        image_alt: { type: string, default: '', maxLength: 200 }
+        image_key: { type: string, nullable: true }

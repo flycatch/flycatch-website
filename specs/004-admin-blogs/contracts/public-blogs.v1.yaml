@@ -96,7 +96,7 @@ components:
       schema:
         type: string
         minLength: 1
-        maxLength: 128
+        maxLength: 255
   schemas:
     PublicAuthor:
       type: object
@@ -216,6 +216,7 @@ components:
         - description
         - body
         - reading_time
+        - created_at
         - image_key
         - image_alt
         - canonical_url
@@ -226,6 +227,7 @@ components:
         - content_available_in
         - authors
         - categories
+        - seo
       properties:
         title:
           type: string
@@ -237,6 +239,9 @@ components:
           type: string
         reading_time:
           type: integer
+        created_at:
+          type: string
+          format: date-time
         image_key:
           type: string
           nullable: true
@@ -264,6 +269,39 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PublicCategory'
+        seo:
+          $ref: '#/components/schemas/ContentSeo'
+    ContentSeo:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          default: ''
+          maxLength: 200
+        description:
+          type: string
+          default: ''
+          maxLength: 500
+        canonical_url:
+          type: string
+          default: ''
+          maxLength: 500
+        meta_title:
+          type: string
+          default: ''
+          maxLength: 200
+        h1_tag:
+          type: string
+          default: ''
+          maxLength: 200
+        image_alt:
+          type: string
+          default: ''
+          maxLength: 200
+        image_key:
+          type: string
+          nullable: true
   responses:
     BlogNotFound:
       description: Unknown or unpublished blog

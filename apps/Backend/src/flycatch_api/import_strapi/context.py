@@ -5,7 +5,7 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
-from flycatch_api.import_strapi.blocks_html import blocks_to_html
+from flycatch_api.import_strapi.blocks_html import blocks_to_html, unknown_block_types
 from flycatch_api.import_strapi.client import StrapiClient
 from flycatch_api.import_strapi.media import MediaImporter
 from flycatch_api.import_strapi.status import IdMap
@@ -17,17 +17,29 @@ class ImportStats:
     updated: int = 0
     skipped: int = 0
     errors: list[str] = field(default_factory=list)
+    unhandled_blocks: dict[str, int] = field(default_factory=dict)
 
     def merge(self, other: ImportStats) -> None:
         self.created += other.created
         self.updated += other.updated
         self.skipped += other.skipped
         self.errors.extend(other.errors)
+        for block_type, count in other.unhandled_blocks.items():
+            self.unhandled_blocks[block_type] = self.unhandled_blocks.get(block_type, 0) + count
+
+    @property
+    def mapped(self) -> int:
+        return self.created + self.updated
 
     def summary(self) -> str:
+        unhandled = ",".join(
+            f"{name}:{count}" for name, count in sorted(self.unhandled_blocks.items())
+        )
+        suffix = f" unhandled_blocks={unhandled}" if unhandled else ""
         return (
             f"created={self.created} updated={self.updated} "
-            f"skipped={self.skipped} errors={len(self.errors)}"
+            f"skipped={self.skipped} mapped={self.mapped} "
+            f"errors={len(self.errors)}{suffix}"
         )
 
 
@@ -42,6 +54,11 @@ class ImportContext:
     stats: ImportStats = field(default_factory=ImportStats)
 
     def body_html(self, value: Any) -> str:
+        for block_type in unknown_block_types(value):
+            self.stats.unhandled_blocks[block_type] = (
+                self.stats.unhandled_blocks.get(block_type, 0) + 1
+            )
+            self.warnings.append(f"unhandled block type: {block_type}")
         return blocks_to_html(value, resolve_media=self._resolve_block_image)
 
     def _resolve_block_image(self, image: dict[str, Any]) -> str | None:

@@ -1,0 +1,1271 @@
+{
+  "captured_at": "2026-09-12T04:01:26.145245+00:00",
+  "canonical_origin": "https://www.flycatchtech.com",
+  "sitemap_url_count": 139,
+  "sitemap_mappings": [
+    {
+      "from": "/",
+      "from_url": "https://www.flycatchtech.com",
+      "to": "/",
+      "to_url": "https://www.flycatchtech.com",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/services",
+      "from_url": "https://www.flycatchtech.com/services",
+      "to": "/services",
+      "to_url": "https://www.flycatchtech.com/services",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/solutions",
+      "from_url": "https://www.flycatchtech.com/solutions",
+      "to": "/solutions",
+      "to_url": "https://www.flycatchtech.com/solutions",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/case-studies",
+      "from_url": "https://www.flycatchtech.com/case-studies",
+      "to": "/case-studies",
+      "to_url": "https://www.flycatchtech.com/case-studies",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/software-development-services-in-saudi-arabia",
+      "from_url": "https://www.flycatchtech.com/software-development-services-in-saudi-arabia",
+      "to": "/software-development-services-in-saudi-arabia",
+      "to_url": "https://www.flycatchtech.com/software-development-services-in-saudi-arabia",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/contact-us",
+      "from_url": "https://www.flycatchtech.com/contact-us",
+      "to": "/contact-us",
+      "to_url": "https://www.flycatchtech.com/contact-us",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/about-us",
+      "from_url": "https://www.flycatchtech.com/company/about-us",
+      "to": "/company/about-us",
+      "to_url": "https://www.flycatchtech.com/company/about-us",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/services/application-development-services",
+      "from_url": "https://www.flycatchtech.com/services/application-development-services",
+      "to": "/services/application-development-services",
+      "to_url": "https://www.flycatchtech.com/services/application-development-services",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/services/application-modernization",
+      "from_url": "https://www.flycatchtech.com/services/application-modernization",
+      "to": "/services/application-modernization",
+      "to_url": "https://www.flycatchtech.com/services/application-modernization",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/services/mobile-application-development",
+      "from_url": "https://www.flycatchtech.com/services/mobile-application-development",
+      "to": "/services/mobile-application-development",
+      "to_url": "https://www.flycatchtech.com/services/mobile-application-development",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/services/user-centered-design",
+      "from_url": "https://www.flycatchtech.com/services/user-centered-design",
+      "to": "/services/user-centered-design",
+      "to_url": "https://www.flycatchtech.com/services/user-centered-design",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/services/cloud-migration",
+      "from_url": "https://www.flycatchtech.com/services/cloud-migration",
+      "to": "/services/cloud-migration",
+      "to_url": "https://www.flycatchtech.com/services/cloud-migration",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/services/data-migration",
+      "from_url": "https://www.flycatchtech.com/services/data-migration",
+      "to": "/services/data-migration",
+      "to_url": "https://www.flycatchtech.com/services/data-migration",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/services/devOps-consultation",
+      "from_url": "https://www.flycatchtech.com/services/devOps-consultation",
+      "to": "/services/devOps-consultation",
+      "to_url": "https://www.flycatchtech.com/services/devOps-consultation",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/services/infrastructure-management-and-automation",
+      "from_url": "https://www.flycatchtech.com/services/infrastructure-management-and-automation",
+      "to": "/services/infrastructure-management-and-automation",
+      "to_url": "https://www.flycatchtech.com/services/infrastructure-management-and-automation",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/services/digital-transformation",
+      "from_url": "https://www.flycatchtech.com/services/digital-transformation",
+      "to": "/services/digital-transformation",
+      "to_url": "https://www.flycatchtech.com/services/digital-transformation",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/services/ai-services",
+      "from_url": "https://www.flycatchtech.com/services/ai-services",
+      "to": "/services/ai-services",
+      "to_url": "https://www.flycatchtech.com/services/ai-services",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/solutions/credit-life",
+      "from_url": "https://www.flycatchtech.com/solutions/credit-life",
+      "to": "/solutions/credit-life",
+      "to_url": "https://www.flycatchtech.com/solutions/credit-life",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/solutions/com-bus",
+      "from_url": "https://www.flycatchtech.com/solutions/com-bus",
+      "to": "/solutions/com-bus",
+      "to_url": "https://www.flycatchtech.com/solutions/com-bus",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/solutions/procure-flex",
+      "from_url": "https://www.flycatchtech.com/solutions/procure-flex",
+      "to": "/solutions/procure-flex",
+      "to_url": "https://www.flycatchtech.com/solutions/procure-flex",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/careers",
+      "from_url": "https://www.flycatchtech.com/company/careers",
+      "to": "/company/careers",
+      "to_url": "https://www.flycatchtech.com/company/careers",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/jobs-openings",
+      "from_url": "https://www.flycatchtech.com/company/jobs-openings",
+      "to": "/company/jobs-openings",
+      "to_url": "https://www.flycatchtech.com/company/jobs-openings",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs",
+      "from_url": "https://www.flycatchtech.com/company/blogs",
+      "to": "/company/blogs",
+      "to_url": "https://www.flycatchtech.com/company/blogs",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/clients",
+      "from_url": "https://www.flycatchtech.com/company/clients",
+      "to": "/company/clients",
+      "to_url": "https://www.flycatchtech.com/company/clients",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/testimonials",
+      "from_url": "https://www.flycatchtech.com/company/testimonials",
+      "to": "/company/testimonials",
+      "to_url": "https://www.flycatchtech.com/company/testimonials",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/resources",
+      "from_url": "https://www.flycatchtech.com/company/resources",
+      "to": "/company/resources",
+      "to_url": "https://www.flycatchtech.com/company/resources",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/memberships",
+      "from_url": "https://www.flycatchtech.com/company/memberships",
+      "to": "/company/memberships",
+      "to_url": "https://www.flycatchtech.com/company/memberships",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/news-and-events",
+      "from_url": "https://www.flycatchtech.com/company/news-and-events",
+      "to": "/company/news-and-events",
+      "to_url": "https://www.flycatchtech.com/company/news-and-events",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/privacy-policy",
+      "from_url": "https://www.flycatchtech.com/privacy-policy",
+      "to": "/privacy-policy",
+      "to_url": "https://www.flycatchtech.com/privacy-policy",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/terms-and-conditions",
+      "from_url": "https://www.flycatchtech.com/terms-and-conditions",
+      "to": "/terms-and-conditions",
+      "to_url": "https://www.flycatchtech.com/terms-and-conditions",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/case-studies/a-social-e-commerce-platform-for-medallion-retailers",
+      "from_url": "https://www.flycatchtech.com/case-studies/a-social-e-commerce-platform-for-medallion-retailers",
+      "to": "/case-studies/a-social-e-commerce-platform-for-medallion-retailers",
+      "to_url": "https://www.flycatchtech.com/case-studies/a-social-e-commerce-platform-for-medallion-retailers",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/case-studies/digital-platform-for-commercial-real-estate-market",
+      "from_url": "https://www.flycatchtech.com/case-studies/digital-platform-for-commercial-real-estate-market",
+      "to": "/case-studies/digital-platform-for-commercial-real-estate-market",
+      "to_url": "https://www.flycatchtech.com/case-studies/digital-platform-for-commercial-real-estate-market",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/case-studies/a-digital-twin-for-community-education",
+      "from_url": "https://www.flycatchtech.com/case-studies/a-digital-twin-for-community-education",
+      "to": "/case-studies/a-digital-twin-for-community-education",
+      "to_url": "https://www.flycatchtech.com/case-studies/a-digital-twin-for-community-education",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/case-studies/modernising-lms-for-an-edtech-enterprise",
+      "from_url": "https://www.flycatchtech.com/case-studies/modernising-lms-for-an-edtech-enterprise",
+      "to": "/case-studies/modernising-lms-for-an-edtech-enterprise",
+      "to_url": "https://www.flycatchtech.com/case-studies/modernising-lms-for-an-edtech-enterprise",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/case-studies/a-novel-solution-for-credit-building",
+      "from_url": "https://www.flycatchtech.com/case-studies/a-novel-solution-for-credit-building",
+      "to": "/case-studies/a-novel-solution-for-credit-building",
+      "to_url": "https://www.flycatchtech.com/case-studies/a-novel-solution-for-credit-building",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/case-studies/transforming-hospitality-experiences",
+      "from_url": "https://www.flycatchtech.com/case-studies/transforming-hospitality-experiences",
+      "to": "/case-studies/transforming-hospitality-experiences",
+      "to_url": "https://www.flycatchtech.com/case-studies/transforming-hospitality-experiences",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/case-studies/digital-companion-application-for-a-biopharma-company",
+      "from_url": "https://www.flycatchtech.com/case-studies/digital-companion-application-for-a-biopharma-company",
+      "to": "/case-studies/digital-companion-application-for-a-biopharma-company",
+      "to_url": "https://www.flycatchtech.com/case-studies/digital-companion-application-for-a-biopharma-company",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/case-studies/digital-transformation-journey-of-an-insurance-broker-company",
+      "from_url": "https://www.flycatchtech.com/case-studies/digital-transformation-journey-of-an-insurance-broker-company",
+      "to": "/case-studies/digital-transformation-journey-of-an-insurance-broker-company",
+      "to_url": "https://www.flycatchtech.com/case-studies/digital-transformation-journey-of-an-insurance-broker-company",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/case-studies/e-commerce-platform-for-a-retail-customer",
+      "from_url": "https://www.flycatchtech.com/case-studies/e-commerce-platform-for-a-retail-customer",
+      "to": "/case-studies/e-commerce-platform-for-a-retail-customer",
+      "to_url": "https://www.flycatchtech.com/case-studies/e-commerce-platform-for-a-retail-customer",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/case-studies/analytical-and-decision-support-platform-for-a-cns",
+      "from_url": "https://www.flycatchtech.com/case-studies/analytical-and-decision-support-platform-for-a-cns",
+      "to": "/case-studies/analytical-and-decision-support-platform-for-a-cns",
+      "to_url": "https://www.flycatchtech.com/case-studies/analytical-and-decision-support-platform-for-a-cns",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/case-studies/streamlining-government-service-integration-with-a-low-code-fintech-accelerator",
+      "from_url": "https://www.flycatchtech.com/case-studies/streamlining-government-service-integration-with-a-low-code-fintech-accelerator",
+      "to": "/case-studies/streamlining-government-service-integration-with-a-low-code-fintech-accelerator",
+      "to_url": "https://www.flycatchtech.com/case-studies/streamlining-government-service-integration-with-a-low-code-fintech-accelerator",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/case-studies/custom-crm-solution-for-a-leading-manufacturer-in-the-mining-industry",
+      "from_url": "https://www.flycatchtech.com/case-studies/custom-crm-solution-for-a-leading-manufacturer-in-the-mining-industry",
+      "to": "/case-studies/custom-crm-solution-for-a-leading-manufacturer-in-the-mining-industry",
+      "to_url": "https://www.flycatchtech.com/case-studies/custom-crm-solution-for-a-leading-manufacturer-in-the-mining-industry",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/case-studies/a-mobile-solution-for-personalized-clothing-experience",
+      "from_url": "https://www.flycatchtech.com/case-studies/a-mobile-solution-for-personalized-clothing-experience",
+      "to": "/case-studies/a-mobile-solution-for-personalized-clothing-experience",
+      "to_url": "https://www.flycatchtech.com/case-studies/a-mobile-solution-for-personalized-clothing-experience",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/case-studies/redefining-study-abroad-an-ed-tech-aggregator-simplifies-access-to-overseas-education",
+      "from_url": "https://www.flycatchtech.com/case-studies/redefining-study-abroad-an-ed-tech-aggregator-simplifies-access-to-overseas-education",
+      "to": "/case-studies/redefining-study-abroad-an-ed-tech-aggregator-simplifies-access-to-overseas-education",
+      "to_url": "https://www.flycatchtech.com/case-studies/redefining-study-abroad-an-ed-tech-aggregator-simplifies-access-to-overseas-education",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/case-studies/transforming-travel-the-role-of-a-hospitality-aggregator-platform",
+      "from_url": "https://www.flycatchtech.com/case-studies/transforming-travel-the-role-of-a-hospitality-aggregator-platform",
+      "to": "/case-studies/transforming-travel-the-role-of-a-hospitality-aggregator-platform",
+      "to_url": "https://www.flycatchtech.com/case-studies/transforming-travel-the-role-of-a-hospitality-aggregator-platform",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/case-studies/unlocking-potential-how-a-saa-s-marketplace-transforms-local-vendor-reach",
+      "from_url": "https://www.flycatchtech.com/case-studies/unlocking-potential-how-a-saa-s-marketplace-transforms-local-vendor-reach",
+      "to": "/case-studies/unlocking-potential-how-a-saa-s-marketplace-transforms-local-vendor-reach",
+      "to_url": "https://www.flycatchtech.com/case-studies/unlocking-potential-how-a-saa-s-marketplace-transforms-local-vendor-reach",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/case-studies/a-case-study-on-digital-innovation-in-university-1",
+      "from_url": "https://www.flycatchtech.com/case-studies/a-case-study-on-digital-innovation-in-university-1",
+      "to": "/case-studies/a-case-study-on-digital-innovation-in-university-1",
+      "to_url": "https://www.flycatchtech.com/case-studies/a-case-study-on-digital-innovation-in-university-1",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/case-studies/centralized-customer-support-system-for-insurance-broker",
+      "from_url": "https://www.flycatchtech.com/case-studies/centralized-customer-support-system-for-insurance-broker",
+      "to": "/case-studies/centralized-customer-support-system-for-insurance-broker",
+      "to_url": "https://www.flycatchtech.com/case-studies/centralized-customer-support-system-for-insurance-broker",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/case-studies/procurement-management-for-fortune-500-logistics-company",
+      "from_url": "https://www.flycatchtech.com/case-studies/procurement-management-for-fortune-500-logistics-company",
+      "to": "/case-studies/procurement-management-for-fortune-500-logistics-company",
+      "to_url": "https://www.flycatchtech.com/case-studies/procurement-management-for-fortune-500-logistics-company",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/case-studies/transforming-private-aviation-operations-a-centralized-solution-for-scheduling-and-operations-management",
+      "from_url": "https://www.flycatchtech.com/case-studies/transforming-private-aviation-operations-a-centralized-solution-for-scheduling-and-operations-management",
+      "to": "/case-studies/transforming-private-aviation-operations-a-centralized-solution-for-scheduling-and-operations-management",
+      "to_url": "https://www.flycatchtech.com/case-studies/transforming-private-aviation-operations-a-centralized-solution-for-scheduling-and-operations-management",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/data-governance-in-practice-moving-from-policy-to-measurable-value",
+      "from_url": "https://www.flycatchtech.com/company/blogs/data-governance-in-practice-moving-from-policy-to-measurable-value",
+      "to": "/company/blogs/data-governance-in-practice-moving-from-policy-to-measurable-value",
+      "to_url": "https://www.flycatchtech.com/company/blogs/data-governance-in-practice-moving-from-policy-to-measurable-value",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/how-kubernetes-help-your-growing-business",
+      "from_url": "https://www.flycatchtech.com/company/blogs/how-kubernetes-help-your-growing-business",
+      "to": "/company/blogs/how-kubernetes-help-your-growing-business",
+      "to_url": "https://www.flycatchtech.com/company/blogs/how-kubernetes-help-your-growing-business",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/building-a-modern-data-foundation-data-lakes-analytics-and-ai-for-scalable-growth",
+      "from_url": "https://www.flycatchtech.com/company/blogs/building-a-modern-data-foundation-data-lakes-analytics-and-ai-for-scalable-growth",
+      "to": "/company/blogs/building-a-modern-data-foundation-data-lakes-analytics-and-ai-for-scalable-growth",
+      "to_url": "https://www.flycatchtech.com/company/blogs/building-a-modern-data-foundation-data-lakes-analytics-and-ai-for-scalable-growth",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/how-to-manage-your-enterprise-kubernetes-effectively",
+      "from_url": "https://www.flycatchtech.com/company/blogs/how-to-manage-your-enterprise-kubernetes-effectively",
+      "to": "/company/blogs/how-to-manage-your-enterprise-kubernetes-effectively",
+      "to_url": "https://www.flycatchtech.com/company/blogs/how-to-manage-your-enterprise-kubernetes-effectively",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/how-aws-transforms-saudi-enterprises-with-the-new-region",
+      "from_url": "https://www.flycatchtech.com/company/blogs/how-aws-transforms-saudi-enterprises-with-the-new-region",
+      "to": "/company/blogs/how-aws-transforms-saudi-enterprises-with-the-new-region",
+      "to_url": "https://www.flycatchtech.com/company/blogs/how-aws-transforms-saudi-enterprises-with-the-new-region",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/uncovering-aws-eks-elastic-kubernetes-service-a-better-container-orchestration-solution",
+      "from_url": "https://www.flycatchtech.com/company/blogs/uncovering-aws-eks-elastic-kubernetes-service-a-better-container-orchestration-solution",
+      "to": "/company/blogs/uncovering-aws-eks-elastic-kubernetes-service-a-better-container-orchestration-solution",
+      "to_url": "https://www.flycatchtech.com/company/blogs/uncovering-aws-eks-elastic-kubernetes-service-a-better-container-orchestration-solution",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/master-data-management-the-road-to-a-single-truth",
+      "from_url": "https://www.flycatchtech.com/company/blogs/master-data-management-the-road-to-a-single-truth",
+      "to": "/company/blogs/master-data-management-the-road-to-a-single-truth",
+      "to_url": "https://www.flycatchtech.com/company/blogs/master-data-management-the-road-to-a-single-truth",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/why-an-assessment-is-important-for-your-it-ecosystem-before-planning-for-a-cloud-migration",
+      "from_url": "https://www.flycatchtech.com/company/blogs/why-an-assessment-is-important-for-your-it-ecosystem-before-planning-for-a-cloud-migration",
+      "to": "/company/blogs/why-an-assessment-is-important-for-your-it-ecosystem-before-planning-for-a-cloud-migration",
+      "to_url": "https://www.flycatchtech.com/company/blogs/why-an-assessment-is-important-for-your-it-ecosystem-before-planning-for-a-cloud-migration",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/unlocking-growth-the-benefits-of-a-business-first-application-modernization-strategy",
+      "from_url": "https://www.flycatchtech.com/company/blogs/unlocking-growth-the-benefits-of-a-business-first-application-modernization-strategy",
+      "to": "/company/blogs/unlocking-growth-the-benefits-of-a-business-first-application-modernization-strategy",
+      "to_url": "https://www.flycatchtech.com/company/blogs/unlocking-growth-the-benefits-of-a-business-first-application-modernization-strategy",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/how-data-fabric-changes-the-data-management-approach",
+      "from_url": "https://www.flycatchtech.com/company/blogs/how-data-fabric-changes-the-data-management-approach",
+      "to": "/company/blogs/how-data-fabric-changes-the-data-management-approach",
+      "to_url": "https://www.flycatchtech.com/company/blogs/how-data-fabric-changes-the-data-management-approach",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/agentic-ai-runs-on-data-why-enterprises-must-rethink-their-data-architecture",
+      "from_url": "https://www.flycatchtech.com/company/blogs/agentic-ai-runs-on-data-why-enterprises-must-rethink-their-data-architecture",
+      "to": "/company/blogs/agentic-ai-runs-on-data-why-enterprises-must-rethink-their-data-architecture",
+      "to_url": "https://www.flycatchtech.com/company/blogs/agentic-ai-runs-on-data-why-enterprises-must-rethink-their-data-architecture",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/eks-unleashed-how-amazon-eks-accelerates-modern-application-delivery-and-digital-transformation",
+      "from_url": "https://www.flycatchtech.com/company/blogs/eks-unleashed-how-amazon-eks-accelerates-modern-application-delivery-and-digital-transformation",
+      "to": "/company/blogs/eks-unleashed-how-amazon-eks-accelerates-modern-application-delivery-and-digital-transformation",
+      "to_url": "https://www.flycatchtech.com/company/blogs/eks-unleashed-how-amazon-eks-accelerates-modern-application-delivery-and-digital-transformation",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/navigating-compliance-and-governance-in-a-modernized-it-ecosystem",
+      "from_url": "https://www.flycatchtech.com/company/blogs/navigating-compliance-and-governance-in-a-modernized-it-ecosystem",
+      "to": "/company/blogs/navigating-compliance-and-governance-in-a-modernized-it-ecosystem",
+      "to_url": "https://www.flycatchtech.com/company/blogs/navigating-compliance-and-governance-in-a-modernized-it-ecosystem",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/role-of-ai-in-application-modernization",
+      "from_url": "https://www.flycatchtech.com/company/blogs/role-of-ai-in-application-modernization",
+      "to": "/company/blogs/role-of-ai-in-application-modernization",
+      "to_url": "https://www.flycatchtech.com/company/blogs/role-of-ai-in-application-modernization",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/why-should-a-startup-adopt-agile-scrum",
+      "from_url": "https://www.flycatchtech.com/company/blogs/why-should-a-startup-adopt-agile-scrum",
+      "to": "/company/blogs/why-should-a-startup-adopt-agile-scrum",
+      "to_url": "https://www.flycatchtech.com/company/blogs/why-should-a-startup-adopt-agile-scrum",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/a-startup-embarks-digital-transformation-journey",
+      "from_url": "https://www.flycatchtech.com/company/blogs/a-startup-embarks-digital-transformation-journey",
+      "to": "/company/blogs/a-startup-embarks-digital-transformation-journey",
+      "to_url": "https://www.flycatchtech.com/company/blogs/a-startup-embarks-digital-transformation-journey",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/which-product-designing-mechanism-are-you-following",
+      "from_url": "https://www.flycatchtech.com/company/blogs/which-product-designing-mechanism-are-you-following",
+      "to": "/company/blogs/which-product-designing-mechanism-are-you-following",
+      "to_url": "https://www.flycatchtech.com/company/blogs/which-product-designing-mechanism-are-you-following",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/flycatch-fantastic-first-flight-yes",
+      "from_url": "https://www.flycatchtech.com/company/blogs/flycatch-fantastic-first-flight-yes",
+      "to": "/company/blogs/flycatch-fantastic-first-flight-yes",
+      "to_url": "https://www.flycatchtech.com/company/blogs/flycatch-fantastic-first-flight-yes",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/key-considerations-to-choose-the-best-software-development-partner-in-saudi-arabia",
+      "from_url": "https://www.flycatchtech.com/company/blogs/key-considerations-to-choose-the-best-software-development-partner-in-saudi-arabia",
+      "to": "/company/blogs/key-considerations-to-choose-the-best-software-development-partner-in-saudi-arabia",
+      "to_url": "https://www.flycatchtech.com/company/blogs/key-considerations-to-choose-the-best-software-development-partner-in-saudi-arabia",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/how-to-perform-application-assessment-before-cloud-migration-2",
+      "from_url": "https://www.flycatchtech.com/company/blogs/how-to-perform-application-assessment-before-cloud-migration-2",
+      "to": "/company/blogs/how-to-perform-application-assessment-before-cloud-migration-2",
+      "to_url": "https://www.flycatchtech.com/company/blogs/how-to-perform-application-assessment-before-cloud-migration-2",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/how-to-choose-between-a-data-warehouse-and-a-data-lake-for-your-business",
+      "from_url": "https://www.flycatchtech.com/company/blogs/how-to-choose-between-a-data-warehouse-and-a-data-lake-for-your-business",
+      "to": "/company/blogs/how-to-choose-between-a-data-warehouse-and-a-data-lake-for-your-business",
+      "to_url": "https://www.flycatchtech.com/company/blogs/how-to-choose-between-a-data-warehouse-and-a-data-lake-for-your-business",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/why-sovereign-data-is-revolutionizing-the-approach-to-cloud-and-ai-in-2026",
+      "from_url": "https://www.flycatchtech.com/company/blogs/why-sovereign-data-is-revolutionizing-the-approach-to-cloud-and-ai-in-2026",
+      "to": "/company/blogs/why-sovereign-data-is-revolutionizing-the-approach-to-cloud-and-ai-in-2026",
+      "to_url": "https://www.flycatchtech.com/company/blogs/why-sovereign-data-is-revolutionizing-the-approach-to-cloud-and-ai-in-2026",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/transform-your-business-with-modern-data-migration-and-analytics-solutions",
+      "from_url": "https://www.flycatchtech.com/company/blogs/transform-your-business-with-modern-data-migration-and-analytics-solutions",
+      "to": "/company/blogs/transform-your-business-with-modern-data-migration-and-analytics-solutions",
+      "to_url": "https://www.flycatchtech.com/company/blogs/transform-your-business-with-modern-data-migration-and-analytics-solutions",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/why-mantine-how-react-developers-build-flexible-user-interfaces-faster",
+      "from_url": "https://www.flycatchtech.com/company/blogs/why-mantine-how-react-developers-build-flexible-user-interfaces-faster",
+      "to": "/company/blogs/why-mantine-how-react-developers-build-flexible-user-interfaces-faster",
+      "to_url": "https://www.flycatchtech.com/company/blogs/why-mantine-how-react-developers-build-flexible-user-interfaces-faster",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/when-is-the-right-time-to-adopt-an-ai-app-for-your-business-key-considerations-for-ai-investment",
+      "from_url": "https://www.flycatchtech.com/company/blogs/when-is-the-right-time-to-adopt-an-ai-app-for-your-business-key-considerations-for-ai-investment",
+      "to": "/company/blogs/when-is-the-right-time-to-adopt-an-ai-app-for-your-business-key-considerations-for-ai-investment",
+      "to_url": "https://www.flycatchtech.com/company/blogs/when-is-the-right-time-to-adopt-an-ai-app-for-your-business-key-considerations-for-ai-investment",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/the-fundamentals-of-kubernetes-deployment",
+      "from_url": "https://www.flycatchtech.com/company/blogs/the-fundamentals-of-kubernetes-deployment",
+      "to": "/company/blogs/the-fundamentals-of-kubernetes-deployment",
+      "to_url": "https://www.flycatchtech.com/company/blogs/the-fundamentals-of-kubernetes-deployment",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/elevating-guest-experience-with-technology-the-future-of-personalization-in-service-industries",
+      "from_url": "https://www.flycatchtech.com/company/blogs/elevating-guest-experience-with-technology-the-future-of-personalization-in-service-industries",
+      "to": "/company/blogs/elevating-guest-experience-with-technology-the-future-of-personalization-in-service-industries",
+      "to_url": "https://www.flycatchtech.com/company/blogs/elevating-guest-experience-with-technology-the-future-of-personalization-in-service-industries",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/how-to-build-an-ai-powered-app-for-your-business-a-step-by-step-guide",
+      "from_url": "https://www.flycatchtech.com/company/blogs/how-to-build-an-ai-powered-app-for-your-business-a-step-by-step-guide",
+      "to": "/company/blogs/how-to-build-an-ai-powered-app-for-your-business-a-step-by-step-guide",
+      "to_url": "https://www.flycatchtech.com/company/blogs/how-to-build-an-ai-powered-app-for-your-business-a-step-by-step-guide",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/how-web3-is-going-to-change-tech-world",
+      "from_url": "https://www.flycatchtech.com/company/blogs/how-web3-is-going-to-change-tech-world",
+      "to": "/company/blogs/how-web3-is-going-to-change-tech-world",
+      "to_url": "https://www.flycatchtech.com/company/blogs/how-web3-is-going-to-change-tech-world",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/paving-way-to-vision-2030-the-smart-booking-application-elevating-saudi-s-travel-and-hospitality-sector",
+      "from_url": "https://www.flycatchtech.com/company/blogs/paving-way-to-vision-2030-the-smart-booking-application-elevating-saudi-s-travel-and-hospitality-sector",
+      "to": "/company/blogs/paving-way-to-vision-2030-the-smart-booking-application-elevating-saudi-s-travel-and-hospitality-sector",
+      "to_url": "https://www.flycatchtech.com/company/blogs/paving-way-to-vision-2030-the-smart-booking-application-elevating-saudi-s-travel-and-hospitality-sector",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/the-next-gen-travel-aggregator-key-features-market-trends-and-technical-insights",
+      "from_url": "https://www.flycatchtech.com/company/blogs/the-next-gen-travel-aggregator-key-features-market-trends-and-technical-insights",
+      "to": "/company/blogs/the-next-gen-travel-aggregator-key-features-market-trends-and-technical-insights",
+      "to_url": "https://www.flycatchtech.com/company/blogs/the-next-gen-travel-aggregator-key-features-market-trends-and-technical-insights",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/transforming-saudi-businesses-with-zatca-compliance-a-strategic-guide",
+      "from_url": "https://www.flycatchtech.com/company/blogs/transforming-saudi-businesses-with-zatca-compliance-a-strategic-guide",
+      "to": "/company/blogs/transforming-saudi-businesses-with-zatca-compliance-a-strategic-guide",
+      "to_url": "https://www.flycatchtech.com/company/blogs/transforming-saudi-businesses-with-zatca-compliance-a-strategic-guide",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/why-choose-dev-sec-ops-over-traditional-dev-ops",
+      "from_url": "https://www.flycatchtech.com/company/blogs/why-choose-dev-sec-ops-over-traditional-dev-ops",
+      "to": "/company/blogs/why-choose-dev-sec-ops-over-traditional-dev-ops",
+      "to_url": "https://www.flycatchtech.com/company/blogs/why-choose-dev-sec-ops-over-traditional-dev-ops",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/why-legacy-software-modernization-is-a-must-for-your-business-growth",
+      "from_url": "https://www.flycatchtech.com/company/blogs/why-legacy-software-modernization-is-a-must-for-your-business-growth",
+      "to": "/company/blogs/why-legacy-software-modernization-is-a-must-for-your-business-growth",
+      "to_url": "https://www.flycatchtech.com/company/blogs/why-legacy-software-modernization-is-a-must-for-your-business-growth",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/is-your-business-keeping-up-with-the-pace-of-technology-accelerate-growth-with-application-modernization",
+      "from_url": "https://www.flycatchtech.com/company/blogs/is-your-business-keeping-up-with-the-pace-of-technology-accelerate-growth-with-application-modernization",
+      "to": "/company/blogs/is-your-business-keeping-up-with-the-pace-of-technology-accelerate-growth-with-application-modernization",
+      "to_url": "https://www.flycatchtech.com/company/blogs/is-your-business-keeping-up-with-the-pace-of-technology-accelerate-growth-with-application-modernization",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/how-raw-data-fuels-smarter-business-strategies-through-bi",
+      "from_url": "https://www.flycatchtech.com/company/blogs/how-raw-data-fuels-smarter-business-strategies-through-bi",
+      "to": "/company/blogs/how-raw-data-fuels-smarter-business-strategies-through-bi",
+      "to_url": "https://www.flycatchtech.com/company/blogs/how-raw-data-fuels-smarter-business-strategies-through-bi",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/the-role-of-data-management-in-your-cloud-migration-journey",
+      "from_url": "https://www.flycatchtech.com/company/blogs/the-role-of-data-management-in-your-cloud-migration-journey",
+      "to": "/company/blogs/the-role-of-data-management-in-your-cloud-migration-journey",
+      "to_url": "https://www.flycatchtech.com/company/blogs/the-role-of-data-management-in-your-cloud-migration-journey",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/emerging-technologies-and-trends-in-mobile-app-development",
+      "from_url": "https://www.flycatchtech.com/company/blogs/emerging-technologies-and-trends-in-mobile-app-development",
+      "to": "/company/blogs/emerging-technologies-and-trends-in-mobile-app-development",
+      "to_url": "https://www.flycatchtech.com/company/blogs/emerging-technologies-and-trends-in-mobile-app-development",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/the-role-of-ai-and-ml-in-revolutionizing-mobile-app-development",
+      "from_url": "https://www.flycatchtech.com/company/blogs/the-role-of-ai-and-ml-in-revolutionizing-mobile-app-development",
+      "to": "/company/blogs/the-role-of-ai-and-ml-in-revolutionizing-mobile-app-development",
+      "to_url": "https://www.flycatchtech.com/company/blogs/the-role-of-ai-and-ml-in-revolutionizing-mobile-app-development",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/best-practices-for-secure-and-compliant-data-migration-services",
+      "from_url": "https://www.flycatchtech.com/company/blogs/best-practices-for-secure-and-compliant-data-migration-services",
+      "to": "/company/blogs/best-practices-for-secure-and-compliant-data-migration-services",
+      "to_url": "https://www.flycatchtech.com/company/blogs/best-practices-for-secure-and-compliant-data-migration-services",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/bridging-borders-how-nearshore-development-contributes-to-saudi-s-vision-2030-digital-future",
+      "from_url": "https://www.flycatchtech.com/company/blogs/bridging-borders-how-nearshore-development-contributes-to-saudi-s-vision-2030-digital-future",
+      "to": "/company/blogs/bridging-borders-how-nearshore-development-contributes-to-saudi-s-vision-2030-digital-future",
+      "to_url": "https://www.flycatchtech.com/company/blogs/bridging-borders-how-nearshore-development-contributes-to-saudi-s-vision-2030-digital-future",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/advanced-strategies-for-zatca-compliance",
+      "from_url": "https://www.flycatchtech.com/company/blogs/advanced-strategies-for-zatca-compliance",
+      "to": "/company/blogs/advanced-strategies-for-zatca-compliance",
+      "to_url": "https://www.flycatchtech.com/company/blogs/advanced-strategies-for-zatca-compliance",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/how-ai-is-shaping-the-future-of-application-modernization-strategies",
+      "from_url": "https://www.flycatchtech.com/company/blogs/how-ai-is-shaping-the-future-of-application-modernization-strategies",
+      "to": "/company/blogs/how-ai-is-shaping-the-future-of-application-modernization-strategies",
+      "to_url": "https://www.flycatchtech.com/company/blogs/how-ai-is-shaping-the-future-of-application-modernization-strategies",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/curious-about-modernization-an-insight-to-understand-the-transformation-challenges",
+      "from_url": "https://www.flycatchtech.com/company/blogs/curious-about-modernization-an-insight-to-understand-the-transformation-challenges",
+      "to": "/company/blogs/curious-about-modernization-an-insight-to-understand-the-transformation-challenges",
+      "to_url": "https://www.flycatchtech.com/company/blogs/curious-about-modernization-an-insight-to-understand-the-transformation-challenges",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/tailoring-your-modernization-strategy-what-businesses-need-to-know",
+      "from_url": "https://www.flycatchtech.com/company/blogs/tailoring-your-modernization-strategy-what-businesses-need-to-know",
+      "to": "/company/blogs/tailoring-your-modernization-strategy-what-businesses-need-to-know",
+      "to_url": "https://www.flycatchtech.com/company/blogs/tailoring-your-modernization-strategy-what-businesses-need-to-know",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/the-role-of-cloud-services-in-driving-modernization",
+      "from_url": "https://www.flycatchtech.com/company/blogs/the-role-of-cloud-services-in-driving-modernization",
+      "to": "/company/blogs/the-role-of-cloud-services-in-driving-modernization",
+      "to_url": "https://www.flycatchtech.com/company/blogs/the-role-of-cloud-services-in-driving-modernization",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/safeguarding-the-modernized-infrastructure",
+      "from_url": "https://www.flycatchtech.com/company/blogs/safeguarding-the-modernized-infrastructure",
+      "to": "/company/blogs/safeguarding-the-modernized-infrastructure",
+      "to_url": "https://www.flycatchtech.com/company/blogs/safeguarding-the-modernized-infrastructure",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/how-to-achieve-business-agility-through-it-modernization",
+      "from_url": "https://www.flycatchtech.com/company/blogs/how-to-achieve-business-agility-through-it-modernization",
+      "to": "/company/blogs/how-to-achieve-business-agility-through-it-modernization",
+      "to_url": "https://www.flycatchtech.com/company/blogs/how-to-achieve-business-agility-through-it-modernization",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/the-next-frontier-ai-and-automation-in-modernized-it-infrastructure",
+      "from_url": "https://www.flycatchtech.com/company/blogs/the-next-frontier-ai-and-automation-in-modernized-it-infrastructure",
+      "to": "/company/blogs/the-next-frontier-ai-and-automation-in-modernized-it-infrastructure",
+      "to_url": "https://www.flycatchtech.com/company/blogs/the-next-frontier-ai-and-automation-in-modernized-it-infrastructure",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/comprehensive-insights-into-web-hosting-regulations-in-saudi-arabia-key-considerations",
+      "from_url": "https://www.flycatchtech.com/company/blogs/comprehensive-insights-into-web-hosting-regulations-in-saudi-arabia-key-considerations",
+      "to": "/company/blogs/comprehensive-insights-into-web-hosting-regulations-in-saudi-arabia-key-considerations",
+      "to_url": "https://www.flycatchtech.com/company/blogs/comprehensive-insights-into-web-hosting-regulations-in-saudi-arabia-key-considerations",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/fueling-ai-with-accuracy-how-clean-data-drives-better-outcomes",
+      "from_url": "https://www.flycatchtech.com/company/blogs/fueling-ai-with-accuracy-how-clean-data-drives-better-outcomes",
+      "to": "/company/blogs/fueling-ai-with-accuracy-how-clean-data-drives-better-outcomes",
+      "to_url": "https://www.flycatchtech.com/company/blogs/fueling-ai-with-accuracy-how-clean-data-drives-better-outcomes",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/unlocking-business-potential-at-its-finest-through-big-data",
+      "from_url": "https://www.flycatchtech.com/company/blogs/unlocking-business-potential-at-its-finest-through-big-data",
+      "to": "/company/blogs/unlocking-business-potential-at-its-finest-through-big-data",
+      "to_url": "https://www.flycatchtech.com/company/blogs/unlocking-business-potential-at-its-finest-through-big-data",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/from-maps-to-management-exploring-gis-for-logistics-transformation",
+      "from_url": "https://www.flycatchtech.com/company/blogs/from-maps-to-management-exploring-gis-for-logistics-transformation",
+      "to": "/company/blogs/from-maps-to-management-exploring-gis-for-logistics-transformation",
+      "to_url": "https://www.flycatchtech.com/company/blogs/from-maps-to-management-exploring-gis-for-logistics-transformation",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/common-use-cases-of-virtual-workforces-in-enterprises",
+      "from_url": "https://www.flycatchtech.com/company/blogs/common-use-cases-of-virtual-workforces-in-enterprises",
+      "to": "/company/blogs/common-use-cases-of-virtual-workforces-in-enterprises",
+      "to_url": "https://www.flycatchtech.com/company/blogs/common-use-cases-of-virtual-workforces-in-enterprises",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/how-ai-is-going-to-be-handy-the-new-era-of-intelligent-mobile-apps",
+      "from_url": "https://www.flycatchtech.com/company/blogs/how-ai-is-going-to-be-handy-the-new-era-of-intelligent-mobile-apps",
+      "to": "/company/blogs/how-ai-is-going-to-be-handy-the-new-era-of-intelligent-mobile-apps",
+      "to_url": "https://www.flycatchtech.com/company/blogs/how-ai-is-going-to-be-handy-the-new-era-of-intelligent-mobile-apps",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/the-significance-of-digital-transformation-service-providers-in-saudi-arabia-s-digital-future-2030-vision-impact",
+      "from_url": "https://www.flycatchtech.com/company/blogs/the-significance-of-digital-transformation-service-providers-in-saudi-arabia-s-digital-future-2030-vision-impact",
+      "to": "/company/blogs/the-significance-of-digital-transformation-service-providers-in-saudi-arabia-s-digital-future-2030-vision-impact",
+      "to_url": "https://www.flycatchtech.com/company/blogs/the-significance-of-digital-transformation-service-providers-in-saudi-arabia-s-digital-future-2030-vision-impact",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/how-are-mobile-apps-revolutionizing-the-patience-experience-a-simple-guide-on-the-rapid-technology-adoption-of-healthcare",
+      "from_url": "https://www.flycatchtech.com/company/blogs/how-are-mobile-apps-revolutionizing-the-patience-experience-a-simple-guide-on-the-rapid-technology-adoption-of-healthcare",
+      "to": "/company/blogs/how-are-mobile-apps-revolutionizing-the-patience-experience-a-simple-guide-on-the-rapid-technology-adoption-of-healthcare",
+      "to_url": "https://www.flycatchtech.com/company/blogs/how-are-mobile-apps-revolutionizing-the-patience-experience-a-simple-guide-on-the-rapid-technology-adoption-of-healthcare",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/e-learning-solutions-adaptive-learning-through-ai-integration",
+      "from_url": "https://www.flycatchtech.com/company/blogs/e-learning-solutions-adaptive-learning-through-ai-integration",
+      "to": "/company/blogs/e-learning-solutions-adaptive-learning-through-ai-integration",
+      "to_url": "https://www.flycatchtech.com/company/blogs/e-learning-solutions-adaptive-learning-through-ai-integration",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/5-use-cases-that-could-potentially-transform-your-logistics-business",
+      "from_url": "https://www.flycatchtech.com/company/blogs/5-use-cases-that-could-potentially-transform-your-logistics-business",
+      "to": "/company/blogs/5-use-cases-that-could-potentially-transform-your-logistics-business",
+      "to_url": "https://www.flycatchtech.com/company/blogs/5-use-cases-that-could-potentially-transform-your-logistics-business",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/is-your-organization-s-data-safe-while-adopting-ai",
+      "from_url": "https://www.flycatchtech.com/company/blogs/is-your-organization-s-data-safe-while-adopting-ai",
+      "to": "/company/blogs/is-your-organization-s-data-safe-while-adopting-ai",
+      "to_url": "https://www.flycatchtech.com/company/blogs/is-your-organization-s-data-safe-while-adopting-ai",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/what-is-the-best-business-continuity-strategy-that-fits-your-digital-ecosystem",
+      "from_url": "https://www.flycatchtech.com/company/blogs/what-is-the-best-business-continuity-strategy-that-fits-your-digital-ecosystem",
+      "to": "/company/blogs/what-is-the-best-business-continuity-strategy-that-fits-your-digital-ecosystem",
+      "to_url": "https://www.flycatchtech.com/company/blogs/what-is-the-best-business-continuity-strategy-that-fits-your-digital-ecosystem",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/ai-agents-the-brains-powering-tomorrow-s-innovation",
+      "from_url": "https://www.flycatchtech.com/company/blogs/ai-agents-the-brains-powering-tomorrow-s-innovation",
+      "to": "/company/blogs/ai-agents-the-brains-powering-tomorrow-s-innovation",
+      "to_url": "https://www.flycatchtech.com/company/blogs/ai-agents-the-brains-powering-tomorrow-s-innovation",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/big-data-and-virtual-workforces-fueling-saudi-s-vision-2030-an-insight-to-impact-discussion",
+      "from_url": "https://www.flycatchtech.com/company/blogs/big-data-and-virtual-workforces-fueling-saudi-s-vision-2030-an-insight-to-impact-discussion",
+      "to": "/company/blogs/big-data-and-virtual-workforces-fueling-saudi-s-vision-2030-an-insight-to-impact-discussion",
+      "to_url": "https://www.flycatchtech.com/company/blogs/big-data-and-virtual-workforces-fueling-saudi-s-vision-2030-an-insight-to-impact-discussion",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/modernizing-business-with-agentic-ai-for-future-business-continuity",
+      "from_url": "https://www.flycatchtech.com/company/blogs/modernizing-business-with-agentic-ai-for-future-business-continuity",
+      "to": "/company/blogs/modernizing-business-with-agentic-ai-for-future-business-continuity",
+      "to_url": "https://www.flycatchtech.com/company/blogs/modernizing-business-with-agentic-ai-for-future-business-continuity",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/what-s-the-role-of-ai-in-trusted-data-analytics",
+      "from_url": "https://www.flycatchtech.com/company/blogs/what-s-the-role-of-ai-in-trusted-data-analytics",
+      "to": "/company/blogs/what-s-the-role-of-ai-in-trusted-data-analytics",
+      "to_url": "https://www.flycatchtech.com/company/blogs/what-s-the-role-of-ai-in-trusted-data-analytics",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/how-ai-agents-are-transforming-recruitment-processes",
+      "from_url": "https://www.flycatchtech.com/company/blogs/how-ai-agents-are-transforming-recruitment-processes",
+      "to": "/company/blogs/how-ai-agents-are-transforming-recruitment-processes",
+      "to_url": "https://www.flycatchtech.com/company/blogs/how-ai-agents-are-transforming-recruitment-processes",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/google-i-o-2025-a-strategic-shift-for-businesses-in-an-ai-first-world",
+      "from_url": "https://www.flycatchtech.com/company/blogs/google-i-o-2025-a-strategic-shift-for-businesses-in-an-ai-first-world",
+      "to": "/company/blogs/google-i-o-2025-a-strategic-shift-for-businesses-in-an-ai-first-world",
+      "to_url": "https://www.flycatchtech.com/company/blogs/google-i-o-2025-a-strategic-shift-for-businesses-in-an-ai-first-world",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/how-does-aws-support-startups-with-resources",
+      "from_url": "https://www.flycatchtech.com/company/blogs/how-does-aws-support-startups-with-resources",
+      "to": "/company/blogs/how-does-aws-support-startups-with-resources",
+      "to_url": "https://www.flycatchtech.com/company/blogs/how-does-aws-support-startups-with-resources",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/what-it-cost-me-to-build-an-ai-agent-a-deep-dive-into-development-expenses",
+      "from_url": "https://www.flycatchtech.com/company/blogs/what-it-cost-me-to-build-an-ai-agent-a-deep-dive-into-development-expenses",
+      "to": "/company/blogs/what-it-cost-me-to-build-an-ai-agent-a-deep-dive-into-development-expenses",
+      "to_url": "https://www.flycatchtech.com/company/blogs/what-it-cost-me-to-build-an-ai-agent-a-deep-dive-into-development-expenses",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/what-is-model-context-protocol-mcp-how-it-improves-ai-models-performance",
+      "from_url": "https://www.flycatchtech.com/company/blogs/what-is-model-context-protocol-mcp-how-it-improves-ai-models-performance",
+      "to": "/company/blogs/what-is-model-context-protocol-mcp-how-it-improves-ai-models-performance",
+      "to_url": "https://www.flycatchtech.com/company/blogs/what-is-model-context-protocol-mcp-how-it-improves-ai-models-performance",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/how-dev-ops-as-a-service-makes-your-life-easier",
+      "from_url": "https://www.flycatchtech.com/company/blogs/how-dev-ops-as-a-service-makes-your-life-easier",
+      "to": "/company/blogs/how-dev-ops-as-a-service-makes-your-life-easier",
+      "to_url": "https://www.flycatchtech.com/company/blogs/how-dev-ops-as-a-service-makes-your-life-easier",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/how-soft-pos-is-going-to-transform-the-mobile-payment-experience",
+      "from_url": "https://www.flycatchtech.com/company/blogs/how-soft-pos-is-going-to-transform-the-mobile-payment-experience",
+      "to": "/company/blogs/how-soft-pos-is-going-to-transform-the-mobile-payment-experience",
+      "to_url": "https://www.flycatchtech.com/company/blogs/how-soft-pos-is-going-to-transform-the-mobile-payment-experience",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/what-is-a-vector-database-how-search-learns-to-understand-meaning",
+      "from_url": "https://www.flycatchtech.com/company/blogs/what-is-a-vector-database-how-search-learns-to-understand-meaning",
+      "to": "/company/blogs/what-is-a-vector-database-how-search-learns-to-understand-meaning",
+      "to_url": "https://www.flycatchtech.com/company/blogs/what-is-a-vector-database-how-search-learns-to-understand-meaning",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/how-do-you-build-a-custom-enterprise-ai-chatbot-let-s-take-a-step-by-step-journey",
+      "from_url": "https://www.flycatchtech.com/company/blogs/how-do-you-build-a-custom-enterprise-ai-chatbot-let-s-take-a-step-by-step-journey",
+      "to": "/company/blogs/how-do-you-build-a-custom-enterprise-ai-chatbot-let-s-take-a-step-by-step-journey",
+      "to_url": "https://www.flycatchtech.com/company/blogs/how-do-you-build-a-custom-enterprise-ai-chatbot-let-s-take-a-step-by-step-journey",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/what-are-the-must-know-dev-ops-metrics-that-you-cannot-afford-to-miss-in-2025",
+      "from_url": "https://www.flycatchtech.com/company/blogs/what-are-the-must-know-dev-ops-metrics-that-you-cannot-afford-to-miss-in-2025",
+      "to": "/company/blogs/what-are-the-must-know-dev-ops-metrics-that-you-cannot-afford-to-miss-in-2025",
+      "to_url": "https://www.flycatchtech.com/company/blogs/what-are-the-must-know-dev-ops-metrics-that-you-cannot-afford-to-miss-in-2025",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/5-reasons-why-your-business-needs-an-ai-agent",
+      "from_url": "https://www.flycatchtech.com/company/blogs/5-reasons-why-your-business-needs-an-ai-agent",
+      "to": "/company/blogs/5-reasons-why-your-business-needs-an-ai-agent",
+      "to_url": "https://www.flycatchtech.com/company/blogs/5-reasons-why-your-business-needs-an-ai-agent",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/what-are-the-top-trends-that-are-shaping-the-future-of-agentic-ai-development",
+      "from_url": "https://www.flycatchtech.com/company/blogs/what-are-the-top-trends-that-are-shaping-the-future-of-agentic-ai-development",
+      "to": "/company/blogs/what-are-the-top-trends-that-are-shaping-the-future-of-agentic-ai-development",
+      "to_url": "https://www.flycatchtech.com/company/blogs/what-are-the-top-trends-that-are-shaping-the-future-of-agentic-ai-development",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/explore-practical-cloud-migration-strategies-that-enhance-scalability-security-and-performance-learn-how-to-plan-execute-and-optimize-your-move-to-the-cloud",
+      "from_url": "https://www.flycatchtech.com/company/blogs/explore-practical-cloud-migration-strategies-that-enhance-scalability-security-and-performance-learn-how-to-plan-execute-and-optimize-your-move-to-the-cloud",
+      "to": "/company/blogs/explore-practical-cloud-migration-strategies-that-enhance-scalability-security-and-performance-learn-how-to-plan-execute-and-optimize-your-move-to-the-cloud",
+      "to_url": "https://www.flycatchtech.com/company/blogs/explore-practical-cloud-migration-strategies-that-enhance-scalability-security-and-performance-learn-how-to-plan-execute-and-optimize-your-move-to-the-cloud",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/accelerating-cloud-native-success-with-dev-ops-consulting-in-2025-1",
+      "from_url": "https://www.flycatchtech.com/company/blogs/accelerating-cloud-native-success-with-dev-ops-consulting-in-2025-1",
+      "to": "/company/blogs/accelerating-cloud-native-success-with-dev-ops-consulting-in-2025-1",
+      "to_url": "https://www.flycatchtech.com/company/blogs/accelerating-cloud-native-success-with-dev-ops-consulting-in-2025-1",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/how-to-build-an-agentic-ai-enabled-chatbot-the-next-frontier-in-enterprise-ai-1",
+      "from_url": "https://www.flycatchtech.com/company/blogs/how-to-build-an-agentic-ai-enabled-chatbot-the-next-frontier-in-enterprise-ai-1",
+      "to": "/company/blogs/how-to-build-an-agentic-ai-enabled-chatbot-the-next-frontier-in-enterprise-ai-1",
+      "to_url": "https://www.flycatchtech.com/company/blogs/how-to-build-an-agentic-ai-enabled-chatbot-the-next-frontier-in-enterprise-ai-1",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/accelerating-cloud-native-success-with-dev-ops-consulting-in-2025",
+      "from_url": "https://www.flycatchtech.com/company/blogs/accelerating-cloud-native-success-with-dev-ops-consulting-in-2025",
+      "to": "/company/blogs/accelerating-cloud-native-success-with-dev-ops-consulting-in-2025",
+      "to_url": "https://www.flycatchtech.com/company/blogs/accelerating-cloud-native-success-with-dev-ops-consulting-in-2025",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/blogs/how-ai-transforms-application-development-services",
+      "from_url": "https://www.flycatchtech.com/company/blogs/how-ai-transforms-application-development-services",
+      "to": "/company/blogs/how-ai-transforms-application-development-services",
+      "to_url": "https://www.flycatchtech.com/company/blogs/how-ai-transforms-application-development-services",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/jobs-openings/angular-de",
+      "from_url": "https://www.flycatchtech.com/company/jobs-openings/angular-de",
+      "to": "/company/jobs-openings/angular-de",
+      "to_url": "https://www.flycatchtech.com/company/jobs-openings/angular-de",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/company/jobs-openings/it-recruiter",
+      "from_url": "https://www.flycatchtech.com/company/jobs-openings/it-recruiter",
+      "to": "/company/jobs-openings/it-recruiter",
+      "to_url": "https://www.flycatchtech.com/company/jobs-openings/it-recruiter",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/solutions/ai-chat-support",
+      "from_url": "https://www.flycatchtech.com/solutions/ai-chat-support",
+      "to": "/solutions/ai-chat-support",
+      "to_url": "https://www.flycatchtech.com/solutions/ai-chat-support",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/solutions/flyGrid-ai",
+      "from_url": "https://www.flycatchtech.com/solutions/flyGrid-ai",
+      "to": "/solutions/flyGrid-ai",
+      "to_url": "https://www.flycatchtech.com/solutions/flyGrid-ai",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/solutions/doctCare-ai",
+      "from_url": "https://www.flycatchtech.com/solutions/doctCare-ai",
+      "to": "/solutions/doctCare-ai",
+      "to_url": "https://www.flycatchtech.com/solutions/doctCare-ai",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/solutions/talkShop-ai",
+      "from_url": "https://www.flycatchtech.com/solutions/talkShop-ai",
+      "to": "/solutions/talkShop-ai",
+      "to_url": "https://www.flycatchtech.com/solutions/talkShop-ai",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    },
+    {
+      "from": "/solutions/docSis-ai",
+      "from_url": "https://www.flycatchtech.com/solutions/docSis-ai",
+      "to": "/solutions/docSis-ai",
+      "to_url": "https://www.flycatchtech.com/solutions/docSis-ai",
+      "status": 200,
+      "kind": "preserve-exact-production-path"
+    }
+  ],
+  "case_variants": [
+    {
+      "from": "/services/devops-consultation",
+      "to": "/services/devOps-consultation",
+      "status": 301,
+      "kind": "lowercase-to-canonical",
+      "production_today": "404",
+      "notes": "New site must 301 the lowercase variant to the sitemap casing. Production currently 404s /services/devops-consultation and 200s /solutions/flygrid-ai (duplicate)."
+    },
+    {
+      "from": "/solutions/flygrid-ai",
+      "to": "/solutions/flyGrid-ai",
+      "status": 301,
+      "kind": "lowercase-to-canonical",
+      "production_today": "200",
+      "notes": "New site must 301 the lowercase variant to the sitemap casing. Production currently 404s /services/devops-consultation and 200s /solutions/flygrid-ai (duplicate)."
+    },
+    {
+      "from": "/solutions/doctcare-ai",
+      "to": "/solutions/doctCare-ai",
+      "status": 301,
+      "kind": "lowercase-to-canonical",
+      "production_today": "unknown",
+      "notes": "New site must 301 the lowercase variant to the sitemap casing. Production currently 404s /services/devops-consultation and 200s /solutions/flygrid-ai (duplicate)."
+    },
+    {
+      "from": "/solutions/talkshop-ai",
+      "to": "/solutions/talkShop-ai",
+      "status": 301,
+      "kind": "lowercase-to-canonical",
+      "production_today": "unknown",
+      "notes": "New site must 301 the lowercase variant to the sitemap casing. Production currently 404s /services/devops-consultation and 200s /solutions/flygrid-ai (duplicate)."
+    },
+    {
+      "from": "/solutions/docsis-ai",
+      "to": "/solutions/docSis-ai",
+      "status": 301,
+      "kind": "lowercase-to-canonical",
+      "production_today": "unknown",
+      "notes": "New site must 301 the lowercase variant to the sitemap casing. Production currently 404s /services/devops-consultation and 200s /solutions/flygrid-ai (duplicate)."
+    }
+  ],
+  "inherited_redirects": [
+    {
+      "from": "/services/hybrid-cloud",
+      "to": "/services/cloud-migration",
+      "status": 301,
+      "production_today": 308,
+      "kind": "inherited-service-alias"
+    },
+    {
+      "from": "/services/cloud-security",
+      "to": "/services/cloud-migration",
+      "status": 301,
+      "production_today": 308,
+      "kind": "inherited-service-alias"
+    },
+    {
+      "from": "/services/cloud-optimization",
+      "to": "/services/cloud-migration",
+      "status": 301,
+      "production_today": 308,
+      "kind": "inherited-service-alias"
+    },
+    {
+      "from": "/services/data-management-strategy",
+      "to": "/services/data-migration",
+      "status": 301,
+      "production_today": 308,
+      "kind": "inherited-service-alias"
+    },
+    {
+      "from": "/services/data-engineering",
+      "to": "/services/data-migration",
+      "status": 301,
+      "production_today": 308,
+      "kind": "inherited-service-alias"
+    },
+    {
+      "from": "/en",
+      "to": "/",
+      "status": 301,
+      "production_today": 308,
+      "kind": "inherited-locale-prefix"
+    },
+    {
+      "from": "/en/:path*",
+      "to": "/:path*",
+      "status": 301,
+      "production_today": 308,
+      "kind": "inherited-locale-prefix",
+      "verified_example": {
+        "from": "/en/contact-us",
+        "to": "/contact-us",
+        "production_today": 308
+      }
+    }
+  ],
+  "non_sitemap_200": [
+    {
+      "from": "/company",
+      "to": "/",
+      "status": 301,
+      "production_today": "200 empty page; canonical points at home",
+      "kind": "non-sitemap-200",
+      "decision": "301 to / because production already canonicalizes this URL to the home page and the body is empty."
+    },
+    {
+      "from": "/company/jobs-openings/contract",
+      "to": "/company/jobs-openings/contract",
+      "status": 200,
+      "production_today": "200 with real content; absent from sitemap",
+      "kind": "non-sitemap-200",
+      "decision": "Keep 200 and add the URL to the new sitemap. Do not 404."
+    }
+  ],
+  "host_scheme_slash": [
+    {
+      "from": "https://flycatchtech.com/*",
+      "to": "https://www.flycatchtech.com/*",
+      "status": 301,
+      "production_today": 301,
+      "kind": "host-canonical"
+    },
+    {
+      "from": "http://www.flycatchtech.com/*",
+      "to": "https://www.flycatchtech.com/*",
+      "status": 301,
+      "production_today": 301,
+      "kind": "scheme-canonical"
+    },
+    {
+      "from": "/*/",
+      "to": "/*",
+      "status": 301,
+      "production_today": 308,
+      "kind": "trailing-slash",
+      "verified_example": {
+        "from": "/contact-us/",
+        "to": "/contact-us"
+      }
+    }
+  ],
+  "dead_navigation_no_redirect": [
+    "/services/cloud-consult",
+    "/services/business-intelligence",
+    "/services/big-data-analysis",
+    "/services/agentic-ai",
+    "/services/enterprise-gpt",
+    "/services/conversational-ai",
+    "/services/knowledge-ai"
+  ]
+}

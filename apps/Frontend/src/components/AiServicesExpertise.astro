@@ -1,4 +1,6 @@
 ---
+import OptimizedImage from './OptimizedImage.astro';
+import { imageAlt } from '../lib/image';
 import { publicMediaUrl } from '../lib/public-api';
 import type { PublicAiService } from '../lib/public-api';
 
@@ -30,7 +32,7 @@ const show = Boolean(title || description || image || items.length);
       </div>
       <div class="ai-expertise-body" hidden={!(image || items.length)}>
         <div class="ai-expertise-media" hidden={!image}>{image && (
-            <img src={image} alt="" width="377" height="450" loading="lazy" />
+            <OptimizedImage src={image} alt={imageAlt(page.seo.image_alt, title || page.banner_title)} width={377} height={450} sizes="(max-width: 768px) 100vw, 377px" />
           )}
         </div>
         <div class="ai-expertise-list">{items.map((item) => (

@@ -7,8 +7,7 @@ Docker Compose starts Frontend, Administration FE, Backend, PostgreSQL, MinIO, a
 1. `cp deployment/compose/.env.example deployment/compose/.env` and set `JWT_SECRET` (and other `change-me` values) to long random secrets. Do not commit `deployment/compose/.env`.
 2. `docker compose -f deployment/compose/docker-compose.yml up -d --build`
 3. Backend migrations: `docker compose -f deployment/compose/docker-compose.yml exec backend alembic upgrade head`
-4. Seed records: `docker compose -f deployment/compose/docker-compose.yml exec backend flycatch-seed-records`
-5. Bootstrap default roles and two staff users:
+4. Bootstrap default roles and two staff users **before** seeding. Seeded managed records attribute `draft_updated_by` to an existing administrator.
 
    ```bash
    docker compose -f deployment/compose/docker-compose.yml exec backend flycatch-bootstrap \
@@ -24,6 +23,7 @@ Docker Compose starts Frontend, Administration FE, Backend, PostgreSQL, MinIO, a
 
    These emails are examples only. Passwords are **not** stored in the repo: they are prompted (minimum 12 characters) unless you pass `--user-1-password` and `--user-2-password`. Re-running with the same emails is idempotent and does not change existing passwords. Pytest fixtures (`editor1@example.com` / test passwords) are not created by this command.
 
+5. Seed records: `docker compose -f deployment/compose/docker-compose.yml exec backend flycatch-seed-records`
 6. Later staff: `docker compose -f deployment/compose/docker-compose.yml exec backend flycatch-provision-admin --email someone@example.com --role editor` (`--role` is required: `administrator` or `editor`).
 7. Generate Administration FE types: `cd apps/Administration-FE && npm run generate:client`
 8. Build Frontend: `cd apps/Frontend && pnpm install && pnpm run build`
@@ -35,6 +35,15 @@ Tokens stay in Administration FE memory and are sent as `Authorization: Bearer`.
 ## Import content from Strapi
 
 One-shot CLI reads Strapi v4 REST collections and upserts into Postgres (media → MinIO). Idempotent by slug/name.
+
+Local Compose (no production CMS):
+
+```bash
+docker compose -f deployment/compose/docker-compose.yml --env-file deployment/compose/.env exec \
+  backend flycatch-import-strapi --from-dir /app/strapi-fixtures --publication-state live
+```
+
+Remote Strapi (optional; not required for local):
 
 ```bash
 export STRAPI_API_URL=https://your-strapi.example/api
@@ -58,7 +67,14 @@ Useful flags:
 - `--id-map /tmp/strapi-id-map.json` — persist Strapi id → UUID map across runs
 - `-v` — verbose logging
 
-After import, review records in `/admin`. Published Strapi rows are imported with `status=publish`; the public Frontend still needs the usual publish/snapshot rebuild to show content.
+After import, review records in `/admin`. Published Strapi rows are imported with `status=publish`. Rebuild the Frontend image so prerender reads the **local** public API (Compose already sets `API_ORIGIN=http://backend:8000`). Do not point `PUBLIC_ORIGIN` or `API_ORIGIN` at k3s or production.
+
+```bash
+# After import: prerender against the local gateway (not production).
+docker compose -f deployment/compose/docker-compose.yml --env-file deployment/compose/.env up -d --build frontend
+```
+
+Local Compose uses the fixture JSON bundled at `/app/strapi-fixtures` (copied from `apps/Backend/tests/fixtures/strapi`). That is enough to exercise blogs, case studies, openings, downloads, testimonials, and service pages without calling `cms.flycatchtech.com`. Home and some listing sections stay on seed/static copy until matching fixtures exist.
 
 ## Publish-and-rebuild workflow
 
@@ -87,7 +103,7 @@ After import, review records in `/admin`. Published Strapi rows are imported wit
 
 | Scenario | Status | Notes |
 | --- | --- | --- |
-| V1 Public static HTML | Pending local run | Build with `pnpm run build`; verify no-JS |
+| V1 Public SSR HTML | Pending local run | `pnpm run build` + `pnpm run preview`; verify content without client JS |
 | V2 Route gates | Implemented | `check:seo`, `check:i18n` scripts |
 | V3 Discoverability | Implemented | sitemap, robots.txt, admin noindex |
 | V4 Admin draft/publish | Implemented | Bearer + RBAC on Backend + Administration FE |

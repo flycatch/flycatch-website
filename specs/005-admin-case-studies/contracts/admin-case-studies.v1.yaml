@@ -1004,6 +1004,7 @@ components:
         - industries
         - categories
         - technologies
+        - seo
       properties:
         id:
           type: string
@@ -1062,6 +1063,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Technology'
+        seo:
+          $ref: '#/components/schemas/ContentSeo'
     CaseStudyWrite:
       type: object
       additionalProperties: false
@@ -1118,6 +1121,39 @@ components:
             type: string
             format: uuid
           default: []
+        seo:
+          $ref: '#/components/schemas/ContentSeo'
+    ContentSeo:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          default: ''
+          maxLength: 200
+        description:
+          type: string
+          default: ''
+          maxLength: 500
+        canonical_url:
+          type: string
+          default: ''
+          maxLength: 500
+        meta_title:
+          type: string
+          default: ''
+          maxLength: 200
+        h1_tag:
+          type: string
+          default: ''
+          maxLength: 200
+        image_alt:
+          type: string
+          default: ''
+          maxLength: 200
+        image_key:
+          type: string
+          nullable: true
     FieldErrorDetail:
       type: object
       additionalProperties: false

@@ -1,0 +1,24 @@
+{
+  "data": [
+    {
+      "id": 50,
+      "attributes": {
+        "product_title": "FlyGrid",
+        "slug": "flyGrid-ai",
+        "product_description": "Grid product",
+        "image_alt": "FlyGrid mark",
+        "canonical_url": "https://www.flycatchtech.com/solutions/flyGrid-ai",
+        "seo": {
+          "title": "FlyGrid SEO",
+          "description": "FlyGrid description",
+          "canonical_url": "https://www.flycatchtech.com/solutions/flyGrid-ai",
+          "image_alt": "FlyGrid mark"
+        },
+        "publishedAt": "2024-03-01T00:00:00.000Z",
+        "createdAt": "2024-03-01T00:00:00.000Z",
+        "updatedAt": "2024-03-01T00:00:00.000Z"
+      }
+    }
+  ],
+  "meta": {"pagination": {"page": 1, "pageSize": 100, "pageCount": 1, "total": 1}}
+}

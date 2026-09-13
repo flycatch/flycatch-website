@@ -1,0 +1,51 @@
+---
+export const prerender = true;
+
+import InteriorLayout from '../../../layouts/InteriorLayout.astro';
+import SiteHeader from '../../../components/SiteHeader.astro';
+import SiteFooter from '../../../components/SiteFooter.astro';
+import SectionState from '../../../components/SectionState.astro';
+import { loadPublishedOpening } from '../../../lib/public-api';
+import { fallbackMetadata } from '../../../lib/metadata';
+import ApplicationForm from '../../../components/ApplicationForm.astro';
+import { t } from '../../../lib/i18n';
+import { openingStaticPaths } from '../../../lib/static-paths';
+
+export function getStaticPaths() {
+  return openingStaticPaths();
+}
+
+const slug = Astro.params.slug ?? '';
+const result = await loadPublishedOpening(slug);
+const job = result.item;
+if (!job) {
+  Astro.response.status = 404;
+}
+const path = `/company/jobs-openings/${job?.slug ?? slug}`;
+const metadata = fallbackMetadata(
+  path,
+  job?.role || t('page.jobs.title'),
+  result.error ? t('home.error') : job?.specialization || t('page.jobs.description'),
+);
+metadata.indexable = Boolean(job);
+---
+<InteriorLayout title={metadata.title} metadata={metadata} breadcrumbLabel={job?.role}>
+  <SiteHeader breadcrumbLabel={job?.role} />
+  <main id="main" class="page-main" data-api-origin={result.origin}>
+    <article class="container">
+      <SectionState error={result.error} empty={!result.error && !job} />
+      {job ? (
+        <div>
+          <h1>{job.role}</h1>
+          <p class="lede">{job.location} · {job.job_type} · {job.experience}</p>
+          <p hidden={!job.specialization}>{job.specialization}</p>
+          <div class="body-region" set:html={job.body} />
+          <ApplicationForm openingSlug={job.slug} returnTo={path} />
+        </div>
+      ) : (
+        <h1>{t('page.jobs.not_found')}</h1>
+      )}
+    </article>
+  </main>
+  <SiteFooter />
+</InteriorLayout>

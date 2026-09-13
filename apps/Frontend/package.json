@@ -14,18 +14,22 @@
     "check:seo": "node scripts/check-seo.mjs",
     "check:i18n": "node scripts/check-i18n.mjs",
     "check:sitemap": "node scripts/check-sitemap.mjs",
+    "check:indexability": "node scripts/check-indexability.mjs",
+    "check:redirects": "node scripts/check-redirects.mjs",
     "check:performance": "node scripts/check-performance-budget.mjs",
     "check:parity": "node scripts/check-build-parity.mjs",
-    "check:all": "pnpm run check:contracts && pnpm run check:seo && pnpm run check:i18n && pnpm run check:sitemap",
+    "check:baseline-urls": "node scripts/check-baseline-urls.mjs",
+    "check:prerender": "node scripts/check-prerendered-urls.mjs",
+    "check:all": "pnpm run check:contracts && pnpm run check:seo && pnpm run check:i18n && pnpm run check:sitemap && pnpm run check:indexability && pnpm run check:redirects && pnpm run check:performance && pnpm run check:prerender",
     "test:unit": "vitest run",
     "test:e2e": "playwright test --config tests/playwright.config.ts",
     "lint": "eslint src --ext .ts,.astro"
   },
   "dependencies": {
     "@astrojs/node": "^9.5.5",
-    "@astrojs/sitemap": "^3.3.0",
     "@fontsource/poppins": "^5.3.0",
-    "astro": "^5.7.0"
+    "astro": "^5.7.0",
+    "sharp": "^0.35.4"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",

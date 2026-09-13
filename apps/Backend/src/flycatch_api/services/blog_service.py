@@ -24,13 +24,16 @@ from flycatch_api.schemas.public_blogs import (
     PublicBlogSummary,
     PublicCategory,
 )
+from flycatch_api.schemas.admin_homes import ContentSeo
 from flycatch_api.services.author_service import CatalogError, author_schema
 from flycatch_api.services.category_service import category_schema
+from flycatch_api.services.content_blocks import seo_dict
 from flycatch_api.services.text import is_valid_slug, sanitize_html, slugify
 
 PER_PAGE = 10
 DEFAULT_LOCALE = "en"
 LOCALE_LABEL = "En"
+LEGACY_SLUG_LIMIT = 128
 
 
 class BlogService:
@@ -54,19 +57,30 @@ class BlogService:
             total=total,
         )
 
+    def _published_row_by_slug(self, db: Session, slug: str) -> Blog | None:
+        normalized = slug.strip()
+        candidates = [normalized]
+        if len(normalized) > LEGACY_SLUG_LIMIT:
+            candidates.append(normalized[:LEGACY_SLUG_LIMIT])
+        for candidate in candidates:
+            blog = (
+                db.query(Blog)
+                .options(
+                    joinedload(Blog.author_links).joinedload(BlogAuthor.author),
+                    joinedload(Blog.category_links).joinedload(BlogCategory.category),
+                )
+                .filter(
+                    func.lower(Blog.slug) == candidate.lower(),
+                    Blog.status == BlogStatus.publish,
+                )
+                .first()
+            )
+            if blog is not None:
+                return blog
+        return None
+
     def get_published_by_slug(self, db: Session, slug: str) -> PublicBlogDetail:
-        blog = (
-            db.query(Blog)
-            .options(
-                joinedload(Blog.author_links).joinedload(BlogAuthor.author),
-                joinedload(Blog.category_links).joinedload(BlogCategory.category),
-            )
-            .filter(
-                func.lower(Blog.slug) == slug.strip().lower(),
-                Blog.status == BlogStatus.publish,
-            )
-            .first()
-        )
+        blog = self._published_row_by_slug(db, slug)
         if blog is None:
             raise CatalogError(
                 404, EntityNotFound(message_key="public.blogs.not_found").model_dump()
@@ -203,6 +217,13 @@ class BlogService:
         blog.linkedin = payload.linkedin.strip()
         blog.twitter = payload.twitter.strip()
         blog.instagram = payload.instagram.strip()
+        blog.seo = seo_dict(payload.seo)
+        if payload.seo.canonical_url.strip():
+            blog.canonical_url = payload.seo.canonical_url.strip()
+        if payload.seo.image_alt.strip():
+            blog.image_alt = payload.seo.image_alt.strip()
+        if payload.seo.description.strip() and not payload.description.strip():
+            blog.description = payload.seo.description.strip()
         blog.content_available_in = [DEFAULT_LOCALE]
         blog.author_links = [BlogAuthor(author=author) for author in authors]
         blog.category_links = [BlogCategory(category=category) for category in categories]
@@ -277,6 +298,19 @@ class BlogService:
             category_ids=[item.id for item in categories],
             authors=authors,
             categories=categories,
+            seo=self._seo(blog),
+        )
+
+    def _seo(self, blog: Blog) -> ContentSeo:
+        stored = blog.seo if isinstance(blog.seo, dict) else {}
+        return ContentSeo(
+            title=str(stored.get("title") or blog.title or ""),
+            description=str(stored.get("description") or blog.description or ""),
+            canonical_url=str(stored.get("canonical_url") or blog.canonical_url or ""),
+            meta_title=str(stored.get("meta_title") or stored.get("title") or blog.title or ""),
+            h1_tag=str(stored.get("h1_tag") or ""),
+            image_alt=str(stored.get("image_alt") or blog.image_alt or ""),
+            image_key=stored.get("image_key") or blog.image_key,
         )
 
     def _public_authors(self, blog: Blog) -> list[PublicAuthor]:
@@ -317,6 +351,7 @@ class BlogService:
             description=blog.description,
             body=blog.body,
             reading_time=blog.reading_time,
+            created_at=blog.created_at,
             image_key=blog.image_key,
             image_alt=blog.image_alt,
             canonical_url=blog.canonical_url,
@@ -327,4 +362,5 @@ class BlogService:
             content_available_in=list(blog.content_available_in or [DEFAULT_LOCALE]),
             authors=self._public_authors(blog),
             categories=self._public_categories(blog),
+            seo=self._seo(blog),
         )

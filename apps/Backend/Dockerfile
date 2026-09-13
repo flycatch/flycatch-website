@@ -14,5 +14,6 @@ COPY --from=build /usr/local/bin /usr/local/bin
 COPY alembic ./alembic
 COPY alembic.ini ./
 COPY src ./src
+COPY tests/fixtures/strapi ./strapi-fixtures
 EXPOSE 8000
 CMD ["sh", "-c", "alembic upgrade head && uvicorn flycatch_api.main:app --host 0.0.0.0 --port 8000"]

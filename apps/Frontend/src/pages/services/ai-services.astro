@@ -1,4 +1,6 @@
 ---
+export const prerender = true;
+
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import '../../styles/home.css';
 import '../../styles/ai-services.css';
@@ -18,32 +20,45 @@ import {
   loadPublishedAiServices,
   loadPublishedBlogs,
 } from '../../lib/public-api';
-import { fallbackMetadata, metadataFromContentSeo, publicSiteSettings } from '../../lib/metadata';
+import {
+  buildCanonicalUrl,
+  fallbackMetadata,
+  metadataFallbackForPath,
+  metadataFromContentSeo,
+  publicSiteSettings,
+} from '../../lib/metadata';
 import { t } from '../../lib/i18n';
 
-const [listed, blogsResult] = await Promise.all([
-  loadPublishedAiServices(),
-  loadPublishedBlogs(),
+const [primary, blogsResult] = await Promise.all([
+  loadPublishedAiService('ai-services'),
+  loadPublishedBlogs({ maxItems: 3 }),
 ]);
-const slug =
-  listed.items.find((item) => item.slug === 'ai-services')?.slug ??
-  listed.items[0]?.slug ??
-  'ai-services';
-const detail = await loadPublishedAiService(slug);
-const page = detail.item;
-const failed = detail.error || (listed.error && !page);
+let resolved = primary;
+if (!primary.item) {
+  const listed = await loadPublishedAiServices();
+  const slug = listed.items.find((item) => item.slug === 'ai-services')?.slug ?? listed.items[0]?.slug;
+  if (slug && slug !== 'ai-services') {
+    resolved = await loadPublishedAiService(slug);
+  }
+}
+const page = resolved.item;
+const failed = resolved.error && !page;
 const siteSettings = publicSiteSettings();
+const aiServicesPath = '/services/ai-services';
 const metadata = page
-  ? metadataFromContentSeo(page.seo, siteSettings, t('page.ai_services.title'))
+  ? {
+      ...metadataFromContentSeo(page.seo, siteSettings, metadataFallbackForPath(aiServicesPath)),
+      canonical: buildCanonicalUrl(siteSettings.canonical_origin, aiServicesPath),
+    }
   : fallbackMetadata(
-      '/services/ai-services',
+      aiServicesPath,
       t('page.ai_services.title'),
-      failed ? t('home.error') : t('home.empty'),
+      failed ? t('home.error') : t('page.ai_services.description'),
     );
 ---
-<BaseLayout title={metadata.title} metadata={metadata}>
-  <SiteHeader tone="dark" />
-  <main id="main" class="ai-services-page" data-api-origin={detail.origin}>{page ? (
+<BaseLayout title={metadata.title} metadata={metadata} breadcrumbLabel={t('page.ai_services.title')}>
+  <SiteHeader tone="dark" breadcrumbLabel={t('page.ai_services.title')} />
+  <main id="main" class="ai-services-page" data-api-origin={resolved.origin}>{page ? (
       <AiServicesHero page={page} />
     ) : (
       <section class="ai-hero">

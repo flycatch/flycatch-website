@@ -6,6 +6,7 @@ from flycatch_api.db import get_db
 from flycatch_api.models import RecordType
 from flycatch_api.schemas import PublishRequest, PublishResult, PublishedSnapshot
 from flycatch_api.security.dependencies import CurrentSession, assert_resource_action
+from flycatch_api.services.frontend_rebuild import request_frontend_rebuild
 from flycatch_api.services.publish_export import PublishExportService
 from flycatch_api.services.record_service import RecordService
 
@@ -31,6 +32,10 @@ def publish_record(
     assert_resource_action(db, session.administrator_id, resource, action)
     record = _records.publish_record(db, record_type, payload.slug, session.administrator_id)
     snapshot = _export.export_snapshot(db)
+    request_frontend_rebuild(
+        f"publish {payload.type}:{payload.slug}",
+        snapshot_revision=snapshot.revision,
+    )
     return PublishResult(
         type=payload.type,
         slug=payload.slug,

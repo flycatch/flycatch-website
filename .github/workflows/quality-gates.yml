@@ -46,6 +46,12 @@ jobs:
         working-directory: apps/Frontend
       - run: pnpm run check:all
         working-directory: apps/Frontend
+      - run: pnpm exec playwright install --with-deps chromium
+        working-directory: apps/Frontend
+      - run: pnpm run test:e2e
+        working-directory: apps/Frontend
+        env:
+          CI: true
 
   administration-fe:
     runs-on: ubuntu-latest

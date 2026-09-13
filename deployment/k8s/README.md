@@ -178,6 +178,20 @@ The script builds `linux/amd64` images, pushes `:SHA` and `:latest` to Harbor,
 updates `overlays/dev/kustomization.yaml` image tags, commits, and pushes so Argo CD
 can sync.
 
+Publishing in the admin triggers the same frontend rebuild without a manual deploy.
+The Backend POSTs `event_type: frontend-rebuild` to `FRONTEND_REBUILD_WEBHOOK_URL`
+(GitHub `repository_dispatch`). The `Frontend rebuild` workflow runs
+`rebuild-frontend-dev.sh`, which prerenders against the live public API and bumps
+only the frontend image tag.
+
+Store the webhook URL and token on the Backend (not in git):
+
+```bash
+# Example GitHub repository_dispatch target
+FRONTEND_REBUILD_WEBHOOK_URL=https://api.github.com/repos/flycatch/flycatch-website/dispatches
+FRONTEND_REBUILD_WEBHOOK_TOKEN=<github-pat-with-actions-dispatch>
+```
+
 Images:
 
 - `registry.k3s.flycatchtech.in/flycatch-website/backend`

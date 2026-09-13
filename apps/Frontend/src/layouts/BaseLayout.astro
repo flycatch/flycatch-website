@@ -1,34 +1,54 @@
 ---
-import '@fontsource/poppins/300.css';
-import '@fontsource/poppins/400.css';
-import '@fontsource/poppins/500.css';
-import '@fontsource/poppins/600.css';
-import '@fontsource/poppins/700.css';
+import '@fontsource/poppins/latin-300.css';
+import '@fontsource/poppins/latin-400.css';
+import '@fontsource/poppins/latin-500.css';
+import '@fontsource/poppins/latin-600.css';
 import '../styles/tokens.css';
 import '../styles/layout.css';
 import type { PageMetadata } from '../lib/metadata';
+import { publicSiteSettings } from '../lib/metadata';
+import { composeStructuredData } from '../lib/json-ld';
+import { resolveSocialImageUrl, socialTitleWithoutDuplicateBrand } from '../lib/seo';
 import { t } from '../lib/i18n';
 
 interface Props {
   title: string;
   metadata: PageMetadata;
   structuredData?: object[];
+  breadcrumbLabel?: string;
   lang?: string;
   dir?: string;
 }
 
-const { title, metadata, structuredData = [], lang = 'en', dir = 'ltr' } = Astro.props;
+const {
+  title,
+  metadata,
+  structuredData = [],
+  breadcrumbLabel,
+  lang = 'en',
+  dir = 'ltr',
+} = Astro.props;
+const siteSettings = publicSiteSettings();
 const isProduction = (import.meta.env.PUBLIC_ENVIRONMENT || 'development') === 'production';
+const recaptchaSiteKey = import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY || '';
 const shouldNoindex = !metadata.indexable || !isProduction;
-const extraMetas: { name?: string; property?: string; content: string }[] = [];
+const socialTitle = socialTitleWithoutDuplicateBrand(metadata.socialTitle, siteSettings.site_name);
+const socialImageUrl = resolveSocialImageUrl(siteSettings.canonical_origin, metadata.socialImageUrl);
+const extraMetas: { name?: string; property?: string; content: string }[] = [
+  { property: 'og:site_name', content: siteSettings.site_name },
+  { property: 'og:image', content: socialImageUrl },
+  { name: 'twitter:image', content: socialImageUrl },
+];
 if (shouldNoindex) {
   extraMetas.push({ name: 'robots', content: 'noindex, nofollow' });
 }
-if (metadata.socialImageUrl) {
-  extraMetas.push({ property: 'og:image', content: metadata.socialImageUrl });
-  extraMetas.push({ name: 'twitter:image', content: metadata.socialImageUrl });
-}
-const jsonLd = structuredData.map((block) => JSON.stringify(block));
+const jsonLd = composeStructuredData({
+  pathname: Astro.url.pathname,
+  metadata,
+  siteSettings,
+  extra: structuredData,
+  breadcrumbCurrentLabel: breadcrumbLabel,
+}).map((block) => JSON.stringify(block));
 ---
 <!doctype html>
 <html lang={lang} dir={dir}>
@@ -45,18 +65,20 @@ const jsonLd = structuredData.map((block) => JSON.stringify(block));
       <meta name={item.name} property={item.property} content={item.content} />
     ))}
     <meta property="og:type" content="website" />
-    <meta property="og:title" content={metadata.socialTitle} />
+    <meta property="og:title" content={socialTitle} />
     <meta property="og:description" content={metadata.socialDescription} />
     <meta property="og:url" content={metadata.canonical} />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={metadata.socialTitle} />
-    <meta name="twitter:description" content={metadata.socialDescription} />{jsonLd.map((json) => (
+    <meta name="twitter:title" content={socialTitle} />
+    <meta name="twitter:description" content={metadata.socialDescription} />    {jsonLd.map((json) => (
       <script type="application/ld+json" set:html={json} />
     ))}
+    {recaptchaSiteKey && <script src="https://www.google.com/recaptcha/api.js" async defer></script>}
   </head>
   <body>
     <a class="skip-link" href="#main">{t('site.skip_to_content')}</a>
     <slot />
+    {isProduction && <script src="../scripts/analytics.ts"></script>}
   </body>
 </html>
 

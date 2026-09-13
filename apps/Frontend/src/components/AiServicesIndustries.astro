@@ -1,4 +1,6 @@
 ---
+import OptimizedImage from './OptimizedImage.astro';
+import { imageAlt } from '../lib/image';
 import { publicMediaUrl } from '../lib/public-api';
 import type { PublicAiService } from '../lib/public-api';
 
@@ -28,7 +30,7 @@ const show = Boolean(title || description || items.length);
           const wide = index === items.length - 1 && items.length % 2 === 1;
           return (
             <article class:list={['ai-industry-tile', { 'is-tall': tall, 'is-wide': wide }]}>{image ? (
-                <img src={image} alt="" width={wide ? 1192 : 586} height={tall || wide ? 400 : 320} loading="lazy" />
+                <OptimizedImage src={image} alt={imageAlt(item.title, title)} width={wide ? 1192 : 586} height={tall || wide ? 400 : 320} sizes={wide ? '100vw' : '(max-width: 768px) 100vw, 50vw'} />
               ) : (
                 <span class="ai-industry-fallback"></span>
               )}

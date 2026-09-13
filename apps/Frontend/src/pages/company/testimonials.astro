@@ -1,5 +1,7 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+export const prerender = true;
+
+import InteriorLayout from '../../layouts/InteriorLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import HomeTestimonials from '../../components/HomeTestimonials.astro';
@@ -11,17 +13,18 @@ const listed = await loadPublishedClientTestimonials();
 const metadata = fallbackMetadata(
   '/company/testimonials',
   t('page.stories.title'),
-  listed.error ? t('home.error') : t('home.empty'),
+  listed.error ? t('home.error') : t('page.stories.description'),
 );
 metadata.indexable = !listed.error;
 ---
-<BaseLayout title={metadata.title} metadata={metadata}>
+<InteriorLayout title={metadata.title} metadata={metadata}>
   <SiteHeader />
   <main id="main" class="page-main" data-api-origin={listed.origin}>
     <div class="container summary-region">
       <h1>{t('nav.stories')}</h1>
+      <p class="lede">{t('page.stories.intro')}</p>
     </div>
     <HomeTestimonials testimonials={listed.items} error={listed.error} />
   </main>
   <SiteFooter />
-</BaseLayout>
+</InteriorLayout>

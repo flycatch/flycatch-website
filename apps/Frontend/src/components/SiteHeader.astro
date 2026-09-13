@@ -1,7 +1,11 @@
 ---
+import Breadcrumbs from './Breadcrumbs.astro';
 import { t } from '../lib/i18n';
 import {
+  caseStudiesIndexHref,
   companyMenuColumns,
+  contactHref,
+  hasServiceFlyout,
   mobileApplicationLinks,
   mobileCompanyLinks,
   mobileDevopsLinks,
@@ -11,13 +15,16 @@ import {
   serviceFlyoutDevops,
   servicesOverview,
   socialLinks,
+  solutionsIndexHref,
 } from '../lib/nav';
 
 interface Props {
   tone?: 'dark' | 'light';
+  breadcrumbLabel?: string;
+  showBreadcrumbs?: boolean;
 }
 
-const { tone = 'light' } = Astro.props;
+const { tone = 'light', breadcrumbLabel, showBreadcrumbs = true } = Astro.props;
 ---
 <header class={`site-header tone-${tone}`} data-tone={tone}>
   <div class="container header-bar">
@@ -27,6 +34,7 @@ const { tone = 'light' } = Astro.props;
     </a>
     <nav class="primary-nav" aria-label={t('nav.primary')}>
       <div class="nav-cluster">
+        {hasServiceFlyout && (
         <div class="nav-item has-menu">
           <button
             class="nav-trigger type-nav"
@@ -42,13 +50,16 @@ const { tone = 'light' } = Astro.props;
               <div class="container flyout-grid flyout-grid-services">
                 <div class="flyout-intro">
                   <p class="flyout-tagline">{t('nav.services_intro')}</p>
+                  {servicesOverview && (
                   <a class="btn btn-on-dark" href={servicesOverview.href}>
                     {t(servicesOverview.labelKey)}
                     <svg width="24" height="24" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                       <path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                     </svg>
                   </a>
+                  )}
                 </div>
+                {serviceFlyoutApplication.links.length > 0 && (
                 <div>
                   <p class="flyout-heading">{t('nav.flyout_application_services')}</p>
                   <ul>
@@ -57,6 +68,8 @@ const { tone = 'light' } = Astro.props;
                     ))}
                   </ul>
                 </div>
+                )}
+                {serviceFlyoutDevops.length > 0 && (
                 <div>
                   <p class="flyout-heading">{t('nav.flyout_devops')}</p>
                   <ul>
@@ -65,17 +78,25 @@ const { tone = 'light' } = Astro.props;
                     ))}
                   </ul>
                 </div>
+                )}
+                {serviceFlyoutColumnFour.length > 0 && (
                 <ul>
                   {serviceFlyoutColumnFour.map((link) => (
                     <li><a href={link.href}>{t(link.labelKey)}</a></li>
                   ))}
                 </ul>
+                )}
               </div>
             </div>
           </div>
         </div>
-        <a class="nav-link type-nav" href="/solutions">{t('nav.solutions')}</a>
-        <a class="nav-link type-nav" href="/case-studies">{t('nav.case_studies')}</a>
+        )}
+        {solutionsIndexHref && (
+          <a class="nav-link type-nav" href={solutionsIndexHref}>{t('nav.solutions')}</a>
+        )}
+        {caseStudiesIndexHref && (
+          <a class="nav-link type-nav" href={caseStudiesIndexHref}>{t('nav.case_studies')}</a>
+        )}
         <div class="nav-item has-menu">
           <button
             class="nav-trigger type-nav"
@@ -124,7 +145,7 @@ const { tone = 'light' } = Astro.props;
           </div>
         </div>
       </div>
-      <a class="contact-cta" href="/contact-us">{t('nav.contact')}</a>
+      {contactHref && <a class="contact-cta" href={contactHref}>{t('nav.contact')}</a>}
     </nav>
     <button
       class="mobile-nav-toggle"
@@ -164,8 +185,9 @@ const { tone = 'light' } = Astro.props;
     </div>
     <div class="mobile-drawer-frames" data-mobile-frames>
       <div class="mobile-drawer-view is-active" data-panel="root">
-        <h2 class="visually-hidden" id="mobile-drawer-title">{t('nav.menu')}</h2>
+        <p class="visually-hidden" id="mobile-drawer-title">{t('nav.menu')}</p>
         <ul class="mobile-drawer-list">
+          {hasServiceFlyout && (
           <li>
             <button
               class="mobile-drawer-item"
@@ -179,12 +201,17 @@ const { tone = 'light' } = Astro.props;
               <img src="/icon-menu-next.svg" width="26" height="27" alt="" aria-hidden="true" />
             </button>
           </li>
+          )}
+          {solutionsIndexHref && (
           <li>
-            <a class="mobile-drawer-item" href="/solutions">{t('nav.solutions')}</a>
+            <a class="mobile-drawer-item" href={solutionsIndexHref}>{t('nav.solutions')}</a>
           </li>
+          )}
+          {caseStudiesIndexHref && (
           <li>
-            <a class="mobile-drawer-item" href="/case-studies">{t('nav.mobile_case_studies')}</a>
+            <a class="mobile-drawer-item" href={caseStudiesIndexHref}>{t('nav.mobile_case_studies')}</a>
           </li>
+          )}
           <li>
             <button
               class="mobile-drawer-item"
@@ -207,17 +234,22 @@ const { tone = 'light' } = Astro.props;
           <li>
             <a class="mobile-drawer-item" href="/company/testimonials">{t('nav.testimonials')}</a>
           </li>
+          {contactHref && (
           <li>
-            <a class="mobile-drawer-cta contact-cta" href="/contact-us">{t('nav.contact_us')}</a>
+            <a class="mobile-drawer-cta contact-cta" href={contactHref}>{t('nav.contact_us')}</a>
           </li>
+          )}
         </ul>
       </div>
       <div class="mobile-drawer-view" id="mobile-panel-services" data-panel="services" inert>
-        <h2 class="mobile-drawer-heading">{t('nav.services')}</h2>
+        <p class="mobile-drawer-heading">{t('nav.services')}</p>
         <ul class="mobile-drawer-list">
+          {servicesOverview && (
           <li>
             <a class="mobile-drawer-item" href={servicesOverview.href}>{t(servicesOverview.labelKey)}</a>
           </li>
+          )}
+          {mobileApplicationLinks.length > 0 && (
           <li>
             <button
               class="mobile-drawer-item"
@@ -231,6 +263,8 @@ const { tone = 'light' } = Astro.props;
               <img src="/icon-menu-next.svg" width="26" height="27" alt="" aria-hidden="true" />
             </button>
           </li>
+          )}
+          {mobileDevopsLinks.length > 0 && (
           <li>
             <button
               class="mobile-drawer-item"
@@ -244,6 +278,7 @@ const { tone = 'light' } = Astro.props;
               <img src="/icon-menu-next.svg" width="26" height="27" alt="" aria-hidden="true" />
             </button>
           </li>
+          )}
           {mobileServiceLeaves.map((link) => (
             <li>
               <a class="mobile-drawer-item" href={link.href}>{t(link.labelKey)}</a>
@@ -252,7 +287,7 @@ const { tone = 'light' } = Astro.props;
         </ul>
       </div>
       <div class="mobile-drawer-view" id="mobile-panel-application" data-panel="application" inert>
-        <h2 class="mobile-drawer-heading">{t('nav.flyout_application_services')}</h2>
+        <p class="mobile-drawer-heading">{t('nav.flyout_application_services')}</p>
         <ul class="mobile-drawer-list">
           {mobileApplicationLinks.map((link) => (
             <li>
@@ -262,7 +297,7 @@ const { tone = 'light' } = Astro.props;
         </ul>
       </div>
       <div class="mobile-drawer-view" id="mobile-panel-devops" data-panel="devops" inert>
-        <h2 class="mobile-drawer-heading">{t('nav.flyout_devops')}</h2>
+        <p class="mobile-drawer-heading">{t('nav.flyout_devops')}</p>
         <ul class="mobile-drawer-list">
           {mobileDevopsLinks.map((link) => (
             <li>
@@ -272,7 +307,7 @@ const { tone = 'light' } = Astro.props;
         </ul>
       </div>
       <div class="mobile-drawer-view" id="mobile-panel-company" data-panel="company" inert>
-        <h2 class="mobile-drawer-heading">{t('nav.company')}</h2>
+        <p class="mobile-drawer-heading">{t('nav.company')}</p>
         <ul class="mobile-drawer-list">
           {mobileCompanyLinks.map((link) => (
             <li>
@@ -285,4 +320,5 @@ const { tone = 'light' } = Astro.props;
   </div>
 </div>
 {tone === 'light' && <div class="header-spacer" aria-hidden="true"></div>}
+{showBreadcrumbs && <Breadcrumbs currentLabel={breadcrumbLabel} />}
 <script src="../scripts/site-header.ts"></script>

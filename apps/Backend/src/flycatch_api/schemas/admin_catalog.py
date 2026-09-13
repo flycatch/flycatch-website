@@ -614,6 +614,7 @@ class FlycatchSaudiArabia(BaseModel):
     service_section: list[ServiceSectionItem]
     banner_explore_text: str
     services_title: str
+    banner_image_key: str | None
     video_key: str | None
     seo: ContentSeo
     status: ContentStatus
@@ -647,9 +648,62 @@ class FlycatchSaudiArabiaWrite(BaseModel):
     service_section: list[ServiceSectionItem] = Field(default_factory=list)
     banner_explore_text: str = Field(default="", max_length=200)
     services_title: str = Field(default="", max_length=200)
+    banner_image_key: str | None = None
     video_key: str | None = None
     seo: ContentSeo = Field(default_factory=ContentSeo)
     status: ContentStatus = ContentStatus.draft
+
+
+class LegalPage(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: UUID
+    title: str
+    slug: str
+    body: str
+    seo: ContentSeo
+    status: ContentStatus
+    created_at: datetime
+    updated_at: datetime
+
+
+class LegalPageSummary(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: UUID
+    title: str
+    slug: str
+    state: ContentStatus
+    created_at: datetime
+
+
+class LegalPageList(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    items: list[LegalPageSummary]
+    page: int = Field(ge=1)
+    per_page: int = Field(ge=1)
+    total: int = Field(ge=0)
+
+
+class LegalPageWrite(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    title: str = Field(min_length=1, max_length=200)
+    slug: str = Field(default="", max_length=128)
+    body: str = ""
+    seo: ContentSeo = Field(default_factory=ContentSeo)
+    status: ContentStatus = ContentStatus.draft
+
+
+PrivacyPolicy = LegalPage
+PrivacyPolicySummary = LegalPageSummary
+PrivacyPolicyList = LegalPageList
+PrivacyPolicyWrite = LegalPageWrite
+Terms = LegalPage
+TermsSummary = LegalPageSummary
+TermsList = LegalPageList
+TermsWrite = LegalPageWrite
 
 
 class Subscription(BaseModel):

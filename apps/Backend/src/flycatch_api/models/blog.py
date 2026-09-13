@@ -27,7 +27,7 @@ class Blog(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title: Mapped[str] = mapped_column(String(200), nullable=False)
-    slug: Mapped[str] = mapped_column(String(128), unique=True, nullable=False, index=True)
+    slug: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
     description: Mapped[str] = mapped_column(Text, nullable=False, default="")
     body: Mapped[str] = mapped_column(Text, nullable=False, default="")
     status: Mapped[BlogStatus] = mapped_column(
@@ -41,6 +41,7 @@ class Blog(Base):
     linkedin: Mapped[str] = mapped_column(String(500), nullable=False, default="")
     twitter: Mapped[str] = mapped_column(String(500), nullable=False, default="")
     instagram: Mapped[str] = mapped_column(String(500), nullable=False, default="")
+    seo: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
     content_available_in: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)

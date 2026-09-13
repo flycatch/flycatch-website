@@ -1,0 +1,30 @@
+{
+  "privacy_policy": {
+    "title": "Privacy Policy",
+    "slug": "privacy-policy",
+    "body": "<h2>Flycatch privacy policy</h2><p>Last updated: 12th Sep 2026</p><p>At Flycatch we recognise the importance of protecting your personal information and are committed to processing it responsibly and in compliance with applicable data protection laws in all countries in which Flycatch operates.</p><p>This Privacy Statement is supplemented by the Flycatch Online Privacy Statement, which provides more information in the online context, including recruitment. We may provide additional or more specific information on the collection or use of personal information on websites or related to a specific product or service.</p><h3>Why and how we collect and use your personal information</h3><p>We may collect your personal information as an individual for various purposes, such as the following:</p><h4>Access and use of websites or other online service (including apps)</h4><p>When entering one of our websites, or using an online service, we record information necessary to provide you with access, for the operation of the website, and for us to comply with security and legal requirements, such as passwords, IP address and browser settings. We also collect information about your activities during your visit in order to personalise your website experience and to collect statistics to help us improve our websites, products and services.</p><h4>Responding to your request for information, order, or support</h4><p>When you contact us in connection with a request for information, to order a product or service, to provide you with support, or to participate in a forum or other social computing tool, we collect information necessary to fulfil your request, including your name and contact information, details about your request, and information needed for fulfilment, delivery and invoicing.</p>",
+    "seo": {
+      "title": "Privacy Policy | Flycatch",
+      "description": "Privacy policy for Flycatch Technologies — how we collect, use, and protect your data.",
+      "canonical_url": "https://www.flycatchtech.com/privacy-policy",
+      "meta_title": "Privacy Policy | Flycatch",
+      "h1_tag": "Privacy Policy",
+      "image_alt": "Flycatch",
+      "image_key": null
+    }
+  },
+  "terms": {
+    "title": "Terms and Conditions",
+    "slug": "terms-and-conditions",
+    "body": "<h2>Flycatch Terms &amp; Conditions</h2><p>Last updated: 12th Sep 2026</p><p>The website is provided by Flycatch Infotech Pvt. Ltd (hereinafter referred to as 'Flycatch'), a privately owned company with the following address: Flycatch Infotech Pvt. Ltd, Building No.16/3579, 2nd Floor, Adamstar Building Kalangattu Road, Ernakulam, Kakkanad, Kerala, India, 682030</p><p>By using the website or downloading materials from the website, you hereby agree to abide by the Terms &amp; Conditions below.</p><ul><li>You shall not defame, abuse, harass, threaten or violate the legal rights of Flycatch or any third party.</li><li>You shall not contribute, post, upload, or publish any content or materials that might adversely affect the reputation of Flycatch.</li><li>You shall not publish or post any content or materials that are detrimental to Flycatch in any manner.</li><li>You shall not post or upload any materials for which you do not have requisite rights under the law or that are protected by intellectual property rights unless you own or exercise these rights or have received all necessary consent.</li><li>You shall not conduct any contests, surveys or circulate any forwards.</li><li>You shall not in any manner disclose any confidential or proprietary information of any third party.</li><li>You shall not upload, post, publish or disseminate any information that is considered derogatory, profane, inappropriate, defamatory, obscene, indecent or unlawful.</li><li>You shall not falsify or delete any author attributions, legal or other proper notices or proprietary designations or labels of the origin or source of software or other materials contained in a file that is uploaded.</li><li>You shall not prevent or restrict others from using this website or cause any damage to the website.</li><li>You shall not upload any files that contain viruses, Trojan horses, worms, malware or any other similar software or programs that may cause harm to another user's computer.</li></ul><p>The website provides access to certain third-party sites and content. You acknowledge that Flycatch shall not be responsible for the availability, appropriateness or any other such obligations with respect to the contents published in these third-party sites and you shall bear all risks associated with the use of such content.</p><p>You acknowledge that Flycatch, at its sole discretion, may monitor, remove or edit any content on the website, and may disclose any information as necessary to satisfy any applicable law, regulation or legal process.</p><p>You agree to indemnify and hold Flycatch harmless from any claims and loss that may arise as a result of your violation of these Terms &amp; Conditions.</p><h3>Updates to our terms of use</h3><p>Flycatch may update these terms from time to time. Continued use of the website after an update constitutes acceptance of the revised terms.</p>",
+    "seo": {
+      "title": "Terms and Conditions | Flycatch",
+      "description": "Terms and conditions for using Flycatch Technologies services and website.",
+      "canonical_url": "https://www.flycatchtech.com/terms-and-conditions",
+      "meta_title": "Terms and Conditions | Flycatch",
+      "h1_tag": "Terms and Conditions",
+      "image_alt": "Flycatch",
+      "image_key": null
+    }
+  }
+}

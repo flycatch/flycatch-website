@@ -1,4 +1,6 @@
 ---
+import OptimizedImage from './OptimizedImage.astro';
+import { imageAlt } from '../lib/image';
 import { t } from '../lib/i18n';
 import { publicMediaUrl } from '../lib/public-api';
 import type { PublicClientLogo } from '../lib/public-api';
@@ -8,9 +10,10 @@ interface Props {
   logos: PublicClientLogo[];
   error?: boolean;
   home?: boolean;
+  standalone?: boolean;
 }
 
-const { logos, error = false, home = false } = Astro.props;
+const { logos, error = false, home = false, standalone = false } = Astro.props;
 
 function logoSrc(logo: PublicClientLogo, preferWhite: boolean) {
   if (preferWhite) {
@@ -26,12 +29,12 @@ const hideOnHome = home && visible.length === 0;
 ---
 {!hideOnHome && (
 <section
-  class:list={['section', home ? 'section-dark' : 'section-muted']}
+  class:list={['section', home ? 'section-dark' : 'section-muted', { 'clients-standalone': standalone }]}
   id="clients"
 >
   <div class="container">
-    <h2 class="type-section">{t('home.clients')}</h2>
-    <p class="lede type-lede">{t('home.clients_intro')}</p>
+    {!standalone && <><h2 class="type-section">{t('home.clients')}</h2>
+    <p class="lede type-lede">{t('home.clients_intro')}</p></>}
     <SectionState error={error} empty={!home && !error && visible.length === 0} />
     {visible.length > 0 && home && (
       <div class="clients-marquee" data-clients-marquee>
@@ -40,13 +43,12 @@ const hideOnHome = home && visible.length === 0;
             <div class="clients-marquee-set">
               {visible.map(({ logo, src }) => (
                 <div class="clients-logo-cell">
-                  <img
+                  <OptimizedImage
                     src={src}
-                    alt={logo.alt_text}
-                    width="192"
-                    height="64"
-                    loading="lazy"
-                    decoding="async"
+                    alt={imageAlt(logo.alt_text, t('home.clients'))}
+                    width={192}
+                    height={64}
+                    sizes="192px"
                   />
                 </div>
               ))}
@@ -72,16 +74,16 @@ const hideOnHome = home && visible.length === 0;
     {visible.length > 0 && !home && (
       <div class="logo-row">
         {visible.map(({ logo, src }) => (
-          <img src={src} alt={logo.alt_text} width="160" height="64" loading="lazy" />
+          <OptimizedImage src={src} alt={imageAlt(logo.alt_text, t('home.clients'))} width={160} height={64} sizes="160px" />
         ))}
       </div>
     )}
-    <p class:list={['section-actions', { 'clients-actions': home }]}>
+    {!standalone && <p class:list={['section-actions', { 'clients-actions': home }]}>
       <a class:list={['btn', { 'btn-on-dark': home }]} href="/company/clients">
         {t('home.view_clients')}
         <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
       </a>
-    </p>
+    </p>}
   </div>
 </section>
 )}

@@ -2,6 +2,8 @@ from datetime import date as DateValue
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from flycatch_api.schemas.admin_homes import ContentSeo
+
 
 class PublicNamedItem(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -63,3 +65,4 @@ class PublicCaseStudyDetail(BaseModel):
     industries: list[PublicNamedItem]
     categories: list[PublicNamedItem]
     technologies: list[PublicTechnology]
+    seo: ContentSeo

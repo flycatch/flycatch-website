@@ -1,0 +1,74 @@
+---
+export const prerender = true;
+
+import InteriorLayout from '../../layouts/InteriorLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import SectionState from '../../components/SectionState.astro';
+import OptimizedImage from '../../components/OptimizedImage.astro';
+import { imageAlt } from '../../lib/image';
+import { loadPublishedOverview, publicMediaUrl } from '../../lib/public-api';
+import {
+  buildCanonicalUrl,
+  fallbackMetadata,
+  metadataFallbackForPath,
+  metadataFromContentSeo,
+  publicSiteSettings,
+} from '../../lib/metadata';
+import { t } from '../../lib/i18n';
+
+const ABOUT_SLUGS = ['about-us', 'about', 'company-overview'] as const;
+let detail = await loadPublishedOverview(ABOUT_SLUGS[0]);
+for (const slug of ABOUT_SLUGS.slice(1)) {
+  if (detail.item) break;
+  detail = await loadPublishedOverview(slug);
+}
+const overview = detail.item;
+const siteSettings = publicSiteSettings();
+const failed = detail.error && !overview;
+const aboutPath = '/company/about-us';
+const metadata = overview
+  ? {
+      ...metadataFromContentSeo(overview.seo, siteSettings, metadataFallbackForPath(aboutPath)),
+      canonical: buildCanonicalUrl(siteSettings.canonical_origin, aboutPath),
+    }
+  : fallbackMetadata(
+      aboutPath,
+      t('page.about.title'),
+      failed ? t('home.error') : t('page.about.summary'),
+    );
+const heading = overview
+  ? overview.seo.h1_tag.trim() || overview.banner_title || overview.introduction_title || t('page.about.title')
+  : t('page.about.title');
+const banner = overview ? publicMediaUrl(overview.banner_image_key) : null;
+---
+<InteriorLayout title={metadata.title} metadata={metadata}>
+  <SiteHeader />
+  <main id="main" class="page-main" data-api-origin={detail.origin}>
+    <article class="container">
+      <h1>{heading}</h1>
+      <SectionState error={failed} empty={!failed && !overview} />{overview && (
+        <div>
+          <div class="media-frame" hidden={!banner}>{banner && (
+            <OptimizedImage
+              src={banner}
+              alt={imageAlt(overview.seo.image_alt, overview.banner_title)}
+              width={1192}
+              height={480}
+              sizes="100vw"
+              priority
+            />
+          )}</div>
+          <h2 hidden={!overview.introduction_title}>{overview.introduction_title}</h2>
+          <div class="summary-region" hidden={!overview.introduction_first_paragraph}>
+            <p>{overview.introduction_first_paragraph}</p>
+          </div>
+          <div class="body-region" hidden={!overview.introduction_second_paragraph}>
+            <p>{overview.introduction_second_paragraph}</p>
+          </div>
+        </div>
+      )}
+    </article>
+  </main>
+  <SiteFooter />
+</InteriorLayout>

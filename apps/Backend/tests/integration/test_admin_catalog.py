@@ -94,12 +94,11 @@ def test_application_opening_and_public_nested(client, bootstrapped):
 
     public = client.get("/api/v1/public/openings/backend-engineer")
     assert public.status_code == 200
-    assert public.json()["applications"][0]["name"] == "Ada"
+    assert public.json()["applications"] == []
     assert "status" not in public.json()
 
     public_apps = client.get("/api/v1/public/applications")
-    assert public_apps.status_code == 200
-    assert public_apps.json()["items"][0]["email"] == "ada@example.com"
+    assert public_apps.status_code in {404, 405}
 
     negative = client.post(
         "/api/v1/admin/applications",
@@ -234,8 +233,7 @@ def test_named_categories_email_memberships_and_news(client, bootstrapped):
     assert listed_c.json()["per_page"] == 10
     assert listed_c.json()["items"][0]["email"] == "ada@example.com"
     public_c = client.get("/api/v1/public/contacts")
-    assert public_c.status_code == 200
-    assert "status" not in public_c.json()["items"][0]
+    assert public_c.status_code in {404, 405}
     bad_email = client.post(
         "/api/v1/admin/contacts",
         headers=headers,
@@ -313,8 +311,10 @@ def test_named_categories_email_memberships_and_news(client, bootstrapped):
         json={"name": "Hidden", "email": "hidden@example.com"},
     )
     assert draft_contact.status_code == 201
-    public_emails = [item["email"] for item in client.get("/api/v1/public/contacts").json()["items"]]
-    assert "hidden@example.com" not in public_emails
+    assert client.get("/api/v1/public/contacts").status_code in {404, 405}
+    listed_contacts = client.get("/api/v1/admin/contacts", headers=headers)
+    emails = [item["email"] for item in listed_contacts.json()["items"]]
+    assert "hidden@example.com" in emails
 
     draft_news = client.post(
         "/api/v1/admin/news",

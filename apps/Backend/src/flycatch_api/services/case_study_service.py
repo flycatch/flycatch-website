@@ -31,8 +31,10 @@ from flycatch_api.schemas.public_case_studies import (
     PublicNamedItem,
     PublicTechnology,
 )
+from flycatch_api.schemas.admin_homes import ContentSeo
 from flycatch_api.services.author_service import CatalogError
 from flycatch_api.services.case_study_category_service import category_schema
+from flycatch_api.services.content_blocks import seo_dict
 from flycatch_api.services.industry_service import PER_PAGE, coerce_status, industry_schema
 from flycatch_api.services.technology_service import public_technology, technology_schema
 from flycatch_api.services.text import is_valid_slug, sanitize_html, slugify
@@ -220,6 +222,9 @@ class CaseStudyService:
         row.status = coerce_status(payload.status)
         row.image_key = payload.image_key or None
         row.image_alt = payload.image_alt.strip()
+        row.seo = seo_dict(payload.seo)
+        if payload.seo.image_alt.strip():
+            row.image_alt = payload.seo.image_alt.strip()
         row.content_available_in = [DEFAULT_LOCALE]
         row.industry_links = [CaseStudyIndustry(industry=item) for item in industries]
         row.category_links = [CaseStudyCategoryLink(category=item) for item in categories]
@@ -321,6 +326,19 @@ class CaseStudyService:
             industries=industries,
             categories=categories,
             technologies=technologies,
+            seo=self._seo(row),
+        )
+
+    def _seo(self, row: CaseStudy) -> ContentSeo:
+        stored = row.seo if isinstance(row.seo, dict) else {}
+        return ContentSeo(
+            title=str(stored.get("title") or row.heading or ""),
+            description=str(stored.get("description") or row.description or ""),
+            canonical_url=str(stored.get("canonical_url") or ""),
+            meta_title=str(stored.get("meta_title") or stored.get("title") or row.heading or ""),
+            h1_tag=str(stored.get("h1_tag") or ""),
+            image_alt=str(stored.get("image_alt") or row.image_alt or ""),
+            image_key=stored.get("image_key") or row.image_key,
         )
 
     def _public_industries(self, row: CaseStudy) -> list[PublicNamedItem]:
@@ -374,4 +392,5 @@ class CaseStudyService:
             industries=self._public_industries(row),
             categories=self._public_categories(row),
             technologies=self._public_technologies(row),
+            seo=self._seo(row),
         )

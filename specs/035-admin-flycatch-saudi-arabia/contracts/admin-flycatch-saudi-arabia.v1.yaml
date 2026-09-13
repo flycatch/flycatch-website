@@ -226,6 +226,7 @@ components:
             $ref: '#/components/schemas/ServiceSectionItem'
         banner_explore_text: { type: string }
         services_title: { type: string }
+        banner_image_key: { type: string, nullable: true }
         video_key: { type: string, nullable: true }
         seo:
           $ref: '#/components/schemas/ContentSeo'
@@ -271,6 +272,7 @@ components:
           default: []
         banner_explore_text: { type: string, default: '', maxLength: 200 }
         services_title: { type: string, default: '', maxLength: 200 }
+        banner_image_key: { type: string, nullable: true }
         video_key: { type: string, nullable: true }
         seo:
           $ref: '#/components/schemas/ContentSeo'

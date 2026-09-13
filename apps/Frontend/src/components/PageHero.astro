@@ -1,0 +1,18 @@
+---
+import OptimizedImage from './OptimizedImage.astro';
+interface Props {
+  heading: string;
+  image?: string | null;
+  alt?: string;
+  tagline?: string;
+  fullHeight?: boolean;
+}
+const { heading, image, alt = '', tagline, fullHeight = false } = Astro.props;
+---
+<section class:list={['page-hero', { 'page-hero-full': fullHeight }]}>
+  {image && <OptimizedImage class="page-hero-image" src={image} alt={alt} width={1512} height={720} sizes="100vw" priority />}
+  <div class="container page-hero-content">
+    {tagline && <p>{tagline}</p>}
+    <h1>{heading}</h1>
+  </div>
+</section>

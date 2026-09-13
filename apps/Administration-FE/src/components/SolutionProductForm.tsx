@@ -10,6 +10,7 @@ import {
 } from '../lib/admin-api';
 import FormPageHeader from './FormPageHeader';
 import MediaField from './MediaField';
+import SeoFields, { emptySeo, seoValue, type ContentSeoValue } from './SeoFields';
 import { t } from '../lib/i18n';
 
 interface Props {
@@ -40,6 +41,8 @@ export default function SolutionProductForm({ productId, canPublish, onCancel, o
   const [slugManual, setSlugManual] = useState(false);
   const [order, setOrder] = useState(0);
   const [status, setStatus] = useState<'draft' | 'publish'>('draft');
+  const [seo, setSeo] = useState<ContentSeoValue>(emptySeo);
+  const [seoImageFile, setSeoImageFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(!productId);
   const [saving, setSaving] = useState(false);
@@ -60,6 +63,7 @@ export default function SolutionProductForm({ productId, canPublish, onCancel, o
         setSlugManual(true);
         setOrder(item.order);
         setStatus(item.status);
+        setSeo(seoValue(item.seo));
         setReady(true);
       })
       .catch(() => {
@@ -88,6 +92,10 @@ export default function SolutionProductForm({ productId, canPublish, onCancel, o
         slug: slugify(slug) || slugify(productTitle),
         order: Math.max(0, Number(order) || 0),
         status: nextStatus,
+        seo: {
+          ...seo,
+          image_key: seoImageFile ? (await uploadMedia(seoImageFile)).key : seo.image_key,
+        },
       };
       if (productId) await updateSolutionProduct(productId, payload);
       else await createSolutionProduct(payload);
@@ -213,6 +221,7 @@ export default function SolutionProductForm({ productId, canPublish, onCancel, o
             onChange={(event) => setOrder(Math.max(0, Number(event.target.value) || 0))}
           />
         </label>
+        <SeoFields value={seo} imageFile={seoImageFile} onChange={setSeo} onImageFile={setSeoImageFile} />
         {error && (
           <p className="alert alert-error error" role="alert">
             {error}

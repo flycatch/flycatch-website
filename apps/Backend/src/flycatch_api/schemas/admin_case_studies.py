@@ -5,6 +5,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 from flycatch_api.models.case_study import ContentStatus
+from flycatch_api.schemas.admin_homes import ContentSeo
 
 
 class Industry(BaseModel):
@@ -156,6 +157,7 @@ class CaseStudyDetail(BaseModel):
     industries: list[Industry]
     categories: list[CaseStudyCategory]
     technologies: list[Technology]
+    seo: ContentSeo
 
 
 class CaseStudyWrite(BaseModel):
@@ -174,6 +176,7 @@ class CaseStudyWrite(BaseModel):
     industry_ids: list[UUID] = Field(default_factory=list)
     category_ids: list[UUID] = Field(default_factory=list)
     technology_ids: list[UUID] = Field(default_factory=list)
+    seo: ContentSeo = Field(default_factory=ContentSeo)
 
 
 class EntityInUse(BaseModel):

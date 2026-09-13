@@ -1,12 +1,23 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   absoluteMediaUrl,
   apiOrigin,
   fetchOrigin,
   loadPublishedAiService,
   loadPublishedAiServices,
+  loadPublishedBlog,
+  loadPublishedBlogs,
+  loadPublishedHomes,
+  publishedBlogSlugCandidates,
+  publicApiFetchedUrls,
   publicMediaUrl,
+  resetPublicApiCache,
 } from '../../src/lib/public-api';
+
+afterEach(() => {
+  resetPublicApiCache();
+  vi.unstubAllGlobals();
+});
 
 describe('public media URLs', () => {
   it('encodes object keys', () => {
@@ -158,6 +169,70 @@ describe('public AI service field mapping', () => {
     expect(result.item?.solutions[0].solutions_section.title).toBe('DoctCare AI');
     expect(result.item?.solutions[0].solutions_section.image_key).toBe('solutions/doctcare.jpg');
     vi.unstubAllGlobals();
+  });
+});
+
+describe('published blog slug lookup', () => {
+  it('retries a legacy 128-character slug when the production slug is longer', async () => {
+    const full =
+      'explore-practical-cloud-migration-strategies-that-enhance-scalability-security-and-performance-learn-how-to-plan-execute-and-optimize-your-move-to-the-cloud';
+    expect(publishedBlogSlugCandidates(full)).toEqual([full, full.slice(0, 128)]);
+
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: false })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ slug: full.slice(0, 128), title: 'Cloud migration' }),
+      });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedBlog(full);
+    expect(result.error).toBe(false);
+    expect(result.item?.slug).toBe(full.slice(0, 128));
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    vi.unstubAllGlobals();
+  });
+});
+
+describe('CMS request efficiency', () => {
+  it('fetches the same CMS resource only once in a render', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ items: [] }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const [first, second] = await Promise.all([loadPublishedHomes(), loadPublishedHomes()]);
+
+    expect(first.error).toBe(false);
+    expect(second.error).toBe(false);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(publicApiFetchedUrls()).toHaveLength(1);
+    expect(publicApiFetchedUrls()[0]).toContain('/api/v1/public/homes');
+  });
+
+  it('requests only as many blog summaries as the page will render', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        items: [
+          { title: 'One', slug: 'one' },
+          { title: 'Two', slug: 'two' },
+          { title: 'Three', slug: 'three' },
+        ],
+        page: 1,
+        per_page: 3,
+        total: 82,
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await loadPublishedBlogs({ maxItems: 3 });
+
+    expect(result.items).toHaveLength(3);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(String(fetchMock.mock.calls[0][0])).toContain('per_page=3');
+    expect(String(fetchMock.mock.calls[0][0])).toContain('page=1');
   });
 });
 

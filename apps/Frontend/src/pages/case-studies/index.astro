@@ -1,27 +1,52 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+export const prerender = true;
+
+import InteriorLayout from '../../layouts/InteriorLayout.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import HomeCaseStudies from '../../components/HomeCaseStudies.astro';
+import ListingPagination from '../../components/ListingPagination.astro';
 import { loadPublishedCaseStudies } from '../../lib/public-api';
 import { fallbackMetadata } from '../../lib/metadata';
+import { CASE_STUDY_PAGE_SIZE, paginate, parsePageParam } from '../../lib/pagination';
 import { t } from '../../lib/i18n';
 
 const listed = await loadPublishedCaseStudies();
+const sorted = [...listed.items].sort((left, right) => {
+  const dateA = left.date ? Date.parse(left.date) : Number.NaN;
+  const dateB = right.date ? Date.parse(right.date) : Number.NaN;
+  const hasA = Number.isFinite(dateA);
+  const hasB = Number.isFinite(dateB);
+  if (hasA && hasB && dateB !== dateA) return dateB - dateA;
+  if (hasA !== hasB) return hasA ? -1 : 1;
+  return right.order - left.order;
+});
+const pageWindow = paginate(
+  sorted,
+  parsePageParam(Astro.url.searchParams.get('page')),
+  CASE_STUDY_PAGE_SIZE,
+);
+const listTitle =
+  pageWindow.page > 1
+    ? t('listing.page_title', { title: t('page.case_studies.title'), page: pageWindow.page })
+    : t('page.case_studies.title');
 const metadata = fallbackMetadata(
-  '/case-studies',
-  t('page.case_studies.title'),
-  listed.error ? t('home.error') : t('home.empty'),
+  pageWindow.page > 1 ? `/case-studies?page=${pageWindow.page}` : '/case-studies',
+  listTitle,
+  listed.error ? t('home.error') : t('page.case_studies.description'),
 );
 metadata.indexable = !listed.error;
 ---
-<BaseLayout title={metadata.title} metadata={metadata}>
+<InteriorLayout title={metadata.title} metadata={metadata}>
   <SiteHeader />
   <main id="main" class="page-main" data-api-origin={listed.origin}>
     <div class="container summary-region">
-      <h1>{t('nav.case_studies')}</h1>
+      <h1>{listTitle}</h1>
     </div>
-    <HomeCaseStudies studies={listed.items} error={listed.error} />
+    <HomeCaseStudies studies={pageWindow.items} error={listed.error} />
+    <div class="container">
+      <ListingPagination basePath="/case-studies" window={pageWindow} />
+    </div>
   </main>
   <SiteFooter />
-</BaseLayout>
+</InteriorLayout>

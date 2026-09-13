@@ -1,0 +1,19 @@
+---
+import '../styles/pages.css';
+import BaseLayout from './BaseLayout.astro';
+import type { PageMetadata } from '../lib/metadata';
+
+interface Props {
+  title: string;
+  metadata: PageMetadata;
+  structuredData?: object[];
+  breadcrumbLabel?: string;
+  lang?: string;
+  dir?: string;
+}
+
+const props = Astro.props;
+---
+<BaseLayout {...props}>
+  <slot />
+</BaseLayout>

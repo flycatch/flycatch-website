@@ -78,6 +78,8 @@ const flycatchSaudiArabiaContractsDir = join(
   'specs/035-admin-flycatch-saudi-arabia/contracts',
 );
 const subscriptionsContractsDir = join(repoRoot, 'specs/036-admin-subscriptions/contracts');
+const privacyPoliciesContractsDir = join(repoRoot, 'specs/037-admin-privacy-policies/contracts');
+const termsContractsDir = join(repoRoot, 'specs/038-admin-terms/contracts');
 
 const contractSets = [
   {
@@ -180,6 +182,8 @@ const contractSets = [
   { dir: downloadsContractsDir, files: ['admin-downloads.v1.yaml'] },
   { dir: flycatchSaudiArabiaContractsDir, files: ['admin-flycatch-saudi-arabia.v1.yaml'] },
   { dir: subscriptionsContractsDir, files: ['admin-subscriptions.v1.yaml'] },
+  { dir: privacyPoliciesContractsDir, files: ['admin-privacy-policies.v1.yaml'] },
+  { dir: termsContractsDir, files: ['admin-terms.v1.yaml'] },
 ];
 
 mkdirSync(outDir, { recursive: true });

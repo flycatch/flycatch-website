@@ -4,11 +4,11 @@ Production-ready, SEO-first website foundation with three bounded surfaces:
 
 | Surface | Folder | Role |
 | --- | --- | --- |
-| **Frontend** | `apps/Frontend` | Static public site (Astro, pre-rendered HTML) |
+| **Frontend** | `apps/Frontend` | Public site (Astro SSR via `@astrojs/node`; HTML is server-rendered on request) |
 | **Administration FE** | `apps/Administration-FE` | Authenticated staff workspace (Astro + React) |
 | **Backend** | `apps/Backend` | Contract-first API (FastAPI, PostgreSQL, S3-compatible storage) |
 
-Ordinary public browsing does **not** require the Backend at runtime. Administration FE and publish flows do.
+The public site is server-rendered and reads published content from the Backend public API at request time. Administration FE and publish flows use the staff API.
 
 ## Technology stack
 
@@ -72,15 +72,15 @@ Compose does **not** create staff accounts or apply migrations. There is no defa
 
    From `deployment/compose/` you can use `docker compose up -d --build` instead.
 
-3. After Postgres and MinIO are healthy, migrate, seed, and bootstrap two staff users:
+3. After Postgres and MinIO are healthy, migrate, **bootstrap staff first**, then seed. Seeded records attribute updates to an existing administrator.
 
    ```bash
    docker compose -f deployment/compose/docker-compose.yml --env-file deployment/compose/.env exec backend alembic upgrade head
-   docker compose -f deployment/compose/docker-compose.yml --env-file deployment/compose/.env exec backend flycatch-seed-records
    docker compose -f deployment/compose/docker-compose.yml --env-file deployment/compose/.env exec backend flycatch-bootstrap \
      --user-1-email admin1@example.com \
      --user-2-email admin2@example.com \
      --user-2-role editor
+   docker compose -f deployment/compose/docker-compose.yml --env-file deployment/compose/.env exec backend flycatch-seed-records
    ```
 
    Passwords are prompted (minimum 12 characters) unless you pass `--user-1-password` and `--user-2-password`. User 1 is always role `administrator`. Re-running bootstrap with the same emails is idempotent and does not reset passwords.

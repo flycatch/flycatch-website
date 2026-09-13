@@ -23,7 +23,9 @@ from flycatch_api.schemas.public_solution_products import (
     PublicSolutionProductList,
     PublicSolutionProductSummary,
 )
+from flycatch_api.schemas.admin_homes import ContentSeo
 from flycatch_api.services.author_service import CatalogError
+from flycatch_api.services.content_blocks import seo_dict
 from flycatch_api.services.industry_service import PER_PAGE, coerce_status
 from flycatch_api.services.text import is_valid_media_key, is_valid_slug, slugify
 
@@ -55,6 +57,7 @@ def product_schema(row: SolutionProduct) -> SolutionProductSchema:
         order=row.order,
         status=row.status,
         created_at=row.created_at,
+        seo=ContentSeo.model_validate(row.seo or {}),
     )
 
 
@@ -70,6 +73,7 @@ def public_product(row: SolutionProduct) -> PublicSolutionProduct:
         banner_image_on_right=row.banner_image_on_right,
         slug=row.slug,
         order=row.order,
+        seo=ContentSeo.model_validate(row.seo or {}),
     )
 
 
@@ -255,3 +259,4 @@ class SolutionProductService:
         row.slug = slug
         row.order = payload.order
         row.status = coerce_status(payload.status)
+        row.seo = seo_dict(payload.seo)

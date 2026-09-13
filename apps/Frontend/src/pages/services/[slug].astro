@@ -1,0 +1,75 @@
+---
+export const prerender = true;
+
+import InteriorLayout from '../../layouts/InteriorLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import LandingPage from '../../components/LandingPage.astro';
+import ServiceCallout from '../../components/ServiceCallout.astro';
+import ServiceMinds from '../../components/ServiceMinds.astro';
+import HomeInsights from '../../components/HomeInsights.astro';
+import HomeCta from '../../components/HomeCta.astro';
+import { loadPublishedBlogs } from '../../lib/public-api';
+import { canonicalServiceSlug, loadServiceLanding } from '../../lib/page-catalog';
+import { serviceStaticPaths } from '../../lib/static-paths';
+import {
+  buildCanonicalUrl,
+  fallbackMetadata,
+  metadataFallbackForPath,
+  metadataFromContentSeo,
+  publicSiteSettings,
+} from '../../lib/metadata';
+import { t } from '../../lib/i18n';
+
+export function getStaticPaths() {
+  return serviceStaticPaths();
+}
+
+const requested = Astro.params.slug ?? '';
+const slug = canonicalServiceSlug(requested);
+if (!slug || slug === 'ai-services') {
+  if (slug === 'ai-services' && requested !== slug) {
+    return Astro.redirect(`/services/${slug}`, 301);
+  }
+  Astro.response.status = 404;
+} else if (requested !== slug) {
+  return Astro.redirect(`/services/${slug}`, 301);
+}
+
+const result =
+  slug && slug !== 'ai-services'
+    ? await loadServiceLanding(slug)
+    : { item: null, error: false, origin: '' };
+const page = 'item' in result ? result.item : null;
+const failed = 'error' in result ? result.error : false;
+const origin = 'origin' in result ? result.origin : '';
+const siteSettings = publicSiteSettings();
+const path = `/services/${slug}`;
+const fallbackTitle = slug ? t(`page.services.slug.${slug}`) : t('page.not_found.title');
+const metadata = page
+  ? {
+      ...metadataFromContentSeo(page.seo, siteSettings, metadataFallbackForPath(path, fallbackTitle)),
+      canonical: buildCanonicalUrl(siteSettings.canonical_origin, path),
+    }
+  : fallbackMetadata(path, fallbackTitle, failed ? t('home.error') : t('page.not_found.body'));
+if (!page) {
+  metadata.indexable = false;
+}
+const heading = page?.seo.h1_tag.trim() || page?.banner_title || fallbackTitle;
+const blogs = page ? await loadPublishedBlogs({ maxItems: 3 }) : { items: [], error: false };
+---
+<InteriorLayout title={metadata.title} metadata={metadata} breadcrumbLabel={heading}>
+  <SiteHeader tone={page ? 'dark' : 'light'} breadcrumbLabel={heading} showBreadcrumbs={false} />
+  <main id="main" class="page-main page-main-flush" data-api-origin={origin}>
+    <LandingPage page={page} error={failed} heading={heading}>
+      {page && <ServiceCallout slot="after-intro" />}
+    </LandingPage>
+    {page && <>
+      <ServiceMinds />
+      <ServiceCallout variant="closing" />
+      <HomeInsights blogs={blogs.items} error={blogs.error} />
+      <HomeCta />
+    </>}
+  </main>
+  <SiteFooter />
+</InteriorLayout>

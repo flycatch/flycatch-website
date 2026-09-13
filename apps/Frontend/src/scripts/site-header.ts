@@ -46,6 +46,17 @@ function initSiteHeader() {
       const willOpen = !item.classList.contains('is-open');
       closeMenus();
       setExpanded(item, willOpen);
+      if (willOpen) {
+        const first = item.querySelector<HTMLElement>('.flyout a, .nav-menu a');
+        first?.focus();
+      }
+    });
+
+    trigger.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        setExpanded(item, false);
+        trigger.focus();
+      }
     });
 
     item.addEventListener('mouseenter', () => {
@@ -65,6 +76,15 @@ function initSiteHeader() {
 
   document.addEventListener('click', (event) => {
     if (!header.contains(event.target as Node)) closeMenus();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    const openItem = header.querySelector('.nav-item.has-menu.is-open');
+    if (!(openItem instanceof HTMLElement)) return;
+    closeMenus();
+    const trigger = openItem.querySelector<HTMLElement>('.nav-trigger');
+    trigger?.focus();
   });
 
   const toggle = header.querySelector('[data-mobile-toggle]');

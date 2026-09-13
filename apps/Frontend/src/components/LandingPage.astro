@@ -1,0 +1,86 @@
+---
+import { publicMediaUrl, type PublicLanding } from '../lib/public-api';
+import { imageAlt } from '../lib/image';
+import { t } from '../lib/i18n';
+import OptimizedImage from './OptimizedImage.astro';
+import SectionState from './SectionState.astro';
+import PageHero from './PageHero.astro';
+
+interface Props {
+  page: PublicLanding | null;
+  error: boolean;
+  heading: string;
+}
+
+const { page, error, heading } = Astro.props;
+const banner = page ? publicMediaUrl(page.banner_image_key) : null;
+const offering = page ? publicMediaUrl(page.offering_image_key ?? page.outcomes_image_key ?? page.experience_image_key ?? null) : null;
+const offeringTitle = page?.offering_title || page?.outcomes_title || page?.experience_title || '';
+const offeringDescription = page?.offering_description || page?.outcomes_description || page?.experience_description || '';
+const accordion = page?.accordion?.length ? page.accordion : page?.experience_accordion ?? [];
+const faqs = page?.faq_accordion ?? [];
+---
+<article class="landing-page">
+  <SectionState error={error} empty={!error && !page} />
+  {page ? (
+    <div>
+      <PageHero heading={heading} image={banner} alt={imageAlt(page.seo.image_alt, page.banner_title)} tagline={page.banner_tag_line} />
+      <section class="container landing-intro">
+      <h2 hidden={!page.introduction_title}>{page.introduction_title}</h2>
+      <div class="summary-region" hidden={!page.introduction_first_paragraph}>
+        <div set:html={page.introduction_first_paragraph} />
+      </div>
+      <div class="body-region" hidden={!page.introduction_second_paragraph}>
+        <div set:html={page.introduction_second_paragraph} />
+      </div>
+      {page.introduction_third_paragraph && (
+        <div class="body-region" set:html={page.introduction_third_paragraph} />
+      )}
+      </section>
+      <slot name="after-intro" />
+      {(accordion.length > 0 || offeringTitle || offeringDescription) && (
+        <section class="container landing-offerings">
+          <h2>{offeringTitle || t('page.landing.offerings')}</h2>
+          <div class="body-region" hidden={!offeringDescription} set:html={offeringDescription} />
+          <div class:list={['landing-offering-grid', { 'has-image': Boolean(offering) }]}>
+          <div class="landing-offering-image" hidden={!offering}>
+            {offering && (
+              <OptimizedImage src={offering} alt={imageAlt(offeringTitle, page.banner_title)} width={800} height={480} sizes="(max-width: 768px) 100vw, 800px" />
+            )}
+          </div>
+          <div class="landing-accordion">
+            {accordion
+              .slice()
+              .sort((a, b) => a.order - b.order)
+              .map((item) => (
+                <details>
+                  <summary>{item.title}</summary>
+                  <div class="body-region" set:html={item.contents} />
+                </details>
+              ))}
+          </div>
+          </div>
+        </section>
+      )}
+      {faqs.length > 0 && (
+        <section class="container landing-faq">
+          <h2>{page.faq_title || t('page.landing.faq')}</h2>
+          <p class="lede" hidden={!page.faq_description}>{page.faq_description}</p>
+          <div class="landing-accordion">
+            {faqs
+              .slice()
+              .sort((a, b) => a.order - b.order)
+              .map((item) => (
+                <details>
+                  <summary>{item.title}</summary>
+                  <div class="body-region" set:html={item.contents} />
+                </details>
+              ))}
+          </div>
+        </section>
+      )}
+    </div>
+  ) : (
+    <h1>{heading}</h1>
+  )}
+</article>

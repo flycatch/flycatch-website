@@ -1,0 +1,44 @@
+---
+export const prerender = true;
+
+import InteriorLayout from '../../layouts/InteriorLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import SectionState from '../../components/SectionState.astro';
+import OptimizedImage from '../../components/OptimizedImage.astro';
+import { imageAlt } from '../../lib/image';
+import { loadPublishedNews, publicMediaUrl } from '../../lib/public-api';
+import { fallbackMetadata } from '../../lib/metadata';
+import { t } from '../../lib/i18n';
+
+const listed = await loadPublishedNews();
+const metadata = fallbackMetadata(
+  '/company/news-and-events',
+  t('page.news.title'),
+  listed.error ? t('home.error') : t('page.news.description'),
+);
+metadata.indexable = !listed.error;
+---
+<InteriorLayout title={metadata.title} metadata={metadata}>
+  <SiteHeader />
+  <main id="main" class="page-main" data-api-origin={listed.origin}>
+    <div class="container summary-region">
+      <h1>{t('page.news.title')}</h1>
+      <p class="lede">{t('page.news.intro')}</p>
+      <SectionState error={listed.error} empty={!listed.error && listed.items.length === 0} />
+      <ul>
+        {listed.items.map((item) => {
+          const image = publicMediaUrl(item.image_key);
+          return (
+            <li>
+              {image && <OptimizedImage src={image} alt={imageAlt(item.title, t('page.news.title'))} width={360} height={220} sizes="(max-width: 768px) 100vw, 360px" />}
+              <a href={`/company/news-and-events/${item.slug}`}>{item.title}</a>
+              <p>{item.description}</p>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  </main>
+  <SiteFooter />
+</InteriorLayout>

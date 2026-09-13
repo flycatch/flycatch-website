@@ -1,0 +1,86 @@
+---
+import type { ImageMetadata } from 'astro';
+import { getImage } from 'astro:assets';
+import { isRemoteMedia, resolveMediaSrc } from '../lib/image';
+
+const publicImages = import.meta.glob<{ default: ImageMetadata }>(
+  '../../public/**/*.{png,jpg,jpeg,webp}',
+  { eager: true },
+);
+
+function localPublicImage(src: string): ImageMetadata | undefined {
+  return publicImages[`../../public${src}`]?.default;
+}
+
+interface Props {
+  src: string | null | undefined;
+  alt: string;
+  width: number;
+  height: number;
+  sizes?: string;
+  priority?: boolean;
+  class?: string;
+}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  sizes = '(max-width: 768px) 100vw, 1200px',
+  priority = false,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const resolved = src ? resolveMediaSrc(src) : null;
+const loading = priority ? 'eager' : 'lazy';
+const fetchpriority = priority ? 'high' : 'auto';
+
+let optimized: Awaited<ReturnType<typeof getImage>> | null = null;
+const local = typeof resolved === 'string' ? localPublicImage(resolved) : undefined;
+const transformSrc = local ?? (resolved && isRemoteMedia(resolved) ? resolved.href : null);
+if (transformSrc) {
+  try {
+    const widths = [...new Set([480, 768, 1024, Math.min(width, 1600)])].sort((a, b) => a - b);
+    optimized = await getImage({
+      src: transformSrc,
+      ...(typeof transformSrc === 'string' ? { inferSize: true } : {}),
+      widths,
+      format: 'webp',
+    });
+  } catch (error) {
+    console.warn(`OptimizedImage: could not transform ${String(resolved)}`, error);
+  }
+}
+
+const href = optimized?.src ?? (typeof resolved === 'string' ? resolved : src);
+const srcset = optimized?.srcSet.attribute;
+---
+{href ? (
+  <>
+    {priority ? (
+      <link
+        rel="preload"
+        as="image"
+        href={href}
+        imagesrcset={srcset}
+        imagesizes={sizes}
+        fetchpriority="high"
+      />
+    ) : null}
+    <img
+      src={href}
+      srcset={srcset}
+      sizes={sizes}
+      alt={alt}
+      width={width}
+      height={height}
+      loading={loading}
+      fetchpriority={fetchpriority}
+      class={className}
+      decoding="async"
+      {...rest}
+    />
+  </>
+) : null}

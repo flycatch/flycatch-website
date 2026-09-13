@@ -6,11 +6,11 @@ info:
   description: |
     Unauthenticated list of Home entries with status publish.
     Drafts MUST NOT appear. This contract is separate from admin-homes.v1.yaml.
-    Selected case studies are returned as full published PublicCaseStudyDetail
-    objects (industry, category, technology, media, and other visitor fields),
-    never as identifiers alone. Repeatable services and FAQ items are returned
-    in saved order. Public media GET streams object-storage keys referenced by
-    published content.
+    Selected case studies are returned as published PublicCaseStudySummary
+    objects (heading, slug, description, media, and taxonomy fields the home
+    page renders), never as identifiers or full article bodies. Repeatable
+    services and FAQ items are returned in saved order. Public media GET streams
+    object-storage keys referenced by published content.
 servers:
   - url: /api/v1
 security: []
@@ -145,7 +145,7 @@ components:
         case_studies:
           type: array
           items:
-            $ref: '../../005-admin-case-studies/contracts/public-case-studies.v1.yaml#/components/schemas/PublicCaseStudyDetail'
+            $ref: '../../005-admin-case-studies/contracts/public-case-studies.v1.yaml#/components/schemas/PublicCaseStudySummary'
         services:
           type: array
           items:

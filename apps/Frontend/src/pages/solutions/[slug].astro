@@ -1,0 +1,147 @@
+---
+export const prerender = true;
+
+import InteriorLayout from '../../layouts/InteriorLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import SectionState from '../../components/SectionState.astro';
+import OptimizedImage from '../../components/OptimizedImage.astro';
+import { imageAlt } from '../../lib/image';
+import { canonicalSolutionSlug } from '../../lib/page-catalog';
+import { solutionStaticPaths } from '../../lib/static-paths';
+import {
+  loadPublishedSolutionDetailPage,
+  loadPublishedSolutionProduct,
+  publicMediaUrl,
+} from '../../lib/public-api';
+import {
+  buildCanonicalUrl,
+  fallbackMetadata,
+  metadataFallbackForPath,
+  metadataFromContentSeo,
+  publicSiteSettings,
+} from '../../lib/metadata';
+import { t } from '../../lib/i18n';
+import { contactHref } from '../../lib/nav';
+
+export function getStaticPaths() {
+  return solutionStaticPaths();
+}
+
+const requested = Astro.params.slug ?? '';
+const slug = canonicalSolutionSlug(requested);
+if (!slug) {
+  Astro.response.status = 404;
+} else if (requested !== slug) {
+  return Astro.redirect(`/solutions/${slug}`, 301);
+}
+
+const productResult = slug
+  ? await loadPublishedSolutionProduct(slug)
+  : { item: null, error: false, origin: '' };
+const detailResult =
+  !productResult.item && slug
+    ? await loadPublishedSolutionDetailPage(slug)
+    : { item: null, error: productResult.error, origin: productResult.origin };
+const product = productResult.item;
+const detail = detailResult.item;
+const failed = Boolean((productResult.error || detailResult.error) && !product && !detail);
+const siteSettings = publicSiteSettings();
+const path = `/solutions/${slug}`;
+const fallbackTitle = slug ? t(`page.solutions.slug.${slug}`) : t('page.not_found.title');
+const seo = product?.seo ?? detail?.seo;
+const metadata = seo
+  ? {
+      ...metadataFromContentSeo(seo, siteSettings, metadataFallbackForPath(path, fallbackTitle)),
+      canonical: buildCanonicalUrl(siteSettings.canonical_origin, path),
+    }
+  : fallbackMetadata(path, fallbackTitle, failed ? t('home.error') : t('page.not_found.body'));
+if (!product && !detail) metadata.indexable = false;
+const heading =
+  seo?.h1_tag.trim() ||
+  product?.product_title ||
+  detail?.banner.title ||
+  detail?.title ||
+  fallbackTitle;
+const banner = product
+  ? publicMediaUrl(product.product_banner_image_key || product.product_card_image_key)
+  : publicMediaUrl(detail?.banner.image_key);
+const origin = productResult.origin || detailResult.origin;
+---
+<InteriorLayout title={metadata.title} metadata={metadata} breadcrumbLabel={heading}>
+  <SiteHeader breadcrumbLabel={heading} showBreadcrumbs={false} />
+  <main id="main" class="page-main" data-api-origin={origin}>
+    <article class="container">
+      <SectionState error={failed} empty={!failed && !product && !detail} />
+      {!product && <h1>{heading}</h1>}
+      {product && (
+        <div>
+          <div class="solution-detail-hero">
+          <div>
+          {product.product_logo_key && <OptimizedImage class="solution-logo" src={publicMediaUrl(product.product_logo_key)} alt={product.product_title} width={280} height={120} sizes="280px" />}
+          <h1>{heading}</h1>
+          <p class="lede">{product.product_tag}</p>
+          </div>
+          <div class="media-frame" hidden={!banner}>
+            {banner && (
+              <OptimizedImage src={banner} alt={imageAlt(product.seo?.image_alt, product.product_title)} width={1192} height={640} sizes="(max-width: 768px) 100vw, 1192px" priority />
+            )}
+          </div>
+          </div>
+          <div class="body-region" set:html={product.product_description} />
+        </div>
+      )}
+      {detail && (
+        <div class="solution-detail-body">
+          <p class="lede">{detail.banner?.sub_title}</p>
+          <p hidden={!detail.banner?.industry_type}>{detail.banner?.industry_type}</p>
+          <div class="media-frame" hidden={!banner}>
+            {banner && (
+              <OptimizedImage src={banner} alt={imageAlt(detail.seo?.image_alt, detail.banner?.title || detail.title)} width={1192} height={640} sizes="(max-width: 768px) 100vw, 1192px" priority />
+            )}
+          </div>
+          <h2 hidden={!detail.introduction?.sub_title}>{detail.introduction?.sub_title}</h2>
+          <div class="body-region" set:html={detail.introduction?.description} />
+          {detail.challenges && (
+            <section>
+              <h2>{detail.challenges.name || t('page.solutions.challenges')}</h2>
+              <div class="body-region" set:html={detail.challenges.description} />
+              <ul>
+                {detail.challenges.items.map((item) => (
+                  <li>{item.title}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+          {detail.benefits && (
+            <section>
+              <h2>{t('page.solutions.benefits')}</h2>
+              <div class="body-region" set:html={detail.benefits.description} />
+              <ul>
+                {detail.benefits.items.map((item) => (
+                  <li>{item.title}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+          <section hidden={!detail.solutions_section.title}>
+            <h2>{detail.solutions_section.title}</h2>
+            <div class="body-region" set:html={detail.solutions_section.description} />
+          </section>
+          {detail.cta && (detail.cta.title || detail.cta.button_name) && (
+            <section>
+              <h2>{detail.cta.title}</h2>
+              <p>{detail.cta.description}</p>
+              {contactHref && (
+                <p>
+                  <a class="btn" href={contactHref}>{detail.cta.button_name || t('home.contact_action')}</a>
+                </p>
+              )}
+            </section>
+          )}
+        </div>
+      )}
+    </article>
+  </main>
+  <SiteFooter />
+</InteriorLayout>

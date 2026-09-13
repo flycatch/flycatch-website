@@ -34,6 +34,8 @@ from flycatch_api.models.catalog import (
     Application,
     Contact,
     Download,
+    DownloadRequest,
+    EmailOutbox,
     EmailConfiguration,
     EmailTemplate,
     EmployeeTestimonial,
@@ -44,11 +46,13 @@ from flycatch_api.models.catalog import (
     NewsCategory,
     NewsCategoryLink,
     Opening,
+    PrivacyPolicy,
     OpeningApplication,
     Resource,
     ResourceCategory,
     ResourceCategoryLink,
     Subscription,
+    Terms,
 )
 
 __all__ = [
@@ -96,6 +100,8 @@ __all__ = [
     "Application",
     "Contact",
     "Download",
+    "DownloadRequest",
+    "EmailOutbox",
     "EmailConfiguration",
     "EmailTemplate",
     "EmployeeTestimonial",
@@ -107,8 +113,10 @@ __all__ = [
     "NewsCategoryLink",
     "Opening",
     "OpeningApplication",
+    "PrivacyPolicy",
     "Resource",
     "ResourceCategory",
     "ResourceCategoryLink",
     "Subscription",
+    "Terms",
 ]

@@ -1,4 +1,6 @@
 ---
+export const prerender = true;
+
 import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/home.css';
 import SiteHeader from '../components/SiteHeader.astro';
@@ -24,6 +26,7 @@ import {
 import {
   fallbackMetadata,
   homeStructuredData,
+  metadataFallbackForPath,
   metadataFromContentSeo,
   publicSiteSettings,
 } from '../lib/metadata';
@@ -33,13 +36,13 @@ const [homesResult, logosResult, testimonialsResult, blogsResult] = await Promis
   loadPublishedHomes(),
   loadPublishedClientLogos(),
   loadPublishedClientTestimonials(),
-  loadPublishedBlogs(),
+  loadPublishedBlogs({ maxItems: 3 }),
 ]);
 
 const siteSettings = publicSiteSettings();
 const home = homesResult.items[0] ?? null;
 const metadata = home
-  ? metadataFromContentSeo(home.seo, siteSettings, t('page.home.title'))
+  ? metadataFromContentSeo(home.seo, siteSettings, metadataFallbackForPath('/'))
   : fallbackMetadata(
       '/',
       t('page.home.title'),

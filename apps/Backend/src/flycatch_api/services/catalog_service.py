@@ -10,8 +10,10 @@ from flycatch_api.models import Author
 from flycatch_api.models.case_study import ContentStatus
 from flycatch_api.models.catalog import (
     Application as ApplicationRow,
+    OpeningApplication,
     Contact as ContactRow,
     Download as DownloadRow,
+    DownloadRequest as DownloadRequestRow,
     EmailConfiguration as EmailConfigurationRow,
     EmailTemplate as EmailTemplateRow,
     EmployeeTestimonial as EmployeeTestimonialRow,
@@ -23,10 +25,12 @@ from flycatch_api.models.catalog import (
     NewsCategoryLink,
     Opening as OpeningRow,
     OpeningApplication,
+    PrivacyPolicy as PrivacyPolicyRow,
     Resource as ResourceRow,
     ResourceCategory as ResourceCategoryRow,
     ResourceCategoryLink,
     Subscription as SubscriptionRow,
+    Terms as TermsRow,
 )
 from flycatch_api.schemas.admin_auth import FieldErrorDetail, FieldErrors
 from flycatch_api.schemas.admin_blogs import EntityNotFound
@@ -77,6 +81,10 @@ from flycatch_api.schemas.admin_catalog import (
     NewsCategoryWrite,
     NewsList,
     NewsSummary,
+    LegalPage,
+    LegalPageList,
+    LegalPageSummary,
+    LegalPageWrite,
     NewsWrite,
     Opening,
     OpeningList,
@@ -95,6 +103,7 @@ from flycatch_api.schemas.admin_homes import ContentSeo
 from flycatch_api.schemas.public_catalog import (
     PublicApplication,
     PublicApplicationList,
+    PublicApplicationWrite,
     PublicAuthor,
     PublicEmailConfiguration,
     PublicEmailConfigurationList,
@@ -104,8 +113,11 @@ from flycatch_api.schemas.public_catalog import (
     PublicEmployeeTestimonialList,
     PublicContact,
     PublicContactList,
+    PublicContactWrite,
     PublicDownload,
     PublicDownloadList,
+    PublicDownloadRequest,
+    PublicDownloadRequestWrite,
     PublicFlycatchSaudiArabia,
     PublicFlycatchSaudiArabiaList,
     PublicMembership,
@@ -114,6 +126,8 @@ from flycatch_api.schemas.public_catalog import (
     PublicSubscription,
     PublicSubscriptionList,
     PublicSubscriptionWrite,
+    PublicLegalPage,
+    PublicLegalPageList,
     PublicNews,
     PublicNewsCategory,
     PublicNewsCategoryList,
@@ -127,9 +141,14 @@ from flycatch_api.schemas.public_catalog import (
     PublicResourcesCategoryList,
     MembershipImage as PublicMembershipImage,
 )
+from flycatch_api.security.bot_protection import assert_human_submission
 from flycatch_api.services.author_service import CatalogError, author_schema
+from flycatch_api.services.email_pipeline import enqueue_notification
 from flycatch_api.services.content_blocks import optional_key, seo_dict
 from flycatch_api.services.industry_service import PER_PAGE, coerce_status
+from flycatch_api.services.media_service import DOCUMENT_TYPES, MediaService
+
+application_media = MediaService()
 from flycatch_api.services.landing_catalog import seo_snippet
 from flycatch_api.services.text import document_format, is_valid_media_key, is_valid_slug, sanitize_html, slugify
 
@@ -148,6 +167,18 @@ SPECIALIZATIONS = {
     "IT Recruiter",
 }
 TEMPLATE_TYPES = {"user_notification", "admin_notification"}
+CONTACT_TYPES = {
+    "PARTNERSHIP": ("company_name", "details"),
+    "GENERAL_ENQUIRY": ("subject",),
+    "GET_A_QUOTE": ("details",),
+}
+CONTACT_TYPE_ALIASES = {
+    "partnership": "PARTNERSHIP",
+    "general": "GENERAL_ENQUIRY",
+    "quotes": "GET_A_QUOTE",
+    "get_a_quote": "GET_A_QUOTE",
+    "get-a-quote": "GET_A_QUOTE",
+}
 
 
 def _required(value: str, field: str) -> str:
@@ -294,6 +325,85 @@ class ApplicationService:
         if row is None or row.status != ContentStatus.publish:
             raise _not_found("public.applications.not_found")
         return public_application(row)
+
+    def submit(
+        self,
+        db: Session,
+        payload: PublicApplicationWrite,
+        *,
+        resume_name: str | None,
+        resume_type: str | None,
+        resume_data: bytes,
+    ) -> PublicApplication:
+        assert_human_submission(website=payload.website, recaptcha_token=payload.recaptcha_token)
+        _required(payload.name, "name")
+        _required(payload.last_name, "last_name")
+        _required(str(payload.email), "email")
+        _required(payload.phone, "phone")
+        if not resume_data:
+            raise CatalogError(
+                422,
+                FieldErrors(
+                    fields={"resume": FieldErrorDetail(message_key="admin.field.required")}
+                ).model_dump(),
+            )
+        if (resume_type or "").lower() not in DOCUMENT_TYPES:
+            raise CatalogError(
+                422,
+                FieldErrors(
+                    fields={"resume": FieldErrorDetail(message_key="admin.media.type.invalid")}
+                ).model_dump(),
+            )
+        uploaded = application_media.upload(resume_name, resume_type, resume_data)
+        row = ApplicationRow(created_at=datetime.now(UTC))
+        self._apply(
+            row,
+            ApplicationWrite(
+                resume_key=uploaded.key,
+                name=payload.name,
+                last_name=payload.last_name,
+                email=payload.email,
+                phone=payload.phone,
+                additional_info=payload.additional_info,
+                current_ctc=payload.current_ctc,
+                expected_ctc=payload.expected_ctc,
+                notice_period=payload.notice_period,
+                experience=payload.experience,
+                status=ContentStatus.draft,
+            ),
+        )
+        db.add(row)
+        db.flush()
+        slug = payload.opening_slug.strip()
+        if slug:
+            opening = (
+                db.query(OpeningRow)
+                .filter(OpeningRow.slug == slug, OpeningRow.status == ContentStatus.publish)
+                .first()
+            )
+            if opening is None:
+                raise CatalogError(
+                    422,
+                    FieldErrors(
+                        fields={"opening_slug": FieldErrorDetail(message_key="public.openings.not_found")}
+                    ).model_dump(),
+                )
+            db.add(OpeningApplication(opening_id=opening.id, application_id=row.id))
+        db.commit()
+        row = (
+            db.query(ApplicationRow)
+            .options(joinedload(ApplicationRow.opening_links).joinedload(OpeningApplication.opening))
+            .filter(ApplicationRow.id == row.id)
+            .one()
+        )
+        result = public_application(row)
+        enqueue_notification(
+            db,
+            kind="application",
+            source_id=result.id,
+            context={"name": result.name, "email": result.email, "kind": "application"},
+        )
+        return result
 
     def create(self, db: Session, payload: ApplicationWrite) -> Application:
         row = ApplicationRow(created_at=datetime.now(UTC))
@@ -490,9 +600,7 @@ class OpeningService:
             job_status=row.job_status,
             specialization=row.specialization,
             body=row.body,
-            applications=[
-                public_application(link.application) for link in row.application_links if link.application
-            ],
+            applications=[],
         )
 
 
@@ -1410,6 +1518,68 @@ class ContactService:
             raise _not_found("public.contacts.not_found")
         return self._public(row)
 
+    def submit(self, db: Session, payload: PublicContactWrite) -> PublicContact:
+        assert_human_submission(website=payload.website, recaptcha_token=payload.recaptcha_token)
+        _required(payload.name, "name")
+        _required(payload.last_name, "last_name")
+        _required(str(payload.email), "email")
+        _required(payload.phone, "phone")
+        contact_type = CONTACT_TYPE_ALIASES.get(payload.contact_type.strip(), payload.contact_type.strip())
+        if contact_type not in CONTACT_TYPES:
+            raise CatalogError(
+                422,
+                FieldErrors(
+                    fields={"contact_type": FieldErrorDetail(message_key="admin.field.invalid")}
+                ).model_dump(),
+            )
+        extras = {
+            "subject": payload.subject,
+            "details": payload.details,
+            "company_name": payload.company_name,
+        }
+        missing = {
+            field: FieldErrorDetail(message_key="admin.field.required")
+            for field in CONTACT_TYPES[contact_type]
+            if not extras[field].strip()
+        }
+        if missing:
+            raise CatalogError(422, FieldErrors(fields=missing).model_dump())
+        created = self.create(
+            db,
+            ContactWrite(
+                name=payload.name,
+                last_name=payload.last_name,
+                email=payload.email,
+                country=payload.country,
+                phone=payload.phone,
+                subject=payload.subject,
+                details=payload.details,
+                contact_type=contact_type,
+                company_name=payload.company_name,
+                status=ContentStatus.draft,
+            ),
+        )
+        result = PublicContact(
+            id=created.id,
+            name=created.name,
+            last_name=created.last_name,
+            email=created.email,
+            country=created.country,
+            phone=created.phone,
+            subject=created.subject,
+            contact_date=created.contact_date,
+            details=created.details,
+            contact_type=created.contact_type,
+            company_name=created.company_name,
+        )
+        enqueue_notification(
+            db,
+            kind="contact",
+            source_id=created.id,
+            context={"name": created.name, "email": str(created.email), "kind": "contact"},
+        )
+        return result
+
     def create(self, db: Session, payload: ContactWrite) -> Contact:
         row = ContactRow(created_at=datetime.now(UTC))
         self._apply(row, payload)
@@ -1511,6 +1681,39 @@ class DownloadService:
         if row is None or row.status != ContentStatus.publish:
             raise _not_found("public.downloads.not_found")
         return self._public(row)
+
+    def request(self, db: Session, item_id: UUID, payload: PublicDownloadRequestWrite) -> PublicDownloadRequest:
+        assert_human_submission(website=payload.website, recaptcha_token=payload.recaptcha_token)
+        download = db.get(DownloadRow, item_id)
+        if download is None or download.status != ContentStatus.publish:
+            raise _not_found("public.downloads.not_found")
+        name = _required(payload.name, "name")
+        email = _required(str(payload.email), "email")
+        row = DownloadRequestRow(
+            download_id=download.id,
+            name=name,
+            email=email,
+            company=payload.company.strip(),
+            created_at=datetime.now(UTC),
+        )
+        db.add(row)
+        db.commit()
+        db.refresh(row)
+        result = PublicDownloadRequest(
+            id=row.id,
+            download_id=download.id,
+            name=row.name,
+            email=row.email,
+            company=row.company,
+            file_key=download.file_key,
+        )
+        enqueue_notification(
+            db,
+            kind="download",
+            source_id=row.id,
+            context={"name": row.name, "email": row.email, "download": download.name, "kind": "download"},
+        )
+        return result
 
     def create(self, db: Session, payload: DownloadWrite) -> Download:
         row = DownloadRow(created_at=datetime.now(UTC))
@@ -1640,6 +1843,7 @@ class FlycatchSaudiArabiaService:
         row.banner_title = _required(payload.banner_title, "banner_title")
         row.banner_explore_text = payload.banner_explore_text.strip()
         row.services_title = payload.services_title.strip()
+        row.banner_image_key = optional_key(payload.banner_image_key, "banner_image_key")
         row.video_key = optional_key(payload.video_key, "video_key")
         row.seo = seo_dict(payload.seo)
         row.status = coerce_status(payload.status)
@@ -1660,6 +1864,7 @@ class FlycatchSaudiArabiaService:
             service_section=[ServiceSectionItem.model_validate(item) for item in (row.service_section or [])],
             banner_explore_text=row.banner_explore_text,
             services_title=row.services_title,
+            banner_image_key=row.banner_image_key,
             video_key=row.video_key,
             seo=ContentSeo.model_validate(row.seo or {}),
             status=row.status,
@@ -1675,6 +1880,7 @@ class FlycatchSaudiArabiaService:
             ],
             banner_explore_text=row.banner_explore_text,
             services_title=row.services_title,
+            banner_image_key=row.banner_image_key,
             video_key=row.video_key,
             seo=ContentSeo.model_validate(row.seo or {}),
         )
@@ -1732,16 +1938,24 @@ class SubscriptionService:
         return self._detail(row)
 
     def subscribe(self, db: Session, payload: PublicSubscriptionWrite) -> PublicSubscription:
+        assert_human_submission(website=payload.website, recaptcha_token=payload.recaptcha_token)
         created = self.create(
             db,
             SubscriptionWrite(email=payload.email, active=True, status=ContentStatus.draft),
         )
-        return PublicSubscription(
+        result = PublicSubscription(
             id=created.id,
             email=created.email,
             active=created.active,
             created_at=created.created_at,
         )
+        enqueue_notification(
+            db,
+            kind="subscription",
+            source_id=created.id,
+            context={"email": str(created.email), "kind": "subscription"},
+        )
+        return result
 
     def update(self, db: Session, item_id: UUID, payload: SubscriptionWrite) -> Subscription:
         row = db.get(SubscriptionRow, item_id)
@@ -1779,6 +1993,113 @@ class SubscriptionService:
         return PublicSubscription(id=row.id, email=row.email, active=row.active, created_at=row.created_at)
 
 
+class LegalPageService:
+    def __init__(self, model, admin_key: str, public_key: str):
+        self.model = model
+        self.admin_key = admin_key
+        self.public_key = public_key
+
+    def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> LegalPageList:
+        query = db.query(self.model)
+        if q and q.strip():
+            term = f"%{q.strip()}%"
+            query = query.filter(or_(self.model.title.ilike(term), self.model.slug.ilike(term)))
+        page, per_page, rows, total = _paginate(query.order_by(self.model.updated_at.desc()), page, per_page)
+        return LegalPageList(items=[self._summary(row) for row in rows], page=page, per_page=per_page, total=total)
+
+    def list_published(self, db: Session, q: str | None, page: int, per_page: int) -> PublicLegalPageList:
+        query = db.query(self.model).filter(self.model.status == ContentStatus.publish)
+        if q and q.strip():
+            query = query.filter(self.model.title.ilike(f"%{q.strip()}%"))
+        page, per_page, rows, total = _paginate(query.order_by(self.model.updated_at.desc()), page, per_page)
+        return PublicLegalPageList(
+            items=[self._public(row) for row in rows], page=page, per_page=per_page, total=total
+        )
+
+    def get(self, db: Session, item_id: UUID) -> LegalPage:
+        return self._detail(self._load(db, item_id))
+
+    def get_published_by_slug(self, db: Session, slug: str) -> PublicLegalPage:
+        row = (
+            db.query(self.model)
+            .filter(func.lower(self.model.slug) == slug.strip().lower(), self.model.status == ContentStatus.publish)
+            .first()
+        )
+        if row is None:
+            raise _not_found(self.public_key)
+        return self._public(row)
+
+    def create(self, db: Session, payload: LegalPageWrite) -> LegalPage:
+        now = datetime.now(UTC)
+        row = self.model(created_at=now, updated_at=now)
+        self._apply(db, row, payload, None)
+        db.add(row)
+        db.commit()
+        return self.get(db, row.id)
+
+    def update(self, db: Session, item_id: UUID, payload: LegalPageWrite) -> LegalPage:
+        row = self._load(db, item_id)
+        self._apply(db, row, payload, row.id)
+        row.updated_at = datetime.now(UTC)
+        db.commit()
+        return self.get(db, row.id)
+
+    def delete(self, db: Session, item_id: UUID) -> None:
+        row = db.get(self.model, item_id)
+        if row is None:
+            raise _not_found(self.admin_key)
+        db.delete(row)
+        db.commit()
+
+    def _load(self, db: Session, item_id: UUID):
+        row = db.get(self.model, item_id)
+        if row is None:
+            raise _not_found(self.admin_key)
+        return row
+
+    def _apply(self, db: Session, row, payload: LegalPageWrite, current_id: UUID | None) -> None:
+        title = _required(payload.title, "title")
+        slug = slugify(payload.slug) or slugify(title)
+        row.title = title
+        row.slug = _unique_slug(
+            db,
+            self.model,
+            slug,
+            current_id,
+            "slug",
+            f"{self.admin_key.replace('.not_found', '')}.slug.invalid",
+            f"{self.admin_key.replace('.not_found', '')}.slug.duplicate",
+        )
+        row.body = sanitize_html(payload.body)
+        row.seo = seo_dict(payload.seo)
+        row.status = coerce_status(payload.status)
+
+    def _summary(self, row) -> LegalPageSummary:
+        return LegalPageSummary(
+            id=row.id, title=row.title, slug=row.slug, state=row.status, created_at=row.created_at
+        )
+
+    def _detail(self, row) -> LegalPage:
+        return LegalPage(
+            id=row.id,
+            title=row.title,
+            slug=row.slug,
+            body=row.body,
+            seo=ContentSeo.model_validate(row.seo or {}),
+            status=row.status,
+            created_at=row.created_at,
+            updated_at=row.updated_at,
+        )
+
+    def _public(self, row) -> PublicLegalPage:
+        return PublicLegalPage(
+            title=row.title,
+            slug=row.slug,
+            body=row.body,
+            seo=ContentSeo.model_validate(row.seo or {}),
+        )
+
+
 application_service = ApplicationService()
 opening_service = OpeningService()
 employee_testimonial_service = EmployeeTestimonialService()
@@ -1791,3 +2112,7 @@ contact_service = ContactService()
 download_service = DownloadService()
 flycatch_saudi_arabia_service = FlycatchSaudiArabiaService()
 subscription_service = SubscriptionService()
+privacy_policy_service = LegalPageService(
+    PrivacyPolicyRow, "admin.privacy_policies.not_found", "public.privacy_policies.not_found"
+)
+terms_service = LegalPageService(TermsRow, "admin.terms.not_found", "public.terms.not_found")
