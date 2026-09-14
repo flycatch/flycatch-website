@@ -11,11 +11,7 @@ resources:
 # Keep environment-specific values out of the shared base.  The public origin is
 # consumed by the Backend; Astro embeds its equivalent at image-build time.
 patches:
-- target:
-    version: v1
-    kind: ConfigMap
-    name: flycatch-website-config
-  patch: |-
+- patch: |-
     - op: replace
       path: /data/PUBLIC_ORIGIN
       value: https://flycatch-website-test.k3s.flycatchtech.in
@@ -25,17 +21,18 @@ patches:
     - op: replace
       path: /data/ENVIRONMENT
       value: test
+  target:
+    kind: ConfigMap
+    name: flycatch-website-config
+    version: v1
 
 images:
 - name: registry.k3s.flycatchtech.in/flycatch-website/administration-fe
-  newName: registry.k3s.flycatchtech.in/flycatch-website/administration-fe
-  newTag: test-ab6da6712e1a52c96e9a5a3c666a65b2951830a0
+  newTag: test-v0.1.0.30
 - name: registry.k3s.flycatchtech.in/flycatch-website/backend
-  newName: registry.k3s.flycatchtech.in/flycatch-website/backend
-  newTag: test-ab6da6712e1a52c96e9a5a3c666a65b2951830a0
+  newTag: test-v0.1.0.30
 - name: registry.k3s.flycatchtech.in/flycatch-website/frontend
-  newName: registry.k3s.flycatchtech.in/flycatch-website/frontend
-  newTag: test-ab6da6712e1a52c96e9a5a3c666a65b2951830a0
+  newTag: test-v0.1.0.30
 
 replicas:
 - count: 1
