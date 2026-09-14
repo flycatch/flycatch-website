@@ -15,6 +15,7 @@ export default defineConfig({
         `${site}/`,
         `${site}/about`,
         `${site}/services/ai-services`,
+        `${site}/solutions`,
         `${site}/case-studies`,
         `${site}/company/blogs`,
         `${site}/company/clients`,

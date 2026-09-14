@@ -5,6 +5,9 @@ import {
   fetchOrigin,
   loadPublishedAiService,
   loadPublishedAiServices,
+  loadPublishedSolutionProduct,
+  loadPublishedSolutionProducts,
+  loadPublishedSolutions,
   publicMediaUrl,
 } from '../../src/lib/public-api';
 
@@ -157,6 +160,152 @@ describe('public AI service field mapping', () => {
     expect(result.item?.industry_items).toHaveLength(0);
     expect(result.item?.solutions[0].solutions_section.title).toBe('DoctCare AI');
     expect(result.item?.solutions[0].solutions_section.image_key).toBe('solutions/doctcare.jpg');
+    vi.unstubAllGlobals();
+  });
+});
+
+describe('public solutions loaders', () => {
+  it('lists published solutions from the public API', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        items: [
+          {
+            banner_image_key: 'solutions/hero.jpg',
+            banner_title: 'We help companies all around the world to grow',
+            section_title: 'Our Products',
+            seo: {
+              title: 'Solutions',
+              description: '',
+              canonical_url: '/solutions',
+              meta_title: '',
+              h1_tag: '',
+              image_alt: '',
+              image_key: null,
+            },
+          },
+        ],
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedSolutions();
+    expect(result.error).toBe(false);
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0].section_title).toBe('Our Products');
+    expect(String(fetchMock.mock.calls[0][0])).toContain('/api/v1/public/solutions');
+    vi.unstubAllGlobals();
+  });
+
+  it('loads a published solution product by slug', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        product_title: 'Credit Life',
+        product_description: 'Census management',
+        product_tag: 'Insurance',
+        product_logo_key: null,
+        product_card_image_key: 'products/credit-life.jpg',
+        product_banner_image_key: null,
+        card_image_on_right: true,
+        banner_image_on_right: false,
+        slug: 'credit-life',
+        order: 1,
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedSolutionProduct('credit-life');
+    expect(result.error).toBe(false);
+    expect(result.item?.product_title).toBe('Credit Life');
+    expect(String(fetchMock.mock.calls[0][0])).toContain(
+      '/api/v1/public/solution-products/credit-life',
+    );
+    vi.unstubAllGlobals();
+  });
+
+  it('hydrates listed products from the slug endpoint and sorts by order', async () => {
+    const fetchMock = vi.fn(async (url: string) => {
+      const href = String(url);
+      if (href.includes('/api/v1/public/solution-products?')) {
+        return {
+          ok: true,
+          json: async () => ({
+            items: [
+              {
+                slug: 'combus',
+                product_title: 'ComBus',
+                product_description: '',
+                product_tag: '',
+                product_logo_key: null,
+                product_card_image_key: null,
+                card_image_on_right: false,
+                order: 2,
+              },
+              {
+                slug: 'credit-life',
+                product_title: 'Credit Life',
+                product_description: '',
+                product_tag: '',
+                product_logo_key: null,
+                product_card_image_key: null,
+                card_image_on_right: true,
+                order: 1,
+              },
+            ],
+            page: 1,
+            per_page: 10,
+            total: 2,
+          }),
+        };
+      }
+      if (href.endsWith('/solution-products/combus')) {
+        return {
+          ok: true,
+          json: async () => ({
+            product_title: 'ComBus',
+            product_description: 'Body',
+            product_tag: 'Insurance',
+            product_logo_key: null,
+            product_card_image_key: 'products/combus.jpg',
+            product_banner_image_key: null,
+            card_image_on_right: false,
+            banner_image_on_right: false,
+            slug: 'combus',
+            order: 2,
+          }),
+        };
+      }
+      if (href.endsWith('/solution-products/credit-life')) {
+        return {
+          ok: true,
+          json: async () => ({
+            product_title: 'Credit Life',
+            product_description: 'Body',
+            product_tag: 'Insurance',
+            product_logo_key: null,
+            product_card_image_key: 'products/credit-life.jpg',
+            product_banner_image_key: null,
+            card_image_on_right: true,
+            banner_image_on_right: false,
+            slug: 'credit-life',
+            order: 1,
+          }),
+        };
+      }
+      return { ok: false, json: async () => ({}) };
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedSolutionProducts();
+    expect(result.error).toBe(false);
+    expect(result.items.map((item) => item.slug)).toEqual(['credit-life', 'combus']);
+    expect(result.items[0].card_image_on_right).toBe(true);
+    expect(fetchMock.mock.calls.some((call) => String(call[0]).includes('/solution-products?'))).toBe(
+      true,
+    );
+    expect(
+      fetchMock.mock.calls.some((call) =>
+        String(call[0]).includes('/api/v1/public/solution-products/credit-life'),
+      ),
+    ).toBe(true);
     vi.unstubAllGlobals();
   });
 });
