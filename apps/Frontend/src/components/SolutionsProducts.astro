@@ -19,6 +19,7 @@ const heading = title.trim();
     <SectionState error={error} empty={!error && products.length === 0} />
     <div class="solutions-product-list" hidden={!products.length}>{products.map((product) => {
         const image = publicMediaUrl(product.product_card_image_key);
+        const logo = publicMediaUrl(product.product_logo_key);
         const tag = product.product_tag.trim();
         const name = product.product_title.trim();
         const body = product.product_description.trim();
@@ -36,6 +37,11 @@ const heading = title.trim();
             )}
             <div class="solutions-product-copy">
               <p class="solutions-product-tag" hidden={!tag}>{tag}</p>
+              {logo && (
+                <div class="solutions-product-logo">
+                  <img src={logo} alt="" loading="lazy" />
+                </div>
+              )}
               <h3 class="solutions-product-title" hidden={!name}>{name}</h3>
               <p class="solutions-product-body" hidden={!body}>{body}</p>
               {href && (
