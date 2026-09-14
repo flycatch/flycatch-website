@@ -206,6 +206,37 @@ export type PublicAiService = {
   seo: ContentSeo;
 };
 
+export type PublicSolution = {
+  banner_image_key: string | null;
+  banner_title: string;
+  section_title: string;
+  seo: ContentSeo;
+};
+
+export type PublicSolutionProductSummary = {
+  slug: string;
+  product_title: string;
+  product_description: string;
+  product_tag: string;
+  product_logo_key: string | null;
+  product_card_image_key: string | null;
+  card_image_on_right: boolean;
+  order: number;
+};
+
+export type PublicSolutionProduct = {
+  product_title: string;
+  product_description: string;
+  product_tag: string;
+  product_logo_key: string | null;
+  product_card_image_key: string | null;
+  product_banner_image_key: string | null;
+  card_image_on_right: boolean;
+  banner_image_on_right: boolean;
+  slug: string;
+  order: number;
+};
+
 export type PublicListResult<T> = {
   items: T[];
   error: boolean;
@@ -353,4 +384,41 @@ export async function loadPublishedAiService(
   return getJson<PublicAiService>(`/api/v1/public/ai-services/${encodeURIComponent(slug)}`).then(
     ({ data, error, origin }) => ({ item: data, error, origin }),
   );
+}
+
+export async function loadPublishedSolutions(): Promise<PublicListResult<PublicSolution>> {
+  const { data, error, origin } = await getJson<{ items?: PublicSolution[] }>(
+    '/api/v1/public/solutions',
+  );
+  if (error) return { items: [], error: true, origin };
+  return { items: Array.isArray(data?.items) ? data.items : [], error: false, origin };
+}
+
+export async function loadPublishedSolutionProduct(
+  slug: string,
+): Promise<PublicItemResult<PublicSolutionProduct>> {
+  return getJson<PublicSolutionProduct>(
+    `/api/v1/public/solution-products/${encodeURIComponent(slug)}`,
+  ).then(({ data, error, origin }) => ({ item: data, error, origin }));
+}
+
+export async function loadPublishedSolutionProducts(): Promise<
+  PublicListResult<PublicSolutionProduct>
+> {
+  const listed = await loadPaginated<PublicSolutionProductSummary>(
+    '/api/v1/public/solution-products',
+  );
+  if (listed.error) return { items: [], error: true, origin: listed.origin };
+  const items: PublicSolutionProduct[] = [];
+  for (const summary of listed.items) {
+    const slug = summary.slug?.trim();
+    if (!slug) continue;
+    const detail = await loadPublishedSolutionProduct(slug);
+    if (detail.error || !detail.item) {
+      return { items, error: true, origin: listed.origin };
+    }
+    items.push(detail.item);
+  }
+  items.sort((a, b) => a.order - b.order);
+  return { items, error: false, origin: listed.origin };
 }

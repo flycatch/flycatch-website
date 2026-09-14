@@ -1,0 +1,76 @@
+---
+import SectionState from './SectionState.astro';
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicSolutionProduct } from '../lib/public-api';
+import { t } from '../lib/i18n';
+
+interface Props {
+  title: string;
+  products: PublicSolutionProduct[];
+  error?: boolean;
+}
+
+const { title, products, error = false } = Astro.props;
+const heading = title.trim();
+---
+<section class="solutions-products" aria-labelledby="solutions-products-heading">
+  <div class="container">
+    <h2 id="solutions-products-heading" class="type-display" hidden={!heading}>{heading}</h2>
+    <SectionState error={error} empty={!error && products.length === 0} />
+    <div class="solutions-product-list" hidden={!products.length}>{products.map((product) => {
+        const image = publicMediaUrl(product.product_card_image_key);
+        const tag = product.product_tag.trim();
+        const name = product.product_title.trim();
+        const body = product.product_description.trim();
+        const slug = product.slug.trim();
+        const href = slug ? `/solutions/${slug}` : '';
+        return (
+          <article
+            class:list={['solutions-product', { 'is-image-left': !product.card_image_on_right }]}
+          >{image ? (
+              <div class="solutions-product-media has-image">
+                <img src={image} alt="" width="705" height="420" loading="lazy" />
+              </div>
+            ) : (
+              <div class="solutions-product-media solutions-product-fallback"></div>
+            )}
+            <div class="solutions-product-copy">
+              <p class="solutions-product-tag" hidden={!tag}>{tag}</p>
+              <h3 class="solutions-product-title" hidden={!name}>{name}</h3>
+              <p class="solutions-product-body" hidden={!body}>{body}</p>
+              {href && (
+                <p class="solutions-product-actions">
+                  <a class="btn" href={href}>
+                    {t('home.know_more')}
+                    <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
+                  </a>
+                </p>
+              )}
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  </div>
+</section>
+
+<script>
+  const products = document.querySelectorAll('.solutions-product');
+  if (products.length) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          } else {
+            entry.target.classList.remove('is-visible');
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+      },
+    );
+    products.forEach((product) => observer.observe(product));
+  }
+</script>
