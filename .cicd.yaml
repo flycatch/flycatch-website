@@ -1,34 +1,40 @@
 app:
-  name: flycatch-website
+    name: flycatch-website
 
 registry: registry.k3s.flycatchtech.in
 
 gitops:
-  overlayPath: deployment/k8s/overlays
+    overlayPath: deployment/k8s/overlays
+    credentialsId: github-credential
+
+versioning:
+    releaseBranch: master
+    firstReleaseBaseline: f87b2dd
 
 environments:
-  dev: dev
-  qa: qa
-  uat: uat
-  main: prod
-  feat/harbor-test: test
+    dev: dev
+    qa: qa
+    uat: uat
+    main: prod
+    master: prod
+    feat/harbor-test: test
 
 images:
-  - name: flycatch-website/frontend
-    dockerfile: apps/Frontend/Dockerfile
-    context: apps/Frontend
-    args: {}
+    - name: flycatch-website/frontend
+      dockerfile: apps/Frontend/Dockerfile
+      context: apps/Frontend
+      args: {}
 
-  - name: flycatch-website/backend
-    dockerfile: apps/Backend/Dockerfile
-    context: apps/Backend
-    args: {}
+    - name: flycatch-website/backend
+      dockerfile: apps/Backend/Dockerfile
+      context: apps/Backend
+      args: {}
 
-  - name: flycatch-website/administration-fe
-    dockerfile: apps/Administration-FE/Dockerfile
-    context: apps/Administration-FE
-    additionalContexts:
-      specs: specs
-    args:
-      PUBLIC_ORIGIN: https://flycatch-website-test.k3s.flycatchtech.in
-      PUBLIC_ENVIRONMENT: development
+    - name: flycatch-website/administration-fe
+      dockerfile: apps/Administration-FE/Dockerfile
+      context: apps/Administration-FE
+      additionalContexts:
+          specs: specs
+      args:
+          PUBLIC_ORIGIN: https://flycatch-website-test.k3s.flycatchtech.in
+          PUBLIC_ENVIRONMENT: development
