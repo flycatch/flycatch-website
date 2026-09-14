@@ -9,7 +9,6 @@ gitops:
 
 versioning:
     releaseBranch: master
-    firstReleaseBaseline: f87b2dd
 
 environments:
     dev: dev
