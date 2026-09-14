@@ -1660,7 +1660,7 @@ body.is-mobile-drawer-open {
 .site-footer {
   background: var(--color-dark);
   color: #fff;
-  padding: var(--section-pad) 0 var(--s6);
+  padding: 50px 0;
   font-weight: 300;
 }
 
