@@ -36,7 +36,7 @@
 .doctcare-hero-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.64);
+  background: rgba(0, 0, 0, 0.4);
 }
 
 .doctcare-hero-copy {
@@ -46,7 +46,7 @@
 }
 
 .doctcare-hero-title {
-  margin: 0 0 24px;
+  margin: 0 0 100px;
   max-width: 100%;
   color: #ffffff;
   font-size: clamp(1.75rem, 1.375rem + 1.6667vw, 2.875rem);
@@ -326,8 +326,8 @@
 }
 
 .doctcare-benefit-icon {
-  width: clamp(56px, 14vw, 90px);
-  height: clamp(56px, 14vw, 90px);
+  width: clamp(56px, 14vw, 70px);
+  height: clamp(56px, 14vw, 70px);
   object-fit: contain;
 }
 
@@ -356,18 +356,27 @@
   overflow: hidden;
   isolation: isolate;
   width: 100%;
-  max-width: 1292px;
-  margin-inline: auto;
+  max-width: 100%;
   min-height: 280px;
-  aspect-ratio: 1291.911 / 439.4;
   color: #ffffff;
 }
 
 .doctcare-api-cta-shape,
 .doctcare-api-cta-rings-wrap,
-.doctcare-api-cta-rings {
+.doctcare-api-cta-rings,
+.doctcare-api-cta-mobile-bg {
   pointer-events: none;
   max-width: none;
+}
+
+.doctcare-api-cta-mobile-bg {
+  display: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
 }
 
 .doctcare-api-cta-shape {
@@ -425,35 +434,59 @@
   letter-spacing: 0.6px;
 }
 
-.doctcare-api-cta-btn {
+.doctcare-page .doctcare-api-cta-btn {
   box-sizing: border-box;
-  position: absolute;
-  left: 74.537%;
-  top: 58.919%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  width: 20.125%;
-  max-width: 260px;
-  height: 20.71%;
-  min-height: 48px;
+  gap: clamp(6px, 0.8vw, 8px);
+  width: min(260px, 100%);
+  max-width: 100%;
+  min-height: clamp(52px, 8vw, 91px);
   margin: 0;
-  padding: 32px 48px;
+  padding: clamp(16px, 3.2vw, 32px) clamp(24px, 4.8vw, 48px);
   border-color: #ffffff;
-  background: #ffffff;
+  background-color: #ffffff;
   color: #000000;
   border-radius: 12px;
-  font-size: clamp(0.875rem, 0.7rem + 0.74vw, 1.5rem);
+  font-size: clamp(0.875rem, 0.75rem + 0.55vw, 1.125rem);
   font-weight: 400;
   letter-spacing: 0.6px;
-  line-height: 27px;
+  line-height: 1.2;
   white-space: nowrap;
 }
 
-.doctcare-api-cta-btn img {
-  width: 20px;
-  height: 20px;
+.doctcare-page .doctcare-api-cta-btn img {
+  width: clamp(16px, 1.6vw, 20px);
+  height: clamp(16px, 1.6vw, 20px);
+}
+
+.doctcare-page .doctcare-api-cta-btn:hover {
+  background-color: #e50914;
+  color: #ffffff;
+  border-color: #e50914;
+}
+
+@media (min-width: 1025px) {
+  .doctcare-api-cta-panel {
+    aspect-ratio: 1291.911 / 439.4;
+  }
+
+  .doctcare-page .doctcare-api-cta-btn {
+    position: absolute;
+    left: 68%;
+    top: 58.919%;
+    width: 18.125%;
+    max-width: 260px;
+    height: 18%;
+    min-height: 59px;
+    padding: 16px 24px;
+  }
+
+  .doctcare-page .doctcare-api-cta-btn img {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 @media (min-width: 768px) {
@@ -518,46 +551,72 @@
 }
 
 @media (min-width: 1440px) {
-  .doctcare-page .doctcare-api-cta > .container {
-    padding-left: 110px;
-    padding-right: 110px;
-  }
-
   .doctcare-intro-card {
     min-height: 461px;
   }
-
-  .doctcare-api-cta-btn {
-    width: 260px;
-    height: 91px;
-    min-height: 91px;
-  }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 1024px) {
   .doctcare-api-cta-panel {
-    aspect-ratio: auto;
-    min-height: 360px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(16px, 4vw, 32px);
+    aspect-ratio: auto;
+    min-height: clamp(320px, 58vw, 440px);
+    padding: clamp(24px, 6vw, 48px) clamp(16px, 4vw, 32px);
+    box-sizing: border-box;
   }
 
   .doctcare-api-cta-copy {
-    max-width: none;
-    padding: 32px 20px 16px;
+    max-width: min(36rem, 100%);
+    width: 100%;
+    padding: 0;
+    text-align: center;
+    justify-items: center;
   }
 
-  .doctcare-api-cta-btn {
+  .doctcare-page .doctcare-api-cta h2 {
+    font-size: clamp(1.375rem, 1.1rem + 1.4vw, 2.25rem);
+  }
+
+  .doctcare-page .doctcare-api-cta p {
+    font-size: clamp(0.9375rem, 0.85rem + 0.4vw, 1.125rem);
+  }
+
+  .doctcare-page .doctcare-api-cta-btn {
     position: relative;
     left: auto;
     top: auto;
-    align-self: flex-end;
-    width: min(260px, calc(100% - 32px));
-    height: 91px;
-    min-height: 91px;
-    margin: 0 16px 24px;
-    padding: 32px 48px;
+    height: auto;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 768px) {
+  .doctcare-api-cta-shape,
+  .doctcare-api-cta-rings-wrap {
+    display: none;
+  }
+
+  .doctcare-api-cta-mobile-bg {
+    display: block;
+  }
+
+  .doctcare-api-cta-panel {
+    min-height: clamp(340px, 110vw, 420px);
+    background: #000000;
+    border-radius: 16px;
+  }
+
+  .doctcare-api-cta-desc {
+    display: none !important;
+  }
+
+  .doctcare-page .doctcare-api-cta-btn {
+    width: 100%;
+    max-width: none;
   }
 }
 
