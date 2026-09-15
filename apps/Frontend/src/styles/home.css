@@ -1117,7 +1117,7 @@
   border-radius: 12px;
   background: #000000;
   color: #ffffff;
-  font-size: clamp(0.8125rem, 0.75rem + 0.2778vw, 1rem);
+  font-size: clamp(0.875rem, 0.75rem + 0.5vw, 1.125rem);
   font-weight: 400;
 }
 
