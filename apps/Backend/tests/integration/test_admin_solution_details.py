@@ -33,6 +33,7 @@ def test_solution_detail_crud_slug_and_nested(client, bootstrapped):
                     }
                 ],
                 "description": "Plain",
+                "sub_title": "Grow with us",
                 "sub_description": "<p>Grow</p><script>x</script>",
             },
             "challenges": {
@@ -75,7 +76,8 @@ def test_solution_detail_crud_slug_and_nested(client, bootstrapped):
     assert listed.json()["total"] == 1
     assert listed.json()["items"][0]["banner_title"] == "Retail"
     assert listed.json()["items"][0]["title"] == "Retail Ops"
-    assert listed.json()["items"][0]["challenges_title"] == "Legacy"
+    assert listed.json()["items"][0]["introduction_title"] == "Grow with us"
+    assert listed.json()["items"][0]["challenges_title"] == "Ada"
 
     duplicate = client.post(
         "/api/v1/admin/solution-details",
