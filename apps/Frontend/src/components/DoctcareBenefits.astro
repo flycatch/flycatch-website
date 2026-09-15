@@ -1,0 +1,39 @@
+---
+import { publicMediaUrl, sortByOrder } from '../lib/public-api';
+import type { PublicSolutionDetailsPage } from '../lib/public-api';
+import DoctcareHeading from './DoctcareHeading.astro';
+import DoctcareCmsText from './DoctcareCmsText.astro';
+
+interface Props {
+  page: PublicSolutionDetailsPage;
+}
+
+const { page } = Astro.props;
+const block = page.benefits;
+const types = sortByOrder(block.types);
+const description = block.description.trim();
+const show = Boolean(block.items.length || description || types.length);
+---
+{show && (
+  <section class="doctcare-benefits" aria-labelledby="doctcare-benefits-heading">
+    <div class="container doctcare-wide">
+      <DoctcareHeading items={block.items} id="doctcare-benefits-heading" class="doctcare-display" />
+      <p class="doctcare-lede doctcare-benefits-copy" hidden={!description}>{description}</p>
+      <div class="doctcare-benefit-grid" hidden={!types.length}>{types.map((item) => {
+          const icon = publicMediaUrl(item.image_key);
+          const title = item.title.trim();
+          return (
+            <article class="doctcare-benefit-card">
+              {icon ? (
+                <img class="doctcare-benefit-icon" src={icon} alt="" width="90" height="90" loading="lazy" />
+              ) : (
+                <span class="doctcare-benefit-icon"></span>
+              )}
+              <h3 hidden={!title}>{title}</h3>
+              <DoctcareCmsText value={item.description} class="doctcare-benefit-body" />
+            </article>
+          );
+        })}</div>
+    </div>
+  </section>
+)}

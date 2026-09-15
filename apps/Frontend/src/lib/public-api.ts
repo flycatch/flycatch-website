@@ -177,6 +177,110 @@ export type PublicSolutionDetail = {
   solutions_section: PublicSolutionsSection;
 };
 
+export type PublicHeadingItem = {
+  title: string;
+  order: number;
+  color: string;
+};
+
+export type PublicSolutionTypeItem = {
+  image_key: string | null;
+  description: string;
+  order: number;
+  title: string;
+};
+
+export type PublicSolutionDetailsIntroduction = {
+  items: PublicHeadingItem[];
+  description: string;
+  icon_keys: string[];
+  sub_title: string;
+  sub_description: string;
+  image_key: string | null;
+};
+
+export type PublicSolutionDetailsChallenges = {
+  items: PublicHeadingItem[];
+  description: string;
+  image_key: string | null;
+  name: string;
+  position: string;
+  types: PublicSolutionTypeItem[];
+};
+
+export type PublicSolutionDetailsBenefits = {
+  items: PublicHeadingItem[];
+  description: string;
+  types: PublicSolutionTypeItem[];
+};
+
+export type PublicSolutionDetailsCta = {
+  title: string;
+  description: string;
+  button_name: string;
+};
+
+/** Full public Solution Details page (not the nested AI Services card type). */
+export type PublicSolutionDetailsPage = {
+  title: string;
+  slug: string;
+  banner: PublicSolutionBanner;
+  introduction: PublicSolutionDetailsIntroduction;
+  challenges: PublicSolutionDetailsChallenges;
+  benefits: PublicSolutionDetailsBenefits;
+  solutions_section: PublicSolutionsSection;
+  cta: PublicSolutionDetailsCta;
+  seo: ContentSeo;
+};
+
+export function sortByOrder<T extends { order: number }>(items: T[] | null | undefined): T[] {
+  return [...(items ?? [])].sort((a, b) => a.order - b.order);
+}
+
+export function headingColor(color: string | null | undefined): string | undefined {
+  const value = color?.trim();
+  return value || undefined;
+}
+
+/** HTML, Slate-like JSON strings, or plain text from CMS fields. */
+export function cmsRichContent(value: string | null | undefined): { html: string; text: string } {
+  const raw = (value ?? '').trim();
+  if (!raw) return { html: '', text: '' };
+  if (raw.startsWith('<')) {
+    return {
+      html: raw,
+      text: raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim(),
+    };
+  }
+  if (raw.startsWith('[') || raw.startsWith('{')) {
+    const matches = [...raw.matchAll(/['"]text['"]\s*:\s*['"]((?:\\.|[^'\\])*)['"]/g)];
+    if (matches.length) {
+      return { html: '', text: matches.map((match) => match[1]).join(' ').trim() };
+    }
+    try {
+      const parsed = JSON.parse(raw) as unknown;
+      const collected: string[] = [];
+      const walk = (node: unknown) => {
+        if (!node) return;
+        if (Array.isArray(node)) {
+          node.forEach(walk);
+          return;
+        }
+        if (typeof node === 'object') {
+          const record = node as { text?: unknown; children?: unknown };
+          if (typeof record.text === 'string') collected.push(record.text);
+          walk(record.children);
+        }
+      };
+      walk(parsed);
+      if (collected.length) return { html: '', text: collected.join(' ').trim() };
+    } catch {
+      /* keep raw text */
+    }
+  }
+  return { html: '', text: raw };
+}
+
 export type PublicAiServiceSummary = {
   slug: string;
   banner_title: string;
@@ -421,4 +525,12 @@ export async function loadPublishedSolutionProducts(): Promise<
   }
   items.sort((a, b) => a.order - b.order);
   return { items, error: false, origin: listed.origin };
+}
+
+export async function loadPublishedSolutionDetail(
+  slug: string,
+): Promise<PublicItemResult<PublicSolutionDetailsPage>> {
+  return getJson<PublicSolutionDetailsPage>(
+    `/api/v1/public/solution-details/${encodeURIComponent(slug)}`,
+  ).then(({ data, error, origin }) => ({ item: data, error, origin }));
 }

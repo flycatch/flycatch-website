@@ -1,0 +1,46 @@
+---
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicSolutionDetailsPage } from '../lib/public-api';
+import DoctcareHeading from './DoctcareHeading.astro';
+import DoctcareCmsText from './DoctcareCmsText.astro';
+
+interface Props {
+  page: PublicSolutionDetailsPage;
+}
+
+const { page } = Astro.props;
+const intro = page.introduction;
+const description = intro.description.trim();
+const image = publicMediaUrl(intro.image_key);
+const icons = (intro.icon_keys ?? []).map((key) => publicMediaUrl(key)).filter(Boolean) as string[];
+const cardTitle = intro.sub_title.trim();
+const cardBody = intro.sub_description.trim();
+const hasCard = Boolean(icons.length || cardTitle || cardBody);
+const show = Boolean(intro.items.length || description || hasCard || image);
+---
+{show && (
+  <section class="doctcare-intro" aria-labelledby="doctcare-intro-heading">
+    <div class="container doctcare-wide">
+      <div class="doctcare-intro-grid">
+        <div class="doctcare-intro-copy">
+          <DoctcareHeading items={intro.items} id="doctcare-intro-heading" class="doctcare-display" />
+          <p class="doctcare-lede" hidden={!description}>{description}</p>
+          {hasCard && (
+            <div class="doctcare-intro-card">
+              <div class="doctcare-intro-icons" hidden={!icons.length}>{icons.map((src) => (
+                  <span class="doctcare-intro-icon">
+                    <img src={src} alt="" width="80" height="80" loading="lazy" />
+                  </span>
+                ))}</div>
+              <p class="doctcare-intro-card-title" hidden={!cardTitle}>{cardTitle}</p>
+              <DoctcareCmsText value={intro.sub_description} class="doctcare-intro-card-body" />
+            </div>
+          )}
+        </div>
+        <div class="doctcare-intro-media" hidden={!image}>{image && (
+            <img src={image} alt="" width="655" height="769" loading="lazy" />
+          )}</div>
+      </div>
+    </div>
+  </section>
+)}

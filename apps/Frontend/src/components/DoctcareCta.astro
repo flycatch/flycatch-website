@@ -1,0 +1,53 @@
+---
+import type { PublicSolutionDetailsPage } from '../lib/public-api';
+import { t } from '../lib/i18n';
+
+interface Props {
+  page: PublicSolutionDetailsPage;
+}
+
+const { page } = Astro.props;
+const title = page.cta.title.trim();
+const description = page.cta.description.trim();
+const action = page.cta.button_name.trim() || t('home.cta_action');
+const show = Boolean(title || description);
+---
+{show && (
+  <section class="doctcare-api-cta" aria-labelledby="doctcare-api-cta-heading">
+    <div class="container doctcare-wide">
+      <div class="doctcare-api-cta-panel">
+        <img
+          class="doctcare-api-cta-shape"
+          src="/solutions/doctcare-cta-shape.svg"
+          alt=""
+          width="1292"
+          height="439"
+        />
+        <div class="doctcare-api-cta-rings-wrap" aria-hidden="true">
+          <img
+            class="doctcare-api-cta-rings"
+            src="/solutions/doctcare-cta-rings.svg"
+            alt=""
+            width="990"
+            height="990"
+          />
+        </div>
+        <img
+          class="doctcare-api-cta-mobile-bg"
+          src="/solutions/doctcare-cta-bg-mobile.png"
+          alt=""
+          width="335"
+          height="385"
+        />
+        <div class="doctcare-api-cta-copy">
+          <h2 id="doctcare-api-cta-heading" hidden={!title}>{title}</h2>
+          <p class="doctcare-api-cta-desc" hidden={!description}>{description}</p>
+        </div>
+        <a class="btn doctcare-api-cta-btn" href="/contact-us">
+          {action}
+          <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
+        </a>
+      </div>
+    </div>
+  </section>
+)}
