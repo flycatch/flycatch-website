@@ -1,0 +1,21 @@
+---
+import { headingColor, sortByOrder } from '../lib/public-api';
+import type { PublicHeadingItem } from '../lib/public-api';
+
+interface Props {
+  items: PublicHeadingItem[];
+  as?: 'h1' | 'h2';
+  id?: string;
+  class?: string;
+}
+
+const { items, as: Tag = 'h2', id, class: className = '' } = Astro.props;
+const fragments = sortByOrder(items).filter((item) => item.title.trim());
+---
+{fragments.length > 0 && (
+  <Tag id={id} class={className}>{fragments.map((item, index) => (
+      <span style={headingColor(item.color) ? `color:${headingColor(item.color)}` : undefined}>
+        {item.title.trim()}{index < fragments.length - 1 ? ' ' : ''}
+      </span>
+    ))}</Tag>
+)}

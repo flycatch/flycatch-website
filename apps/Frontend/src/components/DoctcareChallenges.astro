@@ -1,0 +1,58 @@
+---
+import { publicMediaUrl, sortByOrder } from '../lib/public-api';
+import type { PublicSolutionDetailsPage } from '../lib/public-api';
+import DoctcareHeading from './DoctcareHeading.astro';
+import DoctcareCmsText from './DoctcareCmsText.astro';
+
+interface Props {
+  page: PublicSolutionDetailsPage;
+}
+
+const { page } = Astro.props;
+const block = page.challenges;
+const types = sortByOrder(block.types);
+const personImage = publicMediaUrl(block.image_key);
+const name = block.name.trim();
+const position = block.position.trim();
+const showPerson = Boolean(personImage || name || position);
+const show =
+  Boolean(block.items.length || block.description.trim() || showPerson || types.length);
+---
+{show && (
+  <section class="doctcare-challenges" aria-labelledby="doctcare-challenges-heading">
+    <div class="container doctcare-wide doctcare-challenges-layout">
+      <div class="doctcare-challenges-pin">
+        <DoctcareHeading items={block.items} id="doctcare-challenges-heading" class="doctcare-display" />
+        <DoctcareCmsText value={block.description} class="doctcare-quote" />
+        {showPerson && (
+          <div class="doctcare-person">
+            {personImage && (
+              <img class="doctcare-person-photo" src={personImage} alt="" width="85" height="80" loading="lazy" />
+            )}
+            <div class="doctcare-person-copy">
+              <p class="doctcare-person-name" hidden={!name}>{name}</p>
+              <p class="doctcare-person-role" hidden={!position}>{position}</p>
+            </div>
+          </div>
+        )}
+      </div>
+      <div class="doctcare-challenges-list" hidden={!types.length}>{types.map((item) => {
+          const icon = publicMediaUrl(item.image_key);
+          const title = item.title.trim();
+          return (
+            <article class="doctcare-challenge-item">
+              {icon ? (
+                <img class="doctcare-challenge-icon" src={icon} alt="" width="80" height="80" loading="lazy" />
+              ) : (
+                <span class="doctcare-challenge-icon"></span>
+              )}
+              <div class="doctcare-challenge-copy">
+                <h3 hidden={!title}>{title}</h3>
+                <DoctcareCmsText value={item.description} class="doctcare-challenge-body" />
+              </div>
+            </article>
+          );
+        })}</div>
+    </div>
+  </section>
+)}
