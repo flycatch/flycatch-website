@@ -1,0 +1,17 @@
+---
+import { cmsRichContent } from '../lib/public-api';
+
+interface Props {
+  value: string;
+  class?: string;
+  as?: 'div' | 'p';
+}
+
+const { value, class: className = '', as: Tag = 'div' } = Astro.props;
+const content = cmsRichContent(value);
+---
+{content.html ? (
+  <Tag class={className} set:html={content.html} />
+) : (
+  <Tag class={className} hidden={!content.text}>{content.text}</Tag>
+)}

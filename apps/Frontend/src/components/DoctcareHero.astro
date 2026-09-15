@@ -1,0 +1,29 @@
+---
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicSolutionDetailsPage } from '../lib/public-api';
+import { t } from '../lib/i18n';
+
+interface Props {
+  page: PublicSolutionDetailsPage;
+}
+
+const { page } = Astro.props;
+const banner = publicMediaUrl(page.banner.image_key);
+const title = page.banner.title.trim();
+const subTitle = page.banner.sub_title.trim() || t('page.doctcare.industry_label');
+const industry = page.banner.industry_type.trim();
+const alt = page.seo.image_alt.trim() || title || page.title;
+---
+<section class="doctcare-hero" aria-labelledby="doctcare-heading">{banner ? (
+    <img class="doctcare-hero-media" src={banner} alt={alt} width="1512" height="982" />
+  ) : (
+    <div class="doctcare-hero-media doctcare-hero-fallback"></div>
+  )}
+  <div class="doctcare-hero-overlay" aria-hidden="true"></div>
+  <div class="container doctcare-hero-copy">
+    <h1 id="doctcare-heading" class="doctcare-hero-title" hidden={!title}>{title}</h1>
+    <p class="doctcare-hero-kicker" hidden={!subTitle}>{subTitle}</p>
+    <p class="doctcare-hero-industry" hidden={!industry}>{industry}</p>
+  </div>
+</section>
+<script src="../scripts/doctcare-hero.ts"></script>
