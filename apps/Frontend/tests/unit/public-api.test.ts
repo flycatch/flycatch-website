@@ -5,6 +5,8 @@ import {
   fetchOrigin,
   loadPublishedAiService,
   loadPublishedAiServices,
+  cmsRichContent,
+  loadPublishedSolutionDetail,
   loadPublishedSolutionProduct,
   loadPublishedSolutionProducts,
   loadPublishedSolutions,
@@ -306,6 +308,89 @@ describe('public solutions loaders', () => {
         String(call[0]).includes('/api/v1/public/solution-products/credit-life'),
       ),
     ).toBe(true);
+    vi.unstubAllGlobals();
+  });
+});
+
+describe('public solution details loader', () => {
+  it('loads a published solution detail by slug without substituting designed copy', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        title: 'doctCare-ai',
+        slug: 'doctcare-ai',
+        banner: {
+          image_key: 'banner.webp',
+          title: 'CMS banner title',
+          sub_title: 'Industry',
+          industry_type: 'Clinical Workflow Automation',
+        },
+        introduction: {
+          items: [{ title: 'DoctCare AI', order: 2, color: '#E50914' }],
+          description: 'CMS intro',
+          icon_keys: ['icon.webp'],
+          sub_title: 'CMS card title',
+          sub_description: '<p>CMS card body</p>',
+          image_key: 'intro.webp',
+        },
+        challenges: {
+          items: [{ title: 'Challenges', order: 1, color: '#E50914' }],
+          description: '<p>CMS quote</p>',
+          image_key: 'person.webp',
+          name: 'CMS name',
+          position: 'CMS role',
+          types: [
+            {
+              image_key: 'type.webp',
+              title: 'Administrative Overload',
+              description: '<p>CMS type</p>',
+              order: 1,
+            },
+          ],
+        },
+        benefits: {
+          items: [{ title: 'DoctCare AI', order: 1, color: '#E50914' }],
+          description: 'CMS benefits',
+          types: [
+            {
+              image_key: 'benefit.webp',
+              title: 'Frictionless Implementation',
+              description:
+                "[{'type': 'paragraph', 'children': [{'text': 'CMS benefit copy', 'type': 'text'}]}]",
+              order: 1,
+            },
+          ],
+        },
+        solutions_section: { title: '', image_key: null, description: '' },
+        cta: {
+          title: 'CMS cta title',
+          description: 'CMS cta body',
+          button_name: 'Book a call',
+        },
+        seo: {
+          title: '',
+          description: '',
+          canonical_url: '',
+          meta_title: '',
+          h1_tag: '',
+          image_alt: '',
+          image_key: null,
+        },
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedSolutionDetail('doctcare-ai');
+    expect(result.error).toBe(false);
+    expect(result.item?.slug).toBe('doctcare-ai');
+    expect(result.item?.banner.title).toBe('CMS banner title');
+    expect(result.item?.introduction.items[0].title).toBe('DoctCare AI');
+    expect(result.item?.challenges.types[0].title).toBe('Administrative Overload');
+    expect(result.item?.benefits.types[0].title).toBe('Frictionless Implementation');
+    expect(result.item?.cta.title).toBe('CMS cta title');
+    expect(String(fetchMock.mock.calls[0][0])).toContain(
+      '/api/v1/public/solution-details/doctcare-ai',
+    );
+    expect(cmsRichContent(result.item?.benefits.types[0].description).text).toBe('CMS benefit copy');
     vi.unstubAllGlobals();
   });
 });

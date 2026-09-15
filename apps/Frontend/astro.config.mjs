@@ -16,6 +16,7 @@ export default defineConfig({
         `${site}/about`,
         `${site}/services/ai-services`,
         `${site}/solutions`,
+        `${site}/solutions/doctcare-ai`,
         `${site}/case-studies`,
         `${site}/company/blogs`,
         `${site}/company/clients`,

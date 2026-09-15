@@ -1,0 +1,629 @@
+/* DoctCare AI detail page. Explicit values; unique sections only. */
+.doctcare-page {
+  overflow-x: clip;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+.doctcare-page [hidden] {
+  display: none !important;
+}
+
+.doctcare-hero {
+  position: relative;
+  min-height: min(982px, 100vh);
+  display: grid;
+  align-items: end;
+  color: #ffffff;
+  background: #000b18;
+  overflow: hidden;
+}
+
+.doctcare-hero-media,
+.doctcare-hero-fallback {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  max-width: none;
+}
+
+.doctcare-hero-fallback {
+  background: #000b18;
+}
+
+.doctcare-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.doctcare-hero-copy {
+  position: relative;
+  z-index: 1;
+  padding-bottom: clamp(32px, 6vw, 56px);
+}
+
+.doctcare-hero-title {
+  margin: 0 0 100px;
+  max-width: 100%;
+  color: #ffffff;
+  font-size: clamp(1.75rem, 1.375rem + 1.6667vw, 2.875rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.6px;
+  transform: scale(0.9);
+  transform-origin: left bottom;
+  transition: transform 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.doctcare-hero-title.is-visible {
+  transform: scale(1);
+}
+
+.doctcare-hero-kicker {
+  margin: 0;
+  font-size: clamp(1.125rem, 0.9583rem + 0.7407vw, 1.625rem);
+  font-weight: 275;
+  line-height: 1.2;
+  letter-spacing: 0.6px;
+}
+
+.doctcare-page .doctcare-hero-industry {
+  margin: 8px 0 0;
+  font-size: clamp(1.5rem, 1.3333rem + 0.7407vw, 2rem);
+  font-weight: 300;
+  line-height: 1.2;
+  letter-spacing: 0.6px;
+}
+
+.doctcare-page .doctcare-display {
+  margin: 0;
+  max-width: 100%;
+  font-size: var(--text-46);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.6px;
+}
+
+.doctcare-page .doctcare-lede {
+  margin: 8px 0 0;
+  font-size: var(--text-20);
+  font-weight: 300;
+  line-height: 1.5;
+  letter-spacing: 0.6px;
+}
+
+.doctcare-intro {
+  padding: clamp(48px, 8vw, 80px) 0;
+  background: #ffffff;
+}
+
+.doctcare-intro-grid {
+  display: grid;
+  gap: clamp(24px, 4vw, 32px);
+  align-items: stretch;
+}
+
+.doctcare-intro-copy {
+  display: grid;
+  align-content: start;
+  gap: clamp(16px, 3vw, 24px);
+}
+
+.doctcare-intro-card {
+  position: relative;
+  margin-top: 8px;
+  padding: clamp(28px, 5vw, 48px) clamp(16px, 3vw, 24px) clamp(16px, 3vw, 24px);
+  min-height: clamp(220px, 40vw, 280px);
+  border-radius: 24px;
+  background: #fafafa;
+}
+
+.doctcare-intro-icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(12px, 2vw, 16px);
+  align-items: center;
+  margin-bottom: clamp(24px, 5vw, 48px);
+}
+
+/* .doctcare-intro-icon {
+  display: grid;
+  place-items: center;
+  width: clamp(72px, 18vw, 120px);
+  height: clamp(72px, 18vw, 120px);
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 12.675px 12.675px 59.15px rgba(0, 0, 0, 0.15);
+} */
+
+.doctcare-intro-icon img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.doctcare-page .doctcare-intro-card-title {
+  margin: 0;
+  font-size: var(--text-20);
+  font-weight: 500;
+  line-height: 1.3;
+  color: #000000;
+}
+
+.doctcare-page .doctcare-intro-card-body {
+  margin: 16px 0 0;
+  font-size: var(--text-20);
+  font-weight: 300;
+  line-height: 1.5;
+  letter-spacing: 0.6px;
+}
+
+.doctcare-intro-card-body p {
+  margin: 0;
+}
+
+.doctcare-intro-media {
+  min-height: clamp(200px, 50vw, 280px);
+  border-radius: 24px;
+  overflow: hidden;
+  background: #f2f2f2;
+}
+
+.doctcare-intro-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.doctcare-challenges {
+  background: #000000;
+  color: #ffffff;
+  padding: clamp(48px, 8vw, 80px) 0;
+}
+
+.doctcare-challenges-layout {
+  display: grid;
+  gap: clamp(32px, 6vw, 48px);
+}
+
+.doctcare-challenges-pin {
+  display: grid;
+  gap: clamp(20px, 4vw, 32px);
+  align-content: start;
+}
+
+.doctcare-page .doctcare-quote,
+.doctcare-page .doctcare-quote p {
+  margin: 0;
+  font-size: var(--text-20);
+  font-weight: 300;
+  line-height: 1.4;
+  letter-spacing: 0.6px;
+}
+
+.doctcare-person {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 4vw, 32px);
+  max-width: 332px;
+}
+
+.doctcare-person-photo {
+  width: clamp(56px, 12vw, 85px);
+  height: clamp(52px, 11vw, 80px);
+  border-radius: 999px;
+  object-fit: cover;
+  background: #ffffff;
+  flex-shrink: 0;
+}
+
+.doctcare-person-copy {
+  display: grid;
+  gap: 16px;
+}
+
+.doctcare-page .doctcare-person-name {
+  margin: 0;
+  font-size: var(--text-16);
+  font-weight: 500;
+  letter-spacing: 0.6px;
+  color: #e50914;
+}
+
+.doctcare-page .doctcare-person-role {
+  margin: 0;
+  font-size: var(--text-16);
+  font-weight: 300;
+  letter-spacing: 0.6px;
+  color: #ffffff;
+}
+
+.doctcare-challenges-list {
+  display: grid;
+  gap: clamp(32px, 6vw, 48px);
+}
+
+.doctcare-challenge-item {
+  display: grid;
+  grid-template-columns: clamp(48px, 12vw, 80px) minmax(0, 1fr);
+  gap: clamp(16px, 4vw, 24px);
+  align-items: start;
+  padding-bottom: clamp(24px, 5vw, 40px);
+  border-bottom: 1px solid #ffffff;
+}
+
+.doctcare-challenge-item:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.doctcare-challenge-icon {
+  width: clamp(48px, 12vw, 80px);
+  height: clamp(48px, 12vw, 80px);
+  object-fit: contain;
+}
+
+.doctcare-challenge-copy {
+  display: grid;
+  gap: clamp(16px, 3vw, 24px);
+}
+
+.doctcare-page .doctcare-challenges .doctcare-challenge-copy h3 {
+  margin: 0;
+  font-size: var(--text-36);
+  font-weight: 300;
+  line-height: 1.416;
+  letter-spacing: 0.6px;
+  color: #ffffff;
+}
+
+.doctcare-page .doctcare-challenge-body,
+.doctcare-page .doctcare-challenge-body p,
+.doctcare-page .doctcare-challenge-body li {
+  margin: 0;
+  font-size: var(--text-20);
+  font-weight: 300;
+  line-height: 1.4;
+  letter-spacing: 0.6px;
+}
+
+.doctcare-page .doctcare-challenge-body :is(h1, h2, h3, h4, h5, h6, span, em, u, s) {
+  font-size: inherit;
+}
+
+.doctcare-page .doctcare-challenge-body strong,
+.doctcare-page .doctcare-challenge-body b {
+  font-size: inherit;
+  font-weight: 500;
+}
+
+.doctcare-benefits {
+  padding: clamp(48px, 8vw, 80px) 0;
+  background: #ffffff;
+}
+
+.doctcare-benefits-copy {
+  margin-top: 8px;
+  white-space: pre-line;
+}
+
+.doctcare-benefit-grid {
+  display: grid;
+  gap: clamp(32px, 6vw, 48px) clamp(16px, 3vw, 24px);
+  margin-top: clamp(32px, 6vw, 48px);
+}
+
+.doctcare-benefit-card {
+  display: grid;
+  gap: clamp(20px, 4vw, 32px);
+  align-content: start;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.doctcare-benefit-icon {
+  width: clamp(56px, 14vw, 70px);
+  height: clamp(56px, 14vw, 70px);
+  object-fit: contain;
+}
+
+.doctcare-page .doctcare-benefits h3 {
+  margin: 0;
+  font-size: var(--text-36);
+  font-weight: 300;
+  line-height: 1.416;
+  letter-spacing: 0.6px;
+}
+
+.doctcare-page .doctcare-benefit-body,
+.doctcare-page .doctcare-benefit-body p {
+  margin: 0;
+  font-size: var(--text-20);
+  font-weight: 300;
+  line-height: 1.4;
+}
+
+.doctcare-api-cta {
+  padding: 0 0 clamp(48px, 8vw, 80px);
+}
+
+.doctcare-api-cta-panel {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  width: 100%;
+  max-width: 100%;
+  min-height: 280px;
+  color: #ffffff;
+}
+
+.doctcare-api-cta-shape,
+.doctcare-api-cta-rings-wrap,
+.doctcare-api-cta-rings,
+.doctcare-api-cta-mobile-bg {
+  pointer-events: none;
+  max-width: none;
+}
+
+.doctcare-api-cta-mobile-bg {
+  display: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.doctcare-api-cta-shape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  transform: scaleY(-1) rotate(180deg);
+}
+
+.doctcare-api-cta-rings-wrap {
+  position: absolute;
+  left: 13.078%;
+  top: 0;
+  width: 77.095%;
+  height: 100.137%;
+  overflow: hidden;
+}
+
+.doctcare-api-cta-rings {
+  position: absolute;
+  left: 0.333%;
+  top: 0.755%;
+  width: 99.349%;
+  height: auto;
+}
+
+.doctcare-api-cta-copy,
+.doctcare-api-cta-btn {
+  position: relative;
+  z-index: 1;
+}
+
+.doctcare-api-cta-copy {
+  display: grid;
+  gap: 16px;
+  max-width: min(640px, 58%);
+  padding: clamp(24px, 6.4%, 56px) 16px 16px clamp(16px, 5.8%, 75px);
+}
+
+.doctcare-page .doctcare-api-cta h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(1.75rem, 1.375rem + 1.6667vw, 2.875rem);
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.doctcare-page .doctcare-api-cta p {
+  margin: 0;
+  font-size: clamp(1rem, 0.9167rem + 0.3704vw, 1.25rem);
+  font-weight: 300;
+  line-height: 1.4;
+  letter-spacing: 0.6px;
+}
+
+.doctcare-page .doctcare-api-cta-btn {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(6px, 0.8vw, 8px);
+  width: min(260px, 100%);
+  max-width: 100%;
+  min-height: clamp(52px, 8vw, 91px);
+  margin: 0;
+  padding: clamp(16px, 3.2vw, 32px) clamp(24px, 4.8vw, 48px);
+  border-color: #ffffff;
+  background-color: #ffffff;
+  color: #000000;
+  border-radius: 12px;
+  font-size: clamp(0.875rem, 0.75rem + 0.55vw, 1.125rem);
+  font-weight: 400;
+  letter-spacing: 0.6px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.doctcare-page .doctcare-api-cta-btn img {
+  width: clamp(16px, 1.6vw, 20px);
+  height: clamp(16px, 1.6vw, 20px);
+}
+
+.doctcare-page .doctcare-api-cta-btn:hover {
+  background-color: #e50914;
+  color: #ffffff;
+  border-color: #e50914;
+}
+
+@media (min-width: 1025px) {
+  .doctcare-api-cta-panel {
+    aspect-ratio: 1291.911 / 439.4;
+  }
+
+  .doctcare-page .doctcare-api-cta-btn {
+    position: absolute;
+    left: 68%;
+    top: 58.919%;
+    width: 18.125%;
+    max-width: 260px;
+    height: 18%;
+    min-height: 59px;
+    padding: 16px 24px;
+  }
+
+  .doctcare-page .doctcare-api-cta-btn img {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (min-width: 768px) {
+  .doctcare-benefit-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(48px, 7vw, 80px) clamp(24px, 4vw, 40px);
+  }
+
+  .doctcare-challenge-item {
+    grid-template-columns: clamp(64px, 8vw, 80px) minmax(0, 1fr);
+    gap: clamp(24px, 5vw, 48px);
+  }
+
+  .doctcare-intro-icon:nth-child(2) {
+    width: clamp(96px, 16vw, 143px);
+    height: clamp(96px, 16vw, 143px);
+  }
+
+  .doctcare-intro-icon:nth-child(3) {
+    width: clamp(64px, 10vw, 85px);
+    height: clamp(64px, 10vw, 85px);
+  }
+
+  .doctcare-intro-icon:nth-child(4) {
+    width: clamp(72px, 12vw, 101px);
+    height: clamp(72px, 12vw, 101px);
+  }
+}
+
+@media (hover: hover) {
+  .doctcare-benefit-card:hover {
+    transform: translateY(-12px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .doctcare-intro-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 30px;
+    align-items: stretch;
+  }
+
+  .doctcare-intro-media {
+    height: 100%;
+    min-height: 100%;
+  }
+
+  .doctcare-challenges {
+    padding: clamp(80px, 10vw, 120px) 0;
+  }
+
+  .doctcare-challenges-layout {
+    grid-template-columns: minmax(0, 546px) minmax(0, 1fr);
+    gap: clamp(48px, 8vw, 80px) clamp(48px, 10vw, 144px);
+    align-items: start;
+  }
+
+  .doctcare-challenges-pin {
+    position: sticky;
+    top: 124px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .doctcare-intro-card {
+    min-height: 461px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .doctcare-api-cta-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(16px, 4vw, 32px);
+    aspect-ratio: auto;
+    min-height: clamp(320px, 58vw, 440px);
+    padding: clamp(24px, 6vw, 48px) clamp(16px, 4vw, 32px);
+    box-sizing: border-box;
+  }
+
+  .doctcare-api-cta-copy {
+    max-width: min(36rem, 100%);
+    width: 100%;
+    padding: 0;
+    text-align: center;
+    justify-items: center;
+  }
+
+  .doctcare-page .doctcare-api-cta h2 {
+    font-size: clamp(1.375rem, 1.1rem + 1.4vw, 2.25rem);
+  }
+
+  .doctcare-page .doctcare-api-cta p {
+    font-size: clamp(0.9375rem, 0.85rem + 0.4vw, 1.125rem);
+  }
+
+  .doctcare-page .doctcare-api-cta-btn {
+    position: relative;
+    left: auto;
+    top: auto;
+    height: auto;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 768px) {
+  .doctcare-api-cta-shape,
+  .doctcare-api-cta-rings-wrap {
+    display: none;
+  }
+
+  .doctcare-api-cta-mobile-bg {
+    display: block;
+  }
+
+  .doctcare-api-cta-panel {
+    min-height: clamp(340px, 110vw, 420px);
+    background: #000000;
+    border-radius: 16px;
+  }
+
+  .doctcare-api-cta-desc {
+    display: none !important;
+  }
+
+  .doctcare-page .doctcare-api-cta-btn {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .doctcare-hero-title,
+  .doctcare-benefit-card {
+    transform: none;
+    transition: none;
+  }
+}
