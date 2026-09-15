@@ -243,15 +243,6 @@ def normalize_cta(raw: object) -> dict:
     }
 
 
-def _first_title(items: object) -> str:
-    if not isinstance(items, list):
-        return ""
-    for item in items:
-        if isinstance(item, dict) and item.get("title"):
-            return str(item["title"])
-    return ""
-
-
 def _introduction(payload: IntroductionBlock) -> dict:
     items: list[dict] = []
     for item in payload.items:
@@ -375,8 +366,8 @@ class SolutionDetailService:
                     id=row.id,
                     title=row.title,
                     banner_title=(row.banner or {}).get("title", "") or "",
-                    introduction_title=_first_title((row.introduction or {}).get("items")),
-                    challenges_title=_first_title((row.challenges or {}).get("items")),
+                    introduction_title=str((row.introduction or {}).get("sub_title") or ""),
+                    challenges_title=str((row.challenges or {}).get("name") or ""),
                     state=row.status,
                 )
                 for row in rows
