@@ -1,0 +1,7 @@
+---
+import SolutionDetailPage from '../../components/SolutionDetailPage.astro';
+import { solutionDetailByPathSlug } from '../../lib/solution-detail';
+
+const product = solutionDetailByPathSlug('doctCare-ai');
+---
+<SolutionDetailPage product={product} />
