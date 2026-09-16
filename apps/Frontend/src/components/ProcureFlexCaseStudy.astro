@@ -1,0 +1,45 @@
+---
+import { procureFlexCopy as copy } from '../lib/procure-flex-data';
+---
+<section class="pf-case" aria-labelledby="pf-case-heading">
+  <div class="container pf-case-inner">
+    <div class="pf-case-panel">
+      <div class="pf-case-header" data-pf-reveal>
+        <p class="pf-case-eyebrow">{copy.caseStudy.eyebrow}</p>
+        <h2 id="pf-case-heading" class="pf-case-title">{copy.caseStudy.title}</h2>
+        <p class="pf-case-body">{copy.caseStudy.description}</p>
+      </div>
+      <div class="pf-case-cards">
+        <article class="pf-card" data-pf-reveal>
+          <div class="pf-card-top">
+            <div class="pf-card-icon">
+              <img src="/procure-flex/case-challenge.svg" alt="" width="80" height="80" />
+            </div>
+            <h3 class="pf-card-title">{copy.caseStudy.challengeTitle}</h3>
+          </div>
+          <p class="pf-card-body">{copy.caseStudy.challenge}</p>
+        </article>
+        <article class="pf-card" data-pf-reveal>
+          <div class="pf-card-top">
+            <div class="pf-card-icon">
+              <img src="/procure-flex/case-solution.svg" alt="" width="80" height="80" />
+            </div>
+            <h3 class="pf-card-title">{copy.caseStudy.solutionTitle}</h3>
+          </div>
+          <p class="pf-card-body">{copy.caseStudy.solution}</p>
+        </article>
+      </div>
+    </div>
+    <div class="pf-case-meta" data-pf-reveal>
+      <p>
+        <span class="pf-case-meta-label">{copy.caseStudy.durationLabel}</span>
+        <span class="pf-case-meta-value">{copy.caseStudy.duration}</span>
+      </p>
+      <span class="pf-case-meta-rule" aria-hidden="true">|</span>
+      <p>
+        <span class="pf-case-meta-label">{copy.caseStudy.techLabel}</span>
+        <span class="pf-case-meta-value">{copy.caseStudy.tech}</span>
+      </p>
+    </div>
+  </div>
+</section>

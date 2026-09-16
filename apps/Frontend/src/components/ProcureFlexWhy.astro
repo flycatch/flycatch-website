@@ -1,0 +1,24 @@
+---
+import { procureFlexCopy as copy } from '../lib/procure-flex-data';
+---
+<section class="pf-why" aria-labelledby="pf-why-heading">
+  <div class="container pf-why-inner">
+    <div class="pf-why-media" data-pf-reveal>
+      <img
+        src="/procure-flex/why.jpg"
+        alt={copy.why.imageAlt}
+        width="581"
+        height="540"
+        loading="lazy"
+      />
+    </div>
+    <div class="pf-why-copy" data-pf-reveal>
+      <h2 id="pf-why-heading" class="pf-display">
+        {copy.why.headingLead}
+        <br />
+        {copy.why.heading}
+      </h2>
+      <p class="pf-why-body">{copy.why.body}</p>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,34 @@
+---
+import ProcureFlexWordmark from './ProcureFlexWordmark.astro';
+import { procureFlexCopy as copy } from '../lib/procure-flex-data';
+---
+<section class="pf-hero" aria-labelledby="procure-flex-heading">
+  <div class="container pf-hero-inner">
+    <div class="pf-hero-media" data-pf-reveal>
+      <img
+        src="/procure-flex/hero-laptop.png"
+        alt={copy.hero.imageAlt}
+        width="653"
+        height="640"
+      />
+    </div>
+    <div class="pf-hero-copy" data-pf-reveal>
+      <div>
+        <h1 id="procure-flex-heading">
+          <ProcureFlexWordmark
+            tone="dark"
+            size="hero"
+            procure={copy.wordmark.procure}
+            flex={copy.wordmark.flex}
+            alt=""
+          />
+        </h1>
+        <p class="pf-hero-lede">{copy.hero.lede}</p>
+      </div>
+      <div>
+        <p class="pf-hero-industry-label">{copy.hero.industryLabel}</p>
+        <p class="pf-hero-industry">{copy.hero.industry}</p>
+      </div>
+    </div>
+  </div>
+</section>

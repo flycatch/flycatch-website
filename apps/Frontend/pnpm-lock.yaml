@@ -17,6 +17,9 @@ importers:
       '@fontsource/poppins':
         specifier: ^5.3.0
         version: 5.3.0
+      '@fontsource/quicksand':
+        specifier: ^5.3.0
+        version: 5.3.0
       astro:
         specifier: ^5.7.0
         version: 5.18.2(@types/node@22.20.1)(rollup@4.63.1)(typescript@5.9.3)(yaml@2.9.0)
@@ -626,6 +629,9 @@ packages:
 
   '@fontsource/poppins@5.3.0':
     resolution: {integrity: sha512-cms1nM7U6SN8epIV1WMVOV8VsA645aSm3wHfzIQnkk188U341ThbJGSl2Sv54V29gnDbT2arMPfLzvVIIVCceQ==}
+
+  '@fontsource/quicksand@5.3.0':
+    resolution: {integrity: sha512-epmMUyXI39f88bZSCyKlHTZqUWg4O7DqrTXOKqsqbVKMLshX9RtIYCUIw+G2nOfEwdIHIjYbeWdwHRcEzRXBRQ==}
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -3136,6 +3142,8 @@ snapshots:
       levn: 0.4.1
 
   '@fontsource/poppins@5.3.0': {}
+
+  '@fontsource/quicksand@5.3.0': {}
 
   '@humanfs/core@0.19.2':
     dependencies:
