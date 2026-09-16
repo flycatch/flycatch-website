@@ -507,10 +507,26 @@
   }
 
   .doctcare-page[data-solution='talkshop-ai'] .doctcare-api-cta-btn {
-    width: fit-content;
-    max-width: min(22rem, calc(100% - 68% - 4%));
+    width: max-content;
+    max-width: calc(100% - 68% - 8px);
+    min-width: min-content;
     height: auto;
     min-height: clamp(52px, 6vw, 79px);
+    gap: clamp(6px, 0.7vw, 8px);
+    padding: 16px clamp(12px, 1.5vw, 28px);
+    white-space: nowrap;
+  }
+
+  .doctcare-page[data-solution='talkshop-ai'] .doctcare-api-cta-btn span {
+    flex-shrink: 0;
+    min-width: min-content;
+    overflow-wrap: normal;
+    white-space: nowrap;
+  }
+
+  .doctcare-page[data-solution='talkshop-ai'] .doctcare-api-cta-btn img {
+    width: clamp(20px, 2vw, 32px);
+    height: clamp(20px, 2vw, 32px);
   }
 }
 
