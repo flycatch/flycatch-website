@@ -467,6 +467,24 @@
   border-color: #e50914;
 }
 
+.doctcare-page[data-solution='talkshop-ai'] .doctcare-api-cta-btn {
+  width: fit-content;
+  max-width: min(100%, 22rem);
+  min-width: 0;
+  padding: clamp(16px, 3.2vw, 32px) clamp(20px, 3.2vw, 32px);
+  text-align: center;
+  white-space: normal;
+}
+
+.doctcare-page[data-solution='talkshop-ai'] .doctcare-api-cta-btn span {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.doctcare-page[data-solution='talkshop-ai'] .doctcare-api-cta-btn img {
+  flex-shrink: 0;
+}
+
 @media (min-width: 1025px) {
   .doctcare-api-cta-panel {
     aspect-ratio: 1291.911 / 439.4;
@@ -486,6 +504,29 @@
   .doctcare-page .doctcare-api-cta-btn img {
     width: 32px;
     height: 32px;
+  }
+
+  .doctcare-page[data-solution='talkshop-ai'] .doctcare-api-cta-btn {
+    width: max-content;
+    max-width: calc(100% - 68% - 8px);
+    min-width: min-content;
+    height: auto;
+    min-height: clamp(52px, 6vw, 79px);
+    gap: clamp(6px, 0.7vw, 8px);
+    padding: 16px clamp(12px, 1.5vw, 28px);
+    white-space: nowrap;
+  }
+
+  .doctcare-page[data-solution='talkshop-ai'] .doctcare-api-cta-btn span {
+    flex-shrink: 0;
+    min-width: min-content;
+    overflow-wrap: normal;
+    white-space: nowrap;
+  }
+
+  .doctcare-page[data-solution='talkshop-ai'] .doctcare-api-cta-btn img {
+    width: clamp(20px, 2vw, 32px);
+    height: clamp(20px, 2vw, 32px);
   }
 }
 

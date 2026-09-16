@@ -1,0 +1,44 @@
+---
+import '@fontsource/quicksand/600.css';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/home.css';
+import '../../styles/procure-flex.css';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import HomeInsights from '../../components/HomeInsights.astro';
+import HomeCta from '../../components/HomeCta.astro';
+import ProcureFlexHero from '../../components/ProcureFlexHero.astro';
+import ProcureFlexQuote from '../../components/ProcureFlexQuote.astro';
+import ProcureFlexWhy from '../../components/ProcureFlexWhy.astro';
+import ProcureFlexFeatures from '../../components/ProcureFlexFeatures.astro';
+import ProcureFlexShowcase from '../../components/ProcureFlexShowcase.astro';
+import ProcureFlexBenefits from '../../components/ProcureFlexBenefits.astro';
+import ProcureFlexCaseStudy from '../../components/ProcureFlexCaseStudy.astro';
+import { loadPublishedBlogs } from '../../lib/public-api';
+import { fallbackMetadata } from '../../lib/metadata';
+import { t } from '../../lib/i18n';
+
+const blogsResult = await loadPublishedBlogs();
+const metadata = fallbackMetadata(
+  '/solutions/procure-flex',
+  t('page.procureflex.title'),
+  t('page.procureflex.description'),
+);
+metadata.indexable = true;
+---
+<BaseLayout title={metadata.title} metadata={metadata}>
+  <SiteHeader />
+  <main id="main" class="solutions-page procure-flex-page" data-api-origin={blogsResult.origin}>
+    <ProcureFlexHero />
+    <ProcureFlexQuote />
+    <ProcureFlexWhy />
+    <ProcureFlexFeatures />
+    <ProcureFlexShowcase />
+    <ProcureFlexBenefits />
+    <ProcureFlexCaseStudy />
+    <HomeInsights blogs={blogsResult.items} error={blogsResult.error} home />
+    <HomeCta />
+  </main>
+  <SiteFooter />
+</BaseLayout>
+<script src="../../scripts/procure-flex.ts"></script>

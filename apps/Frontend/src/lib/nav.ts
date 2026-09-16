@@ -63,11 +63,11 @@ export const solutionLinks: NavLink[] = [
   { href: '/solutions/credit-life', labelKey: 'nav.credit_life' },
   { href: '/solutions/combus', labelKey: 'nav.combus' },
   { href: '/solutions/ai-chat-support', labelKey: 'nav.ai_chat_support' },
-  { href: '/solutions/procureflex', labelKey: 'nav.procureflex' },
-  { href: '/solutions/flygrid-ai', labelKey: 'nav.flygrid' },
-  { href: '/solutions/doctcare-ai', labelKey: 'nav.doctcare' },
-  { href: '/solutions/talkshop-ai', labelKey: 'nav.talkshop' },
-  { href: '/solutions/docsist-ai', labelKey: 'nav.docsist' },
+  { href: '/solutions/procure-flex', labelKey: 'nav.procureflex' },
+  { href: '/solutions/flyGrid-ai', labelKey: 'nav.flygrid' },
+  { href: '/solutions/doctCare-ai', labelKey: 'nav.doctcare' },
+  { href: '/solutions/talkShop-ai', labelKey: 'nav.talkshop' },
+  { href: '/solutions/docSis-ai', labelKey: 'nav.docsist' },
 ];
 
 export const companyLinks: NavLink[] = [

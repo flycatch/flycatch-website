@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/home.css';
+import '../styles/solutions.css';
+import '../styles/doctcare.css';
+import SiteHeader from './SiteHeader.astro';
+import SiteFooter from './SiteFooter.astro';
+import HomeInsights from './HomeInsights.astro';
+import HomeCta from './HomeCta.astro';
+import SectionState from './SectionState.astro';
+import DoctcareHero from './DoctcareHero.astro';
+import DoctcareIntro from './DoctcareIntro.astro';
+import DoctcareChallenges from './DoctcareChallenges.astro';
+import DoctcareBenefits from './DoctcareBenefits.astro';
+import DoctcareCta from './DoctcareCta.astro';
+import { loadPublishedBlogs, loadPublishedSolutionDetail } from '../lib/public-api';
+import { fallbackMetadata, metadataFromContentSeo, publicSiteSettings } from '../lib/metadata';
+import { t } from '../lib/i18n';
+import { solutionDetailPath, type SolutionDetailProduct } from '../lib/solution-detail';
+
+interface Props {
+  product: SolutionDetailProduct;
+}
+
+const { product } = Astro.props;
+const path = solutionDetailPath(product);
+const fallbackTitle = t(product.titleKey);
+const [detail, blogsResult] = await Promise.all([
+  loadPublishedSolutionDetail(product.apiSlug),
+  loadPublishedBlogs(),
+]);
+const page = detail.item;
+const failed = detail.error && !page;
+const siteSettings = publicSiteSettings();
+const metadata = page
+  ? metadataFromContentSeo(
+      {
+        ...page.seo,
+        canonical_url: page.seo.canonical_url.trim() || path,
+      },
+      siteSettings,
+      fallbackTitle,
+    )
+  : fallbackMetadata(path, fallbackTitle, failed ? t('home.error') : t('home.empty'));
+---
+<BaseLayout title={metadata.title} metadata={metadata}>
+  <SiteHeader tone="dark" />
+  <main id="main" class="solutions-page doctcare-page" data-solution={product.apiSlug} data-api-origin={detail.origin}>{page ? (
+      <>
+        <DoctcareHero page={page} />
+        <DoctcareIntro page={page} />
+        <DoctcareChallenges page={page} />
+        <DoctcareBenefits page={page} />
+        <DoctcareCta page={page} />
+      </>
+    ) : (
+      <section class="doctcare-hero">
+        <div class="container doctcare-hero-copy summary-region">
+          <h1 id="doctcare-heading" class="doctcare-hero-title">{fallbackTitle}</h1>
+          <SectionState error={failed} empty={!failed} />
+        </div>
+      </section>
+    )}
+    <HomeInsights blogs={blogsResult.items} error={blogsResult.error} home />
+    <HomeCta />
+  </main>
+  <SiteFooter />
+</BaseLayout>

@@ -1,0 +1,17 @@
+---
+import { procureFlexCopy as copy } from '../lib/procure-flex-data';
+---
+<section class="pf-showcase" aria-label={copy.showcase.body}>
+  <div class="container pf-showcase-inner">
+    <div class="pf-showcase-media" data-pf-reveal>
+      <img
+        src="/procure-flex/showcase.png"
+        alt={copy.showcase.imageAlt}
+        width="703"
+        height="491"
+        loading="lazy"
+      />
+    </div>
+    <p class="pf-showcase-body" data-pf-reveal>{copy.showcase.body}</p>
+  </div>
+</section>

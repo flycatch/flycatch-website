@@ -10,7 +10,7 @@ interface Props {
 const { page } = Astro.props;
 const banner = publicMediaUrl(page.banner.image_key);
 const title = page.banner.title.trim();
-const subTitle = page.banner.sub_title.trim() || t('page.doctcare.industry_label');
+const subTitle = page.banner.sub_title.trim() || t('page.solution_detail.industry_label');
 const industry = page.banner.industry_type.trim();
 const alt = page.seo.image_alt.trim() || title || page.title;
 ---

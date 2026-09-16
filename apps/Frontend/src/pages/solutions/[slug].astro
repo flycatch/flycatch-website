@@ -1,0 +1,10 @@
+---
+import SolutionDetailPage from '../../components/SolutionDetailPage.astro';
+import { resolveSolutionDetailRoute } from '../../lib/solution-detail';
+
+const product = resolveSolutionDetailRoute(Astro.params.slug);
+if (!product) {
+  return Astro.redirect('/404');
+}
+---
+<SolutionDetailPage product={product} />
