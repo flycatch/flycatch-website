@@ -1,0 +1,28 @@
+---
+import { t } from '../lib/i18n';
+import ProcureFlexWordmark from './ProcureFlexWordmark.astro';
+import { procureFlexCopy as copy } from '../lib/procure-flex-data';
+---
+<section class="pf-quote" aria-label={t('page.procureflex.title')}>
+  <div class="container pf-quote-inner">
+    <div data-pf-reveal>
+      <ProcureFlexWordmark
+        tone="light"
+        size="large"
+        procure={copy.wordmark.procure}
+        flex={copy.wordmark.flex}
+        alt={copy.wordmark.altLight}
+      />
+    </div>
+    <blockquote class="pf-quote-copy" data-pf-reveal>
+      <img
+        class="pf-quote-mark"
+        src="/procure-flex/quote.svg"
+        width="62"
+        height="50"
+        alt=""
+      />
+      <p class="pf-quote-text">{copy.quote}</p>
+    </blockquote>
+  </div>
+</section>

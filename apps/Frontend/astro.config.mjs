@@ -20,6 +20,7 @@ export default defineConfig({
         `${site}/solutions/docSis-ai`,
         `${site}/solutions/talkShop-ai`,
         `${site}/solutions/flyGrid-ai`,
+        `${site}/solutions/procure-flex`,
         `${site}/case-studies`,
         `${site}/company/blogs`,
         `${site}/company/clients`,
