@@ -393,5 +393,55 @@ describe('public solution details loader', () => {
     expect(cmsRichContent(result.item?.benefits.types[0].description).text).toBe('CMS benefit copy');
     vi.unstubAllGlobals();
   });
+
+  it('requests each published solution-detail slug from the same public contract', async () => {
+    const slugs = ['doctcare-ai', 'docsis-ai', 'talkshop-ai', 'flygrid-ai'];
+    for (const slug of slugs) {
+      const fetchMock = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          title: slug,
+          slug,
+          banner: { image_key: null, title: 'CMS banner', sub_title: '', industry_type: '' },
+          introduction: {
+            items: [],
+            description: '',
+            icon_keys: [],
+            sub_title: '',
+            sub_description: '',
+            image_key: null,
+          },
+          challenges: {
+            items: [],
+            description: '',
+            image_key: null,
+            name: '',
+            position: '',
+            types: [],
+          },
+          benefits: { items: [], description: '', types: [] },
+          solutions_section: { title: '', image_key: null, description: '' },
+          cta: { title: '', description: '', button_name: '' },
+          seo: {
+            title: '',
+            description: '',
+            canonical_url: '',
+            meta_title: '',
+            h1_tag: '',
+            image_alt: '',
+            image_key: null,
+          },
+        }),
+      });
+      vi.stubGlobal('fetch', fetchMock);
+      const result = await loadPublishedSolutionDetail(slug);
+      expect(result.error).toBe(false);
+      expect(result.item?.slug).toBe(slug);
+      expect(String(fetchMock.mock.calls[0][0])).toContain(
+        `/api/v1/public/solution-details/${slug}`,
+      );
+      vi.unstubAllGlobals();
+    }
+  });
 });
 
