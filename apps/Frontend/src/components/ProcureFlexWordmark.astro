@@ -1,0 +1,20 @@
+---
+interface Props {
+  tone?: 'light' | 'dark';
+  size?: 'hero' | 'large';
+  procure: string;
+  flex: string;
+  alt: string;
+}
+
+const { tone = 'dark', size = 'hero', procure, flex, alt } = Astro.props;
+const src = tone === 'light' ? '/procure-flex/logo-light.svg' : size === 'hero' ? '/procure-flex/logo-hero.svg' : '/procure-flex/logo-dark.svg';
+const width = size === 'large' ? 333 : 162;
+const height = size === 'large' ? 206 : 100;
+---
+<div class:list={['procure-flex-wordmark', `is-${tone}`, `is-${size}`]}>
+  <img src={src} alt={alt} width={width} height={height} />
+  <span class="procure-flex-wordmark-text">
+    <span class="procure-flex-wordmark-procure">{procure}</span><span class="procure-flex-wordmark-flex">{flex}</span>
+  </span>
+</div>
