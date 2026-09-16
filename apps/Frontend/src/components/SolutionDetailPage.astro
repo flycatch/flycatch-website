@@ -45,7 +45,7 @@ const metadata = page
 ---
 <BaseLayout title={metadata.title} metadata={metadata}>
   <SiteHeader tone="dark" />
-  <main id="main" class="solutions-page doctcare-page" data-api-origin={detail.origin}>{page ? (
+  <main id="main" class="solutions-page doctcare-page" data-solution={product.apiSlug} data-api-origin={detail.origin}>{page ? (
       <>
         <DoctcareHero page={page} />
         <DoctcareIntro page={page} />
