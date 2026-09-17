@@ -1,0 +1,26 @@
+---
+import { creditLifeCopy as copy } from '../lib/credit-life-data';
+---
+<section class="cl-quote" aria-label={copy.hero.logoAlt}>
+  <div class="container cl-quote-inner">
+    <div class="cl-quote-copy" data-cl-reveal>
+      <img
+        class="cl-quote-mark"
+        src="/credit-life/quote.svg"
+        width="63"
+        height="50"
+        alt=""
+      />
+      <p class="cl-quote-text">{copy.quote.text}</p>
+    </div>
+    <div class="cl-quote-media" data-cl-reveal>
+      <img
+        src="/credit-life/intro.webp"
+        alt={copy.quote.imageAlt}
+        width="600"
+        height="400"
+        loading="lazy"
+      />
+    </div>
+  </div>
+</section>

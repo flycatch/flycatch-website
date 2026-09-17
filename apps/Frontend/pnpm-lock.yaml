@@ -23,6 +23,9 @@ importers:
       astro:
         specifier: ^5.7.0
         version: 5.18.2(@types/node@22.20.1)(rollup@4.63.1)(typescript@5.9.3)(yaml@2.9.0)
+      swiper:
+        specifier: ^14.2.0
+        version: 14.2.0
     devDependencies:
       '@axe-core/playwright':
         specifier: ^4.10.1
@@ -2350,6 +2353,10 @@ packages:
     resolution: {integrity: sha512-bkxnTg1kSU0guhIBmibA6UUhrQmPVA1XsQLN+ylCd+UWzbnLkySOcXpyk1mrl05f+pcaCx2eHb+sp6BgMZWX+Q==}
     engines: {node: '>=16'}
     hasBin: true
+
+  swiper@14.2.0:
+    resolution: {integrity: sha512-GsL4M9Fq7Sg22OyL3SjdNj/0bxTfIxPJJHHW394Li0u5vYtExi0a09iBUc8CuLafJi5pAlH2AHUe1PocxHl45g==}
+    engines: {node: '>= 4.7.0'}
 
   synckit@0.11.13:
     resolution: {integrity: sha512-eNRKgb3z66Yp3D2CixVujOUvXLFUTij/zVnV8KRyvFdQwpz7I5DS8UfRkTeLzb64u+dkzDSdelE24izu+zSSUg==}
@@ -5268,6 +5275,8 @@ snapshots:
       csso: 5.0.5
       picocolors: 1.1.1
       sax: 1.6.1
+
+  swiper@14.2.0: {}
 
   synckit@0.11.13:
     dependencies:

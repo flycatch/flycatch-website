@@ -1,0 +1,32 @@
+---
+import { creditLifeCopy as copy } from '../lib/credit-life-data';
+---
+<section class="cl-hero" aria-labelledby="credit-life-heading">
+  <div class="container cl-hero-inner">
+    <div class="cl-hero-copy" data-cl-reveal>
+      <div class="cl-hero-title">
+        <h1 id="credit-life-heading">
+          <img
+            src="/credit-life/logo.svg"
+            alt={copy.hero.logoAlt}
+            width="275"
+            height="95"
+          />
+        </h1>
+        <p class="cl-hero-tagline">{copy.hero.tagline}</p>
+      </div>
+      <div class="cl-hero-mobile-banner">
+        <img
+          src="/credit-life/banner.webp"
+          alt={copy.hero.bannerAlt}
+          width="784"
+          height="553"
+        />
+      </div>
+      <div class="cl-hero-industry">
+        <p class="cl-hero-industry-label">{copy.hero.industryLabel}</p>
+        <p class="cl-hero-industry-value">{copy.hero.industry}</p>
+      </div>
+    </div>
+  </div>
+</section>

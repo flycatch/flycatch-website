@@ -1,0 +1,37 @@
+---
+import { creditLifeCopy as copy } from '../lib/credit-life-data';
+---
+<section class="cl-features" aria-labelledby="cl-features-heading">
+  <div class="container cl-features-inner">
+    <div class="cl-features-aside">
+      <h2 id="cl-features-heading" class="cl-display" data-cl-reveal>{copy.features.heading}</h2>
+      <p class="cl-feature-intro" data-cl-reveal>{copy.features.intro}</p>
+      <img
+        class="cl-features-visual"
+        src="/credit-life/key-features.svg"
+        alt={copy.features.imageAlt}
+        width="300"
+        height="300"
+        loading="lazy"
+        data-cl-reveal
+      />
+    </div>
+    <ul class="cl-feature-list">
+      {copy.features.items.map((item) => (
+        <li class="cl-feature" data-cl-reveal>
+          <img
+            class="cl-feature-icon"
+            src={item.icon}
+            alt=""
+            width="70"
+            height="70"
+          />
+          <div class="cl-feature-text">
+            <h3 class="cl-feature-title">{item.title}</h3>
+            <p class="cl-feature-body">{item.body}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
