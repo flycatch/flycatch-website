@@ -11,7 +11,9 @@ export const creditLifeCopy = {
     imageAlt: 'Credit Life product preview',
   },
   why: {
-    heading: 'Why Credit Life solution',
+    headingLead: 'Why Credit Life',
+    headingAccent: 'Solution',
+    heading: 'Why Credit Life Solution',
     body: [
       'The introduction of credit life insurance programs in various countries has presented significant challenges for financial institutions, insurance companies, and insurance brokers. Manually calculating premiums, filing census reports monthly, and processing complex policy claims are now laborious and time-consuming.',
       'By bringing all of these stakeholders under one platform, Creditlife simplifies the complicated and labor-intensive tasks leaving zero carbon footprint.',
@@ -63,6 +65,21 @@ export const creditLifeCopy = {
   showcase: {
     body: "First of it's kind Creditlife enable easy management of creditlife policies incorporating multiple stakeholders. It enrich business with Realtime Death notification from an authorized source, Holistic Data reporting, and quick automated claim processing.",
     imageAlt: 'Credit Life application on a laptop',
+    laptopFrameAlt: 'Laptop frame around the Credit Life product screens',
+    slides: [
+      {
+        src: '/credit-life/slides/slide-1.webp',
+        alt: 'Credit Life policy manager dashboard',
+      },
+      {
+        src: '/credit-life/slides/slide-2.webp',
+        alt: 'Credit Life screens for managing multiple policies and clients',
+      },
+      {
+        src: '/credit-life/slides/slide-3.webp',
+        alt: 'Credit Life census management and automated claim processing',
+      },
+    ],
   },
   stakeholders: {
     imageAlt: 'Credit Life stakeholders overview',
