@@ -1,0 +1,40 @@
+---
+import { creditLifeCopy as copy } from '../lib/credit-life-data';
+---
+<section class="cl-benefits" aria-labelledby="cl-benefits-heading">
+  <div class="container cl-benefits-inner">
+    <div class="cl-benefits-aside">
+      <h2 id="cl-benefits-heading" class="cl-display cl-display-dark" data-cl-reveal>
+        {copy.benefits.heading}
+      </h2>
+      <img
+        class="cl-benefits-visual"
+        src="/credit-life/benefits.webp"
+        alt={copy.benefits.imageAlt}
+        width="283"
+        height="338"
+        loading="lazy"
+        data-cl-reveal
+      />
+    </div>
+    <ul class="cl-benefit-list">
+      {copy.benefits.items.map((item) => (
+        <li class="cl-benefit" data-cl-reveal>
+          <img
+            class="cl-benefit-icon"
+            src={item.icon}
+            alt=""
+            width="100"
+            height="100"
+          />
+          <p class="cl-benefit-body">
+            {item.highlight && (
+              <span class="cl-benefit-highlight">{`${item.highlight}\u00a0`}</span>
+            )}
+            <span>{item.body}</span>
+          </p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
