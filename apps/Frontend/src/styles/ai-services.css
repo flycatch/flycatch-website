@@ -416,6 +416,10 @@
 }
 
 @media (min-width: 1024px) {
+  .ai-services-banner-heading {
+    padding-bottom: 80px;
+  }
+
   .ai-hero {
     min-height: 982px;
   }

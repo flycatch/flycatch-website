@@ -8,14 +8,13 @@ export const procureFlexCopy = {
   hero: {
     lede: 'User Centric Platform for Smart, Secure, and Organized Procurement',
     industryLabel: 'Industry',
-    industry: 'Procurement',
+    industry: 'Procurement & Vendor Management',
     imageAlt: 'Laptop showing the ProcureFlex dashboard',
   },
   quote:
     'Proven to transform procurement efficiency, it has helped a logistics giant in Saudi Arabia achieve 50% faster procurement cycles, enhanced compliance, and simplified vendor management.',
   why: {
-    headingLead: 'Why',
-    heading: 'ProcureFlex',
+    heading: 'A Smarter Way to Manage Your Procurement',
     body: 'ProcureFlex is a robust procurement platform that streamlines operations by addressing supply chain delays, procurement fraud, and manual inefficiencies. With features like centralized administration, automated workflows, and seamless integration with existing systems, it delivers faster implementations, reduced process delays, and improved compliance.',
     imageAlt: 'Person working on a laptop at a desk',
   },
