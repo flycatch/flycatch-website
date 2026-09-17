@@ -321,6 +321,10 @@
 }
 
 @media (min-width: 1024px) {
+  .solutions-banner-heading {
+    padding-bottom: 80px;
+  }
+
   .solutions-hero-copy {
     padding-bottom: 56px;
   }
