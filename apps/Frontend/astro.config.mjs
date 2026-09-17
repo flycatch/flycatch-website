@@ -21,6 +21,7 @@ export default defineConfig({
         `${site}/solutions/talkShop-ai`,
         `${site}/solutions/flyGrid-ai`,
         `${site}/solutions/procure-flex`,
+        `${site}/solutions/credit-life`,
         `${site}/case-studies`,
         `${site}/company/blogs`,
         `${site}/company/clients`,

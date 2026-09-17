@@ -1,0 +1,18 @@
+---
+import { creditLifeCopy as copy } from '../lib/credit-life-data';
+---
+<section class="cl-stakeholders" aria-label={copy.stakeholders.imageAlt}>
+  <div class="container cl-stakeholders-inner">
+    <img
+      src="/credit-life/laptop.webp"
+      alt={copy.stakeholders.imageAlt}
+      width="703"
+      height="491"
+      loading="lazy"
+      data-cl-reveal
+    />
+    {copy.stakeholders.items.map((item) => (
+      <p class="cl-stakeholders-text" data-cl-reveal>{item}</p>
+    ))}
+  </div>
+</section>

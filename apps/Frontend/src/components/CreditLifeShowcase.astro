@@ -1,0 +1,16 @@
+---
+import { creditLifeCopy as copy } from '../lib/credit-life-data';
+---
+<section class="cl-showcase" aria-label={copy.showcase.body}>
+  <div class="container cl-showcase-inner">
+    <p class="cl-showcase-body" data-cl-reveal>{copy.showcase.body}</p>
+    <img
+      src="/credit-life/responsive-laptop.webp"
+      alt={copy.showcase.imageAlt}
+      width="1192"
+      height="638"
+      loading="lazy"
+      data-cl-reveal
+    />
+  </div>
+</section>

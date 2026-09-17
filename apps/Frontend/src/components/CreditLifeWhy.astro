@@ -1,0 +1,24 @@
+---
+import { creditLifeCopy as copy } from '../lib/credit-life-data';
+---
+<section class="cl-why" aria-labelledby="cl-why-heading">
+  <div class="container cl-why-inner">
+    <h2 id="cl-why-heading" class="cl-why-heading" data-cl-reveal>
+      {copy.why.heading}
+    </h2>
+    <div class="cl-why-media" data-cl-reveal>
+      <img
+        src="/credit-life/why.webp"
+        alt={copy.why.imageAlt}
+        width="600"
+        height="400"
+        loading="lazy"
+      />
+    </div>
+    <div class="cl-why-copy" data-cl-reveal>
+      {copy.why.body.map((paragraph) => (
+        <p class="cl-why-body">{paragraph}</p>
+      ))}
+    </div>
+  </div>
+</section>

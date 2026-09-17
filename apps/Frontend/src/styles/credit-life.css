@@ -1,0 +1,544 @@
+/* Credit Life landing. Explicit values; unique sections only. */
+.credit-life-page {
+  overflow-x: clip;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+.credit-life-page > #insights,
+.credit-life-page > #book-call {
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+.credit-life-page img {
+  max-width: 100%;
+  height: auto;
+}
+
+.cl-hero {
+  background-color: #ffffff;
+  background-image: url('/credit-life/banner.webp');
+  background-repeat: no-repeat;
+  background-position: 100% center;
+  background-size: auto 100%;
+  color: #000000;
+  min-height: 60vh;
+}
+
+.cl-hero-inner {
+  display: flex;
+  align-items: flex-start;
+}
+
+.cl-hero-copy {
+  width: 50%;
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 200px;
+}
+
+.cl-hero-title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 40px;
+}
+
+.cl-hero h1 {
+  margin: 0;
+  font: inherit;
+}
+
+.cl-hero h1 img {
+  display: block;
+  width: 275px;
+  height: auto;
+  max-width: 100%;
+}
+
+.cl-hero-tagline {
+  margin: 0;
+  font-size: clamp(1.125rem, 0.9583rem + 0.7407vw, 1.625rem);
+  font-weight: 300;
+  line-height: normal;
+  letter-spacing: 0.6px;
+}
+
+.cl-hero-mobile-banner {
+  display: none;
+  width: 100%;
+  justify-content: center;
+}
+
+.cl-hero-industry {
+  margin-bottom: 50px;
+}
+
+.cl-hero-industry-label,
+.cl-hero-industry-value {
+  margin: 0;
+  letter-spacing: 0.6px;
+  line-height: normal;
+}
+
+.cl-hero-industry-label {
+  font-size: clamp(1.125rem, 0.9583rem + 0.7407vw, 1.625rem);
+  font-weight: 275;
+}
+
+.cl-hero-industry-value {
+  font-size: clamp(1.5rem, 1.3333rem + 0.7407vw, 2rem);
+  font-weight: 300;
+}
+
+.cl-quote {
+  background: #000000;
+  color: #ffffff;
+  padding: 50px 0;
+}
+
+.cl-quote-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 30px;
+  align-items: center;
+}
+
+.cl-quote-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 20px;
+  color: #ffffff;
+}
+
+.cl-quote-mark {
+  display: block;
+  width: 60px;
+  height: auto;
+}
+
+.cl-quote-text {
+  margin: 0;
+  font-size: clamp(1.5rem, 1.3333rem + 0.7407vw, 2rem);
+  font-weight: 300;
+  line-height: normal;
+  letter-spacing: 0.6px;
+}
+
+.cl-quote-media {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 50px 0;
+}
+
+.cl-quote-media img {
+  width: 100%;
+  height: auto;
+}
+
+.cl-why {
+  background: #ffffff;
+}
+
+.cl-why-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:
+    'media heading'
+    'media copy';
+  column-gap: 30px;
+  row-gap: 10px;
+  align-items: start;
+  padding-top: 70px;
+  padding-bottom: 70px;
+}
+
+.cl-why-heading {
+  grid-area: heading;
+  margin: 0;
+  font-size: clamp(2rem, 1.7083rem + 1.296vw, 2.875rem);
+  font-weight: 400;
+  line-height: 1.333;
+  letter-spacing: 0.6px;
+}
+
+.cl-why-media {
+  grid-area: media;
+  min-width: 0;
+}
+
+.cl-why-media img {
+  width: 100%;
+  height: auto;
+}
+
+.cl-why-copy {
+  grid-area: copy;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.cl-why-body {
+  margin: 0;
+  font-size: clamp(1rem, 0.9167rem + 0.3704vw, 1.25rem);
+  font-weight: 300;
+  line-height: normal;
+  letter-spacing: 0.6px;
+}
+
+.cl-display {
+  margin: 0;
+  font-size: clamp(2rem, 1.7083rem + 1.296vw, 2.875rem);
+  font-weight: 300;
+  line-height: 1.333;
+  letter-spacing: 0.6px;
+}
+
+.cl-display-dark {
+  color: #000000;
+}
+
+.cl-features {
+  background: #000000;
+  color: #ffffff;
+}
+
+.cl-features-inner,
+.cl-benefits-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 70px;
+  padding-top: 70px;
+  padding-bottom: 70px;
+}
+
+.cl-features-aside,
+.cl-benefits-aside {
+  width: 50%;
+  min-width: 0;
+  position: sticky;
+  top: calc(var(--header-height) + 16px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 20px;
+}
+
+.cl-features-visual {
+  width: 60%;
+  height: auto;
+}
+
+.cl-feature-intro {
+  margin: 0;
+  font-size: clamp(1rem, 0.9167rem + 0.3704vw, 1.25rem);
+  font-weight: 300;
+  line-height: normal;
+  letter-spacing: 0.6px;
+}
+
+.cl-feature-list,
+.cl-benefit-list {
+  width: 50%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cl-feature-list {
+  gap: 50px;
+}
+
+.cl-feature {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 40px;
+  padding-bottom: 50px;
+  border-bottom: 1px solid #ffffff;
+}
+
+.cl-feature:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.cl-feature-icon {
+  width: 70px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.cl-feature-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  min-width: 0;
+}
+
+.cl-feature-title {
+  margin: 0;
+  font-size: clamp(1.5rem, 1.25rem + 0.8333vw, 2.25rem);
+  font-weight: 300;
+  line-height: 1.4167;
+  letter-spacing: 0.6px;
+}
+
+.cl-feature-body {
+  margin: 0;
+  font-size: clamp(1rem, 0.9167rem + 0.3704vw, 1.25rem);
+  font-weight: 300;
+  line-height: normal;
+  letter-spacing: 0.6px;
+}
+
+.cl-showcase {
+  background: #ffffff;
+  padding: 70px 0;
+}
+
+.cl-showcase-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+.cl-showcase-body {
+  margin: 0;
+  font-size: clamp(1.5rem, 1.3333rem + 0.7407vw, 2rem);
+  font-weight: 300;
+  line-height: normal;
+  letter-spacing: 0.6px;
+}
+
+.cl-showcase-inner img {
+  width: 100%;
+  height: auto;
+}
+
+.cl-stakeholders {
+  width: 100%;
+  padding: 100px 0;
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.cl-stakeholders-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.cl-stakeholders-inner img {
+  width: 100%;
+  max-width: 703px;
+  height: auto;
+}
+
+.cl-stakeholders-text {
+  margin: 0;
+  text-align: center;
+  color: #ffffff;
+  font-size: clamp(1.5rem, 1.3333rem + 0.7407vw, 2rem);
+  font-weight: 300;
+  line-height: normal;
+  letter-spacing: 0.6px;
+}
+
+.cl-benefits {
+  background-color: #f2f2f2;
+}
+
+.cl-benefits-aside {
+  align-items: center;
+  color: #000000;
+}
+
+.cl-benefits-visual {
+  width: 60%;
+  height: auto;
+}
+
+.cl-benefit-list {
+  gap: 150px;
+}
+
+.cl-benefit {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 20px;
+  color: #000000;
+}
+
+.cl-benefit-icon {
+  width: 100px;
+  height: auto;
+}
+
+.cl-benefit-body {
+  margin: 0;
+  font-size: clamp(1.5rem, 1.25rem + 0.8333vw, 2.25rem);
+  font-weight: 300;
+  line-height: 1.4167;
+  letter-spacing: 0.6px;
+}
+
+.cl-benefit-highlight {
+  color: #e50914;
+}
+
+[data-cl-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-cl-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (max-width: 1300px) {
+  .cl-hero-copy {
+    width: 40%;
+  }
+}
+
+@media (max-width: 1100px) {
+  .cl-hero {
+    background-size: 60%;
+  }
+
+  .cl-hero-title {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 940px) {
+  .cl-hero {
+    min-height: 50vh;
+  }
+
+  .cl-hero-copy {
+    gap: 100px;
+  }
+}
+
+@media (max-width: 750px) {
+  .cl-hero {
+    background: none;
+    min-height: 100%;
+  }
+
+  .cl-hero-copy {
+    width: 100%;
+    min-height: 100%;
+    gap: 50px;
+  }
+
+  .cl-hero-mobile-banner {
+    display: flex;
+  }
+
+  .cl-quote-inner,
+  .cl-why-inner,
+  .cl-features-inner,
+  .cl-benefits-inner {
+    flex-wrap: wrap;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cl-quote-inner {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cl-why-inner {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'heading'
+      'media'
+      'copy';
+  }
+
+  .cl-why-media,
+  .cl-why-copy,
+  .cl-features-aside,
+  .cl-feature-list,
+  .cl-benefits-aside,
+  .cl-benefit-list {
+    width: 100%;
+  }
+
+  .cl-features-aside,
+  .cl-benefits-aside {
+    position: static;
+    top: auto;
+  }
+
+  .cl-features-visual,
+  .cl-benefits-visual {
+    display: none;
+  }
+
+  .cl-benefits-aside {
+    align-items: flex-start;
+  }
+
+  .cl-feature {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .cl-benefit-list {
+    gap: 80px;
+  }
+
+  .cl-benefit-icon {
+    width: 88px;
+  }
+
+  .cl-hero-tagline,
+  .cl-hero-industry-label,
+  .cl-quote-text,
+  .cl-why-heading,
+  .cl-display,
+  .cl-feature-title,
+  .cl-showcase-body,
+  .cl-stakeholders-text,
+  .cl-benefit-body {
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (min-width: 1440px) {
+  .credit-life-page .container {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-cl-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
