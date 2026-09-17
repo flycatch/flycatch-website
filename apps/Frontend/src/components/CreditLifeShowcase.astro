@@ -2,15 +2,53 @@
 import { creditLifeCopy as copy } from '../lib/credit-life-data';
 ---
 <section class="cl-showcase" aria-label={copy.showcase.body}>
-  <div class="container cl-showcase-inner">
+  <div class="container cl-showcase-copy">
     <p class="cl-showcase-body" data-cl-reveal>{copy.showcase.body}</p>
+  </div>
+  <div class="cl-showcase-carousel" data-cl-reveal>
+    <div class="swiper cl-showcase-swiper cl-slider-push-down">
+        <div class="swiper-wrapper">
+          {copy.showcase.slides.map((slide) => (
+            <div class="swiper-slide">
+              <img
+                src={slide.src}
+                alt={slide.alt}
+                width="800"
+                height="500"
+                loading="lazy"
+              />
+            </div>
+          ))}
+          {copy.showcase.slides.map((slide) => (
+            <div class="swiper-slide" aria-hidden="true">
+              <img
+                src={slide.src}
+                alt=""
+                width="800"
+                height="500"
+                loading="lazy"
+              />
+            </div>
+          ))}
+        </div>
+    </div>
+    <div class="cl-showcase-laptop" aria-hidden="true">
+      <img
+        src="/credit-life/hollow-laptop.png"
+        alt=""
+        width="683"
+        height="397"
+      />
+    </div>
+  </div>
+  <div class="container">
     <img
+      class="cl-showcase-mobile"
       src="/credit-life/responsive-laptop.webp"
       alt={copy.showcase.imageAlt}
       width="1192"
       height="638"
       loading="lazy"
-      data-cl-reveal
     />
   </div>
 </section>
