@@ -1,0 +1,29 @@
+---
+import { cmsRichContent } from '../lib/public-api';
+import type { PublicApplicationDevelopment } from '../lib/public-api';
+
+interface Props {
+  page: PublicApplicationDevelopment;
+}
+
+const { page } = Astro.props;
+const title = page.introduction_title.trim();
+const first = cmsRichContent(page.introduction_first_paragraph);
+const second = cmsRichContent(page.introduction_second_paragraph);
+const firstMarkup = first.html || first.text;
+const secondMarkup = second.html || second.text;
+const show = Boolean(title || firstMarkup || secondMarkup);
+---
+{show && (
+  <section class="ads-intro" aria-labelledby="ads-intro-heading">
+    <div class="container">
+      <div class="ads-intro-inner">
+        <h2 id="ads-intro-heading" class="type-section" hidden={!title}>{title}</h2>
+        <div class="ads-intro-copy" hidden={!(firstMarkup || secondMarkup)}>
+          <div class="type-lede" hidden={!firstMarkup} set:html={firstMarkup}></div>
+          <div class="type-lede" hidden={!secondMarkup} set:html={secondMarkup}></div>
+        </div>
+      </div>
+    </div>
+  </section>
+)}

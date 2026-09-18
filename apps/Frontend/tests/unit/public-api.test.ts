@@ -5,6 +5,8 @@ import {
   fetchOrigin,
   loadPublishedAiService,
   loadPublishedAiServices,
+  loadPublishedApplicationDevelopment,
+  loadPublishedApplicationDevelopments,
   cmsRichContent,
   loadPublishedSolutionDetail,
   loadPublishedSolutionProduct,
@@ -162,6 +164,117 @@ describe('public AI service field mapping', () => {
     expect(result.item?.industry_items).toHaveLength(0);
     expect(result.item?.solutions[0].solutions_section.title).toBe('DoctCare AI');
     expect(result.item?.solutions[0].solutions_section.image_key).toBe('solutions/doctcare.jpg');
+    vi.unstubAllGlobals();
+  });
+});
+
+describe('public application development loaders', () => {
+  it('lists published application development pages from the public API', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        items: [
+          {
+            slug: 'best-app-development-company-for-enterprise-solutions',
+            banner_title: 'Best App Development Company for Enterprise Solutions',
+            banner_image_key: '1de875c802c3416b89ba35d66cf36f64.webp',
+          },
+        ],
+        page: 1,
+        per_page: 10,
+        total: 1,
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedApplicationDevelopments();
+    expect(result.error).toBe(false);
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0].slug).toBe('best-app-development-company-for-enterprise-solutions');
+    expect(String(fetchMock.mock.calls[0][0])).toContain('/api/v1/public/application-development');
+    vi.unstubAllGlobals();
+  });
+
+  it('loads a published application development page by slug', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        slug: 'best-app-development-company-for-enterprise-solutions',
+        banner_title: 'Best App Development Company for Enterprise Solutions',
+        banner_image_key: '1de875c802c3416b89ba35d66cf36f64.webp',
+        introduction_title: 'Engineer Modern Digital Systems for Business',
+        introduction_first_paragraph: 'First',
+        introduction_second_paragraph: 'Second',
+        accordion: [],
+        offering_image_key: '5c8957bbff214a478966dadb005fee32.webp',
+        offering_title: 'What We Offer?',
+        offering_description: '<p>Offer</p>',
+        faq_title: '',
+        faq_description: '',
+        faq_accordion: [],
+        content_available_in: ['en'],
+        seo: {
+          title: 'Best App Development Companies',
+          description: '',
+          canonical_url: '/services/application-development-services',
+          meta_title: '',
+          h1_tag: '',
+          image_alt: '',
+          image_key: null,
+        },
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedApplicationDevelopment(
+      'best-app-development-company-for-enterprise-solutions',
+    );
+    expect(result.error).toBe(false);
+    expect(result.item?.slug).toBe('best-app-development-company-for-enterprise-solutions');
+    expect(String(fetchMock.mock.calls[0][0])).toContain(
+      '/api/v1/public/application-development/best-app-development-company-for-enterprise-solutions',
+    );
+    vi.unstubAllGlobals();
+  });
+});
+
+describe('public application development field mapping', () => {
+  it('returns published detail fields without substituting designed content', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        slug: 'cms-ads',
+        banner_title: 'CMS title',
+        banner_image_key: null,
+        introduction_title: '',
+        introduction_first_paragraph: '',
+        introduction_second_paragraph: '',
+        accordion: [{ title: 'One', contents: '<p>Body</p>', order: 2 }],
+        offering_image_key: null,
+        offering_title: '',
+        offering_description: '',
+        faq_title: '',
+        faq_description: '',
+        faq_accordion: [],
+        content_available_in: ['en'],
+        seo: {
+          title: 'ADS',
+          description: '',
+          canonical_url: '/services/application-development-services',
+          meta_title: '',
+          h1_tag: '',
+          image_alt: '',
+          image_key: null,
+        },
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedApplicationDevelopment('cms-ads');
+    expect(result.error).toBe(false);
+    expect(result.item?.banner_title).toBe('CMS title');
+    expect(result.item?.banner_image_key).toBeNull();
+    expect(result.item?.introduction_title).toBe('');
+    expect(result.item?.offering_title).toBe('');
+    expect(result.item?.accordion).toHaveLength(1);
+    expect(result.item?.faq_accordion).toHaveLength(0);
     vi.unstubAllGlobals();
   });
 });

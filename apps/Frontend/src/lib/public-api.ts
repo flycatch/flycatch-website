@@ -310,6 +310,30 @@ export type PublicAiService = {
   seo: ContentSeo;
 };
 
+export type PublicApplicationDevelopmentSummary = {
+  slug: string;
+  banner_title: string;
+  banner_image_key: string | null;
+};
+
+export type PublicApplicationDevelopment = {
+  slug: string;
+  banner_title: string;
+  banner_image_key: string | null;
+  introduction_title: string;
+  introduction_first_paragraph: string;
+  introduction_second_paragraph: string;
+  accordion: PublicAccordionItem[];
+  offering_image_key: string | null;
+  offering_title: string;
+  offering_description: string;
+  faq_title: string;
+  faq_description: string;
+  faq_accordion: PublicAccordionItem[];
+  content_available_in: string[];
+  seo: ContentSeo;
+};
+
 export type PublicSolution = {
   banner_image_key: string | null;
   banner_title: string;
@@ -488,6 +512,22 @@ export async function loadPublishedAiService(
   return getJson<PublicAiService>(`/api/v1/public/ai-services/${encodeURIComponent(slug)}`).then(
     ({ data, error, origin }) => ({ item: data, error, origin }),
   );
+}
+
+export async function loadPublishedApplicationDevelopments(): Promise<
+  PublicListResult<PublicApplicationDevelopmentSummary>
+> {
+  return loadPaginated<PublicApplicationDevelopmentSummary>(
+    '/api/v1/public/application-development',
+  );
+}
+
+export async function loadPublishedApplicationDevelopment(
+  slug: string,
+): Promise<PublicItemResult<PublicApplicationDevelopment>> {
+  return getJson<PublicApplicationDevelopment>(
+    `/api/v1/public/application-development/${encodeURIComponent(slug)}`,
+  ).then(({ data, error, origin }) => ({ item: data, error, origin }));
 }
 
 export async function loadPublishedSolutions(): Promise<PublicListResult<PublicSolution>> {
