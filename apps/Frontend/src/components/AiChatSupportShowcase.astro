@@ -1,0 +1,14 @@
+---
+import CoverflowLaptopSlider from './CoverflowLaptopSlider.astro';
+import { aiChatSupportCopy as copy } from '../lib/ai-chat-support-data';
+---
+<section class="acs-showcase" aria-label={copy.showcase.body}>
+  <div class="container acs-showcase-copy">
+    <p class="acs-showcase-body" data-acs-reveal>{copy.showcase.body}</p>
+  </div>
+  <CoverflowLaptopSlider
+    slides={copy.showcase.slides}
+    mobileSrc="/ai-chat-support/laptop-mobile.webp"
+    mobileAlt={copy.showcase.imageAlt}
+  />
+</section>

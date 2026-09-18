@@ -1,0 +1,26 @@
+---
+import { aiChatSupportCopy as copy } from '../lib/ai-chat-support-data';
+---
+<section class="acs-quote" aria-label={copy.hero.logoAlt}>
+  <div class="container acs-quote-inner">
+    <div class="acs-quote-copy" data-acs-reveal>
+      <img
+        class="acs-quote-mark"
+        src="/ai-chat-support/quote.svg"
+        width="63"
+        height="50"
+        alt=""
+      />
+      <p class="acs-quote-text">{copy.quote.text}</p>
+    </div>
+    <div class="acs-quote-media" data-acs-reveal>
+      <img
+        src="/ai-chat-support/chatgpt-robot.webp"
+        alt={copy.quote.imageAlt}
+        width="373"
+        height="592"
+        loading="lazy"
+      />
+    </div>
+  </div>
+</section>

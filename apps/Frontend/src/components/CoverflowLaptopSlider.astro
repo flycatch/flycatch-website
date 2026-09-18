@@ -1,0 +1,60 @@
+---
+interface Slide {
+  src: string;
+  alt: string;
+}
+
+interface Props {
+  slides: Slide[];
+  mobileSrc: string;
+  mobileAlt: string;
+  laptopFrameSrc?: string;
+}
+
+const {
+  slides,
+  mobileSrc,
+  mobileAlt,
+  laptopFrameSrc = '/credit-life/hollow-laptop.png',
+} = Astro.props;
+
+const carouselSlides = [
+  ...slides.map((slide) => ({ ...slide, hidden: false })),
+  ...slides.map((slide) => ({ src: slide.src, alt: '', hidden: true })),
+];
+---
+<div class="acs-showcase-carousel" data-acs-reveal>
+  <div class="swiper acs-showcase-swiper acs-slider-push-down">
+    <div class="swiper-wrapper">
+      {carouselSlides.map((slide) => (
+        <div class="swiper-slide" aria-hidden={slide.hidden ? 'true' : undefined}>
+          <img
+            src={slide.src}
+            alt={slide.alt}
+            width="800"
+            height="500"
+            loading="lazy"
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+  <div class="acs-showcase-laptop" aria-hidden="true">
+    <img
+      src={laptopFrameSrc}
+      alt=""
+      width="683"
+      height="397"
+    />
+  </div>
+</div>
+<div class="container">
+  <img
+    class="acs-showcase-mobile"
+    src={mobileSrc}
+    alt={mobileAlt}
+    width="1192"
+    height="638"
+    loading="lazy"
+  />
+</div>

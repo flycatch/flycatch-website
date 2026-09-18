@@ -1,0 +1,24 @@
+---
+import { aiChatSupportCopy as copy } from '../lib/ai-chat-support-data';
+---
+<section class="acs-why" aria-labelledby="acs-why-heading">
+  <div class="container acs-why-inner">
+    <div class="acs-why-media" data-acs-reveal>
+      <img
+        src="/ai-chat-support/why-ai-chat.webp"
+        alt={copy.why.imageAlt}
+        width="581"
+        height="480"
+        loading="lazy"
+      />
+    </div>
+    <div class="acs-why-text">
+      <h2 id="acs-why-heading" class="acs-why-heading" data-acs-reveal>
+        {copy.why.heading}
+      </h2>
+      <div class="acs-why-copy" data-acs-reveal>
+        <p class="acs-why-body">{copy.why.body}</p>
+      </div>
+    </div>
+  </div>
+</section>

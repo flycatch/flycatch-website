@@ -23,6 +23,7 @@ export default defineConfig({
         `${site}/solutions/procure-flex`,
         `${site}/solutions/credit-life`,
         `${site}/solutions/com-bus`,
+        `${site}/solutions/ai-chat-support`,
         `${site}/case-studies`,
         `${site}/company/blogs`,
         `${site}/company/clients`,
