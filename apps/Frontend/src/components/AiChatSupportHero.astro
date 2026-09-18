@@ -1,0 +1,28 @@
+---
+import { aiChatSupportCopy as copy } from '../lib/ai-chat-support-data';
+---
+<section class="acs-hero" aria-labelledby="ai-chat-support-heading">
+  <div class="container acs-hero-inner">
+    <div class="acs-hero-copy" data-acs-reveal>
+      <div class="acs-hero-title">
+        <h1 id="ai-chat-support-heading">
+          <img
+            src="/ai-chat-support/logo.svg"
+            alt={copy.hero.logoAlt}
+            width="570"
+            height="45"
+          />
+        </h1>
+        <p class="acs-hero-tagline">{copy.hero.tagline}</p>
+      </div>
+      <div class="acs-hero-mobile-banner">
+        <img
+          src="/ai-chat-support/macbook-pro.webp"
+          alt={copy.hero.bannerAlt}
+          width="889"
+          height="542"
+        />
+      </div>
+    </div>
+  </div>
+</section>
