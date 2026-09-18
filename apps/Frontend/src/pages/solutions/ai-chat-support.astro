@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/home.css';
+import '../../styles/ai-chat-support.css';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import HomeInsights from '../../components/HomeInsights.astro';
+import HomeCta from '../../components/HomeCta.astro';
+import AiChatSupportHero from '../../components/AiChatSupportHero.astro';
+import AiChatSupportQuote from '../../components/AiChatSupportQuote.astro';
+import AiChatSupportWhy from '../../components/AiChatSupportWhy.astro';
+import AiChatSupportFeatures from '../../components/AiChatSupportFeatures.astro';
+import AiChatSupportShowcase from '../../components/AiChatSupportShowcase.astro';
+import { loadPublishedBlogs } from '../../lib/public-api';
+import { fallbackMetadata } from '../../lib/metadata';
+import { t } from '../../lib/i18n';
+
+const blogsResult = await loadPublishedBlogs();
+const metadata = fallbackMetadata(
+  '/solutions/ai-chat-support',
+  t('page.ai_chat_support.title'),
+  t('page.ai_chat_support.description'),
+);
+metadata.indexable = true;
+---
+<BaseLayout title={metadata.title} metadata={metadata}>
+  <SiteHeader />
+  <main id="main" class="solutions-page ai-chat-support-page" data-api-origin={blogsResult.origin}>
+    <AiChatSupportHero />
+    <AiChatSupportQuote />
+    <AiChatSupportWhy />
+    <AiChatSupportFeatures />
+    <AiChatSupportShowcase />
+    <HomeInsights blogs={blogsResult.items} error={blogsResult.error} home />
+    <HomeCta />
+  </main>
+  <SiteFooter />
+</BaseLayout>
+<script src="../../scripts/ai-chat-support.ts"></script>
