@@ -22,6 +22,7 @@ export default defineConfig({
         `${site}/solutions/flyGrid-ai`,
         `${site}/solutions/procure-flex`,
         `${site}/solutions/credit-life`,
+        `${site}/solutions/com-bus`,
         `${site}/case-studies`,
         `${site}/company/blogs`,
         `${site}/company/clients`,

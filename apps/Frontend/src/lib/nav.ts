@@ -61,7 +61,7 @@ export const serviceFlyoutColumnFour: NavLink[] = [
 export const solutionLinks: NavLink[] = [
   { href: '/solutions', labelKey: 'nav.solutions_overview' },
   { href: '/solutions/credit-life', labelKey: 'nav.credit_life' },
-  { href: '/solutions/combus', labelKey: 'nav.combus' },
+  { href: '/solutions/com-bus', labelKey: 'nav.combus' },
   { href: '/solutions/ai-chat-support', labelKey: 'nav.ai_chat_support' },
   { href: '/solutions/procure-flex', labelKey: 'nav.procureflex' },
   { href: '/solutions/flyGrid-ai', labelKey: 'nav.flygrid' },
