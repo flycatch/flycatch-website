@@ -156,8 +156,6 @@
 }
 
 .acs-why-media img {
-  position: absolute;
-  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -296,6 +294,13 @@
   font-weight: 300;
   line-height: normal;
   letter-spacing: 0.6px;
+}
+
+@media (min-width: 1025px) {
+  .acs-showcase-body {
+    padding-top: 100px;
+    padding-bottom: 100px;
+  }
 }
 
 .acs-showcase-carousel {
