@@ -1,0 +1,54 @@
+---
+import { t } from '../lib/i18n';
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicCaseStudy } from '../lib/public-api';
+import SectionState from './SectionState.astro';
+
+interface Props {
+  studies: PublicCaseStudy[];
+  error?: boolean;
+}
+
+const { studies, error = false } = Astro.props;
+const items = studies.filter(
+  (study) =>
+    study.image_key || (study.heading ?? '').trim() || (study.description ?? '').trim(),
+);
+---
+{(error || items.length > 0) && (
+  <section class="ads-related-studies" id="related-case-studies" aria-labelledby="ads-related-heading">
+    <div class="container">
+      <h2 id="ads-related-heading" class="type-section">{t('page.application_development.related_case_studies')}</h2>
+      <SectionState error={error} />
+      {items.length > 0 && (
+        <div class="ads-related-grid">
+          {items.map((study) => {
+            const image = publicMediaUrl(study.image_key);
+            const title = (study.heading || study.short_heading).trim();
+            return (
+              <a class="ads-related-card" href={`/case-studies/${study.slug}`}>
+                {image ? (
+                  <div class="ads-related-media">
+                    <img src={image} alt={study.image_alt || title} width="400" height="400" loading="lazy" />
+                  </div>
+                ) : (
+                  <div class="ads-related-media"></div>
+                )}
+                <div class="ads-related-copy">
+                  <h3 class="ads-related-title">{title}</h3>
+                  <p class="ads-related-description" hidden={!study.description.trim()}>{study.description}</p>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      )}
+      <p class="ads-related-actions">
+        <a class="btn" href="/case-studies">
+          {t('home.view_works')}
+          <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
+        </a>
+      </p>
+    </div>
+  </section>
+)}

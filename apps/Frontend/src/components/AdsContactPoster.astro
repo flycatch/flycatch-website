@@ -1,0 +1,49 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  description?: string;
+  action: string;
+  href: string;
+  image: string;
+  imageAlt: string;
+  imageWidth: number;
+  imageHeight: number;
+}
+
+const {
+  eyebrow,
+  title,
+  description = '',
+  action,
+  href,
+  image,
+  imageAlt,
+  imageWidth,
+  imageHeight,
+} = Astro.props;
+---
+<section class="ads-poster section-dark">
+  <div class="container ads-poster-layout">
+    <div class="ads-poster-copy">
+      <p class="type-lede">{eyebrow}</p>
+      <h2 class="type-section">{title}</h2>
+      <p class="type-lede" hidden={!description.trim()}>{description}</p>
+      <p>
+        <a class="btn btn-on-dark" href={href}>
+          {action}
+          <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
+        </a>
+      </p>
+    </div>
+    <div class="ads-poster-visual">
+      <img
+        src={image}
+        alt={imageAlt}
+        width={imageWidth}
+        height={imageHeight}
+        loading="lazy"
+      />
+    </div>
+  </div>
+</section>

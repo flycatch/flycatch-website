@@ -15,6 +15,7 @@ export default defineConfig({
         `${site}/`,
         `${site}/about`,
         `${site}/services/ai-services`,
+        `${site}/services/application-development-services`,
         `${site}/solutions`,
         `${site}/solutions/doctCare-ai`,
         `${site}/solutions/docSis-ai`,
