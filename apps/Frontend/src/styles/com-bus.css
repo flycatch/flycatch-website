@@ -24,8 +24,8 @@
   background-color: #ffffff;
   background-image: url('/com-bus/comBusBannerImage.webp');
   background-repeat: no-repeat;
-  background-position: 100% 0;
-  background-size: contain;
+  background-position: 82% center;
+  background-size: auto 82%;
   color: #000000;
   min-height: 80vh;
 }
@@ -110,10 +110,11 @@
   color: #ffffff;
 }
 
-.cb-tagline-inner {
+.combus-page .cb-tagline-inner {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
+  padding-top: 20vh;
   align-items: center;
   text-align: center;
   min-height: calc(100vh - 100px);
