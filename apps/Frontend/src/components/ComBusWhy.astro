@@ -1,0 +1,24 @@
+---
+import { comBusCopy as copy } from '../lib/com-bus-data';
+---
+<section class="cb-why" aria-labelledby="cb-why-heading">
+  <div class="container cb-why-inner">
+    <div class="cb-why-media" data-cb-reveal>
+      <img
+        src="/com-bus/whyComBusImage.webp"
+        alt={copy.why.imageAlt}
+        width="600"
+        height="400"
+        loading="lazy"
+      />
+    </div>
+    <div class="cb-why-text">
+      <h2 id="cb-why-heading" class="cb-why-heading" data-cb-reveal>{copy.why.heading}</h2>
+      <div class="cb-why-copy" data-cb-reveal>
+        {copy.why.body.map((paragraph) => (
+          <p class="cb-why-body">{paragraph}</p>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,32 @@
+---
+import { comBusCopy as copy } from '../lib/com-bus-data';
+---
+<section class="cb-hero" aria-labelledby="com-bus-heading">
+  <div class="container cb-hero-inner">
+    <div class="cb-hero-copy" data-cb-reveal>
+      <div class="cb-hero-title">
+        <h1 id="com-bus-heading">
+          <img
+            src="/com-bus/comBusLogo.svg"
+            alt={copy.hero.logoAlt}
+            width="275"
+            height="46"
+          />
+        </h1>
+        <p class="cb-hero-tagline">{copy.hero.tagline}</p>
+      </div>
+      <div class="cb-hero-mobile-banner">
+        <img
+          src="/com-bus/comBusBannerImage.webp"
+          alt={copy.hero.bannerAlt}
+          width="1026"
+          height="809"
+        />
+      </div>
+      <div class="cb-hero-industry">
+        <p class="cb-hero-industry-label">{copy.hero.industryLabel}</p>
+        <p class="cb-hero-industry-value">{copy.hero.industry}</p>
+      </div>
+    </div>
+  </div>
+</section>

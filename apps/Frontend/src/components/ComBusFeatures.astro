@@ -1,0 +1,37 @@
+---
+import { comBusCopy as copy } from '../lib/com-bus-data';
+---
+<section class="cb-features" aria-labelledby="cb-features-heading">
+  <div class="container cb-features-inner">
+    <div class="cb-features-aside">
+      <h2 id="cb-features-heading" class="cb-display" data-cb-reveal>{copy.features.heading}</h2>
+      <p class="cb-feature-intro" data-cb-reveal>{copy.features.intro}</p>
+      <img
+        class="cb-features-visual"
+        src="/com-bus/keyFeaturesIcon.webp"
+        alt={copy.features.imageAlt}
+        width="300"
+        height="300"
+        loading="lazy"
+        data-cb-reveal
+      />
+    </div>
+    <ul class="cb-feature-list">
+      {copy.features.items.map((item) => (
+        <li class="cb-feature" data-cb-reveal>
+          <img
+            class="cb-feature-icon"
+            src={item.icon}
+            alt=""
+            width="70"
+            height="70"
+          />
+          <div class="cb-feature-text">
+            <h3 class="cb-feature-title">{item.title}</h3>
+            <p class="cb-feature-body">{item.body}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
