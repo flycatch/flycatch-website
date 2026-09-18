@@ -1,0 +1,45 @@
+---
+import { cmsRichContent, publicMediaUrl, sortByOrder } from '../lib/public-api';
+import type { PublicApplicationDevelopment } from '../lib/public-api';
+
+interface Props {
+  page: PublicApplicationDevelopment;
+}
+
+const { page } = Astro.props;
+const title = page.offering_title.trim();
+const description = cmsRichContent(page.offering_description);
+const image = publicMediaUrl(page.offering_image_key);
+const items = sortByOrder(page.accordion).filter(
+  (item) => item.title.trim() || item.contents.trim(),
+);
+const show = Boolean(title || description.html || description.text || image || items.length);
+---
+{show && (
+  <section class="ads-offerings" id="ads-offerings" aria-labelledby="ads-offerings-heading">
+    <div class="container">
+      <h2 id="ads-offerings-heading" class="type-section" hidden={!title}>{title}</h2>
+      <div
+        class="ads-offerings-description type-lede"
+        hidden={!(description.html || description.text)}
+        set:html={description.html || description.text}
+      ></div>
+      <div class="ads-offerings-body" hidden={!(image || items.length)}>
+        <div class="ads-offerings-media" hidden={!image}>
+          {image && <img src={image} alt="" width="375" height="450" loading="lazy" />}
+        </div>
+        <div class="ads-offerings-list">
+          {items.map((item) => (
+            <details class="ads-accordion">
+              <summary>
+                <span>{item.title}</span>
+                <img src="/icon-expand-more.svg" width="40" height="40" alt="" />
+              </summary>
+              <div class="ads-accordion-body type-lede" hidden={!item.contents.trim()} set:html={item.contents} />
+            </details>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+)}
