@@ -1,0 +1,23 @@
+---
+import { comBusCopy as copy } from '../lib/com-bus-data';
+---
+<section class="cb-showcase" aria-label={copy.showcase.imageAlt}>
+  <div class="container cb-showcase-inner">
+    <img
+      class="cb-showcase-image"
+      src="/com-bus/comBusLaptopImage.webp"
+      alt={copy.showcase.imageAlt}
+      width="1192"
+      height="638"
+      loading="lazy"
+    />
+  </div>
+</section>
+<noscript>
+  <style>
+    .cb-showcase-image {
+      opacity: 1;
+      transform: none;
+    }
+  </style>
+</noscript>
