@@ -139,6 +139,30 @@ export type PublicOverview = {
   seo: ContentSeo;
 };
 
+export type PublicMobileApplicationDevelopmentSummary = {
+  slug: string;
+  banner_title: string;
+  banner_image_key: string | null;
+};
+
+export type PublicMobileApplicationDevelopment = {
+  slug: string;
+  banner_title: string;
+  banner_image_key: string | null;
+  introduction_title: string;
+  introduction_first_paragraph: string;
+  introduction_second_paragraph: string;
+  introduction_third_paragraph: string;
+  accordion: PublicAccordionItem[];
+  offering_image_key: string | null;
+  offering_title: string;
+  offering_description: string;
+  faq_title: string;
+  faq_description: string;
+  faq_accordion: PublicAccordionItem[];
+  seo: ContentSeo;
+};
+
 export type PublicAccordionItem = {
   title: string;
   contents: string;
@@ -568,6 +592,22 @@ export async function loadPublishedUserCenteredDesign(
 ): Promise<PublicItemResult<PublicUserCenteredDesign>> {
   return getJson<PublicUserCenteredDesign>(
     `/api/v1/public/user-centered-design/${encodeURIComponent(slug)}`,
+  ).then(({ data, error, origin }) => ({ item: data, error, origin }));
+}
+
+export async function loadPublishedMobileApplicationDevelopments(): Promise<
+  PublicListResult<PublicMobileApplicationDevelopmentSummary>
+> {
+  return loadPaginated<PublicMobileApplicationDevelopmentSummary>(
+    '/api/v1/public/mobile-application-development',
+  );
+}
+
+export async function loadPublishedMobileApplicationDevelopment(
+  slug: string,
+): Promise<PublicItemResult<PublicMobileApplicationDevelopment>> {
+  return getJson<PublicMobileApplicationDevelopment>(
+    `/api/v1/public/mobile-application-development/${encodeURIComponent(slug)}`,
   ).then(({ data, error, origin }) => ({ item: data, error, origin }));
 }
 

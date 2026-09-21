@@ -1,0 +1,27 @@
+---
+import { madPlatforms } from '../lib/mad-static';
+---
+<section class="mad-platforms" aria-labelledby="mad-platforms-heading">
+  <div class="container mad-platforms-grid">
+    <div class="mad-platforms-left">
+      <h2 id="mad-platforms-heading" class="type-section">{madPlatforms.title}</h2>
+      <p class="mad-copy">{madPlatforms.description}</p>
+      <img
+        class="mad-platforms-image"
+        src={madPlatforms.image}
+        alt=""
+        width="479"
+        height="490"
+        loading="lazy"
+      />
+    </div>
+    <div class="mad-platforms-right">
+      {madPlatforms.items.map((item) => (
+        <article class="mad-platform-item">
+          <h3>{item.title}</h3>
+          <p class="mad-copy">{item.body}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

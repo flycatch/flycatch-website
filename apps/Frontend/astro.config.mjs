@@ -18,6 +18,7 @@ export default defineConfig({
         `${site}/services/application-development-services`,
         `${site}/services/application-modernization`,
         `${site}/services/user-centered-design`,
+        `${site}/services/mobile-application-development`,
         `${site}/solutions`,
         `${site}/solutions/doctCare-ai`,
         `${site}/solutions/docSis-ai`,
