@@ -316,7 +316,7 @@ export type PublicApplicationDevelopmentSummary = {
   banner_image_key: string | null;
 };
 
-export type PublicApplicationDevelopment = {
+export type PublicOfferingsLanding = {
   slug: string;
   banner_title: string;
   banner_image_key: string | null;
@@ -330,9 +330,16 @@ export type PublicApplicationDevelopment = {
   faq_title: string;
   faq_description: string;
   faq_accordion: PublicAccordionItem[];
-  content_available_in: string[];
   seo: ContentSeo;
 };
+
+export type PublicApplicationDevelopment = PublicOfferingsLanding & {
+  content_available_in: string[];
+};
+
+export type PublicApplicationModernizationSummary = PublicApplicationDevelopmentSummary;
+
+export type PublicApplicationModernization = PublicOfferingsLanding;
 
 export type PublicSolution = {
   banner_image_key: string | null;
@@ -527,6 +534,22 @@ export async function loadPublishedApplicationDevelopment(
 ): Promise<PublicItemResult<PublicApplicationDevelopment>> {
   return getJson<PublicApplicationDevelopment>(
     `/api/v1/public/application-development/${encodeURIComponent(slug)}`,
+  ).then(({ data, error, origin }) => ({ item: data, error, origin }));
+}
+
+export async function loadPublishedApplicationModernizations(): Promise<
+  PublicListResult<PublicApplicationModernizationSummary>
+> {
+  return loadPaginated<PublicApplicationModernizationSummary>(
+    '/api/v1/public/application-modernization',
+  );
+}
+
+export async function loadPublishedApplicationModernization(
+  slug: string,
+): Promise<PublicItemResult<PublicApplicationModernization>> {
+  return getJson<PublicApplicationModernization>(
+    `/api/v1/public/application-modernization/${encodeURIComponent(slug)}`,
   ).then(({ data, error, origin }) => ({ item: data, error, origin }));
 }
 
