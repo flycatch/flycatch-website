@@ -1,0 +1,121 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/home.css';
+import '../../styles/ai-services.css';
+import '../../styles/mobile-application.css';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import HomeInsights from '../../components/HomeInsights.astro';
+import HomeCta from '../../components/HomeCta.astro';
+import HomeFaq from '../../components/HomeFaq.astro';
+import AiServicesMinds from '../../components/AiServicesMinds.astro';
+import AdsRelatedCaseStudies from '../../components/AdsRelatedCaseStudies.astro';
+import MadHero from '../../components/MadHero.astro';
+import MadIntro from '../../components/MadIntro.astro';
+import MadPlatforms from '../../components/MadPlatforms.astro';
+import MadOffering from '../../components/MadOffering.astro';
+import MadPoster from '../../components/MadPoster.astro';
+import MadQa from '../../components/MadQa.astro';
+import {
+  cmsRichContent,
+  loadPublishedBlogs,
+  loadPublishedCaseStudies,
+  loadPublishedCaseStudy,
+  loadPublishedMobileApplicationDevelopment,
+  loadPublishedMobileApplicationDevelopments,
+  type PublicCaseStudy,
+} from '../../lib/public-api';
+import { madConceptualization, madScale } from '../../lib/mad-static';
+import { fallbackMetadata, metadataFromContentSeo, publicSiteSettings } from '../../lib/metadata';
+import { t } from '../../lib/i18n';
+
+const [listed, blogsResult, casesResult] = await Promise.all([
+  loadPublishedMobileApplicationDevelopments(),
+  loadPublishedBlogs(),
+  loadPublishedCaseStudies(),
+]);
+const slug =
+  listed.items.find((item) => item.slug === 'mobile-application-development')?.slug ??
+  listed.items[0]?.slug ??
+  'mobile-application-development';
+const detail = await loadPublishedMobileApplicationDevelopment(slug);
+const page = detail.item;
+const failed = detail.error || (listed.error && !page);
+const siteSettings = publicSiteSettings();
+const fallbackTitle = t('page.mobile_application.title');
+const metadata = page
+  ? metadataFromContentSeo(page.seo, siteSettings, fallbackTitle)
+  : fallbackMetadata(
+      '/services/mobile-application-development',
+      fallbackTitle,
+      failed ? t('home.error') : t('home.empty'),
+    );
+const heading = page?.banner_title.trim() || fallbackTitle;
+const relatedSlugs = [...casesResult.items]
+  .sort((a, b) => {
+    const dateA = a.date ? Date.parse(a.date) : Number.NaN;
+    const dateB = b.date ? Date.parse(b.date) : Number.NaN;
+    const hasA = Number.isFinite(dateA);
+    const hasB = Number.isFinite(dateB);
+    if (hasA && hasB && dateB !== dateA) return dateB - dateA;
+    if (hasA !== hasB) return hasA ? -1 : 1;
+    return b.order - a.order;
+  })
+  .slice(0, 3)
+  .map((item) => item.slug)
+  .filter(Boolean);
+const relatedDetails = await Promise.all(relatedSlugs.map((itemSlug) => loadPublishedCaseStudy(itemSlug)));
+const relatedStudies: PublicCaseStudy[] = relatedDetails
+  .map((result) => result.item)
+  .filter((item): item is PublicCaseStudy => Boolean(item));
+const relatedError = casesResult.error || relatedDetails.some((result) => result.error);
+const faqs = (page?.faq_accordion ?? [])
+  .filter((item) => item.title.trim() || item.contents.trim())
+  .sort((a, b) => a.order - b.order)
+  .map((item) => ({
+    title: item.title,
+    contents: cmsRichContent(item.contents).text || item.contents,
+  }));
+---
+<BaseLayout title={metadata.title} metadata={metadata}>
+  <SiteHeader tone="dark" />
+  <main id="main" class="mad-page" data-api-origin={detail.origin}>
+    <MadHero page={page} heading={heading} failed={failed} />
+    {page && <MadIntro page={page} />}
+    <MadPlatforms />
+    {page && <MadOffering page={page} />}
+    <MadPoster
+      eyebrow={madConceptualization.eyebrow}
+      title={madConceptualization.title}
+      description={madConceptualization.description}
+      action={madConceptualization.action}
+      href={madConceptualization.href}
+      image={madConceptualization.image}
+      headingId="mad-conceptualization-heading"
+      tone="dark"
+    />
+    <MadQa />
+    {page && (
+      <HomeFaq
+        title={page.faq_title}
+        description={page.faq_description}
+        faqs={faqs}
+        error={detail.error}
+      />
+    )}
+    <AiServicesMinds />
+    <AdsRelatedCaseStudies studies={relatedStudies} error={relatedError} />
+    <MadPoster
+      eyebrow={madScale.eyebrow}
+      title={madScale.title}
+      action={madScale.action}
+      href={madScale.href}
+      image={madScale.image}
+      headingId="mad-scale-heading"
+      tone="dark"
+    />
+    <HomeInsights blogs={blogsResult.items} error={blogsResult.error} home />
+    <HomeCta />
+  </main>
+  <SiteFooter />
+</BaseLayout>

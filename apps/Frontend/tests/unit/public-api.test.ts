@@ -5,6 +5,8 @@ import {
   fetchOrigin,
   loadPublishedAiService,
   loadPublishedAiServices,
+  loadPublishedMobileApplicationDevelopment,
+  loadPublishedMobileApplicationDevelopments,
   loadPublishedApplicationDevelopment,
   loadPublishedApplicationDevelopments,
   loadPublishedApplicationModernization,
@@ -168,6 +170,80 @@ describe('public AI service field mapping', () => {
     expect(result.item?.industry_items).toHaveLength(0);
     expect(result.item?.solutions[0].solutions_section.title).toBe('DoctCare AI');
     expect(result.item?.solutions[0].solutions_section.image_key).toBe('solutions/doctcare.jpg');
+    vi.unstubAllGlobals();
+  });
+});
+
+
+describe('public mobile application development loaders', () => {
+  it('lists published entries from the public API', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        items: [
+          {
+            slug: 'mobile-application-development',
+            banner_title: 'Mobile',
+            banner_image_key: null,
+          },
+        ],
+        page: 1,
+        per_page: 10,
+        total: 1,
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedMobileApplicationDevelopments();
+    expect(result.error).toBe(false);
+    expect(result.items[0].slug).toBe('mobile-application-development');
+    expect(String(fetchMock.mock.calls[0][0])).toContain(
+      '/api/v1/public/mobile-application-development',
+    );
+    vi.unstubAllGlobals();
+  });
+
+  it('loads published detail by slug without substituting designed content', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        slug: 'mobile-application-development',
+        banner_title: 'CMS banner',
+        banner_image_key: 'mad/hero.jpg',
+        introduction_title: 'CMS intro',
+        introduction_first_paragraph: 'First',
+        introduction_second_paragraph: 'Second',
+        introduction_third_paragraph: 'Third',
+        accordion: [{ title: 'Native', contents: '<p>Body</p>', order: 0 }],
+        offering_image_key: 'mad/offering.jpg',
+        offering_title: 'CMS offering',
+        offering_description: '<p>Offering</p>',
+        faq_title: '',
+        faq_description: '',
+        faq_accordion: [],
+        seo: {
+          title: 'Top Mobile App Development Companies & Service in Saudi Arabia',
+          description: '',
+          canonical_url: '/services/mobile-application-development',
+          meta_title: '',
+          h1_tag: '',
+          image_alt: '',
+          image_key: null,
+        },
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedMobileApplicationDevelopment(
+      'mobile-application-development',
+    );
+    expect(result.error).toBe(false);
+    expect(result.item?.banner_title).toBe('CMS banner');
+    expect(result.item?.banner_image_key).toBe('mad/hero.jpg');
+    expect(result.item?.introduction_third_paragraph).toBe('Third');
+    expect(result.item?.accordion).toHaveLength(1);
+    expect(result.item?.offering_title).toBe('CMS offering');
+    expect(String(fetchMock.mock.calls[0][0])).toContain(
+      '/api/v1/public/mobile-application-development/mobile-application-development',
+    );
     vi.unstubAllGlobals();
   });
 });

@@ -1,0 +1,31 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  description?: string;
+  action: string;
+  href: string;
+  image: string;
+  headingId: string;
+  tone?: 'light' | 'dark';
+}
+
+const { eyebrow, title, description = '', action, href, image, headingId, tone = 'light' } = Astro.props;
+const dark = tone === 'dark';
+---
+<section class:list={['mad-poster', { 'mad-poster--dark': dark }]} aria-labelledby={headingId}>
+  <div class="container mad-poster-grid">
+    <div class="mad-poster-copy">
+      <p class="mad-copy mad-poster-eyebrow">{eyebrow}</p>
+      <h2 id={headingId} class="type-section">{title}</h2>
+      {description && <p class="mad-copy">{description}</p>}
+      <a class:list={['btn', { 'btn-on-dark': dark }]} href={href}>
+        {action}
+        <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
+      </a>
+    </div>
+    <div class="mad-poster-media">
+      <img src={image} alt="" width="1000" height="600" loading="lazy" />
+    </div>
+  </div>
+</section>
