@@ -1,0 +1,37 @@
+---
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicMobileApplicationDevelopment } from '../lib/public-api';
+import { MAD_FALLBACK_BANNER } from '../lib/mad-static';
+import SectionState from './SectionState.astro';
+
+interface Props {
+  page: PublicMobileApplicationDevelopment | null;
+  heading: string;
+  failed?: boolean;
+}
+
+const { page, heading, failed = false } = Astro.props;
+const banner = publicMediaUrl(page?.banner_image_key) ?? MAD_FALLBACK_BANNER;
+const alt = page?.seo.image_alt?.trim() || page?.banner_title?.trim() || heading;
+---
+<section class="mad-hero" aria-labelledby="mad-heading">
+  <img
+    class="mad-hero-media"
+    src={banner}
+    alt={alt}
+    width="1512"
+    height="982"
+  />
+  <div class="mad-hero-overlay" aria-hidden="true"></div>
+  <div class="mad-hero-scrim" aria-hidden="true"></div>
+  <div class="container mad-hero-copy">
+    <h1 id="mad-heading" class="type-display-lg mad-banner-heading">{heading}</h1>
+    {failed && !page && (
+      <div class="summary-region">
+        <SectionState error={failed} />
+      </div>
+    )}
+  </div>
+</section>
+
+<script src="../scripts/mad-hero.ts"></script>
