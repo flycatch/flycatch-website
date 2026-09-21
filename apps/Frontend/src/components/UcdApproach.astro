@@ -1,0 +1,29 @@
+---
+import { t } from '../lib/i18n';
+---
+<section class="ucd-approach" aria-labelledby="ucd-approach-heading">
+  <div class="container ucd-approach-inner">
+    <h2 id="ucd-approach-heading" class="type-section">{t('page.user_centered_design.approach_title')}</h2>
+    <p class="type-lede">{t('page.user_centered_design.approach_description')}</p>
+    <div class="ucd-approach-media">
+      <img
+        data-ucd-reveal
+        src="/user-centered-design/ucdApproachTopHalf.webp"
+        alt=""
+        width="1916"
+        height="796"
+        loading="lazy"
+      />
+      <img
+        data-ucd-reveal
+        src="/user-centered-design/ucdApproachBottomHalf.webp"
+        alt=""
+        width="1916"
+        height="818"
+        loading="lazy"
+        style="transition-delay: 600ms"
+      />
+    </div>
+  </div>
+</section>
+<script src="../scripts/ucd-approach.ts"></script>
