@@ -1,0 +1,33 @@
+---
+import { cmsRichContent } from '../lib/public-api';
+import type { PublicMobileApplicationDevelopment } from '../lib/public-api';
+
+interface Props {
+  page: PublicMobileApplicationDevelopment;
+}
+
+const { page } = Astro.props;
+const title = page.introduction_title.trim();
+const paragraphs = [
+  page.introduction_first_paragraph,
+  page.introduction_second_paragraph,
+  page.introduction_third_paragraph,
+].map((value) => cmsRichContent(value)).filter((item) => item.html || item.text);
+const show = Boolean(title || paragraphs.length);
+---
+{show && (
+  <section class="mad-intro" aria-labelledby="mad-intro-heading">
+    <div class="container">
+      <div class="mad-intro-inner">
+        <h2 id="mad-intro-heading" class="type-section" hidden={!title}>{title}</h2>
+        {paragraphs.map((item) =>
+          item.html ? (
+            <div class="mad-copy" set:html={item.html}></div>
+          ) : (
+            <p class="mad-copy">{item.text}</p>
+          )
+        )}
+      </div>
+    </div>
+  </section>
+)}

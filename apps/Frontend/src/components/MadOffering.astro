@@ -1,0 +1,56 @@
+---
+import { cmsRichContent, publicMediaUrl, sortByOrder } from '../lib/public-api';
+import type { PublicMobileApplicationDevelopment } from '../lib/public-api';
+
+interface Props {
+  page: PublicMobileApplicationDevelopment;
+}
+
+const { page } = Astro.props;
+const title = page.offering_title.trim();
+const description = cmsRichContent(page.offering_description);
+const image = publicMediaUrl(page.offering_image_key);
+const items = sortByOrder(page.accordion ?? [])
+  .filter((item) => item.title.trim() || item.contents.trim())
+  .map((item) => ({
+    ...item,
+    body: cmsRichContent(item.contents),
+  }));
+const show = Boolean(title || description.html || description.text || image || items.length);
+---
+{show && (
+  <section class="mad-offering" aria-labelledby="mad-offering-heading">
+    <div class="container">
+      <h2 id="mad-offering-heading" class="type-section" hidden={!title}>{title}</h2>
+      {description.html ? (
+        <div class="mad-copy mad-offering-lede" hidden={!description.html} set:html={description.html}></div>
+      ) : (
+        <p class="mad-copy mad-offering-lede" hidden={!description.text}>{description.text}</p>
+      )}
+      <div class="mad-offering-body" hidden={!(image || items.length)}>
+        <div class="mad-offering-media" hidden={!image}>
+          {image && (
+            <img src={image} alt="" width="479" height="490" loading="lazy" />
+          )}
+        </div>
+        <div class="mad-offering-list">
+          {items.map((item) => (
+            <details class="mad-accordion">
+              <summary>
+                <span>{item.title}</span>
+                <img src="/icon-expand-more.svg" width="40" height="40" alt="" />
+              </summary>
+              {item.body.html ? (
+                <div class="mad-accordion-body" hidden={!item.body.html} set:html={item.body.html}></div>
+              ) : (
+                <div class="mad-accordion-body" hidden={!item.body.text}>{item.body.text}</div>
+              )}
+            </details>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+)}
+
+<script src="../scripts/mad-offering.ts"></script>

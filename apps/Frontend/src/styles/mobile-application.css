@@ -1,0 +1,465 @@
+/* Mobile application development page. Unique sections; 50px section padding. */
+.mad-page {
+  overflow-x: clip;
+  overflow-wrap: break-word;
+}
+
+.mad-page [hidden] {
+  display: none !important;
+}
+
+.mad-page > section:not(.mad-hero):not(.ai-minds) {
+  padding-top: 50px;
+  padding-bottom: 50px;
+  margin: 0;
+}
+
+.mad-copy {
+  margin: 0;
+  max-width: 100%;
+  font-size: clamp(1rem, 0.9167rem + 0.3704vw, 1.25rem);
+  font-weight: 300;
+  line-height: 1.55;
+  letter-spacing: 0.6px;
+  color: #000000;
+}
+
+.mad-hero {
+  position: relative;
+  min-height: 450px;
+  display: grid;
+  align-items: end;
+  color: #ffffff;
+  background: #000b18;
+}
+
+.mad-hero-media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  max-width: none;
+}
+
+.mad-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.mad-hero-scrim {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 266px;
+  background: linear-gradient(
+    0deg,
+    rgb(0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.5) 50%,
+    rgba(0, 0, 0, 0.3) 75%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+.mad-hero-copy {
+  position: relative;
+  z-index: 1;
+  padding-bottom: 24px;
+}
+
+.mad-page .mad-hero h1 {
+  margin: 0;
+  max-width: 100%;
+  color: #ffffff;
+  font-size: clamp(1.75rem, 1.375rem + 1.6667vw, 2.875rem);
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: 0.6px;
+  transform: scale(0.9);
+  transition: transform 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.mad-page .mad-hero h1.is-visible {
+  transform: scale(1);
+}
+
+.mad-intro,
+.mad-offering,
+.mad-qa {
+  background: #ffffff;
+}
+
+.mad-platforms {
+  background: #000000;
+  color: #ffffff;
+}
+
+.mad-intro-inner {
+  display: grid;
+  gap: 24px;
+  max-width: min(988px, 100%);
+  margin: 0 auto;
+}
+
+.mad-page .mad-intro h2,
+.mad-page .mad-platforms h2,
+.mad-page .mad-offering h2,
+.mad-page .mad-qa h2,
+.mad-page .mad-poster h2 {
+  margin: 0;
+  max-width: 100%;
+  font-size: clamp(1.75rem, 1.375rem + 1.6667vw, 2.875rem);
+  font-weight: 300;
+  line-height: 1.333;
+  letter-spacing: 0.6px;
+  color: #000000;
+}
+
+.mad-page .mad-platforms h2,
+.mad-page .mad-platforms .mad-copy,
+.mad-page .mad-platform-item h3,
+.mad-page .mad-poster--dark h2,
+.mad-page .mad-poster--dark .mad-copy {
+  color: #ffffff;
+}
+
+.mad-platforms-grid {
+  display: grid;
+  gap: 40px;
+}
+
+.mad-platforms-left {
+  display: grid;
+  align-content: start;
+  gap: 20px;
+}
+
+.mad-platforms-image {
+  width: min(100%, 479px);
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.mad-platforms-right {
+  display: grid;
+  gap: 0;
+}
+
+.mad-platform-item {
+  display: grid;
+  gap: 12px;
+  padding: 28px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.mad-platform-item:first-child {
+  padding-top: 0;
+}
+
+.mad-platform-item:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.mad-page .mad-platform-item h3 {
+  margin: 0;
+  font-size: clamp(1.5rem, 1.25rem + 1.1111vw, 2.25rem);
+  font-weight: 300;
+  line-height: 1.3;
+  letter-spacing: 0.6px;
+}
+
+.mad-offering-lede {
+  margin-top: 24px;
+}
+
+.mad-offering-body {
+  display: grid;
+  gap: 30px;
+  margin-top: 32px;
+}
+
+.mad-offering-media img {
+  width: min(100%, 479px);
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.mad-accordion {
+  border-top: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.mad-accordion:last-child {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.mad-accordion summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 0;
+  font-size: clamp(1.5rem, 1.3333rem + 0.7407vw, 2rem);
+  font-weight: 300;
+  letter-spacing: 0.6px;
+}
+
+.mad-accordion summary span {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.mad-accordion summary::-webkit-details-marker {
+  display: none;
+}
+
+.mad-accordion summary img {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.mad-accordion[open] summary img {
+  transform: rotate(180deg);
+}
+
+.mad-accordion-body {
+  padding: 0 0 24px;
+  max-width: 100%;
+  font-size: clamp(1rem, 0.9167rem + 0.3704vw, 1.25rem);
+  font-weight: 300;
+  line-height: 1.55;
+  letter-spacing: 0.6px;
+}
+
+.mad-accordion-body :is(ul, ol) {
+  margin: 0;
+  padding-left: 1.2em;
+}
+
+.mad-poster {
+  background: #f3f3f3;
+}
+
+.mad-poster--dark {
+  background: #000000;
+  color: #ffffff;
+}
+
+.mad-poster--dark .btn img {
+  filter: brightness(0) invert(1);
+}
+
+.mad-poster-grid {
+  display: grid;
+  gap: 32px;
+  align-items: center;
+}
+
+.mad-poster-copy {
+  display: grid;
+  align-content: start;
+  gap: 20px;
+  justify-items: start;
+}
+
+.mad-poster-copy .btn {
+  width: fit-content;
+}
+
+.mad-poster-media img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.mad-qa .mad-copy {
+  margin-top: 24px;
+  max-width: min(988px, 100%);
+}
+
+.ads-related-studies {
+  background: #ffffff;
+  color: #000000;
+}
+
+.ads-related-studies .type-section {
+  margin: 0;
+  color: #000000;
+}
+
+.ads-related-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  width: 100%;
+  margin-top: 32px;
+}
+
+.ads-related-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  background: #ffffff;
+  border-radius: 16px;
+  text-decoration: none;
+  color: inherit;
+  text-align: center;
+}
+
+.ads-related-media {
+  position: relative;
+  height: 335px;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #f2f2f2;
+}
+
+.ads-related-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  max-height: 100%;
+  border-radius: 16px;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.ads-related-card:hover .ads-related-media img,
+.ads-related-card:focus-visible .ads-related-media img {
+  transform: scale(1.04);
+}
+
+.ads-related-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding-top: 20px;
+}
+
+.ads-related-title {
+  margin: 0;
+  width: 100%;
+  color: #000000;
+  text-align: start;
+  font-size: clamp(1.25rem, 1.125rem + 0.5556vw, 1.625rem);
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: 0.6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ads-related-description {
+  margin: 0;
+  width: 100%;
+  color: #000000;
+  text-align: start;
+  font-size: clamp(1rem, 0.9167rem + 0.3704vw, 1.25rem);
+  font-weight: 300;
+  line-height: 1.55;
+  letter-spacing: 0.6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ads-related-actions {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 32px 0 0;
+}
+
+.ads-related-actions .btn {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .mad-poster-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 48px;
+  }
+}
+
+@media (min-width: 851px) {
+  .ads-related-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ads-related-media {
+    height: 400px;
+  }
+
+  .ads-related-actions .btn {
+    width: fit-content;
+  }
+}
+
+@media (max-width: 1024px) {
+  .mad-offering-media {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .mad-banner-heading {
+    padding-bottom: 80px;
+  }
+  .mad-hero {
+    min-height: 682px;
+  }
+
+  .mad-hero-copy {
+    padding-bottom: 56px;
+  }
+
+  .mad-platforms-grid {
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    gap: 64px;
+    align-items: start;
+  }
+
+  .mad-offering-body {
+    grid-template-columns: minmax(0, 0.3fr) minmax(0, 1.08fr);
+    gap: 30px;
+    align-items: start;
+  }
+
+  .mad-platforms-left {
+    position: sticky;
+    top: 116px;
+  }
+
+  .mad-offering-media.is-locked {
+    width: 100%;
+    height: var(--mad-offering-image-height);
+  }
+
+  .mad-offering-media.is-locked img {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    object-fit: contain;
+    object-position: left top;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mad-page .mad-hero h1,
+  .mad-accordion summary img {
+    transition: none;
+  }
+}
