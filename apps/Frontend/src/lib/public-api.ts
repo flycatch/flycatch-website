@@ -341,6 +341,10 @@ export type PublicApplicationModernizationSummary = PublicApplicationDevelopment
 
 export type PublicApplicationModernization = PublicOfferingsLanding;
 
+export type PublicUserCenteredDesignSummary = PublicApplicationDevelopmentSummary;
+
+export type PublicUserCenteredDesign = PublicOfferingsLanding;
+
 export type PublicSolution = {
   banner_image_key: string | null;
   banner_title: string;
@@ -550,6 +554,20 @@ export async function loadPublishedApplicationModernization(
 ): Promise<PublicItemResult<PublicApplicationModernization>> {
   return getJson<PublicApplicationModernization>(
     `/api/v1/public/application-modernization/${encodeURIComponent(slug)}`,
+  ).then(({ data, error, origin }) => ({ item: data, error, origin }));
+}
+
+export async function loadPublishedUserCenteredDesigns(): Promise<
+  PublicListResult<PublicUserCenteredDesignSummary>
+> {
+  return loadPaginated<PublicUserCenteredDesignSummary>('/api/v1/public/user-centered-design');
+}
+
+export async function loadPublishedUserCenteredDesign(
+  slug: string,
+): Promise<PublicItemResult<PublicUserCenteredDesign>> {
+  return getJson<PublicUserCenteredDesign>(
+    `/api/v1/public/user-centered-design/${encodeURIComponent(slug)}`,
   ).then(({ data, error, origin }) => ({ item: data, error, origin }));
 }
 
