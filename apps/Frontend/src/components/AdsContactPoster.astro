@@ -9,6 +9,7 @@ interface Props {
   imageAlt: string;
   imageWidth: number;
   imageHeight: number;
+  tone?: 'dark' | 'light';
 }
 
 const {
@@ -21,16 +22,18 @@ const {
   imageAlt,
   imageWidth,
   imageHeight,
+  tone = 'dark',
 } = Astro.props;
+const isLight = tone === 'light';
 ---
-<section class="ads-poster section-dark">
+<section class:list={['ads-poster', isLight ? 'ads-poster-light' : 'section-dark']}>
   <div class="container ads-poster-layout">
     <div class="ads-poster-copy">
       <p class="type-lede">{eyebrow}</p>
       <h2 class="type-section">{title}</h2>
       <p class="type-lede" hidden={!description.trim()}>{description}</p>
       <p>
-        <a class="btn btn-on-dark" href={href}>
+        <a class:list={['btn', isLight ? undefined : 'btn-on-dark']} href={href}>
           {action}
           <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
         </a>

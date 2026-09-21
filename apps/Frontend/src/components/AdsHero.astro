@@ -1,17 +1,19 @@
 ---
 import { publicMediaUrl } from '../lib/public-api';
-import type { PublicApplicationDevelopment } from '../lib/public-api';
+import type { PublicOfferingsLanding } from '../lib/public-api';
 import SectionState from './SectionState.astro';
 import { t } from '../lib/i18n';
 
 interface Props {
-  page?: PublicApplicationDevelopment | null;
+  page?: PublicOfferingsLanding | null;
   failed?: boolean;
+  fallbackTitle?: string;
 }
 
-const { page = null, failed = false } = Astro.props;
+const { page = null, failed = false, fallbackTitle = t('page.application_development.title') } =
+  Astro.props;
 const banner = page ? publicMediaUrl(page.banner_image_key) : null;
-const heading = page?.banner_title.trim() || t('page.application_development.title');
+const heading = page?.banner_title.trim() || fallbackTitle;
 ---
 <section class="ads-hero" aria-labelledby="ads-heading">
   {banner ? (

@@ -7,6 +7,8 @@ import {
   loadPublishedAiServices,
   loadPublishedApplicationDevelopment,
   loadPublishedApplicationDevelopments,
+  loadPublishedApplicationModernization,
+  loadPublishedApplicationModernizations,
   cmsRichContent,
   loadPublishedSolutionDetail,
   loadPublishedSolutionProduct,
@@ -268,6 +270,115 @@ describe('public application development field mapping', () => {
     });
     vi.stubGlobal('fetch', fetchMock);
     const result = await loadPublishedApplicationDevelopment('cms-ads');
+    expect(result.error).toBe(false);
+    expect(result.item?.banner_title).toBe('CMS title');
+    expect(result.item?.banner_image_key).toBeNull();
+    expect(result.item?.introduction_title).toBe('');
+    expect(result.item?.offering_title).toBe('');
+    expect(result.item?.accordion).toHaveLength(1);
+    expect(result.item?.faq_accordion).toHaveLength(0);
+    vi.unstubAllGlobals();
+  });
+});
+
+describe('public application modernization loaders', () => {
+  it('lists published application modernization pages from the public API', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        items: [
+          {
+            slug: 'application-modernization',
+            banner_title: 'Application Modernization Service',
+            banner_image_key: 'modernization/banner.webp',
+          },
+        ],
+        page: 1,
+        per_page: 10,
+        total: 1,
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedApplicationModernizations();
+    expect(result.error).toBe(false);
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0].slug).toBe('application-modernization');
+    expect(String(fetchMock.mock.calls[0][0])).toContain(
+      '/api/v1/public/application-modernization',
+    );
+    vi.unstubAllGlobals();
+  });
+
+  it('loads a published application modernization page by slug', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        slug: 'application-modernization',
+        banner_title: 'Application Modernization Service',
+        banner_image_key: 'modernization/banner.webp',
+        introduction_title: 'Intro',
+        introduction_first_paragraph: 'First',
+        introduction_second_paragraph: 'Second',
+        accordion: [],
+        offering_image_key: 'modernization/offer.webp',
+        offering_title: 'What We Offer?',
+        offering_description: '<p>Offer</p>',
+        faq_title: '',
+        faq_description: '',
+        faq_accordion: [],
+        seo: {
+          title: 'Application Modernization Service | Flycatch',
+          description: '',
+          canonical_url: '/services/application-modernization',
+          meta_title: '',
+          h1_tag: '',
+          image_alt: '',
+          image_key: null,
+        },
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedApplicationModernization('application-modernization');
+    expect(result.error).toBe(false);
+    expect(result.item?.slug).toBe('application-modernization');
+    expect(String(fetchMock.mock.calls[0][0])).toContain(
+      '/api/v1/public/application-modernization/application-modernization',
+    );
+    vi.unstubAllGlobals();
+  });
+});
+
+describe('public application modernization field mapping', () => {
+  it('returns published detail fields without substituting designed content', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        slug: 'cms-modernization',
+        banner_title: 'CMS title',
+        banner_image_key: null,
+        introduction_title: '',
+        introduction_first_paragraph: '',
+        introduction_second_paragraph: '',
+        accordion: [{ title: 'One', contents: '<p>Body</p>', order: 2 }],
+        offering_image_key: null,
+        offering_title: '',
+        offering_description: '',
+        faq_title: '',
+        faq_description: '',
+        faq_accordion: [],
+        seo: {
+          title: 'Modernization',
+          description: '',
+          canonical_url: '/services/application-modernization',
+          meta_title: '',
+          h1_tag: '',
+          image_alt: '',
+          image_key: null,
+        },
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedApplicationModernization('cms-modernization');
     expect(result.error).toBe(false);
     expect(result.item?.banner_title).toBe('CMS title');
     expect(result.item?.banner_image_key).toBeNull();
