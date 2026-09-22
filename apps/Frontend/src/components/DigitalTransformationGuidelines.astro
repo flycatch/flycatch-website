@@ -1,0 +1,29 @@
+---
+import { t } from '../lib/i18n';
+---
+<section class="dt-guideline-image" aria-hidden="true">
+  <div class="container">
+    <img
+      src="/digital-transformation/download-guidelines.webp"
+      alt={t('page.digital_transformation.guidelines_image_alt')}
+      width="1194"
+      height="624"
+      loading="lazy"
+    />
+  </div>
+</section>
+<section class="dt-guidelines" aria-labelledby="dt-guidelines-heading">
+  <div class="container dt-guidelines-inner">
+    <h2 id="dt-guidelines-heading" class="type-section">{t('page.digital_transformation.guidelines_title')}</h2>
+    <div class="dt-guidelines-copy">
+      <p class="type-lede">{t('page.digital_transformation.guidelines_p1')}</p>
+      <p class="type-lede">{t('page.digital_transformation.guidelines_p2')}</p>
+    </div>
+    <p>
+      <a class="btn" href="/digital-transformation/guidelines.pdf" target="_blank" rel="noopener noreferrer">
+        {t('page.digital_transformation.guidelines_action')}
+        <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
+      </a>
+    </p>
+  </div>
+</section>

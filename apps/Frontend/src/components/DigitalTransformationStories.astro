@@ -1,0 +1,27 @@
+---
+import { t } from '../lib/i18n';
+---
+<section class="dt-stories" aria-labelledby="dt-stories-heading">
+  <div class="container dt-stories-layout">
+    <div class="dt-stories-media">
+      <img
+        src="/digital-transformation/success-story.webp"
+        alt={t('page.digital_transformation.stories_image_alt')}
+        width="581"
+        height="614"
+        loading="lazy"
+      />
+    </div>
+    <div class="dt-stories-copy">
+      <h2 id="dt-stories-heading" class="type-section">{t('page.digital_transformation.stories_title')}</h2>
+      <p class="type-lede">{t('page.digital_transformation.stories_p1')}</p>
+      <p class="type-lede">{t('page.digital_transformation.stories_p2')}</p>
+      <p>
+        <a class="btn" href="/case-studies">
+          {t('page.digital_transformation.stories_action')}
+          <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
+        </a>
+      </p>
+    </div>
+  </div>
+</section>

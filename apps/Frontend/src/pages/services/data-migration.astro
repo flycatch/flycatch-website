@@ -1,0 +1,103 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/home.css';
+import '../../styles/ai-services.css';
+import '../../styles/application-development.css';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import HomeInsights from '../../components/HomeInsights.astro';
+import HomeCta from '../../components/HomeCta.astro';
+import AdsHero from '../../components/AdsHero.astro';
+import AdsIntro from '../../components/AdsIntro.astro';
+import AdsOfferings from '../../components/AdsOfferings.astro';
+import AdsContactPoster from '../../components/AdsContactPoster.astro';
+import AdsRelatedCaseStudies from '../../components/AdsRelatedCaseStudies.astro';
+import AiServicesMinds from '../../components/AiServicesMinds.astro';
+import {
+  loadPublishedBlogs,
+  loadPublishedCaseStudies,
+  loadPublishedCaseStudy,
+  loadPublishedDataAnalytic,
+  loadPublishedDataAnalytics,
+  namedServiceAsOfferingsLanding,
+  type PublicCaseStudy,
+} from '../../lib/public-api';
+import { fallbackMetadata, metadataFromContentSeo, publicSiteSettings } from '../../lib/metadata';
+import { t } from '../../lib/i18n';
+
+const preferred = 'data-migration';
+const [listed, blogsResult, casesResult] = await Promise.all([
+  loadPublishedDataAnalytics(),
+  loadPublishedBlogs(),
+  loadPublishedCaseStudies(),
+]);
+const pageName =
+  listed.items.find((item) => item.page_name === preferred)?.page_name ??
+  listed.items[0]?.page_name ??
+  preferred;
+const detail = await loadPublishedDataAnalytic(pageName);
+const page = detail.item;
+const landing = page ? namedServiceAsOfferingsLanding(page) : null;
+const failed = detail.error || (listed.error && !page);
+const siteSettings = publicSiteSettings();
+const metadata = page
+  ? metadataFromContentSeo(page.seo, siteSettings, t('page.data_migration.title'))
+  : fallbackMetadata(
+      '/services/data-migration',
+      t('page.data_migration.title'),
+      failed ? t('home.error') : t('home.empty'),
+    );
+const relatedSlugs = [...casesResult.items]
+  .sort((a, b) => {
+    const dateA = a.date ? Date.parse(a.date) : Number.NaN;
+    const dateB = b.date ? Date.parse(b.date) : Number.NaN;
+    const hasA = Number.isFinite(dateA);
+    const hasB = Number.isFinite(dateB);
+    if (hasA && hasB && dateB !== dateA) return dateB - dateA;
+    if (hasA !== hasB) return hasA ? -1 : 1;
+    return b.order - a.order;
+  })
+  .slice(0, 3)
+  .map((item) => item.slug)
+  .filter(Boolean);
+const relatedDetails = await Promise.all(relatedSlugs.map((itemSlug) => loadPublishedCaseStudy(itemSlug)));
+const relatedStudies: PublicCaseStudy[] = relatedDetails
+  .map((result) => result.item)
+  .filter((item): item is PublicCaseStudy => Boolean(item));
+const relatedError = casesResult.error || relatedDetails.some((result) => result.error);
+---
+<BaseLayout title={metadata.title} metadata={metadata}>
+  <SiteHeader tone="dark" />
+  <main id="main" class="data-migration-page" data-api-origin={detail.origin}>
+    <AdsHero page={landing} failed={failed} fallbackTitle={t('page.data_migration.title')} />
+    {landing && <AdsIntro page={landing} />}
+    <AdsContactPoster
+      tone="light"
+      eyebrow={t('page.data_migration.contact_eyebrow')}
+      title={t('page.data_migration.contact_title')}
+      description={t('page.data_migration.contact_description')}
+      action={t('page.data_migration.contact_action')}
+      href="/contact-us"
+      image="/data-migration/development-contact.webp"
+      imageAlt={page?.seo.image_alt || t('page.data_migration.contact_image_alt')}
+      imageWidth={500}
+      imageHeight={550}
+    />
+    {landing && <AdsOfferings page={landing} />}
+    <AiServicesMinds />
+    <AdsRelatedCaseStudies studies={relatedStudies} error={relatedError} />
+    <AdsContactPoster
+      eyebrow={t('page.data_migration.scale_eyebrow')}
+      title={t('page.data_migration.scale_title')}
+      action={t('page.data_migration.scale_action')}
+      href="/contact-us"
+      image="/data-migration/scale-business.webp"
+      imageAlt={t('page.data_migration.scale_image_alt')}
+      imageWidth={624}
+      imageHeight={573}
+    />
+    <HomeInsights blogs={blogsResult.items} error={blogsResult.error} home />
+    <HomeCta />
+  </main>
+  <SiteFooter />
+</BaseLayout>
