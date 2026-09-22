@@ -11,25 +11,22 @@ import AdsHero from '../../components/AdsHero.astro';
 import AdsIntro from '../../components/AdsIntro.astro';
 import AdsOfferings from '../../components/AdsOfferings.astro';
 import AdsContactPoster from '../../components/AdsContactPoster.astro';
-import AdsRelatedCaseStudies from '../../components/AdsRelatedCaseStudies.astro';
+
 import AiServicesMinds from '../../components/AiServicesMinds.astro';
 import {
   loadPublishedBlogs,
-  loadPublishedCaseStudies,
-  loadPublishedCaseStudy,
+
   loadPublishedCloudService,
   loadPublishedCloudServices,
   namedServiceAsOfferingsLanding,
-  type PublicCaseStudy,
 } from '../../lib/public-api';
 import { fallbackMetadata, metadataFromContentSeo, publicSiteSettings } from '../../lib/metadata';
 import { t } from '../../lib/i18n';
 
 const preferred = 'cloud-migration';
-const [listed, blogsResult, casesResult] = await Promise.all([
+const [listed, blogsResult] = await Promise.all([
   loadPublishedCloudServices(),
   loadPublishedBlogs(),
-  loadPublishedCaseStudies(),
 ]);
 const pageName =
   listed.items.find((item) => item.page_name === preferred)?.page_name ??
@@ -47,24 +44,7 @@ const metadata = page
       t('page.cloud_migration.title'),
       failed ? t('home.error') : t('home.empty'),
     );
-const relatedSlugs = [...casesResult.items]
-  .sort((a, b) => {
-    const dateA = a.date ? Date.parse(a.date) : Number.NaN;
-    const dateB = b.date ? Date.parse(b.date) : Number.NaN;
-    const hasA = Number.isFinite(dateA);
-    const hasB = Number.isFinite(dateB);
-    if (hasA && hasB && dateB !== dateA) return dateB - dateA;
-    if (hasA !== hasB) return hasA ? -1 : 1;
-    return b.order - a.order;
-  })
-  .slice(0, 3)
-  .map((item) => item.slug)
-  .filter(Boolean);
-const relatedDetails = await Promise.all(relatedSlugs.map((itemSlug) => loadPublishedCaseStudy(itemSlug)));
-const relatedStudies: PublicCaseStudy[] = relatedDetails
-  .map((result) => result.item)
-  .filter((item): item is PublicCaseStudy => Boolean(item));
-const relatedError = casesResult.error || relatedDetails.some((result) => result.error);
+
 ---
 <BaseLayout title={metadata.title} metadata={metadata}>
   <SiteHeader tone="dark" />
@@ -72,7 +52,7 @@ const relatedError = casesResult.error || relatedDetails.some((result) => result
     <AdsHero page={landing} failed={failed} fallbackTitle={t('page.cloud_migration.title')} />
     {landing && <AdsIntro page={landing} />}
     <AdsContactPoster
-      tone="light"
+      tone="dark"
       eyebrow={t('page.cloud_migration.contact_eyebrow')}
       title={t('page.cloud_migration.contact_title')}
       description={t('page.cloud_migration.contact_description')}
@@ -85,7 +65,6 @@ const relatedError = casesResult.error || relatedDetails.some((result) => result
     />
     {landing && <AdsOfferings page={landing} />}
     <AiServicesMinds />
-    <AdsRelatedCaseStudies studies={relatedStudies} error={relatedError} />
     <HomeInsights blogs={blogsResult.items} error={blogsResult.error} home />
     <HomeCta />
   </main>
