@@ -11,9 +11,9 @@ interface Props {
 
 const { page = null, failed = false } = Astro.props;
 const banner = page ? publicMediaUrl(page.banner_image_key) : null;
-const heading = page?.banner_title.trim() || '';
+const heading = page?.banner_title.trim() || page?.seo.h1_tag.trim() || '';
 const src = banner || '/services/Banner_image.webp';
-const alt = page?.seo.image_alt || page?.banner_title || t('page.services.title');
+const alt = page?.seo.image_alt.trim() || heading || t('page.services.title');
 ---
 <section class="services-hero" aria-labelledby="services-heading">
   <img
