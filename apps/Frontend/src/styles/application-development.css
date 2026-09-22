@@ -723,3 +723,15 @@
     transition: none;
   }
 }
+
+.cloud-migration-page .ads-hero h1 {
+  padding-bottom: 5vh;
+}
+
+.data-migration-page .ads-hero h1 {
+  padding-bottom: 5vh;
+}
+
+.data-migration-page .ads-intro-inner {
+  padding: 50px 70px;
+}
