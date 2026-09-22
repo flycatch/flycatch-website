@@ -407,6 +407,10 @@ input:focus-visible {
   color: var(--color-red);
 }
 
+.flyout a.btn:hover {
+  color: var(--color-white);
+}
+
 .footer-col a:hover {
   color: var(--color-text);
 }
