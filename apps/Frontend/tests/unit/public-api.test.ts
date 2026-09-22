@@ -19,6 +19,8 @@ import {
   loadPublishedDataAnalytics,
   loadPublishedDigitalTransformation,
   loadPublishedDigitalTransformations,
+  loadPublishedOverview,
+  loadPublishedOverviews,
   cmsRichContent,
   loadPublishedSolutionDetail,
   loadPublishedSolutionProduct,
@@ -814,6 +816,66 @@ describe('public digital transformation loaders', () => {
     expect(String(fetchMock.mock.calls[0][0])).toContain(
       '/api/v1/public/digital-transformation/digital-transformation',
     );
+    vi.unstubAllGlobals();
+  });
+});
+
+describe('public overview loaders', () => {
+  it('lists published overviews from the public API', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        items: [
+          {
+            slug: 'services',
+            banner_title: 'Visualization Services in Saudi | Canada | UK | UAE',
+            banner_image_key: 'overview/banner.webp',
+          },
+        ],
+        page: 1,
+        per_page: 10,
+        total: 1,
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedOverviews();
+    expect(result.error).toBe(false);
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0].slug).toBe('services');
+    expect(String(fetchMock.mock.calls[0][0])).toContain('/api/v1/public/overview');
+    vi.unstubAllGlobals();
+  });
+
+  it('loads a published overview by slug', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        slug: 'services',
+        banner_title: 'Visualization Services in Saudi | Canada | UK | UAE',
+        banner_image_key: 'overview/banner.webp',
+        introduction_title: '',
+        introduction_first_paragraph: '',
+        introduction_second_paragraph: '',
+        seo: {
+          title: 'Services | Flycatch',
+          description: 'Discover expert visualization services',
+          canonical_url: '/services',
+          meta_title: '',
+          h1_tag: 'Visualization Services in Saudi | Canada | UK | UAE',
+          image_alt: 'Visualization Services in Saudi',
+          image_key: null,
+        },
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedOverview('services');
+    expect(result.error).toBe(false);
+    expect(result.item?.slug).toBe('services');
+    expect(result.item?.banner_title).toBe(
+      'Visualization Services in Saudi | Canada | UK | UAE',
+    );
+    expect(result.item?.introduction_title).toBe('');
+    expect(String(fetchMock.mock.calls[0][0])).toContain('/api/v1/public/overview/services');
     vi.unstubAllGlobals();
   });
 });

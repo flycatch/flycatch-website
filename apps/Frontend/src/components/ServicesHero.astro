@@ -1,0 +1,32 @@
+---
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicOverview } from '../lib/public-api';
+import SectionState from './SectionState.astro';
+import { t } from '../lib/i18n';
+
+interface Props {
+  page?: PublicOverview | null;
+  failed?: boolean;
+}
+
+const { page = null, failed = false } = Astro.props;
+const banner = page ? publicMediaUrl(page.banner_image_key) : null;
+const heading = page?.banner_title.trim() || '';
+const src = banner || '/services/Banner_image.webp';
+const alt = page?.seo.image_alt || page?.banner_title || t('page.services.title');
+---
+<section class="services-hero" aria-labelledby="services-heading">
+  <img
+    class="services-hero-media"
+    src={src}
+    alt={alt}
+    width="1512"
+    height="982"
+  />
+  <div class="services-hero-overlay" aria-hidden="true"></div>
+  <div class="container services-hero-copy">
+    <h1 id="services-heading" class="type-display-lg" hidden={!heading}>{heading}</h1>
+    {!page && <SectionState error={failed} empty={!failed} />}
+  </div>
+</section>
+<script src="../scripts/services-hero.ts"></script>
