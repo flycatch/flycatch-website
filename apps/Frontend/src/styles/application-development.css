@@ -212,7 +212,7 @@
   display: none;
   position: sticky;
   top: 1rem;
-  width: 375px;
+  width: 300px;
   flex-shrink: 0;
   height: fit-content;
 }

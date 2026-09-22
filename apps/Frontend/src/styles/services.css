@@ -54,10 +54,10 @@
 .services-hero-copy {
   position: relative;
   z-index: 1;
-  padding-bottom: 5vh;
 }
 
 .services-page .services-hero h1 {
+  padding-bottom: 5vh;
   margin: 0;
   max-width: 80%;
   color: #ffffff;
@@ -87,15 +87,19 @@
   color: #000000;
 }
 
-.services-offering-inner {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
+.services-offering-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 20px;
+  align-items: start;
+}
+
+.services-offering-lead {
+  display: contents;
 }
 
 .services-page .services-offering h2 {
+  order: 1;
   margin: 0;
   max-width: 100%;
   font-size: 46px;
@@ -110,6 +114,8 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
+  order: 2;
+  min-width: 0;
 }
 
 .services-offering-copy p,
@@ -124,6 +130,7 @@
 }
 
 .services-offering-bottom {
+  order: 3;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -192,6 +199,7 @@
 .services-core {
   background: #ffffff;
   color: #000000;
+  overflow: clip;
 }
 
 .services-page .services-core h2 {
@@ -222,15 +230,22 @@
   min-width: 0;
   width: 100%;
   opacity: 0;
-  transform: translateY(16px);
   transition:
-    opacity 0.6s ease-out,
-    transform 0.6s ease-out;
+    opacity 1s ease,
+    transform 1s ease;
+}
+
+.services-core-row.is-from-left {
+  transform: translate3d(-100%, 0, 0);
+}
+
+.services-core-row.is-from-right {
+  transform: translate3d(100%, 0, 0);
 }
 
 .services-core-row.is-visible {
   opacity: 1;
-  transform: none;
+  transform: translate3d(0, 0, 0);
 }
 
 .services-core-media {
@@ -297,7 +312,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .services-page .services-hero h1,
-  .services-core-row {
+  .services-core-row,
+  .services-core-row.is-from-left,
+  .services-core-row.is-from-right {
     opacity: 1;
     transform: none;
     transition: none;
@@ -305,6 +322,39 @@
 }
 
 @media (min-width: 751px) {
+  .services-offering-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: stretch;
+    column-gap: 40px;
+  }
+
+  .services-offering-lead {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+    height: 100%;
+  }
+
+  .services-page .services-offering h2,
+  .services-offering-bottom,
+  .services-offering-copy {
+    order: 0;
+  }
+
+  .services-offering-copy {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .services-offering-bottom {
+    margin-top: 0;
+  }
+
   .services-motto-inner {
     grid-template-columns: minmax(0, 1fr) minmax(0, 330px);
   }

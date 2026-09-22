@@ -56,8 +56,15 @@ const items = [
   <div class="container">
     <h2 id="services-core-heading">{t('page.services.core_title')}</h2>
     <ul class="services-core-list">
-      {items.map((item) => (
-        <li class:list={['services-core-row', { 'is-image-first': item.imageFirst }]} data-services-core-row>
+      {items.map((item, index) => (
+        <li
+          class:list={[
+            'services-core-row',
+            index % 2 === 0 ? 'is-from-left' : 'is-from-right',
+            { 'is-image-first': item.imageFirst },
+          ]}
+          data-services-core-row
+        >
           <div class="services-core-media">
             <img src={item.image} alt={item.alt} width="720" height="350" loading="lazy" />
           </div>
@@ -67,7 +74,11 @@ const items = [
               <p>{item.body}</p>
             </div>
             <p class="services-core-actions">
-              <a class="btn" href={item.href}>
+              <a
+                class="btn"
+                href={item.href}
+                aria-label={t('page.services.explore_more_label', { title: item.title })}
+              >
                 {t('page.services.explore_more')}
                 <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
               </a>

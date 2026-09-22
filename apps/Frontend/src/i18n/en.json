@@ -96,6 +96,7 @@
   "page.services.motto_image_alt": "Wireframe light bulb",
   "page.services.core_title": "Core services",
   "page.services.explore_more": "Explore more",
+  "page.services.explore_more_label": "Explore more about {title}",
   "page.services.core.digital.title": "Digital transformation",
   "page.services.core.digital.body": "Transform your business by streamline operations, enhance customer experiences, and boost agility.",
   "page.services.core.digital.image_alt": "Leading digital transformation services for businesses, enabling software modernization, cloud migration, and data-driven solutions.",
