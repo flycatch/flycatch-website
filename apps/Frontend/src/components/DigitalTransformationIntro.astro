@@ -1,0 +1,34 @@
+---
+import { cmsRichContent } from '../lib/public-api';
+import type { PublicDigitalTransformation } from '../lib/public-api';
+import { t } from '../lib/i18n';
+
+interface Props {
+  page: PublicDigitalTransformation;
+}
+
+const { page } = Astro.props;
+const title = page.introduction_title.trim();
+const first = cmsRichContent(page.introduction_first_paragraph);
+const second = cmsRichContent(page.introduction_second_paragraph);
+const firstMarkup = first.html || first.text;
+const secondMarkup = second.html || second.text;
+const show = Boolean(title || firstMarkup || secondMarkup);
+---
+{show && (
+  <section class="dt-intro" aria-labelledby="dt-intro-heading">
+    <div class="container dt-intro-layout">
+      <h2 id="dt-intro-heading" class="type-section dt-intro-title" hidden={!title}>{title}</h2>
+      <div class="dt-intro-body" hidden={!(firstMarkup || secondMarkup)}>
+        <div class="type-lede" hidden={!firstMarkup} set:html={firstMarkup}></div>
+        <div class="type-lede" hidden={!secondMarkup} set:html={secondMarkup}></div>
+      </div>
+      <p class="dt-intro-action">
+        <a class="btn" href="/contact-us">
+          {t('page.digital_transformation.contact_action')}
+          <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
+        </a>
+      </p>
+    </div>
+  </section>
+)}

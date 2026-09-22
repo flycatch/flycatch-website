@@ -1,27 +1,32 @@
 /* Application Development Services. Explicit values; unique sections only. */
-:is(.application-development-page, .application-modernization-page, .user-centered-design-page) {
+:is(.application-development-page, .application-modernization-page, .user-centered-design-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page) {
   overflow-wrap: break-word;
   overflow-x: clip;
 }
 
-:is(.application-development-page, .application-modernization-page, .user-centered-design-page) [hidden] {
+:is(.application-development-page, .application-modernization-page, .user-centered-design-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page) [hidden] {
   display: none !important;
 }
 
-:is(.application-development-page, .application-modernization-page, .user-centered-design-page) > section:not(.ads-hero) {
+:is(.application-development-page, .application-modernization-page, .user-centered-design-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page) > section:not(.ads-hero) {
   padding-top: 50px;
   padding-bottom: 50px;
 }
 
-:is(.application-development-page, .application-modernization-page, .user-centered-design-page) .ai-minds {
+:is(.application-development-page, .application-modernization-page, .user-centered-design-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page) .ai-minds {
   padding-top: 50px;
   padding-bottom: 50px;
 }
 
-:is(.application-development-page, .application-modernization-page, .user-centered-design-page) .ai-minds h2 {
+:is(.application-development-page, .application-modernization-page, .user-centered-design-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page) .ai-minds h2 {
   font-size: 46px;
   font-weight: 300;
   line-height: 1.333;
+}
+
+:is(.cloud-migration-page, .data-migration-page, .digital-transformation-page) .container {
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .ads-hero {
@@ -63,7 +68,7 @@
   padding-bottom: 5vh;
 }
 
-:is(.application-development-page, .application-modernization-page, .user-centered-design-page) .ads-hero h1 {
+:is(.application-development-page, .application-modernization-page, .user-centered-design-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page) .ads-hero h1 {
   margin: 0;
   max-width: 100%;
   width: 100%;
@@ -76,7 +81,7 @@
     transform 0.6s ease-out;
 }
 
-:is(.application-development-page, .application-modernization-page, .user-centered-design-page) .ads-hero h1.is-visible {
+:is(.application-development-page, .application-modernization-page, .user-centered-design-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page) .ads-hero h1.is-visible {
   opacity: 1;
   transform: scale(1);
 }

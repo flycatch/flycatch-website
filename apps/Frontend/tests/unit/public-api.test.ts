@@ -13,6 +13,12 @@ import {
   loadPublishedApplicationModernizations,
   loadPublishedUserCenteredDesign,
   loadPublishedUserCenteredDesigns,
+  loadPublishedCloudService,
+  loadPublishedCloudServices,
+  loadPublishedDataAnalytic,
+  loadPublishedDataAnalytics,
+  loadPublishedDigitalTransformation,
+  loadPublishedDigitalTransformations,
   cmsRichContent,
   loadPublishedSolutionDetail,
   loadPublishedSolutionProduct,
@@ -571,6 +577,243 @@ describe('public user-centered design field mapping', () => {
     expect(result.item?.offering_title).toBe('');
     expect(result.item?.accordion).toHaveLength(1);
     expect(result.item?.faq_accordion).toHaveLength(0);
+    vi.unstubAllGlobals();
+  });
+});
+
+describe('public cloud services loaders', () => {
+  it('lists published cloud services from the public API', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        items: [
+          {
+            page_name: 'cloud-migration',
+            banner_title: 'Cloud Migration Services',
+            banner_image_key: 'cloud/banner.webp',
+            introduction_title: 'Intro',
+          },
+        ],
+        page: 1,
+        per_page: 10,
+        total: 1,
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedCloudServices();
+    expect(result.error).toBe(false);
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0].page_name).toBe('cloud-migration');
+    expect(String(fetchMock.mock.calls[0][0])).toContain('/api/v1/public/cloud-services');
+    vi.unstubAllGlobals();
+  });
+
+  it('loads a published cloud service by page_name', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        page_name: 'cloud-migration',
+        banner_title: 'Cloud Migration Services',
+        banner_image_key: 'cloud/banner.webp',
+        introduction_title: 'Intro',
+        introduction_first_paragraph: 'First',
+        introduction_second_paragraph: 'Second',
+        accordion: [],
+        offering_image_key: 'cloud/offer.webp',
+        offering_title: 'What We Offer?',
+        offering_description: '<p>Offer</p>',
+        faq_title: '',
+        faq_description: '',
+        faq_accordion: [],
+        seo: {
+          title: 'Cloud Migration Services',
+          description: '',
+          canonical_url: '/services/cloud-migration',
+          meta_title: '',
+          h1_tag: '',
+          image_alt: '',
+          image_key: null,
+        },
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedCloudService('cloud-migration');
+    expect(result.error).toBe(false);
+    expect(result.item?.page_name).toBe('cloud-migration');
+    expect(String(fetchMock.mock.calls[0][0])).toContain(
+      '/api/v1/public/cloud-services/cloud-migration',
+    );
+    vi.unstubAllGlobals();
+  });
+
+  it('returns published detail fields without substituting designed content', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        page_name: 'cloud-services',
+        banner_title: 'CMS title',
+        banner_image_key: null,
+        introduction_title: '',
+        introduction_first_paragraph: '',
+        introduction_second_paragraph: '',
+        accordion: [{ title: 'One', contents: '<p>Body</p>', order: 2 }],
+        offering_image_key: null,
+        offering_title: '',
+        offering_description: '',
+        faq_title: '',
+        faq_description: '',
+        faq_accordion: [],
+        seo: {
+          title: 'Cloud',
+          description: '',
+          canonical_url: '/services/cloud-migration',
+          meta_title: '',
+          h1_tag: '',
+          image_alt: '',
+          image_key: null,
+        },
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedCloudService('cloud-services');
+    expect(result.error).toBe(false);
+    expect(result.item?.banner_title).toBe('CMS title');
+    expect(result.item?.banner_image_key).toBeNull();
+    expect(result.item?.introduction_title).toBe('');
+    expect(result.item?.offering_title).toBe('');
+    expect(result.item?.accordion).toHaveLength(1);
+    vi.unstubAllGlobals();
+  });
+});
+
+describe('public data analytics loaders', () => {
+  it('lists published data analytics pages from the public API', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        items: [
+          {
+            page_name: 'data-migration',
+            banner_title: 'Data Migration Services',
+            banner_image_key: 'data/banner.webp',
+            introduction_title: 'Intro',
+          },
+        ],
+        page: 1,
+        per_page: 10,
+        total: 1,
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedDataAnalytics();
+    expect(result.error).toBe(false);
+    expect(result.items[0].page_name).toBe('data-migration');
+    expect(String(fetchMock.mock.calls[0][0])).toContain('/api/v1/public/data-analytics');
+    vi.unstubAllGlobals();
+  });
+
+  it('loads a published data analytics page by page_name', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        page_name: 'data-migration',
+        banner_title: 'Best Data Analytics Company in Saudi Arabia',
+        banner_image_key: 'data/banner.webp',
+        introduction_title: 'Intro',
+        introduction_first_paragraph: 'First',
+        introduction_second_paragraph: 'Second',
+        accordion: [],
+        offering_image_key: null,
+        offering_title: '',
+        offering_description: '',
+        faq_title: '',
+        faq_description: '',
+        faq_accordion: [],
+        seo: {
+          title: 'Data Migration Services',
+          description: '',
+          canonical_url: '/services/data-migration',
+          meta_title: '',
+          h1_tag: '',
+          image_alt: '',
+          image_key: null,
+        },
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedDataAnalytic('data-migration');
+    expect(result.error).toBe(false);
+    expect(result.item?.page_name).toBe('data-migration');
+    expect(String(fetchMock.mock.calls[0][0])).toContain(
+      '/api/v1/public/data-analytics/data-migration',
+    );
+    vi.unstubAllGlobals();
+  });
+});
+
+describe('public digital transformation loaders', () => {
+  it('lists published digital transformation pages from the public API', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        items: [
+          {
+            slug: 'digital-transformation',
+            banner_title: 'Digital Transformation Services',
+            banner_image_key: 'dt/banner.webp',
+            banner_tag_line: 'Transform now',
+          },
+        ],
+        page: 1,
+        per_page: 10,
+        total: 1,
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedDigitalTransformations();
+    expect(result.error).toBe(false);
+    expect(result.items[0].slug).toBe('digital-transformation');
+    expect(String(fetchMock.mock.calls[0][0])).toContain('/api/v1/public/digital-transformation');
+    vi.unstubAllGlobals();
+  });
+
+  it('loads a published digital transformation page by slug', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        slug: 'digital-transformation',
+        banner_title: 'Digital Transformation Services',
+        banner_image_key: 'dt/banner.webp',
+        banner_tag_line: 'Tag',
+        introduction_title: 'Intro',
+        introduction_first_paragraph: 'First',
+        introduction_second_paragraph: 'Second',
+        accordion: [],
+        outcomes_image_key: 'dt/outcomes.webp',
+        outcomes_title: 'Outcomes',
+        outcomes_description: '<p>Outcomes</p>',
+        faq_title: '',
+        faq_description: '',
+        faq_accordion: [],
+        seo: {
+          title: 'Digital Transformation Service in Saudi Arabia',
+          description: '',
+          canonical_url: '/services/digital-transformation',
+          meta_title: '',
+          h1_tag: '',
+          image_alt: '',
+          image_key: null,
+        },
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedDigitalTransformation('digital-transformation');
+    expect(result.error).toBe(false);
+    expect(result.item?.slug).toBe('digital-transformation');
+    expect(result.item?.outcomes_title).toBe('Outcomes');
+    expect(String(fetchMock.mock.calls[0][0])).toContain(
+      '/api/v1/public/digital-transformation/digital-transformation',
+    );
     vi.unstubAllGlobals();
   });
 });
