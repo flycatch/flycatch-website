@@ -1,0 +1,38 @@
+---
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicDigitalTransformation } from '../lib/public-api';
+import SectionState from './SectionState.astro';
+import { t } from '../lib/i18n';
+
+interface Props {
+  page?: PublicDigitalTransformation | null;
+  failed?: boolean;
+}
+
+const { page = null, failed = false } = Astro.props;
+const banner = page ? publicMediaUrl(page.banner_image_key) : null;
+const heading = page?.banner_title.trim() || t('page.digital_transformation.title');
+const tagLine = page?.banner_tag_line.trim() || '';
+---
+<section class="ads-hero" aria-labelledby="ads-heading">
+  {banner ? (
+    <img
+      class="ads-hero-media"
+      src={banner}
+      alt={page?.seo.image_alt || page?.banner_title}
+      width="1512"
+      height="982"
+    />
+  ) : (
+    <div class="ads-hero-media ads-hero-fallback"></div>
+  )}
+  <div class="ads-hero-overlay" aria-hidden="true"></div>
+  <div class="container ads-hero-copy">
+    <div class="dt-hero-copy">
+      <h1 id="ads-heading" class="type-hero">{heading}</h1>
+      <p class="type-lede dt-hero-tagline" hidden={!tagLine}>{tagLine}</p>
+      {!page && <SectionState error={failed} empty={!failed} />}
+    </div>
+  </div>
+</section>
+<script src="../scripts/ads-hero.ts"></script>

@@ -369,6 +369,100 @@ export type PublicUserCenteredDesignSummary = PublicApplicationDevelopmentSummar
 
 export type PublicUserCenteredDesign = PublicOfferingsLanding;
 
+export type PublicNamedServiceSummary = {
+  page_name: string;
+  banner_title: string;
+  banner_image_key: string | null;
+  introduction_title: string;
+};
+
+export type PublicNamedService = {
+  page_name: string;
+  banner_title: string;
+  banner_image_key: string | null;
+  introduction_title: string;
+  introduction_first_paragraph: string;
+  introduction_second_paragraph: string;
+  accordion: PublicAccordionItem[];
+  offering_image_key: string | null;
+  offering_title: string;
+  offering_description: string;
+  faq_title: string;
+  faq_description: string;
+  faq_accordion: PublicAccordionItem[];
+  seo: ContentSeo;
+};
+
+export type PublicCloudServiceSummary = PublicNamedServiceSummary;
+export type PublicCloudService = PublicNamedService;
+export type PublicDataAnalyticSummary = PublicNamedServiceSummary;
+export type PublicDataAnalytic = PublicNamedService;
+
+export type PublicDigitalTransformationSummary = {
+  slug: string;
+  banner_title: string;
+  banner_image_key: string | null;
+  banner_tag_line: string;
+};
+
+export type PublicDigitalTransformation = {
+  slug: string;
+  banner_title: string;
+  banner_image_key: string | null;
+  banner_tag_line: string;
+  introduction_title: string;
+  introduction_first_paragraph: string;
+  introduction_second_paragraph: string;
+  accordion: PublicAccordionItem[];
+  outcomes_image_key: string | null;
+  outcomes_title: string;
+  outcomes_description: string;
+  faq_title: string;
+  faq_description: string;
+  faq_accordion: PublicAccordionItem[];
+  seo: ContentSeo;
+};
+
+export function namedServiceAsOfferingsLanding(page: PublicNamedService): PublicOfferingsLanding {
+  return {
+    slug: page.page_name,
+    banner_title: page.banner_title,
+    banner_image_key: page.banner_image_key,
+    introduction_title: page.introduction_title,
+    introduction_first_paragraph: page.introduction_first_paragraph,
+    introduction_second_paragraph: page.introduction_second_paragraph,
+    accordion: page.accordion,
+    offering_image_key: page.offering_image_key,
+    offering_title: page.offering_title,
+    offering_description: page.offering_description,
+    faq_title: page.faq_title,
+    faq_description: page.faq_description,
+    faq_accordion: page.faq_accordion,
+    seo: page.seo,
+  };
+}
+
+export function digitalTransformationAsOfferingsLanding(
+  page: PublicDigitalTransformation,
+): PublicOfferingsLanding {
+  return {
+    slug: page.slug,
+    banner_title: page.banner_title,
+    banner_image_key: page.banner_image_key,
+    introduction_title: page.introduction_title,
+    introduction_first_paragraph: page.introduction_first_paragraph,
+    introduction_second_paragraph: page.introduction_second_paragraph,
+    accordion: page.accordion,
+    offering_image_key: page.outcomes_image_key,
+    offering_title: page.outcomes_title,
+    offering_description: page.outcomes_description,
+    faq_title: page.faq_title,
+    faq_description: page.faq_description,
+    faq_accordion: page.faq_accordion,
+    seo: page.seo,
+  };
+}
+
 export type PublicSolution = {
   banner_image_key: string | null;
   banner_title: string;
@@ -608,6 +702,50 @@ export async function loadPublishedMobileApplicationDevelopment(
 ): Promise<PublicItemResult<PublicMobileApplicationDevelopment>> {
   return getJson<PublicMobileApplicationDevelopment>(
     `/api/v1/public/mobile-application-development/${encodeURIComponent(slug)}`,
+  ).then(({ data, error, origin }) => ({ item: data, error, origin }));
+}
+
+export async function loadPublishedCloudServices(): Promise<
+  PublicListResult<PublicCloudServiceSummary>
+> {
+  return loadPaginated<PublicCloudServiceSummary>('/api/v1/public/cloud-services');
+}
+
+export async function loadPublishedCloudService(
+  pageName: string,
+): Promise<PublicItemResult<PublicCloudService>> {
+  return getJson<PublicCloudService>(
+    `/api/v1/public/cloud-services/${encodeURIComponent(pageName)}`,
+  ).then(({ data, error, origin }) => ({ item: data, error, origin }));
+}
+
+export async function loadPublishedDataAnalytics(): Promise<
+  PublicListResult<PublicDataAnalyticSummary>
+> {
+  return loadPaginated<PublicDataAnalyticSummary>('/api/v1/public/data-analytics');
+}
+
+export async function loadPublishedDataAnalytic(
+  pageName: string,
+): Promise<PublicItemResult<PublicDataAnalytic>> {
+  return getJson<PublicDataAnalytic>(
+    `/api/v1/public/data-analytics/${encodeURIComponent(pageName)}`,
+  ).then(({ data, error, origin }) => ({ item: data, error, origin }));
+}
+
+export async function loadPublishedDigitalTransformations(): Promise<
+  PublicListResult<PublicDigitalTransformationSummary>
+> {
+  return loadPaginated<PublicDigitalTransformationSummary>(
+    '/api/v1/public/digital-transformation',
+  );
+}
+
+export async function loadPublishedDigitalTransformation(
+  slug: string,
+): Promise<PublicItemResult<PublicDigitalTransformation>> {
+  return getJson<PublicDigitalTransformation>(
+    `/api/v1/public/digital-transformation/${encodeURIComponent(slug)}`,
   ).then(({ data, error, origin }) => ({ item: data, error, origin }));
 }
 

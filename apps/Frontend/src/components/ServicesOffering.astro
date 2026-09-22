@@ -1,0 +1,35 @@
+---
+import type { PublicOverview } from '../lib/public-api';
+import { t } from '../lib/i18n';
+
+interface Props {
+  page?: PublicOverview | null;
+}
+
+const { page = null } = Astro.props;
+const title = page?.introduction_title.trim() || '';
+const first = page?.introduction_first_paragraph.trim() || '';
+const second = page?.introduction_second_paragraph.trim() || '';
+---
+<section class="services-offering" aria-labelledby="services-offering-heading">
+  <div class="container services-offering-layout">
+    <div class="services-offering-lead">
+      <h2 id="services-offering-heading" hidden={!title}>{title}</h2>
+      <div class="services-offering-bottom">
+        <img
+          class="services-offering-icons"
+          src="/services/techIconGroup.svg"
+          alt={t('page.services.offering_icons_alt')}
+          width="328"
+          height="66"
+          loading="lazy"
+        />
+        <p>{t('page.services.offering_tagline')}</p>
+      </div>
+    </div>
+    <div class="services-offering-copy" hidden={!(first || second)}>
+      <p hidden={!first}>{first}</p>
+      <p hidden={!second}>{second}</p>
+    </div>
+  </div>
+</section>
