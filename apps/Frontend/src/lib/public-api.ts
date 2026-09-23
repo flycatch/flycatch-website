@@ -463,6 +463,48 @@ export function digitalTransformationAsOfferingsLanding(
   };
 }
 
+export type PublicDevOpsConsultSummary = {
+  slug: string;
+  banner_title: string;
+  banner_image_key: string | null;
+};
+
+export type PublicDevOpsConsult = {
+  slug: string;
+  banner_title: string;
+  banner_image_key: string | null;
+  introduction_title: string;
+  introduction_first_paragraph: string;
+  introduction_second_paragraph: string;
+  experience_title: string;
+  experience_accordion: PublicAccordionItem[];
+  experience_image_key: string | null;
+  experience_description: string;
+  faq_title: string;
+  faq_description: string;
+  faq_accordion: PublicAccordionItem[];
+  seo: ContentSeo;
+};
+
+export type PublicInfrastructureManagementSummary = {
+  slug: string;
+  banner_title: string;
+  banner_image_key: string | null;
+};
+
+export type PublicInfrastructureManagement = {
+  slug: string;
+  banner_title: string;
+  banner_image_key: string | null;
+  introduction_title: string;
+  introduction_first_paragraph: string;
+  introduction_second_paragraph: string;
+  faq_title: string;
+  faq_description: string;
+  faq_accordion: PublicAccordionItem[];
+  seo: ContentSeo;
+};
+
 export type PublicSolution = {
   banner_image_key: string | null;
   banner_title: string;
@@ -746,6 +788,36 @@ export async function loadPublishedDigitalTransformation(
 ): Promise<PublicItemResult<PublicDigitalTransformation>> {
   return getJson<PublicDigitalTransformation>(
     `/api/v1/public/digital-transformation/${encodeURIComponent(slug)}`,
+  ).then(({ data, error, origin }) => ({ item: data, error, origin }));
+}
+
+export async function loadPublishedDevOpsConsults(): Promise<
+  PublicListResult<PublicDevOpsConsultSummary>
+> {
+  return loadPaginated<PublicDevOpsConsultSummary>('/api/v1/public/devops-consult');
+}
+
+export async function loadPublishedDevOpsConsult(
+  slug: string,
+): Promise<PublicItemResult<PublicDevOpsConsult>> {
+  return getJson<PublicDevOpsConsult>(
+    `/api/v1/public/devops-consult/${encodeURIComponent(slug)}`,
+  ).then(({ data, error, origin }) => ({ item: data, error, origin }));
+}
+
+export async function loadPublishedInfrastructureManagements(): Promise<
+  PublicListResult<PublicInfrastructureManagementSummary>
+> {
+  return loadPaginated<PublicInfrastructureManagementSummary>(
+    '/api/v1/public/infrastructure-management',
+  );
+}
+
+export async function loadPublishedInfrastructureManagement(
+  slug: string,
+): Promise<PublicItemResult<PublicInfrastructureManagement>> {
+  return getJson<PublicInfrastructureManagement>(
+    `/api/v1/public/infrastructure-management/${encodeURIComponent(slug)}`,
   ).then(({ data, error, origin }) => ({ item: data, error, origin }));
 }
 
