@@ -1,0 +1,55 @@
+---
+const shots = [
+  {
+    src: '/company/careers/image-1.webp',
+    hover: '/company/careers/image-4.webp',
+    alt: 'Team Image 1',
+    place: 'a',
+  },
+  {
+    src: '/company/careers/image-2.webp',
+    hover: '/company/careers/image-7.webp',
+    alt: 'Team Image 3',
+    place: 'b',
+  },
+  {
+    src: '/company/careers/image-10.webp',
+    hover: '/company/careers/image-9.webp',
+    alt: 'Core Team Image',
+    place: 'c',
+  },
+  {
+    src: '/company/careers/image-6.webp',
+    hover: '/company/careers/image-5.webp',
+    alt: 'Team Image 2',
+    place: 'd',
+  },
+  {
+    src: '/company/careers/image-8.webp',
+    hover: '/company/careers/image-3.webp',
+    alt: 'Team Image 4',
+    place: 'e',
+  },
+];
+---
+<section class="careers-life">
+  <div class="container">
+    <header class="careers-life-head">
+      <h2 class="type-section">
+        Life @ <span>Flycatch</span>
+        <img src="/company/careers/logo.svg" alt="" width="65" height="40" />
+      </h2>
+      <p class="lede type-lede">
+        Create the future you truly believe in. Innovative work, meaningful career paths.
+      </p>
+    </header>
+    <div class="careers-life-grid">
+      {shots.map((shot) => (
+        <div class:list={['careers-life-shot', `careers-life-shot--${shot.place}`]}>
+          <img src={shot.src} alt={shot.alt} width="552" height="552" loading="lazy" />
+          <img src={shot.hover} alt="" width="552" height="552" loading="lazy" />
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
