@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/home.css';
+import '../../styles/about-us.css';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import AboutHero from '../../components/AboutHero.astro';
+import AboutIntro from '../../components/AboutIntro.astro';
+import AboutVision from '../../components/AboutVision.astro';
+import AboutGlobalPresence from '../../components/AboutGlobalPresence.astro';
+import AboutCoreValues from '../../components/AboutCoreValues.astro';
+import AboutMinds from '../../components/AboutMinds.astro';
+import AboutGrowCareer from '../../components/AboutGrowCareer.astro';
+import HomeClients from '../../components/HomeClients.astro';
+import HomeTestimonials from '../../components/HomeTestimonials.astro';
+import HomeInsights from '../../components/HomeInsights.astro';
+import HomeCta from '../../components/HomeCta.astro';
+import {
+  loadPublishedBlogs,
+  loadPublishedClientLogos,
+  loadPublishedClientTestimonials,
+} from '../../lib/public-api';
+import { fallbackMetadata } from '../../lib/metadata';
+import { t } from '../../lib/i18n';
+
+const [logosResult, testimonialsResult, blogsResult] = await Promise.all([
+  loadPublishedClientLogos(),
+  loadPublishedClientTestimonials(),
+  loadPublishedBlogs(),
+]);
+
+const metadata = fallbackMetadata(
+  '/company/about-us',
+  t('page.about.title'),
+  'At Flycatch we craft technological innovation and design that helps clients stay ahead.',
+);
+metadata.indexable = !logosResult.error && !testimonialsResult.error;
+---
+<BaseLayout title={metadata.title} metadata={metadata}>
+  <SiteHeader tone="dark" />
+  <main id="main" class="about-us-page" data-api-origin={logosResult.origin}>
+    <AboutHero />
+    <AboutIntro />
+    <AboutVision />
+    <AboutGlobalPresence />
+    <AboutCoreValues />
+    <AboutMinds />
+    <AboutGrowCareer />
+    <HomeClients logos={logosResult.items} error={logosResult.error} home />
+    <HomeTestimonials
+      testimonials={testimonialsResult.items}
+      error={testimonialsResult.error}
+      home={Boolean(testimonialsResult.items[0])}
+    />
+    <HomeInsights blogs={blogsResult.items} error={blogsResult.error} home />
+    <HomeCta />
+  </main>
+  <SiteFooter />
+</BaseLayout>

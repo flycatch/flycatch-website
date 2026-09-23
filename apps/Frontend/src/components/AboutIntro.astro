@@ -1,0 +1,35 @@
+---
+const rows = [
+  {
+    title: 'Who we are',
+    image: '/company/about-us/who.webp',
+    alt: 'Flycatch colleagues working together at a desk',
+    body: "At Flycatch, we immerse ourselves in our clients' modern business landscape, gaining a deep understanding of their vision and strategy. By combining our expertise with their aspirations, we craft a bespoke blend of technological innovation and design to propel them ahead in their industry.",
+  },
+  {
+    title: 'What we do',
+    image: '/company/about-us/what_we_do.webp',
+    alt: 'Engineer reviewing a digital interface on a laptop',
+    body: 'At Flycatch, we embrace the belief that those who dare to challenge the status quo today will achieve remarkable feats tomorrow. Each day presents us with new challenges, and we rise to meet them with a blend of clear goals, profound technical expertise, and a deep understanding of business dynamics. Our mission is to serve our clients with meticulously crafted digital solutions, utilizing state-of-the-art technology to surpass their expectations.',
+  },
+  {
+    title: 'Our Approach',
+    image: '/company/about-us/our-approch.webp',
+    alt: 'Team discussing a software delivery approach',
+    body: "At Flycatch, we transcend traditional software engineering to assist you in crafting business-transforming solutions. Through close and ongoing collaboration with our clients, we've developed end-to-end cooperation models that ensure a seamless and transparent software delivery process.",
+  },
+];
+---
+<section class="about-intro" id="who-we-are">
+  {rows.map((row) => (
+    <div class="container about-intro-row">
+      <div class="about-intro-media">
+        <img src={row.image} alt={row.alt} width="640" height="420" loading="lazy" />
+      </div>
+      <div class="about-intro-copy">
+        <h2 class="type-section">{row.title}</h2>
+        <p class="lede type-lede">{row.body}</p>
+      </div>
+    </div>
+  ))}
+</section>

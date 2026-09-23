@@ -1,5 +1,5 @@
 import type { PageMetadata } from './metadata';
-import type { PublicBlogDetail, PublicCaseStudy } from './public-api';
+import type { PublicBlogDetail, PublicCaseStudy, PublicOpening } from './public-api';
 import type { SeoMetadata, SiteSettings } from './published-snapshot';
 import { absoluteMediaUrl } from './public-api';
 
@@ -83,6 +83,35 @@ export function blogStructuredData(
         jobTitle: author.designation,
       })),
       timeRequired: `PT${Math.max(blog.reading_time, 1)}M`,
+    },
+  ];
+}
+
+export function openingStructuredData(
+  opening: PublicOpening,
+  metadata: PageMetadata,
+  siteSettings: SiteSettings,
+) {
+  return [
+    buildOrganizationJsonLd(siteSettings),
+    {
+      '@context': 'https://schema.org',
+      '@type': 'JobPosting',
+      title: opening.role,
+      description: opening.body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() || opening.role,
+      url: metadata.canonical,
+      employmentType: opening.job_type,
+      jobLocation: {
+        '@type': 'Place',
+        address: opening.location,
+      },
+      hiringOrganization: {
+        '@type': 'Organization',
+        name: siteSettings.site_name,
+        url: siteSettings.canonical_origin,
+      },
+      validThrough: opening.exp_date ?? undefined,
+      identifier: opening.job_id,
     },
   ];
 }

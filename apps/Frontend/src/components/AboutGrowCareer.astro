@@ -1,0 +1,44 @@
+---
+const slides = [
+  { src: '/company/about-us/Artboard-1.webp', alt: 'Flycatch team collaborating in the studio' },
+  { src: '/company/about-us/Artboard-2.webp', alt: 'Flycatch teammates reviewing work together' },
+  { src: '/company/about-us/Artboard-3.webp', alt: 'Flycatch office collaboration' },
+  { src: '/company/about-us/Artboard-6.webp', alt: 'Flycatch colleagues in discussion' },
+  { src: '/company/about-us/Artboard-7.webp', alt: 'Flycatch team workshop' },
+  { src: '/company/about-us/Artboard-9.webp', alt: 'Flycatch teammates celebrating together' },
+];
+---
+<section class="about-career" aria-labelledby="about-career-heading">
+  <div class="container about-career-grid">
+    <div class="about-career-media">
+      <div class="swiper about-career-swiper" data-about-career-swiper>
+        <div class="swiper-wrapper">
+          {slides.map((slide) => (
+            <div class="swiper-slide about-career-slide">
+              <img
+                src={slide.src}
+                alt={slide.alt}
+                width="480"
+                height="600"
+                loading="lazy"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+    <div class="about-career-copy">
+      <h2 id="about-career-heading" class="type-section">Grow your career with us</h2>
+      <p class="lede type-lede">
+        Flycatch's journey all along is rooted by some firm beliefs and ethics which will never change.
+      </p>
+      <p>
+        <a class="btn" href="/company/jobs-openings">
+          Explore opportunities
+          <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
+        </a>
+      </p>
+    </div>
+  </div>
+</section>
+<script src="../scripts/about-career.ts"></script>

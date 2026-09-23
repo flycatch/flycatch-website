@@ -1,0 +1,103 @@
+---
+import type { PublicOpening } from '../lib/public-api';
+import SectionState from './SectionState.astro';
+
+interface Props {
+  openings: PublicOpening[];
+  error?: boolean;
+}
+
+const { openings, error = false } = Astro.props;
+const groups = [...openings.reduce((map, job) => {
+  const key = job.specialization || 'Other';
+  const list = map.get(key) ?? [];
+  list.push(job);
+  map.set(key, list);
+  return map;
+}, new Map<string, PublicOpening[]>())].map(([name, items]) => ({ name, items }));
+---
+<section id="job_opening_section" class="jobs-live" data-jobs-live>
+  <div class="jobs-live-inner">
+    <div class="jobs-live-head">
+      <h1 class="jobs-live-title">Current openings</h1>
+      <div class="jobs-live-dropdown" data-jobs-dropdown>
+        <button
+          type="button"
+          class="jobs-live-select is-placeholder"
+          data-jobs-dropdown-toggle
+          aria-haspopup="listbox"
+          aria-expanded="false"
+          aria-controls="jobs-category-listbox"
+        >
+          <span class="jobs-live-select-label" data-jobs-dropdown-label>Select categories</span>
+          <span class="jobs-live-select-arrow" aria-hidden="true">
+            <svg viewBox="64 64 896 896" focusable="false" fill="currentColor">
+              <path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path>
+            </svg>
+          </span>
+        </button>
+        <ul id="jobs-category-listbox" class="jobs-live-menu" role="listbox" data-jobs-dropdown-menu hidden>
+          <li role="option" class="jobs-live-option" data-value="Full-Time" tabindex="-1">All</li>
+          <li role="option" class="jobs-live-option" data-value="Contract" tabindex="-1">Contract</li>
+        </ul>
+      </div>
+    </div>
+    <div class="jobs-live-head">
+      <p class="jobs-live-desc">
+        Together, we redefine collaboration, forging a shared path towards excellence, where your success is our top priority. If you couldn't find a suitable job opening, please feel free to send your resume to
+        <a class="jobs-live-email" href="mailto:opportunity@flycatchtech.com">opportunity@flycatchtech.com</a>
+      </p>
+    </div>
+    <div class="jobs-live-divider">
+      <div role="separator"></div>
+    </div>
+    <SectionState error={error} />
+    <p class="jobs-live-empty" data-jobs-empty hidden={error || openings.length > 0}>No results found</p>
+    <div class="jobs-live-accordion" data-jobs-accordion hidden={error || openings.length === 0}>
+      {groups.map((group) => (
+        <div class="jobs-live-item" data-jobs-group>
+          <h2 class="jobs-live-group">
+            <button type="button" class="jobs-live-control" data-jobs-toggle aria-expanded="false">
+              <span class="jobs-live-group-label">
+                {group.name} (<span data-jobs-count>{group.items.length}</span>)
+              </span>
+              <span class="jobs-live-chevron" aria-hidden="true">
+                <img src="/accordion-arrow.svg" alt="" width="20" height="11" />
+              </span>
+            </button>
+          </h2>
+          <div class="jobs-live-panel">
+            <div class="jobs-live-panel-inner">
+              {group.items.map((job) => (
+                <article
+                  class="jobs-live-card"
+                  data-job-type={job.job_type}
+                  data-job-specialization={job.specialization}
+                >
+                  <div class="jobs-live-copy">
+                    <a class="jobs-live-role" href={`/company/jobs-openings/${job.slug}`}>{job.role}</a>
+                    <p class="jobs-live-exp">{job.experience.trim()} Experience</p>
+                  </div>
+                  <a class="jobs-live-apply" href={`/company/jobs-openings/${job.slug}`}>
+                    Apply now
+                    <span class="jobs-live-apply-icon" aria-hidden="true">
+                      <svg class="jobs-live-apply-icon-default" width="21" height="21" viewBox="0 0 20 21" fill="none">
+                        <path d="M4.16602 10.5H15.8327" stroke="#E50914" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M10 4.66663L15.8333 10.5L10 16.3333" stroke="#E50914" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                      </svg>
+                      <svg class="jobs-live-apply-icon-hover" width="21" height="21" viewBox="0 0 21 21" fill="none">
+                        <path d="M6.33337 14.6666L14.6667 6.33325" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M6.33337 6.33325H14.6667V14.6666" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
+                      </svg>
+                    </span>
+                  </a>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+<script src="../scripts/jobs-openings-board.ts"></script>

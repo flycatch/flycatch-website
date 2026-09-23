@@ -1,0 +1,51 @@
+---
+const locations = [
+  {
+    id: 'us',
+    src: '/company/about-us/us.webp',
+    alt: 'United States',
+  },
+  {
+    id: 'saudi',
+    src: '/company/about-us/saudi.webp',
+    alt: 'Saudi Arabia',
+  },
+  {
+    id: 'india',
+    src: '/company/about-us/india.webp',
+    alt: 'India',
+  },
+];
+---
+<section class="about-global" aria-labelledby="global-heading">
+  <div class="container about-global-inner">
+    <h2 id="global-heading" class="type-section">Global Presence</h2>
+    <div class="about-global-stage" data-about-global>
+      <img
+        class="about-global-map"
+        src="/company/about-us/mobile-logo.webp"
+        alt="World map showing Flycatch offices in the United States, Saudi Arabia, and India"
+        width="1104"
+        height="596"
+        loading="lazy"
+      />
+      {locations.map((location) => (
+        <span class={`about-global-dot about-global-dot-${location.id}`} aria-hidden="true"></span>
+      ))}
+      <ul class="about-global-pins">
+        {locations.map((location) => (
+          <li class={`about-global-pin about-global-pin-${location.id}`}>
+            <img
+              src={location.src}
+              alt={location.alt}
+              width="150"
+              height="54"
+              loading="lazy"
+            />
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
+<script src="../scripts/about-global.ts"></script>
