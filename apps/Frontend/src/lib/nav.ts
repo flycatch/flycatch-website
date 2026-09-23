@@ -71,7 +71,7 @@ export const solutionLinks: NavLink[] = [
 ];
 
 export const companyLinks: NavLink[] = [
-  { href: '/about', labelKey: 'nav.about' },
+  { href: '/company/about-us', labelKey: 'nav.about' },
   { href: '/company/careers', labelKey: 'nav.careers' },
   { href: '/company/clients', labelKey: 'nav.clients' },
   { href: '/company/testimonials', labelKey: 'nav.stories' },
@@ -80,9 +80,9 @@ export const companyLinks: NavLink[] = [
 
 export const companyMenuColumns: NavLink[][] = [
   [
-    { href: '/about', labelKey: 'nav.about_us' },
+    { href: '/company/about-us', labelKey: 'nav.about_us' },
     { href: '/company/careers', labelKey: 'nav.careers' },
-    { href: '/company/careers', labelKey: 'nav.job_openings' },
+    { href: '/company/jobs-openings', labelKey: 'nav.job_openings' },
   ],
   [
     { href: '/company/blogs', labelKey: 'nav.resources' },
@@ -117,7 +117,7 @@ export const mobileServiceLeaves: NavLink[] = [
 
 export const footerCompany: NavLink[] = [
   { href: '/solutions', labelKey: 'nav.solutions' },
-  { href: '/about', labelKey: 'nav.about' },
+  { href: '/company/about-us', labelKey: 'nav.about' },
   { href: '/company/careers', labelKey: 'nav.careers' },
   { href: '/contact-us', labelKey: 'nav.contact' },
 ];

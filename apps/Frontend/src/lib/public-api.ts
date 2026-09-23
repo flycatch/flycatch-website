@@ -83,6 +83,30 @@ export type PublicClientTestimonial = {
   content_available_in: string[];
 };
 
+export type PublicOpening = {
+  job_id: string;
+  exp_date: string | null;
+  role: string;
+  slug: string;
+  experience: string;
+  location: string;
+  job_type: string;
+  job_status: string;
+  specialization: string;
+  body: string;
+};
+
+export type PublicEmployeeTestimonial = {
+  id: string;
+  name: string;
+  designation: string;
+  review: string;
+  image_key: string | null;
+  order: number;
+  listed: boolean;
+  publish_date: string | null;
+};
+
 export type PublicAuthor = {
   name: string;
   designation: string;
@@ -637,6 +661,29 @@ export async function loadPublishedClientTestimonials(): Promise<
   if (error) return { items: [], error: true, origin };
   const items = Array.isArray(data?.items) ? data.items : [];
   return { items: [...items].sort((a, b) => a.order - b.order), error: false, origin };
+}
+
+export async function loadPublishedOpenings(): Promise<PublicListResult<PublicOpening>> {
+  return loadPaginated<PublicOpening>('/api/v1/public/openings');
+}
+
+export async function loadPublishedOpening(slug: string): Promise<PublicItemResult<PublicOpening>> {
+  return getJson<PublicOpening>(`/api/v1/public/openings/${encodeURIComponent(slug)}`).then(
+    ({ data, error, origin }) => ({ item: data, error, origin }),
+  );
+}
+
+export async function loadPublishedEmployeeTestimonials(): Promise<
+  PublicListResult<PublicEmployeeTestimonial>
+> {
+  const result = await loadPaginated<PublicEmployeeTestimonial>(
+    '/api/v1/public/employee-testimonials',
+  );
+  if (result.error) return result;
+  return {
+    ...result,
+    items: [...result.items].sort((a, b) => a.order - b.order),
+  };
 }
 
 export async function loadPublishedBlogs(): Promise<PublicListResult<PublicBlogSummary>> {

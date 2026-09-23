@@ -1,0 +1,53 @@
+---
+const values = [
+  {
+    title: 'Integrity',
+    body: 'For Flycatch Integrity means doing the right things, treat our colleagues and clients with respect and value their opinions.',
+  },
+  {
+    title: 'Passion for Excellence',
+    body: 'We apply that passion to help sustain our communities and environment for our clients, our communities and our organization',
+  },
+  {
+    title: 'Transparency',
+    body: 'Flycatch built on a foundation of open and honest communication.',
+  },
+  {
+    title: 'Customer Focus',
+    body: 'Relentless passion of customer success is the core winning Mantra of Flycatch.',
+  },
+  {
+    title: 'Ownership, responsibility & empowerment',
+    body: 'We apply that passion to help sustain our communities and environment for our clients, our communities and our organization',
+  },
+];
+---
+<section class="careers-values">
+  <div class="container careers-values-grid">
+    <div class="careers-values-left">
+      <h2 class="type-section">Our core values</h2>
+      <p class="careers-tagline">We Work With Great Minds</p>
+      <p class="lede type-lede">
+        Flycatch's journey has always been guided by steadfast beliefs and ethics that remain unwavering.
+      </p>
+      <img
+        src="/company/careers/core_value_bg.webp"
+        alt=""
+        width="420"
+        height="444"
+        loading="lazy"
+      />
+    </div>
+    <div class="careers-values-right">
+      {values.map((value, index) => (
+        <>
+          <article class="careers-value-item">
+            <h3>{value.title}</h3>
+            <p>{value.body}</p>
+          </article>
+          {index < values.length - 1 && <hr class="careers-values-rule" />}
+        </>
+      ))}
+    </div>
+  </div>
+</section>

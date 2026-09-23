@@ -1,0 +1,84 @@
+---
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicEmployeeTestimonial } from '../lib/public-api';
+import SectionState from './SectionState.astro';
+
+interface Props {
+  testimonials: PublicEmployeeTestimonial[];
+  error?: boolean;
+}
+
+const { testimonials, error = false } = Astro.props;
+---
+<section class="careers-stories" aria-labelledby="employee-stories-heading">
+  <div class="container">
+    <div class="careers-stories-intro">
+      <h2 id="employee-stories-heading" class="type-section">
+        What Our Employees Say About Working at Flycatch Infotech
+      </h2>
+      <p class="lede type-lede">
+        Our employees are the heart and soul of our company, and we are proud of the diverse and talented team that we have built. We believe that their experiences and perspectives can offer valuable insights into what it's like to work at our company. Here are some testimonials from our employees about their experiences working at our organization.
+      </p>
+    </div>
+    <SectionState error={error} empty={!error && testimonials.length === 0} />
+    {testimonials.length > 0 && (
+      <div class="swiper careers-stories-swiper" data-employee-stories>
+        <div class="swiper-wrapper">
+          {testimonials.map((item) => {
+            const image = publicMediaUrl(item.image_key);
+            return (
+              <div class="swiper-slide careers-story-slide">
+                {image && (
+                  <div class="careers-story-photo">
+                    <img
+                      src={image}
+                      alt={`${item.name}, ${item.designation}`}
+                      width="500"
+                      height="450"
+                      loading="lazy"
+                    />
+                    <img
+                      class="careers-story-quote"
+                      src="/company/careers/comma.svg"
+                      alt=""
+                      width="40"
+                      height="35"
+                    />
+                  </div>
+                )}
+                <blockquote class="careers-story-copy">
+                  <p>{item.review}</p>
+                  <footer>
+                    <cite class="careers-story-name">{item.name}</cite>
+                    <span class="careers-story-role">{item.designation}</span>
+                  </footer>
+                </blockquote>
+              </div>
+            );
+          })}
+        </div>
+        <div class="careers-story-indicators" data-story-indicators>
+          {testimonials.map((_, index) => (
+            <button
+              type="button"
+              class="careers-story-indicator"
+              data-story-index={index}
+              aria-label={`Show testimonial ${index + 1}`}
+            />
+          ))}
+        </div>
+        <div class="careers-story-nav">
+          <button type="button" class="careers-story-prev" aria-label="Previous employee testimonial">
+            <img src="/company/careers/arrowleft-black.svg" alt="" width="70" height="70" />
+            <img src="/company/careers/arrowleft-red.svg" alt="" width="70" height="70" />
+          </button>
+          <button type="button" class="careers-story-next" aria-label="Next employee testimonial">
+            <img src="/company/careers/arrowright-black.svg" alt="" width="70" height="70" />
+            <img src="/company/careers/arrowright-red.svg" alt="" width="70" height="70" />
+          </button>
+        </div>
+      </div>
+    )}
+  </div>
+</section>
+{testimonials.length > 0 && <script src="../scripts/careers-stories.ts"></script>}
