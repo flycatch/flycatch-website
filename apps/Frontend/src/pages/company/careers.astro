@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/home.css';
+import '../../styles/careers.css';
+import '../../styles/jobs-openings.css';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import CareersHero from '../../components/CareersHero.astro';
+import CareersCulture from '../../components/CareersCulture.astro';
+import CareersPrinciples from '../../components/CareersPrinciples.astro';
+import CareersCoreValues from '../../components/CareersCoreValues.astro';
+import CareersLife from '../../components/CareersLife.astro';
+import CareersTestimonials from '../../components/CareersTestimonials.astro';
+import CareersJoin from '../../components/CareersJoin.astro';
+import JobOpeningsList from '../../components/JobOpeningsList.astro';
+import HomeInsights from '../../components/HomeInsights.astro';
+import HomeCta from '../../components/HomeCta.astro';
+import {
+  loadPublishedBlogs,
+  loadPublishedEmployeeTestimonials,
+  loadPublishedOpenings,
+} from '../../lib/public-api';
+import { fallbackMetadata } from '../../lib/metadata';
+import { t } from '../../lib/i18n';
+
+const [openingsResult, storiesResult, blogsResult] = await Promise.all([
+  loadPublishedOpenings(),
+  loadPublishedEmployeeTestimonials(),
+  loadPublishedBlogs(),
+]);
+
+const metadata = fallbackMetadata(
+  '/company/careers',
+  t('page.careers.title'),
+  'Find your dream job and grow your career with Flycatch.',
+);
+metadata.indexable = !openingsResult.error && !storiesResult.error;
+---
+<BaseLayout title={metadata.title} metadata={metadata}>
+  <SiteHeader tone="dark" />
+  <main id="main" class="careers-page" data-api-origin={openingsResult.origin}>
+    <CareersHero />
+    <CareersCulture />
+    <CareersPrinciples />
+    <CareersCoreValues />
+    <CareersLife />
+    <CareersTestimonials testimonials={storiesResult.items} error={storiesResult.error} />
+    <CareersJoin />
+    <JobOpeningsList openings={openingsResult.items} error={openingsResult.error} variant="accordion" />
+    <HomeInsights blogs={blogsResult.items} error={blogsResult.error} home />
+    <HomeCta />
+  </main>
+  <SiteFooter />
+</BaseLayout>

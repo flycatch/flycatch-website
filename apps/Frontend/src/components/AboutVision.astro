@@ -1,0 +1,30 @@
+---
+const items = [
+  {
+    title: 'Vision',
+    image: '/company/about-us/vision.svg',
+    alt: 'Vision icon',
+    body: 'Humanize technology and transform lives through innovation',
+  },
+  {
+    title: 'Mission',
+    image: '/company/about-us/mission.svg',
+    alt: 'Mission icon',
+    body: 'Helping our clients create their future through a sustainable innovation',
+  },
+];
+---
+<section class="about-vision" aria-labelledby="vision-heading">
+  <h2 id="vision-heading" class="seo-hidden">Vision</h2>
+  {items.map((item) => (
+    <div class="container about-vision-row">
+      <div class="about-vision-media">
+        <img src={item.image} alt={item.alt} width="240" height="240" loading="lazy" />
+      </div>
+      <div class="about-vision-copy">
+        <h3 class="about-vision-title">{item.title}</h3>
+        <p class="lede type-lede">{item.body}</p>
+      </div>
+    </div>
+  ))}
+</section>

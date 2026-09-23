@@ -1,0 +1,115 @@
+---
+import type { PublicOpening } from '../lib/public-api';
+import SectionState from './SectionState.astro';
+
+interface Props {
+  openings: PublicOpening[];
+  error?: boolean;
+  heading?: string;
+  headingLevel?: 'h1' | 'h2';
+  showFilter?: boolean;
+  variant?: 'list' | 'accordion';
+}
+
+const {
+  openings,
+  error = false,
+  heading = 'Current openings',
+  headingLevel = 'h2',
+  showFilter = true,
+  variant = 'list',
+} = Astro.props;
+const HeadingTag = headingLevel;
+const accordion = variant === 'accordion';
+const specializations = [...new Set(openings.map((item) => item.specialization).filter(Boolean))].sort();
+const groups = [...openings.reduce((map, job) => {
+  const key = job.specialization || 'Other';
+  const list = map.get(key) ?? [];
+  list.push(job);
+  map.set(key, list);
+  return map;
+}, new Map<string, PublicOpening[]>())].map(([name, items]) => ({ name, items }));
+---
+<section class:list={['jobs-board', { 'jobs-board--accordion': accordion }]} data-jobs-board data-jobs-accordion={accordion || undefined}>
+  <div class="container">
+    <div class="jobs-board-head">
+      <HeadingTag class="type-section">{heading}</HeadingTag>
+      {showFilter && (
+        <label class="jobs-filter">
+          <span class="seo-hidden">Select categories</span>
+          <select data-jobs-filter aria-label="Select categories">
+            <option value="">Select categories</option>
+            {specializations.map((name) => (
+              <option value={name}>{name}</option>
+            ))}
+          </select>
+        </label>
+      )}
+    </div>
+    <p class="lede type-lede jobs-board-intro">
+      Together, we redefine collaboration, forging a shared path towards excellence, where your success is our top priority. If you couldn't find a suitable job opening, please feel free to send your resume to
+      <a href="mailto:opportunity@flycatchtech.com">opportunity@flycatchtech.com</a>
+    </p>
+    <SectionState error={error} />
+    <p class="jobs-empty" data-jobs-empty hidden={error || openings.length > 0}>No results found</p>
+    {accordion ? (
+      <div class="jobs-accordion">
+        <div class="jobs-board-divider"></div>
+        {groups.map((group) => (
+          <div class="jobs-accordion-item" data-jobs-group>
+            <button type="button" class="jobs-accordion-control" data-jobs-toggle aria-expanded="false">
+              <span class="jobs-accordion-label">
+                {group.name} (<span data-jobs-count>{group.items.length}</span>)
+              </span>
+              <img src="/accordion-arrow.svg" alt="" width="20" height="11" />
+            </button>
+            <div class="jobs-accordion-panel">
+              <div class="jobs-accordion-panel-inner">
+                {group.items.map((job) => (
+                  <article
+                    class="jobs-card"
+                    data-job-type={job.job_type}
+                    data-job-specialization={job.specialization}
+                  >
+                    <div class="jobs-accordion-copy">
+                      <a class="jobs-accordion-role" href={`/company/jobs-openings/${job.slug}`}>{job.role}</a>
+                      <p class="jobs-accordion-exp">
+                        {job.experience}{/\bexperience\b/i.test(job.experience) ? '' : ' Experience'}
+                      </p>
+                    </div>
+                    <a class="btn jobs-apply" href={`/company/jobs-openings/${job.slug}`}>
+                      Apply
+                      <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
+                    </a>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <ul class="jobs-list">
+        {openings.map((job) => (
+          <li
+            class="jobs-card"
+            data-job-type={job.job_type}
+            data-job-specialization={job.specialization}
+          >
+            <div>
+              <a class="jobs-card-title" href={`/company/jobs-openings/${job.slug}`}>{job.role}</a>
+              <p class="jobs-card-meta">
+                <span>{job.location}</span>
+                <span>{job.experience}</span>
+                <span>{job.job_type}</span>
+                <span>{job.job_status}</span>
+              </p>
+            </div>
+            <a class="btn jobs-apply" href={`/company/jobs-openings/${job.slug}`}>Apply</a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</section>
+<script src="../scripts/jobs-board.ts"></script>

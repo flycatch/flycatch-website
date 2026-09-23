@@ -1,0 +1,50 @@
+---
+const values = [
+  {
+    title: 'Integrity',
+    image: '/company/about-us/integrity.webp',
+    body: 'For Flycatch Integrity means doing the right things, treat our colleagues and clients with respect and value their opinions.',
+  },
+  {
+    title: 'Passion for Excellence',
+    image: '/company/about-us/passion.webp',
+    body: 'We apply that passion to help sustain our communities and environment for our clients, our communities and our organization.',
+  },
+  {
+    title: 'Transparency',
+    image: '/company/about-us/transparency.webp',
+    body: 'Flycatch built on a foundation of open and honest communication.',
+  },
+  {
+    title: 'Customer Focus',
+    image: '/company/about-us/customer_focus.webp',
+    body: 'Relentless passion of customer success is the core winning Mantra of Flycatch.',
+  },
+  {
+    title: 'Ownership, Responsibility & Empowerment',
+    image: '/company/about-us/ownership.webp',
+    body: 'We encourage end-to-end ownership, responsibility, accountability and recognition.',
+  },
+];
+---
+<section class="about-values" aria-labelledby="values-heading">
+  <div class="container">
+    <header class="about-values-head">
+      <h2 id="values-heading" class="type-section">Core values</h2>
+      <p class="lede type-lede">
+        Flycatch's journey all along is rooted by some firm beliefs and ethics which will never change.
+      </p>
+    </header>
+    <ul class="about-values-grid">
+      {values.map((value) => (
+        <li class="about-value-card">
+          <div class="about-value-media">
+            <img src={value.image} alt="" width="100" height="100" loading="lazy" />
+          </div>
+          <h3 class="about-value-title">{value.title}</h3>
+          <p>{value.body}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
