@@ -467,116 +467,6 @@
   object-fit: contain;
 }
 
-.careers-page .jobs-board {
-  background: #f2f2f2;
-  padding-top: 100px;
-  padding-bottom: 100px;
-}
-
-.careers-page .jobs-board-head .type-section {
-  font-weight: 400;
-}
-
-.careers-page .jobs-filter select {
-  width: 250px;
-  height: 55px;
-  border: 1px solid #000000;
-  border-radius: 15px;
-  padding: 0 20px;
-  background-color: #ffffff;
-  background-image: url('/accordion-arrow.svg');
-  background-repeat: no-repeat;
-  background-position: right 20px center;
-  background-size: 16px 11px;
-  appearance: none;
-}
-
-.jobs-board-divider {
-  padding: 10px 0 0;
-  border-top: 1px solid #000000;
-}
-
-.jobs-accordion-item {
-  border-bottom: 1px solid #000000;
-}
-
-.jobs-accordion-item[hidden] {
-  display: none;
-}
-
-.jobs-accordion-control {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  width: 100%;
-  padding: 25px 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  font-size: 1.625rem;
-  font-weight: 300;
-  line-height: 1.4;
-  text-align: left;
-  cursor: pointer;
-}
-
-.jobs-accordion-control img {
-  width: 20px;
-  height: 11px;
-  flex-shrink: 0;
-  transition: transform 0.5s ease;
-}
-
-.jobs-accordion-item.is-open .jobs-accordion-control img {
-  transform: rotate(180deg);
-}
-
-.jobs-accordion-panel {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.5s ease;
-}
-
-.jobs-accordion-item.is-open .jobs-accordion-panel {
-  grid-template-rows: 1fr;
-}
-
-.jobs-accordion-panel-inner {
-  min-height: 0;
-  overflow: hidden;
-}
-
-.jobs-board--accordion .jobs-card {
-  margin: 0 0 10px;
-}
-
-.jobs-accordion-copy {
-  min-width: 0;
-}
-
-.jobs-accordion-role {
-  display: block;
-  font-size: 1.25rem;
-  font-weight: 300;
-  line-height: 1.4;
-  color: inherit;
-  text-decoration: none;
-}
-
-.jobs-accordion-role:hover {
-  color: #e50914;
-}
-
-.jobs-accordion-exp {
-  margin: 4px 0 0;
-  font-size: 1.125rem;
-  font-weight: 300;
-  line-height: 1.4;
-  color: #000000;
-}
-
 @media (max-width: 1024px) {
   .careers-culture-grid,
   .careers-principles-grid,
@@ -657,12 +547,6 @@
   }
   .careers-life-shot--d { grid-column: 1; grid-row: 3; }
   .careers-life-shot--e { grid-column: 2; grid-row: 3; }
-
-  .careers-page .jobs-filter,
-  .careers-page .jobs-filter select,
-  .careers-page .jobs-board--accordion .jobs-apply {
-    width: 100%;
-  }
 }
 
 @media (max-width: 500px) {

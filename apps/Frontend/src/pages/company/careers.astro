@@ -12,7 +12,7 @@ import CareersCoreValues from '../../components/CareersCoreValues.astro';
 import CareersLife from '../../components/CareersLife.astro';
 import CareersTestimonials from '../../components/CareersTestimonials.astro';
 import CareersJoin from '../../components/CareersJoin.astro';
-import JobOpeningsList from '../../components/JobOpeningsList.astro';
+import JobsOpeningsBoard from '../../components/JobsOpeningsBoard.astro';
 import HomeInsights from '../../components/HomeInsights.astro';
 import HomeCta from '../../components/HomeCta.astro';
 import {
@@ -46,7 +46,9 @@ metadata.indexable = !openingsResult.error && !storiesResult.error;
     <CareersLife />
     <CareersTestimonials testimonials={storiesResult.items} error={storiesResult.error} />
     <CareersJoin />
-    <JobOpeningsList openings={openingsResult.items} error={openingsResult.error} variant="accordion" />
+    <div class="jobs-openings-page">
+      <JobsOpeningsBoard openings={openingsResult.items} error={openingsResult.error} />
+    </div>
     <HomeInsights blogs={blogsResult.items} error={blogsResult.error} home />
     <HomeCta />
   </main>
