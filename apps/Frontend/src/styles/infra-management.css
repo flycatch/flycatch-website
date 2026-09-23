@@ -1,0 +1,166 @@
+/* Infrastructure management unique sections. Shared 50px padding via application-development.css. */
+.infra-management-page {
+  overflow-x: clip;
+  overflow-wrap: break-word;
+}
+
+.infra-management-page > section:not(.ads-hero) {
+  margin: 0;
+}
+
+.infra-management-page .ai-minds {
+  padding: 50px 0;
+}
+
+.infra-management-page .container {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.infra-management-page .ads-intro-inner {
+  padding: 50px 70px;
+}
+
+.infra-relevance {
+  background: #000000;
+  color: #ffffff;
+}
+
+.infra-relevance-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 70px;
+  width: 100%;
+  color: #ffffff;
+}
+
+.infra-relevance-left {
+  width: 50%;
+  position: sticky;
+  top: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 20px;
+  height: fit-content;
+}
+
+.infra-relevance-left h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 46px;
+  font-weight: 300;
+  line-height: 1.333;
+}
+
+.infra-relevance-left p {
+  margin: 0;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1.55;
+  max-width: none;
+}
+
+.infra-relevance-media {
+  margin-left: auto;
+  width: 80%;
+  height: auto;
+  display: block;
+}
+
+.infra-relevance-right {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 50px;
+}
+
+.infra-relevance-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 20px;
+}
+
+.infra-relevance-item h3 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 36px;
+  font-weight: 300;
+  line-height: 1.333;
+}
+
+.infra-relevance-item p {
+  margin: 0;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1.55;
+  max-width: none;
+}
+
+.infra-relevance-divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.35);
+  border: 0;
+  margin: 0;
+}
+
+.infra-working {
+  background: #ffffff;
+}
+
+.infra-working-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 30px;
+}
+
+.infra-working .type-section,
+.infra-working .type-lede,
+.infra-working h2,
+.infra-working p {
+  margin: 0;
+  color: #000000;
+  font-weight: 300;
+  max-width: none;
+}
+
+.infra-working img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+@media screen and (max-width: 750px) {
+  .infra-relevance-layout {
+    flex-wrap: wrap;
+    gap: 40px;
+  }
+
+  .infra-relevance-left,
+  .infra-relevance-right {
+    width: 100%;
+  }
+
+  .infra-relevance-left {
+    position: relative;
+    top: unset;
+  }
+
+  .infra-relevance-media {
+    display: none;
+  }
+
+  .infra-relevance-left h2 {
+    font-size: clamp(1.75rem, 1.375rem + 1.6667vw, 2.875rem);
+  }
+
+  .infra-relevance-item h3 {
+    font-size: clamp(1.5rem, 1.3333rem + 0.7407vw, 2.25rem);
+  }
+}

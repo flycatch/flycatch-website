@@ -1,0 +1,32 @@
+---
+import { publicMediaUrl } from '../lib/public-api';
+import SectionState from './SectionState.astro';
+
+interface Props {
+  bannerKey?: string | null;
+  fallbackBanner: string;
+  heading: string;
+  alt?: string;
+  failed?: boolean;
+  showState?: boolean;
+}
+
+const {
+  bannerKey = null,
+  fallbackBanner,
+  heading,
+  alt = '',
+  failed = false,
+  showState = false,
+} = Astro.props;
+const banner = publicMediaUrl(bannerKey) ?? fallbackBanner;
+---
+<section class="ads-hero" aria-labelledby="ads-heading">
+  <img class="ads-hero-media" src={banner} alt={alt || heading} width="1512" height="982" />
+  <div class="ads-hero-overlay" aria-hidden="true"></div>
+  <div class="container ads-hero-copy">
+    <h1 id="ads-heading" class="type-hero">{heading}</h1>
+    {showState && <SectionState error={failed} empty={!failed} />}
+  </div>
+</section>
+<script src="../scripts/ads-hero.ts"></script>
