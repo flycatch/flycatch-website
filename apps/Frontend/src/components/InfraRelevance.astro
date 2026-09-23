@@ -1,0 +1,30 @@
+---
+import { infraRelevance } from '../lib/infra-static';
+---
+<section class="infra-relevance" aria-labelledby="infra-relevance-heading">
+  <div class="container infra-relevance-layout">
+    <div class="infra-relevance-left">
+      <h2 id="infra-relevance-heading">{infraRelevance.title}</h2>
+      <p>{infraRelevance.description}</p>
+      <img
+        class="infra-relevance-media"
+        src={infraRelevance.image}
+        alt=""
+        width="479"
+        height="490"
+        loading="lazy"
+      />
+    </div>
+    <div class="infra-relevance-right">
+      {infraRelevance.items.map((item, index) => (
+        <>
+          {index > 0 && <hr class="infra-relevance-divider" />}
+          <article class="infra-relevance-item">
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+          </article>
+        </>
+      ))}
+    </div>
+  </div>
+</section>

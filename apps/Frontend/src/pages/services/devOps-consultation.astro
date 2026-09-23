@@ -1,0 +1,146 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/home.css';
+import '../../styles/ai-services.css';
+import '../../styles/application-development.css';
+import '../../styles/devops-consult.css';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import HomeInsights from '../../components/HomeInsights.astro';
+import HomeCta from '../../components/HomeCta.astro';
+import HomeFaq from '../../components/HomeFaq.astro';
+import AiServicesMinds from '../../components/AiServicesMinds.astro';
+import AdsRelatedCaseStudies from '../../components/AdsRelatedCaseStudies.astro';
+import AdsContactPoster from '../../components/AdsContactPoster.astro';
+import AdsIntro from '../../components/AdsIntro.astro';
+import LandingHero from '../../components/LandingHero.astro';
+import DevopsOfferings from '../../components/DevopsOfferings.astro';
+import DevopsApproach from '../../components/DevopsApproach.astro';
+import DevopsExperience from '../../components/DevopsExperience.astro';
+import DevopsTools from '../../components/DevopsTools.astro';
+import {
+  loadPublishedBlogs,
+  loadPublishedCaseStudies,
+  loadPublishedCaseStudy,
+  loadPublishedDevOpsConsult,
+  loadPublishedDevOpsConsults,
+  type PublicCaseStudy,
+  type PublicDevOpsConsult,
+  type PublicOfferingsLanding,
+} from '../../lib/public-api';
+import { DEVOPS_FALLBACK_BANNER, devopsScale } from '../../lib/devops-static';
+import { fallbackMetadata, metadataFromContentSeo, publicSiteSettings } from '../../lib/metadata';
+import { t } from '../../lib/i18n';
+
+function toOfferingsLanding(page: PublicDevOpsConsult): PublicOfferingsLanding {
+  return {
+    slug: page.slug,
+    banner_title: page.banner_title,
+    banner_image_key: page.banner_image_key,
+    introduction_title: page.introduction_title,
+    introduction_first_paragraph: page.introduction_first_paragraph,
+    introduction_second_paragraph: page.introduction_second_paragraph,
+    accordion: [],
+    offering_image_key: null,
+    offering_title: '',
+    offering_description: '',
+    faq_title: page.faq_title,
+    faq_description: page.faq_description,
+    faq_accordion: page.faq_accordion,
+    seo: page.seo,
+  };
+}
+
+const [listed, blogsResult, casesResult] = await Promise.all([
+  loadPublishedDevOpsConsults(),
+  loadPublishedBlogs(),
+  loadPublishedCaseStudies(),
+]);
+const slug =
+  listed.items.find((item) => item.slug === 'devops-consultation')?.slug ??
+  listed.items[0]?.slug ??
+  'devops-consultation';
+const detail = await loadPublishedDevOpsConsult(slug);
+const page = detail.item;
+const failed = detail.error || (listed.error && !page);
+const siteSettings = publicSiteSettings();
+const fallbackTitle = t('page.devops_consult.title');
+const metadata = page
+  ? metadataFromContentSeo(page.seo, siteSettings, fallbackTitle)
+  : fallbackMetadata(
+      '/services/devOps-consultation',
+      fallbackTitle,
+      failed ? t('home.error') : t('home.empty'),
+    );
+const heading = page?.banner_title.trim() || fallbackTitle;
+const faqs = (page?.faq_accordion ?? []).map((item) => ({
+  title: item.title,
+  contents: item.contents,
+}));
+const relatedSlugs = [...casesResult.items]
+  .sort((a, b) => {
+    const dateA = a.date ? Date.parse(a.date) : Number.NaN;
+    const dateB = b.date ? Date.parse(b.date) : Number.NaN;
+    const hasA = Number.isFinite(dateA);
+    const hasB = Number.isFinite(dateB);
+    if (hasA && hasB && dateB !== dateA) return dateB - dateA;
+    if (hasA !== hasB) return hasA ? -1 : 1;
+    return b.order - a.order;
+  })
+  .slice(0, 3)
+  .map((item) => item.slug)
+  .filter(Boolean);
+const relatedDetails = await Promise.all(relatedSlugs.map((itemSlug) => loadPublishedCaseStudy(itemSlug)));
+const relatedStudies: PublicCaseStudy[] = relatedDetails
+  .map((result) => result.item)
+  .filter((item): item is PublicCaseStudy => Boolean(item));
+const relatedError = casesResult.error || relatedDetails.some((result) => result.error);
+---
+<BaseLayout title={metadata.title} metadata={metadata}>
+  <SiteHeader tone="dark" />
+  <main id="main" class="devops-consult-page" data-api-origin={detail.origin}>
+    <LandingHero
+      bannerKey={page?.banner_image_key}
+      fallbackBanner={DEVOPS_FALLBACK_BANNER}
+      heading={heading}
+      alt={page?.seo.image_alt || page?.banner_title || heading}
+      failed={failed}
+      showState={!page}
+    />
+    {page && <AdsIntro page={toOfferingsLanding(page)} />}
+    <DevopsOfferings />
+    <DevopsApproach />
+    {page && (
+      <DevopsExperience
+        title={page.experience_title}
+        description={page.experience_description}
+        imageKey={page.experience_image_key}
+        items={page.experience_accordion}
+      />
+    )}
+    <DevopsTools />
+    {page && (
+      <HomeFaq
+        title={page.faq_title}
+        description={page.faq_description}
+        faqs={faqs}
+        error={detail.error}
+      />
+    )}
+    <AiServicesMinds />
+    <AdsRelatedCaseStudies studies={relatedStudies} error={relatedError} />
+    <AdsContactPoster
+      eyebrow={devopsScale.eyebrow}
+      title={devopsScale.title}
+      action={devopsScale.action}
+      href={devopsScale.href}
+      image={devopsScale.image}
+      imageAlt={t('page.devops_consult.scale_image_alt')}
+      imageWidth={624}
+      imageHeight={573}
+    />
+    <HomeInsights blogs={blogsResult.items} error={blogsResult.error} home />
+    <HomeCta />
+  </main>
+  <SiteFooter />
+</BaseLayout>
