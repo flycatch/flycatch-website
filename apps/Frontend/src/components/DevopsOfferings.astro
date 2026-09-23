@@ -1,0 +1,27 @@
+---
+import { devopsOfferings } from '../lib/devops-static';
+---
+<section class="devops-offerings" aria-labelledby="devops-offerings-heading">
+  <div class="container devops-offerings-layout">
+    <div class="devops-offerings-left">
+      <h2 id="devops-offerings-heading" class="type-section">{devopsOfferings.title}</h2>
+      <p class="type-lede">{devopsOfferings.description}</p>
+      <img
+        class="devops-offerings-visual"
+        src={devopsOfferings.image}
+        alt=""
+        width="468"
+        height="315"
+        loading="lazy"
+      />
+    </div>
+    <div class="devops-offerings-right">
+      {devopsOfferings.items.map((item) => (
+        <article class="devops-offering-item">
+          <img src={item.icon} alt="" width="110" height="110" loading="lazy" />
+          <h3>{item.title}</h3>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
