@@ -6,13 +6,12 @@ type ResourceCategory = { name: string };
 type ResourceItem = {
   title: string;
   slug: string;
-  button_name: string;
   reading_time: number;
   image_key: string | null;
   pdf_key: string | null;
   created_at?: string;
   resource_categories?: ResourceCategory[];
-  seo?: { description?: string; image_alt?: string };
+  seo?: { image_alt?: string };
 };
 
 type ResourcePage = {
@@ -76,33 +75,6 @@ function renderCard(item: ResourceItem) {
   title.className = 'resource-title';
   title.textContent = item.title;
   copy.append(title);
-
-  const description = item.seo?.description?.trim();
-  if (description) {
-    const text = document.createElement('p');
-    text.className = 'resource-description';
-    text.textContent = description;
-    copy.append(text);
-  }
-
-  const action = document.createElement('button');
-  action.type = 'button';
-  action.className = 'resource-read';
-  action.textContent = item.button_name?.trim() || t('home.read_more');
-  if (pdf) {
-    action.dataset.resourceOpen = '';
-    action.dataset.pdf = pdf;
-    action.dataset.title = item.title;
-  } else {
-    action.disabled = true;
-  }
-  const icon = document.createElement('img');
-  icon.src = '/icon-arrow-right.svg';
-  icon.width = 21;
-  icon.height = 21;
-  icon.alt = '';
-  action.append(icon);
-  copy.append(action);
 
   article.append(media, copy);
   return article;

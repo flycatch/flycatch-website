@@ -162,6 +162,19 @@ export type PublicResource = {
   seo: ContentSeo;
 };
 
+export type PublicMembershipImage = {
+  image_key: string | null;
+  alt: string;
+};
+
+export type PublicMembership = {
+  id: string;
+  title: string;
+  description: string;
+  images: PublicMembershipImage[];
+  seo: ContentSeo;
+};
+
 export type PublicNews = {
   title: string;
   slug: string;
@@ -846,6 +859,23 @@ export async function loadPublishedResourceCategories(): Promise<
   PublicListResult<PublicResourceCategoryItem>
 > {
   return loadPaginated<PublicResourceCategoryItem>('/api/v1/public/resource-categories');
+}
+
+export async function loadPublishedMembership(
+  membershipId: string,
+): Promise<PublicItemResult<PublicMembership>> {
+  return getJson<PublicMembership>(
+    `/api/v1/public/memberships/${encodeURIComponent(membershipId)}`,
+  ).then(({ data, error, origin }) => ({ item: data, error, origin }));
+}
+
+/** Published membership page: list to resolve the id, then read that record. */
+export async function loadPublishedMembershipPage(): Promise<PublicItemResult<PublicMembership>> {
+  const listed = await loadPaginated<PublicMembership>('/api/v1/public/memberships');
+  if (listed.error) return { item: null, error: true, origin: listed.origin };
+  const membershipId = listed.items[0]?.id?.trim();
+  if (!membershipId) return { item: null, error: false, origin: listed.origin };
+  return loadPublishedMembership(membershipId);
 }
 
 export async function loadPublishedCategories(): Promise<PublicListResult<PublicCategory>> {

@@ -169,65 +169,6 @@
   letter-spacing: var(--tracking);
 }
 
-.resource-description {
-  margin: clamp(0.75rem, 1.5vw, 1rem) 0 0;
-  color: var(--color-black);
-  font-size: var(--text-20);
-  font-weight: 300;
-  line-height: var(--line-height-heading);
-  letter-spacing: var(--tracking);
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
-  overflow: hidden;
-}
-
-.resource-read {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  width: fit-content;
-  margin-top: clamp(1.25rem, 2vw, 2rem);
-  padding: clamp(12px, 1.4vw, 16px) clamp(24px, 3vw, 40px);
-  border: 1px solid #000;
-  border-radius: 12px;
-  background: transparent;
-  color: #000;
-  font: inherit;
-  font-size: var(--text-16);
-  font-weight: 400;
-  line-height: 1.2;
-  letter-spacing: var(--tracking);
-  text-decoration: none;
-  cursor: pointer;
-  transition: background-color 0.4s ease-in-out, border-color 0.4s ease-in-out, color 0.4s ease-in-out;
-}
-
-.resource-read img {
-  width: 21px;
-  height: 21px;
-  display: block;
-  flex-shrink: 0;
-  transition: transform 0.4s ease-in-out, filter 0.4s ease-in-out;
-}
-
-.resource-read:hover:not(:disabled) {
-  background: #e50914;
-  border-color: #e50914;
-  color: #fff;
-}
-
-.resource-read:hover:not(:disabled) img {
-  filter: brightness(0) invert(1);
-  transform: rotate(-30deg);
-}
-
-.resource-read:disabled {
-  cursor: default;
-  opacity: 0.45;
-}
-
 .resource-pdf {
   position: fixed;
   inset: 0;
