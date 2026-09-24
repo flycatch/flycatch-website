@@ -4,9 +4,10 @@ import { resourcesTabs, type ResourcesTabId } from '../lib/nav';
 
 interface Props {
   active: ResourcesTabId;
+  search?: boolean;
 }
 
-const { active } = Astro.props;
+const { active, search = true } = Astro.props;
 ---
 <div class="resources-tabs" data-resources-tabs>
   <div class="container">
@@ -22,6 +23,7 @@ const { active } = Astro.props;
         </a>
       ))}
     </nav>
+    {search && (
     <label class="resources-search">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="2"></circle>
@@ -36,6 +38,7 @@ const { active } = Astro.props;
       />
       <span class="resources-search-mirror" data-resources-search-mirror aria-hidden="true">{t('resources.search')}</span>
     </label>
+    )}
     </div>
   </div>
 </div>

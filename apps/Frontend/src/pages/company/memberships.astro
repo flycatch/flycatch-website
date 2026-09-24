@@ -1,10 +1,55 @@
 ---
-import ResourcesHubLayout from '../../layouts/ResourcesHubLayout.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/home.css';
+import '../../styles/blogs.css';
+import '../../styles/memberships.css';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import ResourcesTabs from '../../components/ResourcesTabs.astro';
+import MembershipsSection from '../../components/MembershipsSection.astro';
+import HomeCta from '../../components/HomeCta.astro';
+import { loadPublishedMembershipPage } from '../../lib/public-api';
+import { fallbackMetadata, metadataFromContentSeo, publicSiteSettings } from '../../lib/metadata';
+import { t } from '../../lib/i18n';
+
+const membershipResult = await loadPublishedMembershipPage();
+const membership = membershipResult.item;
+const failed = membershipResult.error;
+const siteSettings = publicSiteSettings();
+const metadata = membership
+  ? metadataFromContentSeo(membership.seo, siteSettings, t('page.memberships.title'))
+  : fallbackMetadata(
+      '/company/memberships',
+      t('page.memberships.title'),
+      failed ? t('home.error') : t('home.empty'),
+    );
+if (membership && !membership.seo.canonical_url.trim()) {
+  metadata.canonical = fallbackMetadata(
+    '/company/memberships',
+    metadata.title,
+    metadata.description,
+  ).canonical;
+}
+metadata.indexable = !failed;
+const structuredData =
+  failed || !membership
+    ? []
+    : [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          name: membership.title.trim() || metadata.title,
+          description: metadata.description,
+          url: metadata.canonical,
+        },
+      ];
 ---
-<ResourcesHubLayout
-  active="memberships"
-  path="/company/memberships"
-  titleKey="page.memberships.title"
-  descriptionKey="page.memberships.description"
-  headingKey="nav.memberships"
-/>
+<BaseLayout title={metadata.title} metadata={metadata} structuredData={structuredData}>
+  <SiteHeader />
+  <main id="main" class="blogs-page" data-api-origin={membershipResult.origin}>
+    <ResourcesTabs active="memberships" search={false} />
+    <MembershipsSection membership={membership} error={failed} />
+    <HomeCta />
+  </main>
+  <SiteFooter />
+</BaseLayout>

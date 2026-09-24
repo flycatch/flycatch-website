@@ -1,0 +1,83 @@
+.memberships-section {
+  background: #fff;
+  padding: 50px 0 50px;
+  min-width: 0;
+  overflow-x: clip;
+}
+
+.memberships-title {
+  margin: 0;
+  color: #000;
+  text-align: start;
+  font-size: var(--text-46);
+  font-weight: 300;
+  line-height: 1.55;
+  letter-spacing: 0.6px;
+}
+
+.memberships-description,
+.memberships-description :where(p) {
+  margin: 0;
+  color: #000;
+  font-size: var(--text-18);
+  font-weight: 300;
+  line-height: 1.55;
+  letter-spacing: 0.6px;
+}
+
+.memberships-description {
+  margin-top: 12px;
+  max-width: 100%;
+}
+
+.memberships-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  margin: 40px 0 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+}
+
+.memberships-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  padding: 77px 16px;
+  background: #f8f8f8;
+  border-radius: 9.15px;
+}
+
+.memberships-card img {
+  width: 174px;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .memberships-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .memberships-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 500px) {
+  .memberships-section {
+    padding-bottom: 64px;
+  }
+
+  .memberships-card {
+    padding: 48px 16px;
+  }
+}

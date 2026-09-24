@@ -30,6 +30,7 @@ import {
   loadPublishedCategories,
   loadPublishedNewsCategories,
   loadPublishedNewsPage,
+  loadPublishedMembershipPage,
   loadPublishedResourceCategories,
   loadPublishedResourcePage,
   loadPublishedSolutionDetail,
@@ -1464,6 +1465,63 @@ describe('public resources page loader', () => {
     expect(resourcesHref).toContain('/api/v1/public/resources?');
     expect(resourcesHref).toContain('q=docsist');
     expect(String(fetchMock.mock.calls[1][0])).toContain('/api/v1/public/resource-categories');
+    vi.unstubAllGlobals();
+  });
+});
+
+describe('public memberships loader', () => {
+  const membership = {
+    id: '72ca2c51-8438-4e45-8f18-e5b3a35d8063',
+    title: 'Memberships',
+    description: 'Flycatch believes that meaningful relationships are essential for innovation and growth.',
+    images: [
+      { image_key: 'gtech.webp', alt: 'gtech' },
+      { image_key: 'chamber.webp', alt: 'chamber' },
+      { image_key: 'bni.webp', alt: 'bni' },
+    ],
+    seo: {
+      title: 'Memberships | Flycatch',
+      description: 'Flycatch is a proud member of BNI, GTECH, and the Chamber of Commerce.',
+      canonical_url: 'https://www.flycatchtech.com/en/company/membership',
+      meta_title: 'Memberships | Professional Relationships',
+      h1_tag: 'Our Professional Memberships and Industry Associations',
+      image_alt: 'Memberships | Flycatch',
+      image_key: null,
+    },
+  };
+
+  it('loads the published membership from the detail endpoint', async () => {
+    const fetchMock = vi.fn(async (url: string) => {
+      const href = String(url);
+      if (href.includes('/api/v1/public/memberships?')) {
+        return {
+          ok: true,
+          json: async () => ({ items: [membership], page: 1, per_page: 10, total: 1 }),
+        };
+      }
+      return { ok: true, json: async () => membership };
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedMembershipPage();
+    expect(result.error).toBe(false);
+    expect(result.item?.title).toBe('Memberships');
+    expect(result.item?.images.map((image) => image.alt)).toEqual(['gtech', 'chamber', 'bni']);
+    expect(String(fetchMock.mock.calls[1]?.[0])).toContain(
+      '/api/v1/public/memberships/72ca2c51-8438-4e45-8f18-e5b3a35d8063',
+    );
+    vi.unstubAllGlobals();
+  });
+
+  it('returns an empty membership page when nothing is published', async () => {
+    const fetchMock = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({ items: [], page: 1, per_page: 10, total: 0 }),
+    }));
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedMembershipPage();
+    expect(result.error).toBe(false);
+    expect(result.item).toBeNull();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
     vi.unstubAllGlobals();
   });
 });

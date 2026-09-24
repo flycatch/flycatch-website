@@ -59,9 +59,7 @@ const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.n
         const image = resourceThumbnailUrl(item.image_key);
         const pdf = resourceAssetUrl(item.pdf_key);
         const alt = item.seo?.image_alt || item.title;
-        const description = item.seo?.description?.trim() || '';
         const categoryNames = item.resource_categories.map((category) => category.name).filter(Boolean);
-        const label = item.button_name.trim() || t('home.read_more');
         const meta = newsMetaLabel(item.reading_time, item.created_at);
         return (
           <article class="resource-card" data-resource-card data-slug={item.slug} data-categories={categoryNames.join('|')}>
@@ -90,18 +88,6 @@ const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.n
                 )}
               </p>
               <h2 class="resource-title">{item.title}</h2>
-              {description && <p class="resource-description">{description}</p>}
-              <button
-                class="resource-read"
-                type="button"
-                data-resource-open={pdf || undefined}
-                data-pdf={pdf || undefined}
-                data-title={item.title}
-                disabled={!pdf}
-              >
-                <span>{label}</span>
-                <img src="/icon-arrow-right.svg" width="21" height="21" alt="" />
-              </button>
             </div>
           </article>
         );
