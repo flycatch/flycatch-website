@@ -161,6 +161,7 @@ class PublicNews(BaseModel):
     twitter: str
     instagram: str
     youtube_url: str
+    created_at: datetime
     seo: ContentSeo
 
 
