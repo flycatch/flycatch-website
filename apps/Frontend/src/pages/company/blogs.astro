@@ -1,27 +1,66 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/home.css';
+import '../../styles/blogs.css';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
-import HomeInsights from '../../components/HomeInsights.astro';
-import { loadPublishedBlogs } from '../../lib/public-api';
+import ResourcesTabs from '../../components/ResourcesTabs.astro';
+import BlogsListing from '../../components/BlogsListing.astro';
+import HomeCta from '../../components/HomeCta.astro';
+import { loadPublishedBlogPage, loadPublishedCategories } from '../../lib/public-api';
 import { fallbackMetadata } from '../../lib/metadata';
 import { t } from '../../lib/i18n';
 
-const listed = await loadPublishedBlogs();
+const [listed, categories] = await Promise.all([
+  loadPublishedBlogPage(1),
+  loadPublishedCategories(),
+]);
 const metadata = fallbackMetadata(
   '/company/blogs',
   t('page.blog.title'),
-  listed.error ? t('home.error') : t('home.empty'),
+  listed.error ? t('home.error') : t('page.blog.description'),
 );
 metadata.indexable = !listed.error;
+const uniqueFromBlogs = [
+  ...new Map(
+    listed.items.flatMap((blog) => blog.categories).map((category) => [category.name, category]),
+  ).values(),
+];
+const categoryItems = categories.items.length > 0 ? categories.items : uniqueFromBlogs;
+const structuredData = listed.error
+  ? []
+  : [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: t('nav.blogs'),
+        description: metadata.description,
+        url: metadata.canonical,
+        mainEntity: {
+          '@type': 'ItemList',
+          itemListElement: listed.items.map((blog, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: blog.title,
+            url: `${metadata.canonical.replace(/\/company\/blogs\/?$/, '')}/blogs/${blog.slug}`,
+          })),
+        },
+      },
+    ];
 ---
-<BaseLayout title={metadata.title} metadata={metadata}>
+<BaseLayout title={metadata.title} metadata={metadata} structuredData={structuredData}>
   <SiteHeader />
-  <main id="main" class="page-main" data-api-origin={listed.origin}>
-    <div class="container summary-region">
-      <h1>{t('nav.blogs')}</h1>
-    </div>
-    <HomeInsights blogs={listed.items} error={listed.error} limit={0} />
+  <main id="main" class="blogs-page" data-api-origin={listed.origin}>
+    <ResourcesTabs active="blogs" />
+    <BlogsListing
+      blogs={listed.items}
+      categories={categoryItems}
+      error={listed.error}
+      page={listed.page}
+      perPage={listed.per_page}
+      total={listed.total}
+    />
+    <HomeCta />
   </main>
   <SiteFooter />
 </BaseLayout>
