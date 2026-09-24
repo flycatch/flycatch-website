@@ -1,8 +1,10 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/clients.css';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import HomeClients from '../../components/HomeClients.astro';
+import HomeCta from '../../components/HomeCta.astro';
 import { loadPublishedClientLogos } from '../../lib/public-api';
 import { fallbackMetadata } from '../../lib/metadata';
 import { t } from '../../lib/i18n';
@@ -17,11 +19,9 @@ metadata.indexable = !listed.error;
 ---
 <BaseLayout title={metadata.title} metadata={metadata}>
   <SiteHeader />
-  <main id="main" class="page-main" data-api-origin={listed.origin}>
-    <div class="container summary-region">
-      <h1>{t('nav.clients')}</h1>
-    </div>
+  <main id="main" class="clients-page" data-api-origin={listed.origin}>
     <HomeClients logos={listed.items} error={listed.error} />
+    <HomeCta />
   </main>
   <SiteFooter />
 </BaseLayout>
