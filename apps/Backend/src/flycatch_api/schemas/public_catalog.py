@@ -161,6 +161,7 @@ class PublicNews(BaseModel):
     twitter: str
     instagram: str
     youtube_url: str
+    created_at: datetime
     seo: ContentSeo
 
 
@@ -205,6 +206,7 @@ class PublicResource(BaseModel):
     slug: str
     pdf_key: str | None
     resource_categories: list[PublicResourceCategory]
+    created_at: datetime
     seo: ContentSeo
 
 

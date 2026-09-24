@@ -1,0 +1,27 @@
+.clients-page {
+  background: var(--color-white);
+  color: var(--color-black);
+}
+
+.clients-page #clients {
+  background: var(--color-white);
+  color: var(--color-black);
+}
+
+.clients-page #clients .type-section,
+.clients-page #clients .lede {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.clients-page #clients .lede {
+  max-width: 100%;
+  margin-bottom: 0;
+  color: var(--color-black);
+  font-size: 24px;
+}
+
+.clients-page #clients .logo-row {
+  margin-top: 48px;
+  margin-bottom: 48px;
+}

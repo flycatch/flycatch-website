@@ -153,6 +153,7 @@ def test_named_categories_email_memberships_and_news(client, bootstrapped):
     assert public_news.status_code == 200
     assert public_news.json()["news_categories"][0]["name"] == "Company"
     assert public_news.json()["authors"][0]["name"] == "News Writer"
+    assert public_news.json()["created_at"]
 
     resource_cat = client.post(
         "/api/v1/admin/resource-categories",
@@ -170,7 +171,11 @@ def test_named_categories_email_memberships_and_news(client, bootstrapped):
         },
     )
     assert resource.status_code == 201, resource.text
-    assert client.get("/api/v1/public/resources/guide").status_code == 200
+    public_resource = client.get("/api/v1/public/resources/guide")
+    assert public_resource.status_code == 200
+    assert public_resource.json()["pdf_key"] == "file.pdf"
+    assert public_resource.json()["created_at"]
+    assert public_resource.json()["resource_categories"][0]["name"] == "Whitepapers"
 
     email_cfg = client.post(
         "/api/v1/admin/email-configuration",

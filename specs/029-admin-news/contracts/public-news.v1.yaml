@@ -108,7 +108,7 @@ components:
     PublicNews:
       type: object
       additionalProperties: false
-      required: [title, slug, body, news_categories, authors, image_key, description, button_name, reading_time, facebook, linkedin, twitter, instagram, youtube_url, seo]
+      required: [title, slug, body, news_categories, authors, image_key, description, button_name, reading_time, facebook, linkedin, twitter, instagram, youtube_url, created_at, seo]
       properties:
         title: { type: string }
         slug: { type: string }
@@ -130,6 +130,7 @@ components:
         twitter: { type: string }
         instagram: { type: string }
         youtube_url: { type: string }
+        created_at: { type: string, format: date-time }
         seo:
           $ref: '#/components/schemas/ContentSeo'
     PublicNewsList:

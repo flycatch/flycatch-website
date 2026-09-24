@@ -129,6 +129,71 @@ export type PublicBlogSummary = {
   categories: PublicCategory[];
 };
 
+export type PublicNewsCategory = {
+  id?: string;
+  name: string;
+};
+
+export type PublicNewsAuthor = {
+  name: string;
+  bio: string;
+  designation: string;
+  writer_image_keys: string[];
+};
+
+export type PublicResourceCategory = {
+  name: string;
+};
+
+export type PublicResourceCategoryItem = {
+  id?: string;
+  name: string;
+};
+
+export type PublicResource = {
+  image_key: string | null;
+  reading_time: number;
+  title: string;
+  button_name: string;
+  slug: string;
+  pdf_key: string | null;
+  resource_categories: PublicResourceCategory[];
+  created_at?: string;
+  seo: ContentSeo;
+};
+
+export type PublicMembershipImage = {
+  image_key: string | null;
+  alt: string;
+};
+
+export type PublicMembership = {
+  id: string;
+  title: string;
+  description: string;
+  images: PublicMembershipImage[];
+  seo: ContentSeo;
+};
+
+export type PublicNews = {
+  title: string;
+  slug: string;
+  body: string;
+  news_categories: PublicNewsCategory[];
+  authors: PublicNewsAuthor[];
+  image_key: string | null;
+  description: string;
+  button_name: string;
+  reading_time: number;
+  facebook: string;
+  linkedin: string;
+  twitter: string;
+  instagram: string;
+  youtube_url: string;
+  created_at: string;
+  seo: ContentSeo;
+};
+
 export type PublicBlogDetail = {
   title: string;
   slug: string;
@@ -566,6 +631,12 @@ export type PublicListResult<T> = {
   origin: string;
 };
 
+export type PublicPageResult<T> = PublicListResult<T> & {
+  page: number;
+  per_page: number;
+  total: number;
+};
+
 export type PublicItemResult<T> = {
   item: T | null;
   error: boolean;
@@ -690,10 +761,129 @@ export async function loadPublishedBlogs(): Promise<PublicListResult<PublicBlogS
   return loadPaginated<PublicBlogSummary>('/api/v1/public/blogs');
 }
 
+const BLOG_PAGE_SIZE = 10;
+
+export async function loadPublishedBlogPage(
+  page = 1,
+  q?: string,
+): Promise<PublicPageResult<PublicBlogSummary>> {
+  const params = new URLSearchParams({
+    page: String(page),
+    per_page: String(BLOG_PAGE_SIZE),
+  });
+  const query = q?.trim();
+  if (query) params.set('q', query);
+  const { data, error, origin } = await getJson<Paginated<PublicBlogSummary>>(
+    `/api/v1/public/blogs?${params.toString()}`,
+  );
+  if (error || !data) {
+    return { items: [], page, per_page: BLOG_PAGE_SIZE, total: 0, error: true, origin };
+  }
+  return {
+    items: Array.isArray(data.items) ? data.items : [],
+    page: typeof data.page === 'number' ? data.page : page,
+    per_page: typeof data.per_page === 'number' ? data.per_page : BLOG_PAGE_SIZE,
+    total: typeof data.total === 'number' ? data.total : 0,
+    error: false,
+    origin,
+  };
+}
+
 export async function loadPublishedBlog(slug: string): Promise<PublicItemResult<PublicBlogDetail>> {
   return getJson<PublicBlogDetail>(`/api/v1/public/blogs/${encodeURIComponent(slug)}`).then(
     ({ data, error, origin }) => ({ item: data, error, origin }),
   );
+}
+
+const NEWS_PAGE_SIZE = 10;
+
+export async function loadPublishedNewsPage(
+  page = 1,
+  q?: string,
+): Promise<PublicPageResult<PublicNews>> {
+  const params = new URLSearchParams({
+    page: String(page),
+    per_page: String(NEWS_PAGE_SIZE),
+  });
+  const query = q?.trim();
+  if (query) params.set('q', query);
+  const { data, error, origin } = await getJson<Paginated<PublicNews>>(
+    `/api/v1/public/news?${params.toString()}`,
+  );
+  if (error || !data) {
+    return { items: [], page, per_page: NEWS_PAGE_SIZE, total: 0, error: true, origin };
+  }
+  return {
+    items: Array.isArray(data.items) ? data.items : [],
+    page: typeof data.page === 'number' ? data.page : page,
+    per_page: typeof data.per_page === 'number' ? data.per_page : NEWS_PAGE_SIZE,
+    total: typeof data.total === 'number' ? data.total : 0,
+    error: false,
+    origin,
+  };
+}
+
+export async function loadPublishedNewsCategories(): Promise<PublicListResult<PublicNewsCategory>> {
+  return loadPaginated<PublicNewsCategory>('/api/v1/public/news-categories');
+}
+
+const RESOURCE_PAGE_SIZE = 10;
+
+export async function loadPublishedResourcePage(
+  page = 1,
+  q?: string,
+): Promise<PublicPageResult<PublicResource>> {
+  const params = new URLSearchParams({
+    page: String(page),
+    per_page: String(RESOURCE_PAGE_SIZE),
+  });
+  const query = q?.trim();
+  if (query) params.set('q', query);
+  const { data, error, origin } = await getJson<Paginated<PublicResource>>(
+    `/api/v1/public/resources?${params.toString()}`,
+  );
+  if (error || !data) {
+    return { items: [], page, per_page: RESOURCE_PAGE_SIZE, total: 0, error: true, origin };
+  }
+  return {
+    items: Array.isArray(data.items) ? data.items : [],
+    page: typeof data.page === 'number' ? data.page : page,
+    per_page: typeof data.per_page === 'number' ? data.per_page : RESOURCE_PAGE_SIZE,
+    total: typeof data.total === 'number' ? data.total : 0,
+    error: false,
+    origin,
+  };
+}
+
+export async function loadPublishedResourceCategories(): Promise<
+  PublicListResult<PublicResourceCategoryItem>
+> {
+  return loadPaginated<PublicResourceCategoryItem>('/api/v1/public/resource-categories');
+}
+
+export async function loadPublishedMembership(
+  membershipId: string,
+): Promise<PublicItemResult<PublicMembership>> {
+  return getJson<PublicMembership>(
+    `/api/v1/public/memberships/${encodeURIComponent(membershipId)}`,
+  ).then(({ data, error, origin }) => ({ item: data, error, origin }));
+}
+
+/** Published membership page: list to resolve the id, then read that record. */
+export async function loadPublishedMembershipPage(): Promise<PublicItemResult<PublicMembership>> {
+  const listed = await loadPaginated<PublicMembership>('/api/v1/public/memberships');
+  if (listed.error) return { item: null, error: true, origin: listed.origin };
+  const membershipId = listed.items[0]?.id?.trim();
+  if (!membershipId) return { item: null, error: false, origin: listed.origin };
+  return loadPublishedMembership(membershipId);
+}
+
+export async function loadPublishedCategories(): Promise<PublicListResult<PublicCategory>> {
+  const { data, error, origin } = await getJson<{ items?: PublicCategory[] }>(
+    '/api/v1/public/categories',
+  );
+  if (error || !data) return { items: [], error: true, origin };
+  return { items: Array.isArray(data.items) ? data.items : [], error: false, origin };
 }
 
 export async function loadPublishedCaseStudies(): Promise<PublicListResult<PublicCaseStudySummary>> {

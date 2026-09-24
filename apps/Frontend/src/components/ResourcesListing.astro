@@ -1,0 +1,121 @@
+---
+import { t } from '../lib/i18n';
+import { newsMetaLabel } from '../lib/news-media';
+import { resourceAssetUrl, resourceThumbnailUrl } from '../lib/resource-media';
+import type { PublicResource, PublicResourceCategoryItem } from '../lib/public-api';
+import SectionState from './SectionState.astro';
+
+interface Props {
+  items: PublicResource[];
+  categories: PublicResourceCategoryItem[];
+  error?: boolean;
+  page?: number;
+  perPage?: number;
+  total?: number;
+}
+
+const { items, categories, error = false, page = 1, perPage = 10, total = items.length } = Astro.props;
+const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
+---
+<section
+  class="blogs-listing resources-listing"
+  data-resources-listing
+  data-resources-page={page}
+  data-resources-per-page={perPage}
+  data-resources-total={total}
+  data-resources-error={error ? 'true' : 'false'}
+>
+  <div class="container">
+    <div class="resources-listing-head">
+      <h1 class="resources-listing-title">{t('nav.resources')}</h1>
+      <div class="resources-category" data-resources-category-root>
+        <span class="seo-hidden">{t('resources.select_categories')}</span>
+        <button
+          class="resources-category-trigger"
+          type="button"
+          data-resources-category-trigger
+          aria-haspopup="listbox"
+          aria-expanded="false"
+          aria-label={t('resources.select_categories')}
+        >
+          <span data-resources-category-label>{t('resources.categories')}</span>
+          <svg viewBox="64 64 896 896" width="16" height="12" aria-hidden="true">
+            <path fill="currentColor" d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path>
+          </svg>
+        </button>
+        <ul class="resources-category-menu" data-resources-category-menu role="listbox" hidden>
+          <li role="option" data-value="" aria-selected="true">{t('resources.categories')}</li>
+          {sortedCategories.map((category) => (
+            <li role="option" data-value={category.name} aria-selected="false">{category.name}</li>
+          ))}
+        </ul>
+        <input type="hidden" data-resources-category value="" />
+      </div>
+    </div>
+    <SectionState error={error} empty={!error && items.length === 0} />
+    <p class="blogs-empty" data-resources-empty hidden>{t('resources.no_results')}</p>
+    <div class="resources-grid" data-resources-grid>
+      {items.map((item) => {
+        const image = resourceThumbnailUrl(item.image_key);
+        const pdf = resourceAssetUrl(item.pdf_key);
+        const alt = item.seo?.image_alt || item.title;
+        const categoryNames = item.resource_categories.map((category) => category.name).filter(Boolean);
+        const meta = newsMetaLabel(item.reading_time, item.created_at);
+        return (
+          <article class="resource-card" data-resource-card data-slug={item.slug} data-categories={categoryNames.join('|')}>
+            <div class="resource-media">
+              {image && pdf ? (
+                <button
+                  class="resource-media-button"
+                  type="button"
+                  data-resource-open
+                  data-pdf={pdf}
+                  data-title={item.title}
+                  aria-label={t('resources.open_pdf', { title: item.title })}
+                >
+                  <img src={image} alt={alt} width="640" height="360" loading="lazy" />
+                </button>
+              ) : image ? (
+                <img src={image} alt={alt} width="640" height="360" loading="lazy" />
+              ) : null}
+            </div>
+            <div class="resource-copy">
+              <p class="resource-meta">
+                {item.created_at ? (
+                  <time datetime={item.created_at}>{meta}</time>
+                ) : (
+                  meta
+                )}
+              </p>
+              <h2 class="resource-title">{item.title}</h2>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+    <p class="blogs-loading" data-resources-loading hidden>{t('resources.loading')}</p>
+    <div class="blogs-sentinel" data-resources-sentinel aria-hidden="true"></div>
+  </div>
+  <div class="resource-pdf" data-resource-pdf hidden>
+    <button class="resource-pdf-backdrop" type="button" data-resource-pdf-backdrop aria-label={t('resources.close')}></button>
+    <div
+      class="resource-pdf-dialog"
+      data-resource-pdf-dialog
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="resource-pdf-title"
+    >
+      <div class="resource-pdf-bar">
+        <h2 class="resource-pdf-title" id="resource-pdf-title" data-resource-pdf-title>{t('resources.pdf_preview')}</h2>
+        <button class="resource-pdf-close" type="button" data-resource-pdf-close aria-label={t('resources.close')}>
+          <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M4 4l12 12M16 4L4 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+          </svg>
+        </button>
+      </div>
+      <p class="resource-pdf-status" data-resource-pdf-status hidden>{t('resources.loading')}</p>
+      <iframe class="resource-pdf-frame" data-resource-pdf-frame title={t('resources.pdf_preview')}></iframe>
+    </div>
+  </div>
+</section>
+<script src="../scripts/resources-listing.ts"></script>

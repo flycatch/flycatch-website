@@ -1,8 +1,10 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/testimonials.css';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
-import HomeTestimonials from '../../components/HomeTestimonials.astro';
+import TestimonialsList from '../../components/TestimonialsList.astro';
+import HomeCta from '../../components/HomeCta.astro';
 import { loadPublishedClientTestimonials } from '../../lib/public-api';
 import { fallbackMetadata } from '../../lib/metadata';
 import { t } from '../../lib/i18n';
@@ -11,17 +13,52 @@ const listed = await loadPublishedClientTestimonials();
 const metadata = fallbackMetadata(
   '/company/testimonials',
   t('page.stories.title'),
-  listed.error ? t('home.error') : t('home.empty'),
+  listed.error ? t('home.error') : t('page.stories.description'),
 );
 metadata.indexable = !listed.error;
+const structuredData = listed.error
+  ? []
+  : [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: t('nav.testimonials'),
+        description: metadata.description,
+        url: metadata.canonical,
+        mainEntity: {
+          '@type': 'ItemList',
+          itemListElement: listed.items.map((item, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            item: {
+              '@type': 'Review',
+              name: item.title,
+              reviewBody: item.review,
+              author: {
+                '@type': 'Person',
+                name: item.client_name,
+                jobTitle: item.client_designation || undefined,
+                worksFor: item.client_company
+                  ? { '@type': 'Organization', name: item.client_company }
+                  : undefined,
+              },
+            },
+          })),
+        },
+      },
+    ];
 ---
-<BaseLayout title={metadata.title} metadata={metadata}>
+<BaseLayout title={metadata.title} metadata={metadata} structuredData={structuredData}>
   <SiteHeader />
-  <main id="main" class="page-main" data-api-origin={listed.origin}>
-    <div class="container summary-region">
-      <h1>{t('nav.stories')}</h1>
-    </div>
-    <HomeTestimonials testimonials={listed.items} error={listed.error} />
+  <main id="main" class="testimonials-page" data-api-origin={listed.origin}>
+    <section class="testimonials-hero" aria-labelledby="testimonials-heading">
+      <div class="testimonials-inner">
+        <h1 id="testimonials-heading">{t('nav.testimonials')}</h1>
+        <p>{t('home.clients_intro')}</p>
+      </div>
+    </section>
+    <TestimonialsList testimonials={listed.items} error={listed.error} />
+    <HomeCta />
   </main>
   <SiteFooter />
 </BaseLayout>
