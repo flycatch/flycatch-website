@@ -2,47 +2,42 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import '../../styles/home.css';
 import '../../styles/blogs.css';
+import '../../styles/news.css';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import ResourcesTabs from '../../components/ResourcesTabs.astro';
-import BlogsListing from '../../components/BlogsListing.astro';
+import NewsListing from '../../components/NewsListing.astro';
 import HomeCta from '../../components/HomeCta.astro';
-import { loadPublishedBlogPage, loadPublishedCategories } from '../../lib/public-api';
+import { loadPublishedNewsCategories, loadPublishedNewsPage } from '../../lib/public-api';
 import { fallbackMetadata } from '../../lib/metadata';
 import { t } from '../../lib/i18n';
 
 const [listed, categories] = await Promise.all([
-  loadPublishedBlogPage(1),
-  loadPublishedCategories(),
+  loadPublishedNewsPage(1),
+  loadPublishedNewsCategories(),
 ]);
 const metadata = fallbackMetadata(
-  '/company/blogs',
-  t('page.blog.title'),
-  listed.error ? t('home.error') : t('page.blog.description'),
+  '/company/news-and-events',
+  t('page.news.title'),
+  listed.error ? t('home.error') : t('page.news.description'),
 );
 metadata.indexable = !listed.error;
-const uniqueFromBlogs = [
-  ...new Map(
-    listed.items.flatMap((blog) => blog.categories).map((category) => [category.name, category]),
-  ).values(),
-];
-const categoryItems = categories.items.length > 0 ? categories.items : uniqueFromBlogs;
 const structuredData = listed.error
   ? []
   : [
       {
         '@context': 'https://schema.org',
         '@type': 'CollectionPage',
-        name: t('nav.blogs'),
+        name: t('nav.news_events'),
         description: metadata.description,
         url: metadata.canonical,
         mainEntity: {
           '@type': 'ItemList',
-          itemListElement: listed.items.map((blog, index) => ({
+          itemListElement: listed.items.map((item, index) => ({
             '@type': 'ListItem',
             position: index + 1,
-            name: blog.title,
-            url: `${metadata.canonical.replace(/\/company\/blogs\/?$/, '')}/blogs/${blog.slug}`,
+            name: item.title,
+            url: `${metadata.canonical.replace(/\/$/, '')}/${item.slug}`,
           })),
         },
       },
@@ -51,10 +46,10 @@ const structuredData = listed.error
 <BaseLayout title={metadata.title} metadata={metadata} structuredData={structuredData}>
   <SiteHeader />
   <main id="main" class="blogs-page" data-api-origin={listed.origin}>
-    <ResourcesTabs active="blogs" />
-    <BlogsListing
-      blogs={listed.items}
-      categories={categoryItems}
+    <ResourcesTabs active="news" />
+    <NewsListing
+      items={listed.items}
+      categories={categories.items}
       error={listed.error}
       page={listed.page}
       perPage={listed.per_page}

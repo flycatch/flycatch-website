@@ -1,0 +1,107 @@
+---
+import { t } from '../lib/i18n';
+import { newsMetaLabel, youtubeEmbedUrl } from '../lib/news-media';
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicNews, PublicNewsCategory } from '../lib/public-api';
+import SectionState from './SectionState.astro';
+
+interface Props {
+  items: PublicNews[];
+  categories: PublicNewsCategory[];
+  error?: boolean;
+  page?: number;
+  perPage?: number;
+  total?: number;
+}
+
+const { items, categories, error = false, page = 1, perPage = 10, total = items.length } = Astro.props;
+const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
+---
+<section
+  class="blogs-listing news-listing"
+  data-news-listing
+  data-news-page={page}
+  data-news-per-page={perPage}
+  data-news-total={total}
+  data-news-error={error ? 'true' : 'false'}
+>
+  <div class="container">
+    <div class="news-listing-head">
+      <h1 class="news-listing-title">{t('nav.news_events')}</h1>
+      <div class="news-category" data-news-category-root>
+        <span class="seo-hidden">{t('resources.select_categories')}</span>
+        <button
+          class="news-category-trigger"
+          type="button"
+          data-news-category-trigger
+          aria-haspopup="listbox"
+          aria-expanded="false"
+          aria-label={t('resources.select_categories')}
+        >
+          <span data-news-category-label>{t('resources.categories')}</span>
+          <svg viewBox="64 64 896 896" width="16" height="12" aria-hidden="true">
+            <path fill="currentColor" d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path>
+          </svg>
+        </button>
+        <ul class="news-category-menu" data-news-category-menu role="listbox" hidden>
+          <li role="option" data-value="" aria-selected="true">{t('resources.categories')}</li>
+          {sortedCategories.map((category) => (
+            <li role="option" data-value={category.name} aria-selected="false">{category.name}</li>
+          ))}
+        </ul>
+        <input type="hidden" data-news-category value="" />
+      </div>
+    </div>
+    <SectionState error={error} empty={!error && items.length === 0} />
+    <p class="blogs-empty" data-news-empty hidden>{t('resources.no_results')}</p>
+    <div class="news-flow" data-news-flow>
+      {items.map((item, index) => {
+        const embed = youtubeEmbedUrl(item.youtube_url);
+        const image = publicMediaUrl(item.image_key);
+        const alt = item.seo?.image_alt || item.title;
+        const categoryNames = item.news_categories.map((category) => category.name).filter(Boolean);
+        const label = item.button_name.trim() || t('home.read_more');
+        const featured = index === 0;
+        return (
+          <article
+            class:list={['news-item', featured ? 'news-feature' : 'news-card']}
+            data-news-item
+            data-categories={categoryNames.join('|')}
+          >
+            <div class="news-media">
+              {embed ? (
+                <iframe
+                  src={embed}
+                  title={item.title}
+                  loading={featured ? 'eager' : 'lazy'}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                ></iframe>
+              ) : image ? (
+                <img src={image} alt={alt} width="600" height="400" loading={featured ? 'eager' : 'lazy'} />
+              ) : null}
+            </div>
+            <div class="news-copy">
+              <p class="news-meta">
+                {item.created_at ? (
+                  <time datetime={item.created_at}>{newsMetaLabel(item.reading_time, item.created_at)}</time>
+                ) : (
+                  newsMetaLabel(item.reading_time, item.created_at)
+                )}
+              </p>
+              <h2 class="news-title">{item.title}</h2>
+              {item.description && <p class="news-description">{item.description}</p>}
+              <a class="news-read" href={`/company/news-and-events/${item.slug}`}>
+                <span>{label}</span>
+                <img src="/icon-arrow-right.svg" width="21" height="21" alt="" />
+              </a>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+    <p class="blogs-loading" data-news-loading hidden>{t('resources.loading')}</p>
+    <div class="blogs-sentinel" data-news-sentinel aria-hidden="true"></div>
+  </div>
+</section>
+<script src="../scripts/news-listing.ts"></script>

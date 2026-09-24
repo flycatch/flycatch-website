@@ -1097,6 +1097,7 @@ class NewsService:
             twitter=row.twitter,
             instagram=row.instagram,
             youtube_url=row.youtube_url,
+            created_at=row.created_at,
             seo=ContentSeo.model_validate(row.seo or {}),
         )
 
@@ -1240,6 +1241,7 @@ class ResourceService:
             resource_categories=[
                 PublicResourceCategory(name=link.category.name) for link in row.category_links if link.category
             ],
+            created_at=row.created_at,
             seo=ContentSeo.model_validate(row.seo or {}),
         )
 

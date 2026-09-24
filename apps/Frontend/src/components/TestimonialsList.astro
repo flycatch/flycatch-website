@@ -1,0 +1,93 @@
+---
+import { t } from '../lib/i18n';
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicClientTestimonial } from '../lib/public-api';
+import SectionState from './SectionState.astro';
+
+interface Props {
+  testimonials: PublicClientTestimonial[];
+  error?: boolean;
+  loading?: boolean;
+}
+
+const { testimonials, error = false, loading = false } = Astro.props;
+
+function roleLine(item: PublicClientTestimonial) {
+  return [item.client_designation, item.client_company].filter(Boolean).join(', ');
+}
+---
+<section
+  class="testimonials-list"
+  id="testimonials"
+  aria-labelledby="testimonials-list-heading"
+  aria-busy={loading ? 'true' : 'false'}
+>
+  <h2 id="testimonials-list-heading" class="seo-hidden">{t('nav.testimonials')}</h2>
+  {loading && (
+    <div class="testimonials-inner">
+      <SectionState loading />
+    </div>
+  )}
+  {!loading && error && (
+    <div class="testimonials-inner">
+      <SectionState error />
+    </div>
+  )}
+  {!loading && !error && testimonials.length === 0 && (
+    <div class="testimonials-inner">
+      <SectionState empty />
+    </div>
+  )}
+  {!loading && !error && testimonials.length > 0 && (
+    <div class="testimonials-stack">
+      {testimonials.map((item, index) => {
+        const imageSrc = publicMediaUrl(item.image_key);
+        const role = roleLine(item);
+        const alt = item.alt_text.trim() || item.client_name;
+        const dark = index % 2 === 0;
+        return (
+          <article class:list={['testimonials-card', dark ? 'testimonials-card-dark' : 'testimonials-card-light']}>
+            <div class="testimonials-inner stories-layout">
+              <div class="stories-left">
+                {imageSrc && (
+                  <div class="stories-photo">
+                    <img
+                      src={imageSrc}
+                      alt={alt}
+                      width="150"
+                      height="150"
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      decoding="async"
+                    />
+                  </div>
+                )}
+                <div class="stories-byline">
+                  <p class="stories-name">{item.client_name}</p>
+                  {role && <p class="stories-role">{role}</p>}
+                </div>
+                <img
+                  class="stories-quote"
+                  src="/testimonial-quote-icon.png"
+                  alt=""
+                  width="162"
+                  height="142"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <div class="stories-right">
+                <p class="testimonials-kicker"># {t('home.success_stories')}</p>
+                {item.title && <h3 class="stories-title">{item.title}</h3>}
+                {item.review && <p class="stories-review">{item.review}</p>}
+                <div class="stories-byline stories-byline-mobile">
+                  <p class="stories-name">{item.client_name}</p>
+                  {role && <p class="stories-role">{role}</p>}
+                </div>
+              </div>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  )}
+</section>

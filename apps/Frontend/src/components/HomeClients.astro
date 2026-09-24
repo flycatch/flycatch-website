@@ -30,7 +30,11 @@ const hideOnHome = home && visible.length === 0;
   id="clients"
 >
   <div class="container">
-    <h2 class="type-section">{t('home.clients')}</h2>
+    {home ? (
+      <h2 class="type-section">{t('home.clients')}</h2>
+    ) : (
+      <h1 class="type-section">{t('home.clients')}</h1>
+    )}
     <p class="lede type-lede">{t('home.clients_intro')}</p>
     <SectionState error={error} empty={!home && !error && visible.length === 0} />
     {visible.length > 0 && home && (
@@ -76,12 +80,14 @@ const hideOnHome = home && visible.length === 0;
         ))}
       </div>
     )}
-    <p class:list={['section-actions', { 'clients-actions': home }]}>
-      <a class:list={['btn', { 'btn-on-dark': home }]} href="/company/clients">
-        {t('home.view_clients')}
-        <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
-      </a>
-    </p>
+    {home && (
+      <p class:list={['section-actions', 'clients-actions']}>
+        <a class="btn btn-on-dark" href="/company/clients">
+          {t('home.view_clients')}
+          <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
+        </a>
+      </p>
+    )}
   </div>
 </section>
 )}

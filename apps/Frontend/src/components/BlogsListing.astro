@@ -1,0 +1,108 @@
+---
+import { t } from '../lib/i18n';
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicBlogSummary, PublicCategory } from '../lib/public-api';
+import SectionState from './SectionState.astro';
+
+interface Props {
+  blogs: PublicBlogSummary[];
+  categories: PublicCategory[];
+  error?: boolean;
+  page?: number;
+  perPage?: number;
+  total?: number;
+}
+
+const { blogs, categories, error = false, page = 1, perPage = 10, total = blogs.length } = Astro.props;
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function formatCreatedDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return `${date.getUTCDate()} ${months[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
+}
+---
+<section
+  class="blogs-listing"
+  data-blogs-listing
+  data-blogs-page={page}
+  data-blogs-per-page={perPage}
+  data-blogs-total={total}
+  data-blogs-error={error ? 'true' : 'false'}
+>
+  <div class="container">
+    <div class="blogs-listing-head">
+      <h1 class="type-section blogs-listing-title">{t('nav.blogs')}</h1>
+      <div class="blogs-category" data-blogs-category-root>
+        <span class="seo-hidden">{t('resources.select_categories')}</span>
+        <button
+          class="blogs-category-trigger"
+          type="button"
+          data-blogs-category-trigger
+          aria-haspopup="listbox"
+          aria-expanded="false"
+          aria-label={t('resources.select_categories')}
+        >
+          <span data-blogs-category-label>{t('resources.categories')}</span>
+          <svg viewBox="64 64 896 896" width="16" height="12" aria-hidden="true">
+            <path fill="currentColor" d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path>
+          </svg>
+        </button>
+        <ul class="blogs-category-menu" data-blogs-category-menu role="listbox" hidden>
+          <li role="option" data-value="" aria-selected="true">{t('resources.categories')}</li>
+          {categories.map((category) => (
+            <li role="option" data-value={category.name} aria-selected="false">{category.name}</li>
+          ))}
+        </ul>
+        <input type="hidden" data-blogs-category value="" />
+      </div>
+    </div>
+    <SectionState error={error} empty={!error && blogs.length === 0} />
+    <p class="blogs-empty" data-blogs-empty hidden>{t('resources.no_results')}</p>
+    <div class="blogs-grid" data-blogs-grid>
+      {blogs.map((blog) => {
+          const image = publicMediaUrl(blog.image_key);
+          const created = formatCreatedDate(blog.created_at);
+          const categoryNames = blog.categories.map((category) => category.name);
+          const authorNames = blog.authors.map((author) => author.name);
+          const primary = categoryNames[0] || '';
+          const search = [blog.title, blog.description, ...categoryNames, ...authorNames].join(' ').trim();
+          return (
+            <article
+              class="blogs-card"
+              data-blog-card
+              data-search={search}
+              data-categories={categoryNames.join('|')}
+            >
+              <a href={`/blogs/${blog.slug}`}>
+                {image ? (
+                  <div class="blogs-card-media">
+                    <img src={image} alt={blog.image_alt || blog.title} width="377" height="210" loading="lazy" />
+                  </div>
+                ) : (
+                  <div class="blogs-card-media"></div>
+                )}
+                <div class="blogs-card-body">
+                  <p class="blogs-card-meta">
+                    <span class="blogs-card-category">{primary}</span>
+                    {created && <time datetime={blog.created_at}>{created}</time>}
+                  </p>
+                  <h2 class="blogs-card-title">{blog.title}</h2>
+                  {blog.categories.length > 0 && (
+                    <div class="blogs-card-tags">
+                      {blog.categories.map((category) => (
+                        <span class="blogs-card-tag">{category.name}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </a>
+            </article>
+          );
+        })}
+    </div>
+    <p class="blogs-loading" data-blogs-loading hidden>{t('resources.loading')}</p>
+    <div class="blogs-sentinel" data-blogs-sentinel aria-hidden="true"></div>
+  </div>
+</section>
+<script src="../scripts/blogs-listing.ts"></script>
