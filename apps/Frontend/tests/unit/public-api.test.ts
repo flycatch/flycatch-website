@@ -26,6 +26,8 @@ import {
   loadPublishedOverview,
   loadPublishedOverviews,
   cmsRichContent,
+  loadPublishedBlogPage,
+  loadPublishedCategories,
   loadPublishedSolutionDetail,
   loadPublishedSolutionProduct,
   loadPublishedSolutionProducts,
@@ -1293,6 +1295,61 @@ describe('public solution details loader', () => {
       );
       vi.unstubAllGlobals();
     }
+  });
+});
+
+describe('public blog page loader', () => {
+  it('requests one published blog page with search', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        items: [
+          {
+            title: 'Cloud notes',
+            slug: 'cloud-notes',
+            description: 'Notes',
+            reading_time: 4,
+            created_at: '2026-01-02T00:00:00.000Z',
+            image_key: null,
+            image_alt: '',
+            authors: [],
+            categories: [{ name: 'Cloud' }],
+          },
+        ],
+        page: 2,
+        per_page: 10,
+        total: 12,
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedBlogPage(2, 'cloud');
+    expect(result.error).toBe(false);
+    expect(result.page).toBe(2);
+    expect(result.total).toBe(12);
+    expect(result.items).toHaveLength(1);
+    const href = String(fetchMock.mock.calls[0][0]);
+    expect(href).toContain('/api/v1/public/blogs?');
+    expect(href).toContain('page=2');
+    expect(href).toContain('per_page=10');
+    expect(href).toContain('q=cloud');
+    vi.unstubAllGlobals();
+  });
+});
+
+describe('public categories loader', () => {
+  it('lists published categories from the public API', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        items: [{ name: 'Engineering' }, { name: 'Cloud' }],
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedCategories();
+    expect(result.error).toBe(false);
+    expect(result.items.map((item) => item.name)).toEqual(['Engineering', 'Cloud']);
+    expect(String(fetchMock.mock.calls[0][0])).toContain('/api/v1/public/categories');
+    vi.unstubAllGlobals();
   });
 });
 

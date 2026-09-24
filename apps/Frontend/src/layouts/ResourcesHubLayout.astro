@@ -1,0 +1,37 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import '../styles/home.css';
+import '../styles/blogs.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import ResourcesTabs from '../components/ResourcesTabs.astro';
+import HomeCta from '../components/HomeCta.astro';
+import { fallbackMetadata } from '../lib/metadata';
+import { t } from '../lib/i18n';
+import type { ResourcesTabId } from '../lib/nav';
+
+interface Props {
+  active: ResourcesTabId;
+  path: string;
+  titleKey: string;
+  descriptionKey: string;
+  headingKey: string;
+}
+
+const { active, path, titleKey, descriptionKey, headingKey } = Astro.props;
+const metadata = fallbackMetadata(path, t(titleKey), t(descriptionKey));
+metadata.indexable = true;
+---
+<BaseLayout title={metadata.title} metadata={metadata}>
+  <SiteHeader />
+  <main id="main" class="blogs-page">
+    <ResourcesTabs active={active} />
+    <section class="resources-hub-body">
+      <div class="container">
+        <h1 class="type-section">{t(headingKey)}</h1>
+      </div>
+    </section>
+    <HomeCta />
+  </main>
+  <SiteFooter />
+</BaseLayout>

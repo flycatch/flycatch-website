@@ -78,6 +78,15 @@ export const companyLinks: NavLink[] = [
   { href: '/company/blogs', labelKey: 'nav.blogs' },
 ];
 
+export type ResourcesTabId = 'blogs' | 'news' | 'resources' | 'memberships';
+
+export const resourcesTabs: { id: ResourcesTabId; href: string; labelKey: string }[] = [
+  { id: 'blogs', href: '/company/blogs', labelKey: 'nav.blogs' },
+  { id: 'news', href: '/company/news-and-events', labelKey: 'nav.news_events' },
+  { id: 'resources', href: '/company/resources', labelKey: 'nav.resources' },
+  { id: 'memberships', href: '/company/memberships', labelKey: 'nav.memberships' },
+];
+
 export const companyMenuColumns: NavLink[][] = [
   [
     { href: '/company/about-us', labelKey: 'nav.about_us' },

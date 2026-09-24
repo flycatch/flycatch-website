@@ -566,6 +566,12 @@ export type PublicListResult<T> = {
   origin: string;
 };
 
+export type PublicPageResult<T> = PublicListResult<T> & {
+  page: number;
+  per_page: number;
+  total: number;
+};
+
 export type PublicItemResult<T> = {
   item: T | null;
   error: boolean;
@@ -690,10 +696,46 @@ export async function loadPublishedBlogs(): Promise<PublicListResult<PublicBlogS
   return loadPaginated<PublicBlogSummary>('/api/v1/public/blogs');
 }
 
+const BLOG_PAGE_SIZE = 10;
+
+export async function loadPublishedBlogPage(
+  page = 1,
+  q?: string,
+): Promise<PublicPageResult<PublicBlogSummary>> {
+  const params = new URLSearchParams({
+    page: String(page),
+    per_page: String(BLOG_PAGE_SIZE),
+  });
+  const query = q?.trim();
+  if (query) params.set('q', query);
+  const { data, error, origin } = await getJson<Paginated<PublicBlogSummary>>(
+    `/api/v1/public/blogs?${params.toString()}`,
+  );
+  if (error || !data) {
+    return { items: [], page, per_page: BLOG_PAGE_SIZE, total: 0, error: true, origin };
+  }
+  return {
+    items: Array.isArray(data.items) ? data.items : [],
+    page: typeof data.page === 'number' ? data.page : page,
+    per_page: typeof data.per_page === 'number' ? data.per_page : BLOG_PAGE_SIZE,
+    total: typeof data.total === 'number' ? data.total : 0,
+    error: false,
+    origin,
+  };
+}
+
 export async function loadPublishedBlog(slug: string): Promise<PublicItemResult<PublicBlogDetail>> {
   return getJson<PublicBlogDetail>(`/api/v1/public/blogs/${encodeURIComponent(slug)}`).then(
     ({ data, error, origin }) => ({ item: data, error, origin }),
   );
+}
+
+export async function loadPublishedCategories(): Promise<PublicListResult<PublicCategory>> {
+  const { data, error, origin } = await getJson<{ items?: PublicCategory[] }>(
+    '/api/v1/public/categories',
+  );
+  if (error || !data) return { items: [], error: true, origin };
+  return { items: Array.isArray(data.items) ? data.items : [], error: false, origin };
 }
 
 export async function loadPublishedCaseStudies(): Promise<PublicListResult<PublicCaseStudySummary>> {
