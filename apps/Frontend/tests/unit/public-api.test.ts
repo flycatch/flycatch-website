@@ -30,6 +30,8 @@ import {
   loadPublishedCategories,
   loadPublishedNewsCategories,
   loadPublishedNewsPage,
+  loadPublishedResourceCategories,
+  loadPublishedResourcePage,
   loadPublishedSolutionDetail,
   loadPublishedSolutionProduct,
   loadPublishedSolutionProducts,
@@ -1401,6 +1403,67 @@ describe('public news page loader', () => {
     expect(newsHref).toContain('/api/v1/public/news?');
     expect(newsHref).toContain('q=launch');
     expect(String(fetchMock.mock.calls[1][0])).toContain('/api/v1/public/news-categories');
+    vi.unstubAllGlobals();
+  });
+});
+
+describe('public resources page loader', () => {
+  it('requests one published resources page and resource categories', async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const href = String(input);
+      if (href.includes('/api/v1/public/resource-categories')) {
+        return {
+          ok: true,
+          json: async () => ({
+            items: [{ id: '11111111-1111-1111-1111-111111111111', name: 'AI' }],
+            page: 1,
+            per_page: 10,
+            total: 1,
+          }),
+        };
+      }
+      return {
+        ok: true,
+        json: async () => ({
+          items: [
+            {
+              image_key: 'cover.webp',
+              reading_time: 5,
+              title: 'DocSist Ai',
+              button_name: 'View',
+              slug: 'docsist-ai',
+              pdf_key: 'guide.pdf',
+              created_at: '2025-08-04T00:00:00.000Z',
+              resource_categories: [{ name: 'AI' }],
+              seo: {
+                title: 'Resources | Flycatch',
+                description: 'A guide to DocSist.',
+                canonical_url: '',
+                meta_title: '',
+                h1_tag: '',
+                image_alt: 'DocSist Ai',
+                image_key: null,
+              },
+            },
+          ],
+          page: 1,
+          per_page: 10,
+          total: 1,
+        }),
+      };
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const listed = await loadPublishedResourcePage(1, 'docsist');
+    const categories = await loadPublishedResourceCategories();
+    expect(listed.error).toBe(false);
+    expect(listed.items[0]?.slug).toBe('docsist-ai');
+    expect(listed.items[0]?.pdf_key).toBe('guide.pdf');
+    expect(listed.items[0]?.created_at).toBe('2025-08-04T00:00:00.000Z');
+    expect(categories.items.map((item) => item.name)).toEqual(['AI']);
+    const resourcesHref = String(fetchMock.mock.calls[0][0]);
+    expect(resourcesHref).toContain('/api/v1/public/resources?');
+    expect(resourcesHref).toContain('q=docsist');
+    expect(String(fetchMock.mock.calls[1][0])).toContain('/api/v1/public/resource-categories');
     vi.unstubAllGlobals();
   });
 });

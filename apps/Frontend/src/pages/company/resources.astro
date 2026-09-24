@@ -1,10 +1,75 @@
 ---
-import ResourcesHubLayout from '../../layouts/ResourcesHubLayout.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/home.css';
+import '../../styles/blogs.css';
+import '../../styles/resources.css';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import ResourcesTabs from '../../components/ResourcesTabs.astro';
+import ResourcesListing from '../../components/ResourcesListing.astro';
+import HomeInsights from '../../components/HomeInsights.astro';
+import HomeCta from '../../components/HomeCta.astro';
+import {
+  loadPublishedBlogs,
+  loadPublishedResourceCategories,
+  loadPublishedResourcePage,
+} from '../../lib/public-api';
+import { fallbackMetadata } from '../../lib/metadata';
+import { t } from '../../lib/i18n';
+
+const [listed, categories, blogs] = await Promise.all([
+  loadPublishedResourcePage(1),
+  loadPublishedResourceCategories(),
+  loadPublishedBlogs(),
+]);
+const metadata = fallbackMetadata(
+  '/company/resources',
+  t('page.resources.title'),
+  listed.error ? t('home.error') : t('page.resources.description'),
+);
+metadata.indexable = !listed.error;
+const uniqueFromResources = [
+  ...new Map(
+    listed.items
+      .flatMap((item) => item.resource_categories)
+      .map((category) => [category.name, category]),
+  ).values(),
+];
+const categoryItems = categories.items.length > 0 ? categories.items : uniqueFromResources;
+const structuredData = listed.error
+  ? []
+  : [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: t('nav.resources'),
+        description: metadata.description,
+        url: metadata.canonical,
+        mainEntity: {
+          '@type': 'ItemList',
+          itemListElement: listed.items.map((item, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: item.title,
+          })),
+        },
+      },
+    ];
 ---
-<ResourcesHubLayout
-  active="resources"
-  path="/company/resources"
-  titleKey="page.resources.title"
-  descriptionKey="page.resources.description"
-  headingKey="nav.resources"
-/>
+<BaseLayout title={metadata.title} metadata={metadata} structuredData={structuredData}>
+  <SiteHeader />
+  <main id="main" class="blogs-page" data-api-origin={listed.origin}>
+    <ResourcesTabs active="resources" />
+    <ResourcesListing
+      items={listed.items}
+      categories={categoryItems}
+      error={listed.error}
+      page={listed.page}
+      perPage={listed.per_page}
+      total={listed.total}
+    />
+    <HomeInsights blogs={blogs.items} error={blogs.error} home />
+    <HomeCta />
+  </main>
+  <SiteFooter />
+</BaseLayout>

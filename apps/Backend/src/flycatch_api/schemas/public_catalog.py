@@ -206,6 +206,7 @@ class PublicResource(BaseModel):
     slug: str
     pdf_key: str | None
     resource_categories: list[PublicResourceCategory]
+    created_at: datetime
     seo: ContentSeo
 
 
