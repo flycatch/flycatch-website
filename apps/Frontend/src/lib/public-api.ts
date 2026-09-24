@@ -141,6 +141,27 @@ export type PublicNewsAuthor = {
   writer_image_keys: string[];
 };
 
+export type PublicResourceCategory = {
+  name: string;
+};
+
+export type PublicResourceCategoryItem = {
+  id?: string;
+  name: string;
+};
+
+export type PublicResource = {
+  image_key: string | null;
+  reading_time: number;
+  title: string;
+  button_name: string;
+  slug: string;
+  pdf_key: string | null;
+  resource_categories: PublicResourceCategory[];
+  created_at?: string;
+  seo: ContentSeo;
+};
+
 export type PublicNews = {
   title: string;
   slug: string;
@@ -791,6 +812,40 @@ export async function loadPublishedNewsPage(
 
 export async function loadPublishedNewsCategories(): Promise<PublicListResult<PublicNewsCategory>> {
   return loadPaginated<PublicNewsCategory>('/api/v1/public/news-categories');
+}
+
+const RESOURCE_PAGE_SIZE = 10;
+
+export async function loadPublishedResourcePage(
+  page = 1,
+  q?: string,
+): Promise<PublicPageResult<PublicResource>> {
+  const params = new URLSearchParams({
+    page: String(page),
+    per_page: String(RESOURCE_PAGE_SIZE),
+  });
+  const query = q?.trim();
+  if (query) params.set('q', query);
+  const { data, error, origin } = await getJson<Paginated<PublicResource>>(
+    `/api/v1/public/resources?${params.toString()}`,
+  );
+  if (error || !data) {
+    return { items: [], page, per_page: RESOURCE_PAGE_SIZE, total: 0, error: true, origin };
+  }
+  return {
+    items: Array.isArray(data.items) ? data.items : [],
+    page: typeof data.page === 'number' ? data.page : page,
+    per_page: typeof data.per_page === 'number' ? data.per_page : RESOURCE_PAGE_SIZE,
+    total: typeof data.total === 'number' ? data.total : 0,
+    error: false,
+    origin,
+  };
+}
+
+export async function loadPublishedResourceCategories(): Promise<
+  PublicListResult<PublicResourceCategoryItem>
+> {
+  return loadPaginated<PublicResourceCategoryItem>('/api/v1/public/resource-categories');
 }
 
 export async function loadPublishedCategories(): Promise<PublicListResult<PublicCategory>> {

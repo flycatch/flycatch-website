@@ -1241,6 +1241,7 @@ class ResourceService:
             resource_categories=[
                 PublicResourceCategory(name=link.category.name) for link in row.category_links if link.category
             ],
+            created_at=row.created_at,
             seo=ContentSeo.model_validate(row.seo or {}),
         )
 

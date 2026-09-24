@@ -89,7 +89,7 @@ components:
     PublicResource:
       type: object
       additionalProperties: false
-      required: [image_key, reading_time, title, button_name, slug, pdf_key, resource_categories, seo]
+      required: [image_key, reading_time, title, button_name, slug, pdf_key, resource_categories, created_at, seo]
       properties:
         image_key: { type: string, nullable: true }
         reading_time: { type: integer }
@@ -97,6 +97,7 @@ components:
         button_name: { type: string }
         slug: { type: string }
         pdf_key: { type: string, nullable: true }
+        created_at: { type: string, format: date-time }
         resource_categories:
           type: array
           items:
