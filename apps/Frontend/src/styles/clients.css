@@ -16,6 +16,11 @@
 
 .clients-page #clients .lede {
   max-width: 100%;
+  margin-bottom: 0;
   color: var(--color-black);
   font-size: 24px;
+}
+
+.clients-page #clients .logo-row {
+  margin-top: 48px;
 }
