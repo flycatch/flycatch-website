@@ -1097,6 +1097,7 @@ class NewsService:
             twitter=row.twitter,
             instagram=row.instagram,
             youtube_url=row.youtube_url,
+            created_at=row.created_at,
             seo=ContentSeo.model_validate(row.seo or {}),
         )
 

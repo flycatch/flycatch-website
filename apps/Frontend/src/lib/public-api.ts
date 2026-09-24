@@ -129,6 +129,37 @@ export type PublicBlogSummary = {
   categories: PublicCategory[];
 };
 
+export type PublicNewsCategory = {
+  id?: string;
+  name: string;
+};
+
+export type PublicNewsAuthor = {
+  name: string;
+  bio: string;
+  designation: string;
+  writer_image_keys: string[];
+};
+
+export type PublicNews = {
+  title: string;
+  slug: string;
+  body: string;
+  news_categories: PublicNewsCategory[];
+  authors: PublicNewsAuthor[];
+  image_key: string | null;
+  description: string;
+  button_name: string;
+  reading_time: number;
+  facebook: string;
+  linkedin: string;
+  twitter: string;
+  instagram: string;
+  youtube_url: string;
+  created_at: string;
+  seo: ContentSeo;
+};
+
 export type PublicBlogDetail = {
   title: string;
   slug: string;
@@ -728,6 +759,38 @@ export async function loadPublishedBlog(slug: string): Promise<PublicItemResult<
   return getJson<PublicBlogDetail>(`/api/v1/public/blogs/${encodeURIComponent(slug)}`).then(
     ({ data, error, origin }) => ({ item: data, error, origin }),
   );
+}
+
+const NEWS_PAGE_SIZE = 10;
+
+export async function loadPublishedNewsPage(
+  page = 1,
+  q?: string,
+): Promise<PublicPageResult<PublicNews>> {
+  const params = new URLSearchParams({
+    page: String(page),
+    per_page: String(NEWS_PAGE_SIZE),
+  });
+  const query = q?.trim();
+  if (query) params.set('q', query);
+  const { data, error, origin } = await getJson<Paginated<PublicNews>>(
+    `/api/v1/public/news?${params.toString()}`,
+  );
+  if (error || !data) {
+    return { items: [], page, per_page: NEWS_PAGE_SIZE, total: 0, error: true, origin };
+  }
+  return {
+    items: Array.isArray(data.items) ? data.items : [],
+    page: typeof data.page === 'number' ? data.page : page,
+    per_page: typeof data.per_page === 'number' ? data.per_page : NEWS_PAGE_SIZE,
+    total: typeof data.total === 'number' ? data.total : 0,
+    error: false,
+    origin,
+  };
+}
+
+export async function loadPublishedNewsCategories(): Promise<PublicListResult<PublicNewsCategory>> {
+  return loadPaginated<PublicNewsCategory>('/api/v1/public/news-categories');
 }
 
 export async function loadPublishedCategories(): Promise<PublicListResult<PublicCategory>> {

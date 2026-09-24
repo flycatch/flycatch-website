@@ -21,9 +21,9 @@ function initResourcesTabs() {
       const iconWidth = icon instanceof SVGElement ? icon.getBoundingClientRect().width : 24;
       const styles = getComputedStyle(search);
       const gap = Number.parseFloat(styles.columnGap || styles.gap) || 8;
-      const available = Math.max(0, inner.clientWidth - nav.offsetWidth - iconWidth - gap - 24);
+      const available = Math.max(0, inner.clientWidth - nav.offsetWidth - iconWidth - gap - 48);
       const desired = mirror.offsetWidth + 8;
-      input.style.width = `${Math.min(Math.max(desired, 72), available || 72)}px`;
+      input.style.width = `${Math.min(Math.max(desired, 128), available || 128, 250)}px`;
     };
 
     input.addEventListener('input', () => {

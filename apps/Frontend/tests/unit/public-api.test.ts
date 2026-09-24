@@ -28,6 +28,8 @@ import {
   cmsRichContent,
   loadPublishedBlogPage,
   loadPublishedCategories,
+  loadPublishedNewsCategories,
+  loadPublishedNewsPage,
   loadPublishedSolutionDetail,
   loadPublishedSolutionProduct,
   loadPublishedSolutionProducts,
@@ -1332,6 +1334,73 @@ describe('public blog page loader', () => {
     expect(href).toContain('page=2');
     expect(href).toContain('per_page=10');
     expect(href).toContain('q=cloud');
+    vi.unstubAllGlobals();
+  });
+});
+
+describe('public news page loader', () => {
+  it('requests one published news page and news categories', async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const href = String(input);
+      if (href.includes('/api/v1/public/news-categories')) {
+        return {
+          ok: true,
+          json: async () => ({
+            items: [{ id: '11111111-1111-1111-1111-111111111111', name: 'Company' }],
+            page: 1,
+            per_page: 10,
+            total: 1,
+          }),
+        };
+      }
+      return {
+        ok: true,
+        json: async () => ({
+          items: [
+            {
+              title: 'Launch Day',
+              slug: 'launch-day',
+              body: '',
+              description: 'Notes',
+              button_name: 'Read More',
+              reading_time: 3,
+              image_key: null,
+              youtube_url: 'https://www.youtube.com/watch?v=abc123',
+              created_at: '2026-09-24T00:00:00.000Z',
+              facebook: '',
+              linkedin: '',
+              twitter: '',
+              instagram: '',
+              news_categories: [{ name: 'Company' }],
+              authors: [],
+              seo: {
+                title: '',
+                description: '',
+                canonical_url: '',
+                meta_title: '',
+                h1_tag: '',
+                image_alt: '',
+                image_key: null,
+              },
+            },
+          ],
+          page: 1,
+          per_page: 10,
+          total: 1,
+        }),
+      };
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const listed = await loadPublishedNewsPage(1, 'launch');
+    const categories = await loadPublishedNewsCategories();
+    expect(listed.error).toBe(false);
+    expect(listed.items[0]?.slug).toBe('launch-day');
+    expect(listed.items[0]?.youtube_url).toContain('watch?v=');
+    expect(categories.items.map((item) => item.name)).toEqual(['Company']);
+    const newsHref = String(fetchMock.mock.calls[0][0]);
+    expect(newsHref).toContain('/api/v1/public/news?');
+    expect(newsHref).toContain('q=launch');
+    expect(String(fetchMock.mock.calls[1][0])).toContain('/api/v1/public/news-categories');
     vi.unstubAllGlobals();
   });
 });

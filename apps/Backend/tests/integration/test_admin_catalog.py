@@ -153,6 +153,7 @@ def test_named_categories_email_memberships_and_news(client, bootstrapped):
     assert public_news.status_code == 200
     assert public_news.json()["news_categories"][0]["name"] == "Company"
     assert public_news.json()["authors"][0]["name"] == "News Writer"
+    assert public_news.json()["created_at"]
 
     resource_cat = client.post(
         "/api/v1/admin/resource-categories",
