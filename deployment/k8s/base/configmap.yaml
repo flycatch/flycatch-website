@@ -15,4 +15,5 @@ data:
   S3_USE_SSL: "false"
   JWT_ACCESS_MINUTES: "15"
   GATEWAY_PORT: "8080"
-  PUBLIC_RECAPTCHA_SITE_KEY: ""
+  # Google published test site key (localhost only). Replace for real hostnames.
+  PUBLIC_RECAPTCHA_SITE_KEY: "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"

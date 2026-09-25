@@ -13,6 +13,8 @@ ADMIN_FE_IMAGE="${ADMIN_FE_IMAGE:-${REGISTRY}/flycatch-website/administration-fe
 OVERLAY="deployment/k8s/overlays/dev"
 PUBLIC_ORIGIN="${PUBLIC_ORIGIN:-https://flycatch-website-dev.k3s.flycatchtech.in}"
 PUBLIC_ENVIRONMENT="${PUBLIC_ENVIRONMENT:-development}"
+# Google published test site key by default (localhost). Override for real hostnames.
+PUBLIC_RECAPTCHA_SITE_KEY="${PUBLIC_RECAPTCHA_SITE_KEY:-6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI}"
 
 die() {
   echo "error: $*" >&2
@@ -34,6 +36,7 @@ TAG="$(git rev-parse HEAD)"
 echo "==> tag ${TAG}"
 echo "==> PUBLIC_ORIGIN=${PUBLIC_ORIGIN}"
 echo "==> PUBLIC_ENVIRONMENT=${PUBLIC_ENVIRONMENT}"
+echo "==> PUBLIC_RECAPTCHA_SITE_KEY=${PUBLIC_RECAPTCHA_SITE_KEY:0:12}…"
 
 echo "==> docker login ${REGISTRY}"
 echo "${HARBOR_PASSWORD}" | docker login "${REGISTRY}" -u "${HARBOR_USERNAME}" --password-stdin
@@ -48,6 +51,7 @@ echo "==> build frontend (linux/amd64)"
 docker build --platform linux/amd64 -f apps/Frontend/Dockerfile \
   --build-arg "PUBLIC_ORIGIN=${PUBLIC_ORIGIN}" \
   --build-arg "PUBLIC_ENVIRONMENT=${PUBLIC_ENVIRONMENT}" \
+  --build-arg "PUBLIC_RECAPTCHA_SITE_KEY=${PUBLIC_RECAPTCHA_SITE_KEY}" \
   -t "${FRONTEND_IMAGE}:${TAG}" \
   -t "${FRONTEND_IMAGE}:latest" \
   apps/Frontend

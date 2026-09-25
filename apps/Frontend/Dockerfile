@@ -17,8 +17,9 @@ WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package.json ./
 COPY --from=build /app/dist ./dist
+ARG PUBLIC_RECAPTCHA_SITE_KEY=
 ENV HOST=0.0.0.0
 ENV PORT=4321
-ENV PUBLIC_RECAPTCHA_SITE_KEY=
+ENV PUBLIC_RECAPTCHA_SITE_KEY=$PUBLIC_RECAPTCHA_SITE_KEY
 EXPOSE 4321
 CMD ["node", "./dist/server/entry.mjs"]
