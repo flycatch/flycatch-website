@@ -41,6 +41,7 @@ export default defineConfig({
         `${site}/company/memberships`,
         `${site}/company/clients`,
         `${site}/company/testimonials`,
+        `${site}/contact-us`,
       ],
     }),
   ],
@@ -59,6 +60,10 @@ export default defineConfig({
     },
     server: {
       proxy: {
+        '/api/v1/public/contacts': {
+          target: process.env.CONTACT_API_ORIGIN || 'http://127.0.0.1:8000',
+          changeOrigin: true,
+        },
         '/api': {
           target: process.env.PUBLIC_ORIGIN || 'http://localhost:8080',
           changeOrigin: true,

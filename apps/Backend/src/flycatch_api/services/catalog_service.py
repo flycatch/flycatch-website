@@ -104,6 +104,8 @@ from flycatch_api.schemas.public_catalog import (
     PublicEmployeeTestimonialList,
     PublicContact,
     PublicContactList,
+    PublicContactType,
+    PublicContactWrite,
     PublicDownload,
     PublicDownloadList,
     PublicFlycatchSaudiArabia,
@@ -128,6 +130,7 @@ from flycatch_api.schemas.public_catalog import (
     MembershipImage as PublicMembershipImage,
 )
 from flycatch_api.services.author_service import CatalogError, author_schema
+from flycatch_api.services.recaptcha import verify_recaptcha
 from flycatch_api.services.content_blocks import optional_key, seo_dict
 from flycatch_api.services.industry_service import PER_PAGE, coerce_status
 from flycatch_api.services.landing_catalog import seo_snippet
@@ -1411,6 +1414,44 @@ class ContactService:
         if row is None or row.status != ContentStatus.publish:
             raise _not_found("public.contacts.not_found")
         return self._public(row)
+
+    def submit(self, db: Session, payload: PublicContactWrite) -> PublicContact:
+        verify_recaptcha(payload.recaptchaToken)
+        company_name = ""
+        subject = ""
+        if payload.contact_type == PublicContactType.PARTNERSHIP:
+            company_name = (payload.company_name or "").strip()
+        elif payload.contact_type == PublicContactType.GENERAL_ENQUIRY:
+            subject = (payload.subject or "").strip()
+        created = self.create(
+            db,
+            ContactWrite(
+                name=payload.name.strip(),
+                last_name=payload.last_name.strip(),
+                email=payload.email,
+                country=payload.country.strip(),
+                phone=payload.phone_no.strip(),
+                subject=subject,
+                contact_date=datetime.now(UTC).date(),
+                details=payload.details.strip(),
+                contact_type=payload.contact_type.value,
+                company_name=company_name,
+                status=ContentStatus.draft,
+            ),
+        )
+        return PublicContact(
+            id=created.id,
+            name=created.name,
+            last_name=created.last_name,
+            email=created.email,
+            country=created.country,
+            phone=created.phone,
+            subject=created.subject,
+            contact_date=created.contact_date,
+            details=created.details,
+            contact_type=created.contact_type,
+            company_name=created.company_name,
+        )
 
     def create(self, db: Session, payload: ContactWrite) -> Contact:
         row = ContactRow(created_at=datetime.now(UTC))

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from datetime import date, datetime
+from enum import Enum
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
 
 from flycatch_api.schemas.admin_homes import ContentSeo
 
@@ -243,6 +244,35 @@ class PublicMembershipList(BaseModel):
     page: int = Field(ge=1)
     per_page: int = Field(ge=1)
     total: int = Field(ge=0)
+
+
+class PublicContactType(str, Enum):
+    GET_A_QUOTE = "GET_A_QUOTE"
+    PARTNERSHIP = "PARTNERSHIP"
+    GENERAL_ENQUIRY = "GENERAL_ENQUIRY"
+
+
+class PublicContactWrite(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    contact_type: PublicContactType
+    name: str = Field(min_length=1, max_length=120)
+    last_name: str = Field(min_length=1, max_length=120)
+    email: EmailStr
+    phone_no: str = Field(min_length=8, max_length=40, pattern=r"^\+[1-9]\d{6,14}$")
+    country: str = Field(min_length=1, max_length=120)
+    details: str = Field(min_length=1, max_length=8000)
+    recaptchaToken: str = Field(min_length=1, max_length=4000)
+    company_name: str | None = Field(default=None, max_length=200)
+    subject: str | None = Field(default=None, max_length=200)
+
+    @model_validator(mode="after")
+    def require_conditional_fields(self) -> PublicContactWrite:
+        if self.contact_type == PublicContactType.PARTNERSHIP and not (self.company_name or "").strip():
+            raise ValueError("company_name is required for PARTNERSHIP")
+        if self.contact_type == PublicContactType.GENERAL_ENQUIRY and not (self.subject or "").strip():
+            raise ValueError("subject is required for GENERAL_ENQUIRY")
+        return self
 
 
 class PublicContact(BaseModel):
