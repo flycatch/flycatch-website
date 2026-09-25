@@ -1,0 +1,43 @@
+openapi: 3.1.0
+info:
+  title: Public Industries
+  version: 1.0.0
+  summary: Read-only published industries for the website frontend.
+  description: |
+    Unauthenticated list of industries with status publish.
+    Drafts MUST NOT appear. Each item includes only the visitor-visible name.
+    This contract is separate from admin-case-studies.v1.yaml.
+servers:
+  - url: /api/v1
+security: []
+paths:
+  /public/industries:
+    get:
+      operationId: listPublicIndustries
+      summary: List published industries
+      tags: [public-industries]
+      responses:
+        '200':
+          description: Published industry catalog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicIndustryList'
+components:
+  schemas:
+    PublicIndustry:
+      type: object
+      additionalProperties: false
+      required: [name]
+      properties:
+        name:
+          type: string
+    PublicIndustryList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicIndustry'
