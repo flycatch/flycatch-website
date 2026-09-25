@@ -17,7 +17,7 @@ images:
   newTag: 0ef167fc2b9c86fb60b01df8580bf5da67af8dc0
 - name: registry.k3s.flycatchtech.in/flycatch-website/frontend
   newName: registry.k3s.flycatchtech.in/flycatch-website/frontend
-  newTag: 0ef167fc2b9c86fb60b01df8580bf5da67af8dc0
+  newTag: 1a98f6142ed0b075051de0cddfcc7faf65adae09
 
 replicas:
 - count: 1

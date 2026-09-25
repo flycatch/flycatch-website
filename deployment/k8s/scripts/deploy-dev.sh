@@ -13,8 +13,8 @@ ADMIN_FE_IMAGE="${ADMIN_FE_IMAGE:-${REGISTRY}/flycatch-website/administration-fe
 OVERLAY="deployment/k8s/overlays/dev"
 PUBLIC_ORIGIN="${PUBLIC_ORIGIN:-https://flycatch-website-dev.k3s.flycatchtech.in}"
 PUBLIC_ENVIRONMENT="${PUBLIC_ENVIRONMENT:-development}"
-# Google published test site key by default (localhost). Override for real hostnames.
-PUBLIC_RECAPTCHA_SITE_KEY="${PUBLIC_RECAPTCHA_SITE_KEY:-6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI}"
+# reCAPTCHA v2 site key (public). Override if rotating keys.
+PUBLIC_RECAPTCHA_SITE_KEY="${PUBLIC_RECAPTCHA_SITE_KEY:-6Ldx3M4tAAAAAEyHUp1Qt8GF3H3JuKHqFbdD9JsH}"
 
 die() {
   echo "error: $*" >&2
