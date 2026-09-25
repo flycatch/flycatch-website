@@ -19,6 +19,7 @@ from flycatch_api.schemas.admin_case_studies import (
 from flycatch_api.schemas.admin_case_studies import (
     Industry as IndustrySchema,
 )
+from flycatch_api.schemas.public_case_studies import PublicIndustry, PublicIndustryList
 from flycatch_api.services.author_service import CatalogError
 
 PER_PAGE = 10
@@ -67,6 +68,15 @@ class IndustryService:
             per_page=per_page,
             total=total,
         )
+
+    def list_published(self, db: Session) -> PublicIndustryList:
+        rows = (
+            db.query(Industry)
+            .filter(Industry.status == ContentStatus.publish)
+            .order_by(Industry.name.asc())
+            .all()
+        )
+        return PublicIndustryList(items=[PublicIndustry(name=row.name) for row in rows])
 
     def get(self, db: Session, industry_id: UUID) -> IndustrySchema:
         industry = db.get(Industry, industry_id)

@@ -22,6 +22,18 @@ class PublicTechnologyList(BaseModel):
     items: list[PublicTechnology]
 
 
+class PublicIndustry(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str
+
+
+class PublicIndustryList(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    items: list[PublicIndustry]
+
+
 class PublicCaseStudySummary(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

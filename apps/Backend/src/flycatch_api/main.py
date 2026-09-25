@@ -39,6 +39,7 @@ from flycatch_api.api import (
     public_data_analytics,
     public_digital_transformation,
     public_homes,
+    public_industries,
     public_media,
     public_solution_details,
     public_solution_products,
@@ -139,6 +140,7 @@ app.include_router(public_authors.router, prefix="/api/v1")
 app.include_router(public_categories.router, prefix="/api/v1")
 app.include_router(public_case_studies.router, prefix="/api/v1")
 app.include_router(public_technologies.router, prefix="/api/v1")
+app.include_router(public_industries.router, prefix="/api/v1")
 app.include_router(public_client_logos.router, prefix="/api/v1")
 app.include_router(public_client_testimonials.router, prefix="/api/v1")
 app.include_router(public_homes.router, prefix="/api/v1")
