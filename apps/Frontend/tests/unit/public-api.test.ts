@@ -28,6 +28,7 @@ import {
   cmsRichContent,
   loadPublishedBlogPage,
   loadPublishedCategories,
+  loadPublishedIndustries,
   loadPublishedNewsCategories,
   loadPublishedNewsPage,
   loadPublishedMembershipPage,
@@ -1539,6 +1540,23 @@ describe('public categories loader', () => {
     expect(result.error).toBe(false);
     expect(result.items.map((item) => item.name)).toEqual(['Engineering', 'Cloud']);
     expect(String(fetchMock.mock.calls[0][0])).toContain('/api/v1/public/categories');
+    vi.unstubAllGlobals();
+  });
+});
+
+describe('public industries loader', () => {
+  it('lists published industries from the public API', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        items: [{ name: 'Fintech' }, { name: 'Aviation' }],
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedIndustries();
+    expect(result.error).toBe(false);
+    expect(result.items.map((item) => item.name)).toEqual(['Fintech', 'Aviation']);
+    expect(String(fetchMock.mock.calls[0][0])).toContain('/api/v1/public/industries');
     vi.unstubAllGlobals();
   });
 });
