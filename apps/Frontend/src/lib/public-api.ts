@@ -117,6 +117,10 @@ export type PublicCategory = {
   name: string;
 };
 
+export type PublicIndustry = {
+  name: string;
+};
+
 export type PublicBlogSummary = {
   title: string;
   slug: string;
@@ -881,6 +885,14 @@ export async function loadPublishedMembershipPage(): Promise<PublicItemResult<Pu
 export async function loadPublishedCategories(): Promise<PublicListResult<PublicCategory>> {
   const { data, error, origin } = await getJson<{ items?: PublicCategory[] }>(
     '/api/v1/public/categories',
+  );
+  if (error || !data) return { items: [], error: true, origin };
+  return { items: Array.isArray(data.items) ? data.items : [], error: false, origin };
+}
+
+export async function loadPublishedIndustries(): Promise<PublicListResult<PublicIndustry>> {
+  const { data, error, origin } = await getJson<{ items?: PublicIndustry[] }>(
+    '/api/v1/public/industries',
   );
   if (error || !data) return { items: [], error: true, origin };
   return { items: Array.isArray(data.items) ? data.items : [], error: false, origin };

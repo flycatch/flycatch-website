@@ -1,0 +1,101 @@
+---
+import { t } from '../lib/i18n';
+import { publicMediaUrl } from '../lib/public-api';
+import type { PublicCaseStudySummary, PublicIndustry } from '../lib/public-api';
+import SectionState from './SectionState.astro';
+
+interface Props {
+  studies: PublicCaseStudySummary[];
+  industries: PublicIndustry[];
+  error?: boolean;
+  industriesError?: boolean;
+}
+
+const { studies, industries, error = false, industriesError = false } = Astro.props;
+const industryNames = [...new Set(industries.map((item) => item.name.trim()).filter(Boolean))].sort(
+  (a, b) => a.localeCompare(b),
+);
+---
+<noscript>
+  <style>
+    .cs-banner h1,
+    .services-core-row {
+      opacity: 1;
+      transform: none;
+    }
+  </style>
+</noscript>
+<section class="cs-studies" aria-labelledby="case-studies-heading">
+  <div class="container">
+    <div class="cs-head">
+      <h2 id="case-studies-heading">{t('nav.case_studies')}</h2>
+      <div class="cs-filter">
+        <label class="visually-hidden" for="case-studies-industry">{t('page.case_studies.filter_label')}</label>
+        <select id="case-studies-industry" data-case-industry>
+          <option value="">{t('page.case_studies.all_industry')}</option>
+          {industryNames.map((name) => (
+            <option value={name}>{name}</option>
+          ))}
+        </select>
+        {industriesError && <p class="state-msg" role="status">{t('home.error')}</p>}
+      </div>
+    </div>
+    <SectionState error={error} empty={!error && studies.length === 0} />
+    <p class="state-msg" data-case-empty hidden>{t('page.case_studies.no_results')}</p>
+    {!error && studies.length > 0 && (
+      <ul class="services-core-list cs-list">
+        {studies.map((study, index) => {
+          const image = publicMediaUrl(study.image_key);
+          const title = study.short_heading.trim() || study.heading.trim();
+          const industry = study.industries.map((item) => item.name.trim()).filter(Boolean);
+          const fromLeft = index % 2 === 0;
+          return (
+            <li>
+              <a
+                class:list={[
+                  'services-core-row',
+                  'cs-study',
+                  fromLeft ? 'is-from-left' : 'is-from-right',
+                  { 'is-image-first': !fromLeft },
+                ]}
+                href={`/case-studies/${study.slug}`}
+                data-services-core-row
+                data-case-study
+                data-industries={JSON.stringify(industry)}
+              >
+                <div class="services-core-media">
+                  {image ? (
+                    <img
+                      src={image}
+                      alt={study.image_alt.trim() || title}
+                      width="720"
+                      height="350"
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                    />
+                  ) : (
+                    <div class="cs-media-fallback" role="img" aria-label={study.image_alt.trim() || title}></div>
+                  )}
+                </div>
+                <div class="services-core-copy">
+                  <div class="services-core-text cs-copy">
+                    {industry.length > 0 && <p class="cs-industry">{industry.join(', ')}</p>}
+                    <h3>{title}</h3>
+                    {study.description.trim() && <p class="cs-description">{study.description}</p>}
+                  </div>
+                  <p class="services-core-actions">
+                    <span class="btn">
+                      {t('home.know_more')}
+                      <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
+                    </span>
+                  </p>
+                </div>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    )}
+  </div>
+</section>
+<script src="../scripts/case-studies-listing.ts"></script>
+<script src="../scripts/services-core.ts"></script>
