@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Response, status
 from sqlalchemy.orm import Session
 
 from flycatch_api.api.bulk_routes import attach_bulk_routes
@@ -9,6 +9,7 @@ from flycatch_api.schemas import admin_catalog as admin
 from flycatch_api.schemas import public_catalog as public
 from flycatch_api.security.dependencies import CurrentSession, assert_resource_action, assert_write_permissions
 from flycatch_api.services.author_service import CatalogError
+from flycatch_api.services.contact_notifications import notify_contact_submission
 from flycatch_api.services.catalog_service import (
     application_service,
     contact_service,
@@ -426,6 +427,20 @@ public_subscriptions = public_uuid(
     svc=subscription_service,
     id_name="subscription_id",
 )
+
+
+@public_contacts.post("", response_model=public.PublicContact, status_code=status.HTTP_201_CREATED)
+def create_public_contact(
+    payload: public.PublicContactWrite,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+):
+    try:
+        created = contact_service.submit(db, payload)
+    except CatalogError as error:
+        _raise(error)
+    background_tasks.add_task(notify_contact_submission, str(created.id))
+    return created
 
 
 @public_subscriptions.post("", response_model=public.PublicSubscription, status_code=status.HTTP_201_CREATED)

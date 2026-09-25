@@ -23,6 +23,9 @@ importers:
       astro:
         specifier: ^5.7.0
         version: 5.18.2(@types/node@22.20.1)(rollup@4.63.1)(typescript@5.9.3)(yaml@2.9.0)
+      intl-tel-input:
+        specifier: ^29.5.3
+        version: 29.5.3
       swiper:
         specifier: ^14.2.0
         version: 14.2.0
@@ -1734,6 +1737,9 @@ packages:
 
   inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
+
+  intl-tel-input@29.5.3:
+    resolution: {integrity: sha512-aVqUyjALMavXrdpniEv5+9CjTdVcHRDLiHKi6fBKxb+iNVriwqnWcsGvWmKwHjjDdBoYe2lf3pta0sIJL5ytYA==}
 
   iron-webcrypto@1.2.1:
     resolution: {integrity: sha512-feOM6FaSr6rEABp/eDfVseKyTMDt+KGpeB35SkVn9Tyn0CqvVsY3EwI0v5i8nMHyJnzCIQf7nsy3p41TPkJZhg==}
@@ -4401,6 +4407,8 @@ snapshots:
   index-to-position@1.2.0: {}
 
   inherits@2.0.4: {}
+
+  intl-tel-input@29.5.3: {}
 
   iron-webcrypto@1.2.1: {}
 

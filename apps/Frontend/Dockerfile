@@ -6,8 +6,10 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 ARG PUBLIC_ORIGIN=http://localhost:8080
 ARG PUBLIC_ENVIRONMENT=development
+ARG PUBLIC_RECAPTCHA_SITE_KEY=
 ENV PUBLIC_ORIGIN=$PUBLIC_ORIGIN
 ENV PUBLIC_ENVIRONMENT=$PUBLIC_ENVIRONMENT
+ENV PUBLIC_RECAPTCHA_SITE_KEY=$PUBLIC_RECAPTCHA_SITE_KEY
 RUN pnpm run build
 
 FROM node:22-alpine
@@ -17,5 +19,6 @@ COPY --from=build /app/package.json ./
 COPY --from=build /app/dist ./dist
 ENV HOST=0.0.0.0
 ENV PORT=4321
+ENV PUBLIC_RECAPTCHA_SITE_KEY=
 EXPOSE 4321
 CMD ["node", "./dist/server/entry.mjs"]

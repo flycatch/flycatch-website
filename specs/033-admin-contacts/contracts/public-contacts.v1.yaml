@@ -7,6 +7,45 @@ servers:
 security: []
 paths:
   /public/contacts:
+    post:
+      operationId: createPublicContact
+      summary: Submit a visitor contact enquiry
+      tags: [public]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicContactWrite'
+      responses:
+        '201':
+          description: Created contact
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicContact'
+        '400':
+          description: CAPTCHA verification failed
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [code, message_key]
+                properties:
+                  code:
+                    type: string
+                    const: captcha_failed
+                  message_key:
+                    type: string
+        '422':
+          description: Field-level validation errors
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
     get:
       operationId: listPublicContacts
       summary: List published records
@@ -63,6 +102,23 @@ paths:
 components:
   schemas:
 
+    PublicContactWrite:
+      type: object
+      additionalProperties: false
+      required: [contact_type, name, last_name, email, phone_no, country, details, recaptchaToken]
+      properties:
+        contact_type:
+          type: string
+          enum: [GET_A_QUOTE, PARTNERSHIP, GENERAL_ENQUIRY]
+        name: { type: string, minLength: 1, maxLength: 120 }
+        last_name: { type: string, minLength: 1, maxLength: 120 }
+        email: { type: string, format: email }
+        phone_no: { type: string, minLength: 8, maxLength: 40 }
+        country: { type: string, minLength: 1, maxLength: 120 }
+        details: { type: string, minLength: 1, maxLength: 8000 }
+        recaptchaToken: { type: string, minLength: 1, maxLength: 4000 }
+        company_name: { type: string, maxLength: 200 }
+        subject: { type: string, maxLength: 200 }
     PublicContact:
       type: object
       additionalProperties: false
