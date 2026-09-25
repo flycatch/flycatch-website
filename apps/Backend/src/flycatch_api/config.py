@@ -1,8 +1,9 @@
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore", populate_by_name=True)
 
     database_url: str = "postgresql+psycopg://flycatch:change-me@localhost:5432/flycatch"
     s3_endpoint: str = "http://localhost:9000"
@@ -24,7 +25,10 @@ class Settings(BaseSettings):
     recaptcha_secret_key: str = ""
     smtp_host: str = ""
     smtp_port: int = 587
-    smtp_username: str = ""
+    smtp_username: str = Field(
+        default="",
+        validation_alias=AliasChoices("SMTP_USERNAME", "SMTP_USER", "smtp_username"),
+    )
     smtp_password: str = ""
     smtp_use_tls: bool = True
 
