@@ -151,6 +151,7 @@ kubectl -n flycatch-website-dev create secret generic flycatch-website-secrets \
   --from-literal=CSRF_SECRET='<long-random>' \
   --from-literal=JWT_SECRET='<long-random>' \
   --from-literal=BUILD_EXPORT_TOKEN='<long-random>' \
+  --from-literal=RECAPTCHA_SECRET_KEY='<recaptcha-secret-key>' \
   --dry-run=client -o yaml | kubectl apply -f -
 ```
 
