@@ -1,0 +1,18 @@
+---
+import { t } from '../lib/i18n';
+
+const heading = t('page.case_studies.banner_title');
+---
+<section class="cs-banner" aria-labelledby="case-studies-banner-heading">
+  <img
+    class="cs-banner-media"
+    src="/case-studies/banner.webp"
+    alt={heading}
+    width="1920"
+    height="1080"
+  />
+  <div class="cs-banner-overlay" aria-hidden="true"></div>
+  <div class="container cs-banner-copy">
+    <h1 id="case-studies-banner-heading">{heading}</h1>
+  </div>
+</section>

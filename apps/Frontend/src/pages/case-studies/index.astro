@@ -1,27 +1,70 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/home.css';
+import '../../styles/services.css';
+import '../../styles/case-studies.css';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
-import HomeCaseStudies from '../../components/HomeCaseStudies.astro';
-import { loadPublishedCaseStudies } from '../../lib/public-api';
+import CaseStudiesBanner from '../../components/CaseStudiesBanner.astro';
+import CaseStudiesListing from '../../components/CaseStudiesListing.astro';
+import HomeClients from '../../components/HomeClients.astro';
+import HomeTestimonials from '../../components/HomeTestimonials.astro';
+import HomeCta from '../../components/HomeCta.astro';
+import {
+  loadPublishedCaseStudies,
+  loadPublishedClientLogos,
+  loadPublishedClientTestimonials,
+  loadPublishedIndustries,
+} from '../../lib/public-api';
 import { fallbackMetadata } from '../../lib/metadata';
 import { t } from '../../lib/i18n';
 
-const listed = await loadPublishedCaseStudies();
+const [listed, industries, logos, testimonials] = await Promise.all([
+  loadPublishedCaseStudies(),
+  loadPublishedIndustries(),
+  loadPublishedClientLogos(),
+  loadPublishedClientTestimonials(),
+]);
 const metadata = fallbackMetadata(
   '/case-studies',
   t('page.case_studies.title'),
-  listed.error ? t('home.error') : t('home.empty'),
+  listed.error ? t('home.error') : t('page.case_studies.description'),
 );
 metadata.indexable = !listed.error;
+const structuredData = listed.error
+  ? []
+  : [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: t('nav.case_studies'),
+        description: metadata.description,
+        url: metadata.canonical,
+        mainEntity: {
+          '@type': 'ItemList',
+          itemListElement: listed.items.map((item, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: item.short_heading.trim() || item.heading,
+            url: `${metadata.canonical.replace(/\/$/, '')}/${item.slug}`,
+          })),
+        },
+      },
+    ];
 ---
-<BaseLayout title={metadata.title} metadata={metadata}>
-  <SiteHeader />
-  <main id="main" class="page-main" data-api-origin={listed.origin}>
-    <div class="container summary-region">
-      <h1>{t('nav.case_studies')}</h1>
-    </div>
-    <HomeCaseStudies studies={listed.items} error={listed.error} />
+<BaseLayout title={metadata.title} metadata={metadata} structuredData={structuredData}>
+  <SiteHeader tone="dark" />
+  <main id="main" class="case-studies-page" data-api-origin={listed.origin}>
+    <CaseStudiesBanner />
+    <CaseStudiesListing
+      studies={listed.items}
+      industries={industries.items}
+      error={listed.error}
+      industriesError={industries.error}
+    />
+    <HomeClients logos={logos.items} error={logos.error} home />
+    <HomeTestimonials testimonials={testimonials.items} error={testimonials.error} home />
+    <HomeCta />
   </main>
   <SiteFooter />
 </BaseLayout>
