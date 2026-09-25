@@ -21,6 +21,12 @@ class Settings(BaseSettings):
     session_cookie_name: str = "admin_session"
     session_idle_minutes: int = 30
     session_absolute_hours: int = 12
+    recaptcha_secret_key: str = ""
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_username: str = ""
+    smtp_password: str = ""
+    smtp_use_tls: bool = True
 
 
 settings = Settings()

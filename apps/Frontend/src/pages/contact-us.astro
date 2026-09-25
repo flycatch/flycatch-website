@@ -1,0 +1,218 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/home.css';
+import '../styles/contact-us.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import HomeCta from '../components/HomeCta.astro';
+import { fallbackMetadata } from '../lib/metadata';
+import { t } from '../lib/i18n';
+
+const metadata = fallbackMetadata('/contact-us', t('page.contact.title'), t('page.contact.description'));
+metadata.indexable = true;
+const runtimeEnv = process.env;
+const siteKey = (import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY || runtimeEnv.PUBLIC_RECAPTCHA_SITE_KEY || '').trim();
+const captchaDev =
+  (import.meta.env.PUBLIC_ENVIRONMENT || runtimeEnv.PUBLIC_ENVIRONMENT || 'development') !== 'production';
+
+const offices = [
+  {
+    id: 'saudi',
+    name: t('page.contact.office.saudi.name'),
+    address: t('page.contact.office.saudi.address'),
+    phone: t('page.contact.office.saudi.phone'),
+    image: '/contact-us/saudi-arabia-office.webp',
+    imageAlt: t('page.contact.office.saudi.image_alt'),
+    country: 'SA',
+    map: 'https://www.google.com/maps/dir//Riyadh+Business+Gate,+Airport+Road,+Riyadh+11166,+Saudi+Arabia',
+  },
+  {
+    id: 'us',
+    name: t('page.contact.office.us.name'),
+    address: t('page.contact.office.us.address'),
+    phone: t('page.contact.office.us.phone'),
+    image: '/contact-us/united-states-office.webp',
+    imageAlt: t('page.contact.office.us.image_alt'),
+    country: 'US',
+    map: 'https://www.google.com/maps/dir//443+S+Raymond+Ave,+Pasadena,+CA+91105',
+  },
+  {
+    id: 'india',
+    name: t('page.contact.office.india.name'),
+    address: t('page.contact.office.india.address'),
+    phone: t('page.contact.office.india.phone'),
+    image: '/contact-us/india-office.webp',
+    imageAlt: t('page.contact.office.india.image_alt'),
+    country: 'IN',
+    map: 'https://www.google.com/maps/dir//FLYCATCH+INFOTECH+PRIVATE+LIMITED,+Adamstar+Building,+BUILDING+NO.16%2F3579,+2+nd+FLOOR,+KALANGATTU+ROAD,+Kakkanad,+Kerala+682030,+India/@10.0134383,76.3218591,17124m/data=!3m2!1e3!4b1!4m8!4m7!1m0!1m5!1m1!1s0x3b080d8e1ef73119:0xa88d6a0aae4d5bc3!2m2!1d76.3630588!2d10.0133563?entry=ttu',
+  },
+];
+
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    name: metadata.title,
+    description: metadata.description,
+    url: metadata.canonical,
+  },
+  ...offices.map((office) => ({
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: `Flycatch ${office.name}`,
+    telephone: office.phone,
+    email: t('page.contact.office.email'),
+    image: office.image,
+    url: metadata.canonical,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: office.address,
+      addressCountry: office.country,
+    },
+  })),
+];
+---
+<BaseLayout title={metadata.title} metadata={metadata} structuredData={structuredData}>
+  <SiteHeader tone="light" />
+  <main id="main" class="contact-us-page">
+    <section class="contact-form-section" aria-labelledby="contact-heading">
+      <div class="contact-wrap contact-grid">
+        <div class="contact-intro">
+          <h1 id="contact-heading">{t('page.contact.heading')}</h1>
+          <p>{t('page.contact.lede')}</p>
+        </div>
+        <div class="contact-form-column">
+          <div class="contact-tabs" role="tablist" aria-label={t('page.contact.tabs')}>
+            <button
+              class="contact-tab is-active"
+              type="button"
+              role="tab"
+              id="contact-tab-quote"
+              aria-selected="true"
+              aria-controls="contact-panel"
+              data-contact-type="GET_A_QUOTE"
+              data-details-placeholder={t('page.contact.placeholder.quote')}
+            >
+              {t('page.contact.tab.quote')}
+            </button>
+            <button
+              class="contact-tab"
+              type="button"
+              role="tab"
+              id="contact-tab-partnership"
+              aria-selected="false"
+              aria-controls="contact-panel"
+              tabindex="-1"
+              data-contact-type="PARTNERSHIP"
+              data-details-placeholder={t('page.contact.placeholder.partnership')}
+            >
+              {t('page.contact.tab.partnership')}
+            </button>
+            <button
+              class="contact-tab"
+              type="button"
+              role="tab"
+              id="contact-tab-general"
+              aria-selected="false"
+              aria-controls="contact-panel"
+              tabindex="-1"
+              data-contact-type="GENERAL_ENQUIRY"
+              data-details-placeholder={t('page.contact.placeholder.general')}
+            >
+              {t('page.contact.tab.general')}
+            </button>
+          </div>
+          <form id="contact-panel" class="contact-form" data-contact-form novalidate role="tabpanel" aria-labelledby="contact-tab-quote">
+            <div class="contact-fields">
+              <div class="contact-field">
+                <label class="required" for="contact-name">{t('page.contact.first_name')}</label>
+                <input id="contact-name" name="name" type="text" autocomplete="given-name" placeholder={t('page.contact.placeholder.first_name')} aria-describedby="contact-name-error" />
+                <p class="contact-error" id="contact-name-error" data-error-for="name"></p>
+              </div>
+              <div class="contact-field">
+                <label class="required" for="contact-last-name">{t('page.contact.last_name')}</label>
+                <input id="contact-last-name" name="last_name" type="text" autocomplete="family-name" placeholder={t('page.contact.placeholder.last_name')} aria-describedby="contact-last-name-error" />
+                <p class="contact-error" id="contact-last-name-error" data-error-for="last_name"></p>
+              </div>
+              <div class="contact-field">
+                <label class="required" for="contact-email">{t('page.contact.email')}</label>
+                <input id="contact-email" name="email" type="email" autocomplete="email" placeholder={t('page.contact.placeholder.email')} aria-describedby="contact-email-error" />
+                <p class="contact-error" id="contact-email-error" data-error-for="email"></p>
+              </div>
+              <div class="contact-field">
+                <label class="required" for="contact-phone">{t('page.contact.phone')}</label>
+                <input id="contact-phone" name="phone_no" type="tel" autocomplete="tel" placeholder={t('page.contact.placeholder.phone')} aria-describedby="contact-phone-error" />
+                <p class="contact-error" id="contact-phone-error" data-error-for="phone_no"></p>
+              </div>
+              <div class="contact-field contact-field-wide" data-company hidden>
+                <label class="required" for="contact-company">{t('page.contact.company')}</label>
+                <input id="contact-company" name="company_name" type="text" autocomplete="organization" placeholder={t('page.contact.placeholder.company')} aria-describedby="contact-company-error" />
+                <p class="contact-error" id="contact-company-error" data-error-for="company_name"></p>
+              </div>
+              <div class="contact-field contact-field-wide" data-subject hidden>
+                <label class="required" for="contact-subject">{t('page.contact.subject')}</label>
+                <input id="contact-subject" name="subject" type="text" placeholder={t('page.contact.placeholder.subject')} aria-describedby="contact-subject-error" />
+                <p class="contact-error" id="contact-subject-error" data-error-for="subject"></p>
+              </div>
+              <div class="contact-field contact-field-wide">
+                <label class="contact-details-label required" for="contact-details">{t('page.contact.details')}</label>
+                <textarea id="contact-details" name="details" placeholder={t('page.contact.placeholder.quote')} aria-describedby="contact-details-error"></textarea>
+                <p class="contact-error" id="contact-details-error" data-error-for="details"></p>
+              </div>
+            </div>
+            <div class="contact-privacy" data-privacy hidden>
+              <input id="contact-privacy" name="privacy" type="checkbox" aria-describedby="contact-privacy-error" />
+              <label for="contact-privacy">
+                {t('page.contact.privacy_before')}
+                <a href="/privacy-policy">{t('page.contact.privacy_link')}</a>
+                {t('page.contact.privacy_after')}
+              </label>
+            </div>
+            <p class="contact-error" id="contact-privacy-error" data-error-for="privacy"></p>
+            <div class="contact-captcha" data-contact-captcha data-sitekey={siteKey} data-captcha-dev={captchaDev ? 'true' : 'false'}></div>
+            <p class="contact-error" id="contact-captcha-error" data-error-for="captcha"></p>
+            <div class="contact-submit-row">
+              <button class="contact-submit" type="submit" data-contact-submit disabled>
+                <span data-contact-submit-label>{t('page.contact.submit')}</span>
+                <img src="/icon-arrow-right.svg" width="21" height="21" alt="" />
+              </button>
+            </div>
+            <p class="contact-status" data-contact-status role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+    <section class="offices" aria-labelledby="offices-heading">
+      <div class="contact-wrap">
+        <h2 id="offices-heading">{t('page.contact.offices_title')}</h2>
+      </div>
+      <div class="office-stack">
+        {offices.map((office) => (
+          <article class="office" aria-labelledby={`office-${office.id}`}>
+            <div class="contact-wrap office-row">
+              <div class="office-info">
+                <img src={office.image} alt={office.imageAlt} width="800" height="500" loading="lazy" />
+                <div class="office-copy">
+                  <h3 class="office-name" id={`office-${office.id}`}>{office.name}</h3>
+                  <p class="office-address">{office.address}</p>
+                  <p><a href={`tel:${office.phone.replace(/[^\d+]/g, '')}`}>{office.phone}</a></p>
+                  <p><a href={`mailto:${t('page.contact.office.email')}`}>{t('page.contact.office.email')}</a></p>
+                </div>
+              </div>
+              <div class="office-map-wrap">
+                <a class="office-map" href={office.map} target="_blank" rel="noopener noreferrer">
+                  <span class="office-map-dot" aria-hidden="true"></span>
+                  {t('page.contact.office.map')}
+                </a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+    <HomeCta />
+  </main>
+  <SiteFooter />
+</BaseLayout>
+<script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer></script>
+<script src="../scripts/contact-form.ts"></script>
