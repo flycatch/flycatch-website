@@ -163,7 +163,8 @@ export const CATALOG_SECTIONS: CatalogSection[] = [
       { key: 'state', labelKey: 'state', kind: 'state' },
     ],
     fields: [
-      { kind: 'richtext', key: 'body', labelKey: 'body' },
+      // Raw HTML email bodies — richtext escapes tags and breaks delivery rendering.
+      { kind: 'textarea', key: 'body', labelKey: 'body', required: true },
       { kind: 'text', key: 'slug', labelKey: 'slug', required: true },
       { kind: 'select', key: 'type', labelKey: 'type', options: ['user_notification', 'admin_notification'] },
       { kind: 'text', key: 'subject', labelKey: 'subject', required: true },
