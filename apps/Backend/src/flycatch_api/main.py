@@ -1,9 +1,12 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 
 from flycatch_api.config import settings
+from flycatch_api.db import Base, engine
 from flycatch_api.api import (
     admin_ai_services,
     admin_auth,
@@ -49,7 +52,22 @@ from flycatch_api.api import (
     stubs,
 )
 
-app = FastAPI(title="Flycatch API", version="2.0.0", docs_url="/api/docs", openapi_url="/api/openapi.json")
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    if settings.database_url.startswith("sqlite"):
+        import flycatch_api.models  # noqa: F401
+
+        Base.metadata.create_all(bind=engine)
+    yield
+
+
+app = FastAPI(
+    title="Flycatch API",
+    version="2.0.0",
+    docs_url="/api/docs",
+    openapi_url="/api/openapi.json",
+    lifespan=lifespan,
+)
 
 
 @app.exception_handler(HTTPException)
