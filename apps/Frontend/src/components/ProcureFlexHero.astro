@@ -4,7 +4,7 @@ import { procureFlexCopy as copy } from '../lib/procure-flex-data';
 ---
 <section class="pf-hero" aria-labelledby="procure-flex-heading">
   <div class="container pf-hero-inner">
-    <div class="pf-hero-media" data-pf-reveal>
+    <div class="pf-hero-media" data-section-reveal data-reveal="rise">
       <img
         src="/procure-flex/hero-laptop.png"
         alt={copy.hero.imageAlt}
@@ -12,9 +12,9 @@ import { procureFlexCopy as copy } from '../lib/procure-flex-data';
         height="640"
       />
     </div>
-    <div class="pf-hero-copy" data-pf-reveal>
+    <div class="pf-hero-copy">
       <div>
-        <h1 id="procure-flex-heading">
+        <h1 id="procure-flex-heading" data-hero-entrance>
           <ProcureFlexWordmark
             tone="dark"
             size="hero"

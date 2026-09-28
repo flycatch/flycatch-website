@@ -101,7 +101,7 @@ const relatedError = listed.error || relatedDetails.some((item) => item.error);
           <div class="csd-banner-overlay" aria-hidden="true"></div>
           <div class="container csd-banner-copy">
             <div class="csd-banner-text">
-              <h1 id="case-study-heading">{heading}</h1>
+              <h1 id="case-study-heading" data-hero-entrance>{heading}</h1>
               {industry && (
                 <p class="csd-industry">
                   <span class="csd-industry-label">{t('page.case_studies.industry')}</span>
@@ -139,7 +139,7 @@ const relatedError = listed.error || relatedDetails.some((item) => item.error);
     ) : (
       <section class="csd-content">
         <div class="container">
-          <h1>{heading}</h1>
+          <h1 data-hero-entrance>{heading}</h1>
           <SectionState error={result.error} empty={!result.error} />
         </div>
       </section>
@@ -162,4 +162,3 @@ const relatedError = listed.error || relatedDetails.some((item) => item.error);
   </main>
   <SiteFooter />
 </BaseLayout>
-<script src="../../scripts/case-study-detail.ts"></script>

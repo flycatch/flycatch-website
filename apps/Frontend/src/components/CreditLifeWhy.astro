@@ -3,7 +3,7 @@ import { creditLifeCopy as copy } from '../lib/credit-life-data';
 ---
 <section class="cl-why" aria-labelledby="cl-why-heading">
   <div class="container cl-why-inner">
-    <div class="cl-why-media" data-cl-reveal>
+    <div class="cl-why-media" data-section-reveal data-reveal="rise">
       <img
         src="/credit-life/why.webp"
         alt={copy.why.imageAlt}
@@ -13,11 +13,11 @@ import { creditLifeCopy as copy } from '../lib/credit-life-data';
       />
     </div>
     <div class="cl-why-text">
-      <h2 id="cl-why-heading" class="cl-why-heading" data-cl-reveal>
+      <h2 id="cl-why-heading" class="cl-why-heading" data-section-reveal data-reveal="rise">
         <span class="cl-why-heading-lead">{copy.why.headingLead}</span>
         <span class="cl-why-heading-accent">{copy.why.headingAccent}</span>
       </h2>
-      <div class="cl-why-copy" data-cl-reveal>
+      <div class="cl-why-copy" data-section-reveal data-reveal="rise">
         {copy.why.body.map((paragraph) => (
           <p class="cl-why-body">{paragraph}</p>
         ))}

@@ -31,7 +31,7 @@ const banner = overview ? publicMediaUrl(overview.banner_image_key) : null;
   <SiteHeader />
   <main id="main" class="page-main" data-api-origin={listed.origin}>
     <article class="container">
-      <h1>{heading}</h1>
+      <h1 data-hero-entrance>{heading}</h1>
       <SectionState error={failed} empty={!failed && !overview} />{overview && (
         <div>
           <div class="media-frame" hidden={!banner}>{banner && (

@@ -177,10 +177,6 @@ input:focus-visible {
     border-color var(--motion-nav);
 }
 
-.site-header.is-hidden {
-  transform: translateY(-100%);
-}
-
 .site-header.tone-light,
 .site-header.is-scrolled {
   background: var(--color-white);
@@ -291,7 +287,10 @@ input:focus-visible {
   color: var(--color-white);
   box-shadow: var(--shadow-menu);
   transform-origin: 100% 0;
-  animation: flyout-in var(--motion-nav) cubic-bezier(0.39, 0.575, 0.565, 1) both;
+  animation-name: flyout-in;
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.39, 0.575, 0.565, 1);
+  animation-fill-mode: both;
 }
 
 @keyframes flyout-in {
@@ -2111,6 +2110,24 @@ body.is-mobile-drawer-open {
 }
 
 @media (min-width: 1024px) and (hover: hover) {
+  .nav-trigger,
+  .nav-link {
+    transition:
+      color var(--motion-nav-hover),
+      transform var(--motion-nav-hover);
+  }
+
+  .nav-trigger:hover,
+  .nav-link:hover {
+    color: var(--color-red);
+    transform: scale(1.1);
+  }
+
+  .nav-trigger:focus-visible,
+  .nav-link:focus-visible {
+    color: var(--color-red);
+  }
+
   .nav-item.has-menu:hover .flyout,
   .nav-item.has-menu:focus-within .flyout {
     display: block;
@@ -2124,9 +2141,75 @@ body.is-mobile-drawer-open {
   }
 }
 
+html.js [data-hero-entrance],
+html.js [data-section-reveal] {
+  opacity: 0;
+  transform: scale(0.85);
+  transition:
+    opacity var(--motion-entrance),
+    transform var(--motion-entrance);
+}
+
+html.js [data-hero-entrance].is-visible,
+html.js [data-section-reveal].is-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+html.js [data-section-reveal][data-reveal='rise'],
+html.js [data-pf-reveal],
+html.js [data-cl-reveal],
+html.js [data-acs-reveal],
+html.js [data-cb-reveal],
+html.js [data-ucd-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html.js [data-section-reveal][data-reveal='rise'].is-visible,
+html.js [data-pf-reveal].is-visible,
+html.js [data-cl-reveal].is-visible,
+html.js [data-acs-reveal].is-visible,
+html.js [data-cb-reveal].is-visible,
+html.js [data-ucd-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  html.js [data-hero-entrance],
+  html.js [data-section-reveal],
+  html.js [data-section-reveal][data-reveal='rise'],
+  html.js [data-pf-reveal],
+  html.js [data-cl-reveal],
+  html.js [data-acs-reveal],
+  html.js [data-cb-reveal],
+  html.js [data-ucd-reveal],
+  [data-hero-entrance],
+  [data-section-reveal],
+  [data-pf-reveal],
+  [data-cl-reveal],
+  [data-acs-reveal],
+  [data-cb-reveal],
+  [data-ucd-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    animation: none;
+  }
+
+  .nav-trigger,
+  .nav-link,
+  .nav-trigger:hover,
+  .nav-link:hover {
+    transform: none;
   }
 
   .site-header,

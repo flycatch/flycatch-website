@@ -75,13 +75,6 @@
   font-weight: 400;
   line-height: normal;
   letter-spacing: 0.6px;
-  transform: scale(0.9);
-  transition: transform 1.5s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
-}
-
-.mad-page .mad-hero h1.is-visible {
-  transform: scale(1);
 }
 
 .mad-intro,
@@ -458,7 +451,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mad-page .mad-hero h1,
   .mad-accordion summary img {
     transition: none;
   }

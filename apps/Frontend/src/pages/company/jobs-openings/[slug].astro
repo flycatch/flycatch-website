@@ -41,7 +41,7 @@ const structuredData = opening ? openingStructuredData(opening, metadata, siteSe
       <SectionState error={result.error} empty={!result.error && !opening} />
       {opening && (
         <div>
-          <h1 class="type-section">{opening.role}</h1>
+          <h1 class="type-section" data-hero-entrance>{opening.role}</h1>
           <p class="jobs-card-meta">
             <span>{opening.location}</span>
             <span>{opening.experience}</span>

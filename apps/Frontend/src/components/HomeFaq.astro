@@ -15,7 +15,7 @@ const items = faqs.filter((faq) => (faq.title ?? '').trim() || (faq.contents ?? 
 {items.length > 0 && (
 <section class="section" id="faq">
   <div class="container">
-    <h2 hidden={!title} class="type-section">{title}</h2>
+    <h2 hidden={!title} class="type-section" data-section-reveal>{title}</h2>
     <div class="lede" hidden={!description} set:html={description} />
     <SectionState error={error} />
     {items.map((faq) => (

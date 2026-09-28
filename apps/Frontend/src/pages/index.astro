@@ -54,7 +54,7 @@ const structuredData = home ? homeStructuredData(home, metadata, siteSettings) :
     ) : (
       <section class="hero">
         <div class="container hero-copy summary-region">
-          <h1>{siteSettings.site_name}</h1>
+          <h1 data-hero-entrance>{siteSettings.site_name}</h1>
           <SectionState error={homesResult.error} empty={!homesResult.error} />
         </div>
       </section>

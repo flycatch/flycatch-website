@@ -481,19 +481,6 @@
   color: #e50914;
 }
 
-[data-cl-reveal] {
-  opacity: 0;
-  transform: translateY(16px);
-  transition:
-    opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-[data-cl-reveal].is-visible {
-  opacity: 1;
-  transform: none;
-}
-
 @media (max-width: 1300px) {
   .cl-hero-copy {
     width: 40%;
@@ -650,10 +637,3 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  [data-cl-reveal] {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-}

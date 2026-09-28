@@ -22,21 +22,6 @@ function syncCaseStudySides(list: HTMLElement) {
 }
 
 function initCaseStudiesListing() {
-  const heading = document.getElementById('case-studies-banner-heading');
-  if (heading && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          entry.target.classList.toggle('is-visible', entry.isIntersecting);
-        });
-      },
-      { threshold: 0.4 },
-    );
-    observer.observe(heading);
-  } else if (heading) {
-    heading.classList.add('is-visible');
-  }
-
   const select = document.querySelector<HTMLSelectElement>('[data-case-industry]');
   const list = document.querySelector<HTMLElement>('.cs-list');
   const empty = document.querySelector<HTMLElement>('[data-case-empty]');

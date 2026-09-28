@@ -1,3 +1,5 @@
+// Documented exception: left/right row slides stay here (not shared zoom).
+// Must still honour reduced motion and no-JS visibility.
 const rows = document.querySelectorAll('[data-services-core-row]');
 if (rows.length) {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

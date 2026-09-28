@@ -5,8 +5,8 @@ import { procureFlexCopy as copy } from '../lib/procure-flex-data';
 <section class="pf-benefits" aria-labelledby="pf-benefits-heading">
   <div class="container pf-benefits-inner">
     <div class="pf-benefits-aside">
-      <h2 id="pf-benefits-heading" class="pf-display pf-display-light" data-pf-reveal>{copy.benefits.heading}</h2>
-      <div data-pf-reveal>
+      <h2 id="pf-benefits-heading" class="pf-display pf-display-light" data-section-reveal data-reveal="rise">{copy.benefits.heading}</h2>
+      <div data-section-reveal data-reveal="rise">
         <ProcureFlexWordmark
           tone="dark"
           size="large"
@@ -18,7 +18,7 @@ import { procureFlexCopy as copy } from '../lib/procure-flex-data';
     </div>
     <ul class="pf-benefit-list">
       {copy.benefits.items.map((item) => (
-        <li class="pf-benefit" data-pf-reveal>
+        <li class="pf-benefit" data-section-reveal data-reveal="rise">
           <div class="pf-benefit-icon">
             <img src={item.icon} alt="" width="100" height="100" />
           </div>

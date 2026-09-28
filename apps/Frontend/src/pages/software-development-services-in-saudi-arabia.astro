@@ -74,7 +74,7 @@ const structuredData = page
     ) : (
       <section class="hero">
         <div class="container hero-copy summary-region">
-          <h1>{siteSettings.site_name}</h1>
+          <h1 data-hero-entrance>{siteSettings.site_name}</h1>
           <SectionState error={saudiResult.error} empty={!saudiResult.error} />
         </div>
       </section>

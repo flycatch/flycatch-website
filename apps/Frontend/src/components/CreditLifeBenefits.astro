@@ -4,7 +4,7 @@ import { creditLifeCopy as copy } from '../lib/credit-life-data';
 <section class="cl-benefits" aria-labelledby="cl-benefits-heading">
   <div class="container cl-benefits-inner">
     <div class="cl-benefits-aside">
-      <h2 id="cl-benefits-heading" class="cl-display cl-display-dark" data-cl-reveal>
+      <h2 id="cl-benefits-heading" class="cl-display cl-display-dark" data-section-reveal data-reveal="rise">
         {copy.benefits.heading}
       </h2>
       <img
@@ -14,12 +14,12 @@ import { creditLifeCopy as copy } from '../lib/credit-life-data';
         width="283"
         height="338"
         loading="lazy"
-        data-cl-reveal
+        data-section-reveal data-reveal="rise"
       />
     </div>
     <ul class="cl-benefit-list">
       {copy.benefits.items.map((item) => (
-        <li class="cl-benefit" data-cl-reveal>
+        <li class="cl-benefit" data-section-reveal data-reveal="rise">
           <img
             class="cl-benefit-icon"
             src={item.icon}

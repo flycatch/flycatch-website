@@ -7,7 +7,7 @@ import { devopsApproach } from '../lib/devops-static';
     <p class="type-lede">{devopsApproach.description}</p>
     <div class="devops-approach-media">
       <img
-        data-ucd-reveal
+        data-section-reveal data-reveal="rise"
         src={devopsApproach.topImage}
         alt=""
         width="1916"
@@ -15,7 +15,7 @@ import { devopsApproach } from '../lib/devops-static';
         loading="lazy"
       />
       <img
-        data-ucd-reveal
+        data-section-reveal data-reveal="rise"
         src={devopsApproach.bottomImage}
         alt=""
         width="1916"
@@ -26,4 +26,3 @@ import { devopsApproach } from '../lib/devops-static';
     </div>
   </div>
 </section>
-<script src="../scripts/ucd-approach.ts"></script>

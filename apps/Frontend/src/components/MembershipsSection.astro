@@ -27,22 +27,22 @@ const heading = title || t('nav.memberships');
   <div class="container">
     {loading ? (
       <>
-        <h1 class="memberships-title">{t('nav.memberships')}</h1>
+        <h1 class="memberships-title" data-hero-entrance>{t('nav.memberships')}</h1>
         <SectionState loading />
       </>
     ) : error ? (
       <>
-        <h1 class="memberships-title">{t('nav.memberships')}</h1>
+        <h1 class="memberships-title" data-hero-entrance>{t('nav.memberships')}</h1>
         <SectionState error />
       </>
     ) : !membership || !hasContent ? (
       <>
-        <h1 class="memberships-title">{t('nav.memberships')}</h1>
+        <h1 class="memberships-title" data-hero-entrance>{t('nav.memberships')}</h1>
         <SectionState empty />
       </>
     ) : (
       <>
-        <h1 class="memberships-title">{heading}</h1>
+        <h1 class="memberships-title" data-hero-entrance>{heading}</h1>
         {(description.html || description.text) && (
           <DoctcareCmsText class="memberships-description" value={membership.description} />
         )}

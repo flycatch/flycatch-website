@@ -58,16 +58,6 @@
   line-height: 1.2;
   letter-spacing: 0.6px;
   overflow-wrap: break-word;
-  opacity: 0;
-  transform: scale(0.85);
-  transition:
-    opacity 0.6s ease-out,
-    transform 0.6s ease-out;
-}
-
-.case-studies-page .cs-banner h1.is-visible {
-  opacity: 1;
-  transform: scale(1);
 }
 
 .cs-studies {
