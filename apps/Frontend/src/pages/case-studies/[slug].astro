@@ -1,11 +1,23 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/home.css';
+import '../../styles/application-development.css';
+import '../../styles/case-study-detail.css';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import SectionState from '../../components/SectionState.astro';
+import HomeTestimonials from '../../components/HomeTestimonials.astro';
+import HomeInsights from '../../components/HomeInsights.astro';
+import HomeCta from '../../components/HomeCta.astro';
+import AdsContactPoster from '../../components/AdsContactPoster.astro';
+import AdsRelatedCaseStudies from '../../components/AdsRelatedCaseStudies.astro';
 import {
+  loadPublishedBlogs,
+  loadPublishedCaseStudies,
   loadPublishedCaseStudy,
+  loadPublishedClientTestimonials,
   publicMediaUrl,
+  type PublicCaseStudy,
 } from '../../lib/public-api';
 import {
   fallbackMetadata,
@@ -18,9 +30,21 @@ import { t } from '../../lib/i18n';
 const { slug } = Astro.params;
 if (!slug) throw new Error('Case study slug missing');
 
-const siteSettings = publicSiteSettings();
-const result = await loadPublishedCaseStudy(slug);
+function caseStudyBodyHtml(html: string) {
+  return html.replace(/src=(["'])media:([^"']+)\1/gi, (_match, quote: string, key: string) => {
+    const url = publicMediaUrl(decodeURIComponent(key));
+    return url ? `src=${quote}${url}${quote}` : `src=${quote}${quote}`;
+  });
+}
+
+const [result, listed, blogsResult, testimonials] = await Promise.all([
+  loadPublishedCaseStudy(slug),
+  loadPublishedCaseStudies(),
+  loadPublishedBlogs(),
+  loadPublishedClientTestimonials(),
+]);
 const study = result.item;
+const siteSettings = publicSiteSettings();
 const metadata = study
   ? metadataFromCaseStudy(study, siteSettings, `/case-studies/${study.slug}`)
   : fallbackMetadata(
@@ -30,28 +54,112 @@ const metadata = study
     );
 const structuredData = study ? caseStudyStructuredData(study, metadata, siteSettings) : [];
 const image = study ? publicMediaUrl(study.image_key) : null;
-const chips = study ? [...study.industries, ...study.categories] : [];
-const heading = study ? study.heading : t('nav.case_studies');
+const heading = study ? study.heading.trim() : t('nav.case_studies');
+const industry = study
+  ? study.industries
+      .map((item) => item.name.trim())
+      .filter(Boolean)
+      .join(', ')
+  : '';
+const bodyHtml = study ? caseStudyBodyHtml(study.body) : '';
+const technologies = (study?.technologies ?? []).filter((item) => item.name.trim() || item.logo_key);
+
+const relatedSlugs = [...listed.items]
+  .filter((item) => item.slug && item.slug !== slug)
+  .sort((a, b) => {
+    const dateA = a.date ? Date.parse(a.date) : Number.NaN;
+    const dateB = b.date ? Date.parse(b.date) : Number.NaN;
+    const hasA = Number.isFinite(dateA);
+    const hasB = Number.isFinite(dateB);
+    if (hasA && hasB && dateB !== dateA) return dateB - dateA;
+    if (hasA !== hasB) return hasA ? -1 : 1;
+    return b.order - a.order;
+  })
+  .slice(0, 3)
+  .map((item) => item.slug);
+const relatedDetails = await Promise.all(relatedSlugs.map((itemSlug) => loadPublishedCaseStudy(itemSlug)));
+const relatedStudies: PublicCaseStudy[] = relatedDetails
+  .map((item) => item.item)
+  .filter((item): item is PublicCaseStudy => Boolean(item));
+const relatedError = listed.error || relatedDetails.some((item) => item.error);
 ---
 <BaseLayout title={metadata.title} metadata={metadata} structuredData={structuredData}>
-  <SiteHeader />
-  <main id="main" class="page-main" data-api-origin={result.origin}>
-    <article class="container">
-      <SectionState error={result.error} empty={!result.error && !study} />
-      <h1>{heading}</h1>{study && (
-        <div>
-          <p class="insight-meta" hidden={!study.date}>{study.date}</p>
-          <p class="lede">{study.description}</p>
-          <div class="media-frame" hidden={!image}>{image && (
-            <img src={image} alt={study.image_alt || study.heading} width="1192" height="640" />
-          )}</div>
-          <div class="chip-row">{chips.map((item) => (
-            <span class="chip">{item.name}</span>
-          ))}</div>
-          <div class="body-region" set:html={study.body} />
+  <SiteHeader tone="dark" />
+  <main id="main" class="case-studies-page case-study-detail-page" data-api-origin={result.origin}>
+    {study ? (
+      <>
+        <section class="csd-banner" aria-labelledby="case-study-heading">
+          {image && (
+            <img
+              class="csd-banner-media"
+              src={image}
+              alt={study.image_alt || heading}
+              width="1920"
+              height="1080"
+            />
+          )}
+          <div class="csd-banner-overlay" aria-hidden="true"></div>
+          <div class="container csd-banner-copy">
+            <div class="csd-banner-text">
+              <h1 id="case-study-heading">{heading}</h1>
+              {industry && (
+                <p class="csd-industry">
+                  <span class="csd-industry-label">{t('page.case_studies.industry')}</span>
+                  <span class="csd-industry-name">{industry}</span>
+                </p>
+              )}
+            </div>
+          </div>
+        </section>
+        <section class="csd-content" aria-label={heading}>
+          <div class="container">
+            {bodyHtml && <div class="csd-body" set:html={bodyHtml} />}
+            {technologies.length > 0 && (
+              <>
+                <h2 class="csd-tech-title">{t('page.case_studies.technologies_title')}</h2>
+                <ul class="csd-tech-grid">
+                  {technologies.map((item) => {
+                    const logo = publicMediaUrl(item.logo_key);
+                    return (
+                      <li>
+                        {logo ? (
+                          <img src={logo} alt={item.name} width="174" height="100" loading="lazy" />
+                        ) : (
+                          <span>{item.name}</span>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </>
+            )}
+          </div>
+        </section>
+      </>
+    ) : (
+      <section class="csd-content">
+        <div class="container">
+          <h1>{heading}</h1>
+          <SectionState error={result.error} empty={!result.error} />
         </div>
-      )}
-    </article>
+      </section>
+    )}
+    <HomeTestimonials testimonials={testimonials.items} error={testimonials.error} home />
+    <AdsRelatedCaseStudies studies={relatedStudies} error={relatedError} />
+    <AdsContactPoster
+      eyebrow={t('home.minds_title')}
+      title={t('page.application_development.contact_title')}
+      description={t('page.application_development.contact_description')}
+      action={t('page.application_development.contact_action')}
+      href="/contact-us"
+      image="/application-development/development-contact.webp"
+      imageAlt={t('page.application_development.contact_image_alt')}
+      imageWidth={500}
+      imageHeight={550}
+    />
+    <HomeInsights blogs={blogsResult.items} error={blogsResult.error} home />
+    <HomeCta />
   </main>
   <SiteFooter />
 </BaseLayout>
+<script src="../../scripts/case-study-detail.ts"></script>
