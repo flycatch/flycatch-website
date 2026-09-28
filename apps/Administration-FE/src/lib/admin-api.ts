@@ -28,7 +28,12 @@ import {
 } from './token-store';
 import { t } from './i18n';
 
-const API_BASE = (import.meta.env.PUBLIC_ORIGIN || 'http://localhost:8080') + '/api/v1';
+/** Same-origin `/api/v1` by default; `PUBLIC_ORIGIN` is an optional absolute override. */
+export function resolveApiBase(origin = import.meta.env.PUBLIC_ORIGIN): string {
+  return `${origin || ''}/api/v1`;
+}
+
+const API_BASE = resolveApiBase();
 
 export type TokenPair = AuthComponents['schemas']['TokenPair'];
 export type SessionContext = AuthComponents['schemas']['SessionContext'];
