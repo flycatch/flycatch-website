@@ -1,15 +1,24 @@
 ---
 import { t } from '../lib/i18n';
 import { publicMediaUrl } from '../lib/public-api';
-import type { PublicHome } from '../lib/public-api';
 
 interface Props {
-  home: PublicHome;
+  home: {
+    video_key: string | null;
+    banner_title: string;
+    title?: string;
+    seo: {
+      h1_tag?: string;
+      image_alt?: string;
+    };
+  };
+  exploreLabel?: string;
 }
 
-const { home } = Astro.props;
+const { home, exploreLabel = '' } = Astro.props;
 const video = publicMediaUrl(home.video_key);
-const heading = home.banner_title.trim() || home.seo.h1_tag?.trim() || home.title;
+const heading = home.banner_title.trim() || home.seo.h1_tag?.trim() || home.title || '';
+const explore = exploreLabel.trim() || t('home.explore');
 ---
 <section class="hero" aria-labelledby="home-heading">{video ? (
     <video
@@ -31,7 +40,7 @@ const heading = home.banner_title.trim() || home.seo.h1_tag?.trim() || home.titl
     </div>
     <a class="explore" href="#services">
       <img src="/icon-explore.svg" width="104" height="104" alt="" />
-      <span>{t('home.explore')}</span>
+      <span>{explore}</span>
     </a>
   </div>
 </section>

@@ -1107,6 +1107,51 @@ export async function loadPublishedSolutionProducts(): Promise<
   return { items, error: false, origin: listed.origin };
 }
 
+export type PublicSaudiServiceSection = {
+  image_key: string | null;
+  types_title: string;
+  contents: string;
+  links: string;
+};
+
+export type PublicFlycatchSaudiArabia = {
+  id: string;
+  banner_title: string;
+  service_section: PublicSaudiServiceSection[];
+  banner_explore_text: string;
+  services_title: string;
+  video_key: string | null;
+  seo: ContentSeo;
+};
+
+export function saudiSectionToHomeService(item: PublicSaudiServiceSection): HomeService {
+  return {
+    services_types_title: item.types_title ?? '',
+    services_image_key: item.image_key ?? null,
+    services_contents: item.contents ?? '',
+    our_services_links: item.links ?? '',
+  };
+}
+
+export async function loadPublishedFlycatchSaudiArabia(
+  itemId: string,
+): Promise<PublicItemResult<PublicFlycatchSaudiArabia>> {
+  return getJson<PublicFlycatchSaudiArabia>(
+    `/api/v1/public/flycatch-saudi-arabia/${encodeURIComponent(itemId)}`,
+  ).then(({ data, error, origin }) => ({ item: data, error, origin }));
+}
+
+/** Published Saudi Arabia page: list to resolve the id, then read that record. */
+export async function loadPublishedFlycatchSaudiArabiaPage(): Promise<
+  PublicItemResult<PublicFlycatchSaudiArabia>
+> {
+  const listed = await loadPaginated<PublicFlycatchSaudiArabia>('/api/v1/public/flycatch-saudi-arabia');
+  if (listed.error) return { item: null, error: true, origin: listed.origin };
+  const itemId = listed.items[0]?.id?.trim();
+  if (!itemId) return { item: null, error: false, origin: listed.origin };
+  return loadPublishedFlycatchSaudiArabia(itemId);
+}
+
 export async function loadPublishedSolutionDetail(
   slug: string,
 ): Promise<PublicItemResult<PublicSolutionDetailsPage>> {
