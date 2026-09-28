@@ -31,7 +31,9 @@ import {
   loadPublishedIndustries,
   loadPublishedNewsCategories,
   loadPublishedNewsPage,
+  loadPublishedFlycatchSaudiArabiaPage,
   loadPublishedMembershipPage,
+  saudiSectionToHomeService,
   loadPublishedResourceCategories,
   loadPublishedResourcePage,
   loadPublishedSolutionDetail,
@@ -1520,6 +1522,71 @@ describe('public memberships loader', () => {
     }));
     vi.stubGlobal('fetch', fetchMock);
     const result = await loadPublishedMembershipPage();
+    expect(result.error).toBe(false);
+    expect(result.item).toBeNull();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    vi.unstubAllGlobals();
+  });
+});
+
+describe('public Saudi Arabia loader', () => {
+  it('maps service sections onto home service fields', () => {
+    expect(
+      saudiSectionToHomeService({
+        image_key: 'saudi/app.jpg',
+        types_title: 'Application services',
+        contents: 'Build products for the Saudi market.',
+        links: 'services/application-development-services',
+      }),
+    ).toEqual({
+      services_types_title: 'Application services',
+      services_image_key: 'saudi/app.jpg',
+      services_contents: 'Build products for the Saudi market.',
+      our_services_links: 'services/application-development-services',
+    });
+  });
+
+  it('reads the published record from the item endpoint', async () => {
+    const item = {
+      id: '72ca2c51-8438-4e45-8f18-e5b3a35d8063',
+      banner_title: 'Software development in Saudi Arabia',
+      service_section: [],
+      banner_explore_text: 'Explore',
+      services_title: 'Services',
+      video_key: 'saudi/hero.mp4',
+      seo: {
+        title: 'Flycatch Arabia',
+        description: 'Services in Saudi Arabia',
+        canonical_url: '',
+        meta_title: 'Flycatch Arabia | Flycatch',
+        h1_tag: 'Software development in Saudi Arabia',
+        image_alt: 'Riyadh skyline',
+        image_key: null,
+      },
+    };
+    const fetchMock = vi.fn(async (url: string) => {
+      if (String(url).includes('/api/v1/public/flycatch-saudi-arabia?')) {
+        return { ok: true, json: async () => ({ items: [item], page: 1, per_page: 10, total: 1 }) };
+      }
+      return { ok: true, json: async () => item };
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedFlycatchSaudiArabiaPage();
+    expect(result.error).toBe(false);
+    expect(result.item?.banner_title).toBe('Software development in Saudi Arabia');
+    expect(String(fetchMock.mock.calls[1]?.[0])).toContain(
+      '/api/v1/public/flycatch-saudi-arabia/72ca2c51-8438-4e45-8f18-e5b3a35d8063',
+    );
+    vi.unstubAllGlobals();
+  });
+
+  it('returns an empty page when nothing is published', async () => {
+    const fetchMock = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({ items: [], page: 1, per_page: 10, total: 0 }),
+    }));
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedFlycatchSaudiArabiaPage();
     expect(result.error).toBe(false);
     expect(result.item).toBeNull();
     expect(fetchMock).toHaveBeenCalledTimes(1);
