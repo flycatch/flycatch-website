@@ -28,7 +28,7 @@ const isLight = tone === 'light';
 ---
 <section class:list={['ads-poster', isLight ? 'ads-poster-light' : 'section-dark']}>
   <div class="container ads-poster-layout">
-    <div class="ads-poster-copy">
+    <div class="ads-poster-copy" data-section-reveal data-reveal="rise">
       <p class="type-lede">{eyebrow}</p>
       <h2 class="type-section">{title}</h2>
       <p class="type-lede" hidden={!description.trim()}>{description}</p>
@@ -39,7 +39,7 @@ const isLight = tone === 'light';
         </a>
       </p>
     </div>
-    <div class="ads-poster-visual">
+    <div class="ads-poster-visual" data-section-reveal data-reveal="rise">
       <img
         src={image}
         alt={imageAlt}

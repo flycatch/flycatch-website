@@ -3,7 +3,7 @@ import { madPlatforms } from '../lib/mad-static';
 ---
 <section class="mad-platforms" aria-labelledby="mad-platforms-heading">
   <div class="container mad-platforms-grid">
-    <div class="mad-platforms-left">
+    <div class="mad-platforms-left" data-section-reveal data-reveal="rise">
       <h2 id="mad-platforms-heading" class="type-section">{madPlatforms.title}</h2>
       <p class="mad-copy">{madPlatforms.description}</p>
       <img
@@ -15,9 +15,9 @@ import { madPlatforms } from '../lib/mad-static';
         loading="lazy"
       />
     </div>
-    <div class="mad-platforms-right">
+    <div class="mad-platforms-right" data-reveal-stagger>
       {madPlatforms.items.map((item) => (
-        <article class="mad-platform-item">
+        <article class="mad-platform-item" data-section-reveal data-reveal="rise">
           <h3>{item.title}</h3>
           <p class="mad-copy">{item.body}</p>
         </article>

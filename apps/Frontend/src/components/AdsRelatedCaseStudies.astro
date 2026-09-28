@@ -18,15 +18,15 @@ const items = studies.filter(
 {(error || items.length > 0) && (
   <section class="ads-related-studies" id="related-case-studies" aria-labelledby="ads-related-heading">
     <div class="container">
-      <h2 id="ads-related-heading" class="type-section">{t('page.application_development.related_case_studies')}</h2>
+      <h2 id="ads-related-heading" class="type-section" data-section-reveal data-reveal="rise">{t('page.application_development.related_case_studies')}</h2>
       <SectionState error={error} />
       {items.length > 0 && (
-        <div class="ads-related-grid">
+        <div class="ads-related-grid" data-reveal-stagger>
           {items.map((study) => {
             const image = publicMediaUrl(study.image_key);
             const title = (study.heading || study.short_heading).trim();
             return (
-              <a class="ads-related-card" href={`/case-studies/${study.slug}`}>
+              <a class="ads-related-card" href={`/case-studies/${study.slug}`} data-section-reveal data-reveal="rise">
                 {image ? (
                   <div class="ads-related-media">
                     <img src={image} alt={study.image_alt || title} width="400" height="400" loading="lazy" />

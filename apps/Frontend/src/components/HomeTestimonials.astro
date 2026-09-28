@@ -30,7 +30,7 @@ const role = roleParts.join(', ');
     )}
     {featured && (
       <div class="stories-layout">
-        <div class="stories-left">
+        <div class="stories-left" data-section-reveal data-reveal="rise">
           {imageSrc && (
             <div class="stories-photo">
               <img
@@ -59,7 +59,7 @@ const role = roleParts.join(', ');
             />
           )}
         </div>
-        <div class="stories-right">
+        <div class="stories-right" data-section-reveal data-reveal="rise">
           <h2 class="stories-hashtag"># {t('home.success_stories')}</h2>
           {featured.title && <p class="stories-title">{featured.title}</p>}
           {featured.review && <p class="stories-review">{featured.review}</p>}

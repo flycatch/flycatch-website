@@ -18,12 +18,14 @@ const items = faqs.filter((faq) => (faq.title ?? '').trim() || (faq.contents ?? 
     <h2 hidden={!title} class="type-section" data-section-reveal>{title}</h2>
     <div class="lede" hidden={!description} set:html={description} />
     <SectionState error={error} />
-    {items.map((faq) => (
-      <details class="faq-item">
-        <summary>{faq.title}</summary>
-        <p>{faq.contents}</p>
-      </details>
-    ))}
+    <div data-section-reveal data-reveal="rise">
+      {items.map((faq) => (
+        <details class="faq-item">
+          <summary>{faq.title}</summary>
+          <p>{faq.contents}</p>
+        </details>
+      ))}
+    </div>
   </div>
 </section>
 )}

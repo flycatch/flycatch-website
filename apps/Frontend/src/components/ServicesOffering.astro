@@ -12,7 +12,7 @@ const first = page?.introduction_first_paragraph.trim() || '';
 const second = page?.introduction_second_paragraph.trim() || '';
 ---
 <section class="services-offering" aria-labelledby="services-offering-heading">
-  <div class="container services-offering-layout">
+  <div class="container services-offering-layout" data-section-reveal data-reveal="rise">
     <div class="services-offering-lead">
       <h2 id="services-offering-heading" hidden={!title}>{title}</h2>
       <div class="services-offering-bottom">

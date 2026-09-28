@@ -534,11 +534,28 @@
   margin: 0;
 }
 
+:is(.home-page, .ai-services-page, .solutions-page, .application-development-page, .application-modernization-page, .user-centered-design-page, .mad-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .services-page, .devops-consult-page, .infra-management-page, .about-us-page, .careers-page, .jobs-openings-page, .case-studies-page, .contact-us-page) .contact-visual {
+  overflow: clip;
+}
+
 :is(.home-page, .ai-services-page, .solutions-page, .application-development-page, .application-modernization-page, .user-centered-design-page, .mad-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .services-page, .devops-consult-page, .infra-management-page, .about-us-page, .careers-page, .jobs-openings-page, .case-studies-page, .contact-us-page) .contact-visual img {
   width: 100%;
   height: auto;
   display: block;
   object-fit: contain;
+}
+
+@keyframes contact-sphere-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+:is(.home-page, .ai-services-page, .solutions-page, .application-development-page, .application-modernization-page, .user-centered-design-page, .mad-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .services-page, .devops-consult-page, .infra-management-page, .about-us-page, .careers-page, .jobs-openings-page, .case-studies-page, .contact-us-page) .contact-visual img.is-live {
+  animation: contact-sphere-spin 40s linear infinite;
 }
 
 :is(.home-page, .ai-services-page, .solutions-page, .application-development-page, .application-modernization-page, .user-centered-design-page, .mad-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .services-page, .devops-consult-page, .infra-management-page, .about-us-page, .careers-page, .jobs-openings-page, .case-studies-page, .contact-us-page) .minds-layout {
@@ -1163,6 +1180,17 @@
     transform: rotate(-30deg);
   }
 
+  html.js :is(.home-page, .ai-services-page, .solutions-page, .application-development-page, .application-modernization-page, .user-centered-design-page, .mad-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .services-page, .devops-consult-page, .infra-management-page, .about-us-page, .careers-page, .jobs-openings-page, .case-studies-page, .contact-us-page) .case-card.is-visible,
+  html.js :is(.home-page, .ai-services-page, .solutions-page, .application-development-page, .application-modernization-page, .user-centered-design-page, .mad-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .services-page, .devops-consult-page, .infra-management-page, .about-us-page, .careers-page, .jobs-openings-page, .case-studies-page, .contact-us-page) .insight-card.is-visible {
+    transition:
+      opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.3s ease;
+  }
+
+  html.js :is(.home-page, .ai-services-page, .solutions-page, .application-development-page, .application-modernization-page, .user-centered-design-page, .mad-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .services-page, .devops-consult-page, .infra-management-page, .about-us-page, .careers-page, .jobs-openings-page, .case-studies-page, .contact-us-page) .case-card.is-visible:hover,
+  html.js :is(.home-page, .ai-services-page, .solutions-page, .application-development-page, .application-modernization-page, .user-centered-design-page, .mad-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .services-page, .devops-consult-page, .infra-management-page, .about-us-page, .careers-page, .jobs-openings-page, .case-studies-page, .contact-us-page) .insight-card.is-visible:hover {
+    transform: translateY(-3px);
+  }
 }
 
 @media (min-width: 768px) {
@@ -1495,9 +1523,13 @@ body:has(:is(.home-page, .ai-services-page, .solutions-page, .application-develo
   :is(.home-page, .ai-services-page, .solutions-page, .application-development-page, .application-modernization-page, .user-centered-design-page, .mad-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .services-page, .devops-consult-page, .infra-management-page, .about-us-page, .careers-page, .jobs-openings-page, .case-studies-page, .contact-us-page) .clients-marquee-track,
   :is(.home-page, .ai-services-page, .solutions-page, .application-development-page, .application-modernization-page, .user-centered-design-page, .mad-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .services-page, .devops-consult-page, .infra-management-page, .about-us-page, .careers-page, .jobs-openings-page, .case-studies-page, .contact-us-page) .offer-col,
   :is(.home-page, .ai-services-page, .solutions-page, .application-development-page, .application-modernization-page, .user-centered-design-page, .mad-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .services-page, .devops-consult-page, .infra-management-page, .about-us-page, .careers-page, .jobs-openings-page, .case-studies-page, .contact-us-page) .offer-hover-visual,
-  :is(.home-page, .ai-services-page, .solutions-page, .application-development-page, .application-modernization-page, .user-centered-design-page, .mad-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .services-page, .devops-consult-page, .infra-management-page, .about-us-page, .careers-page, .jobs-openings-page, .case-studies-page, .contact-us-page) .offer-link img {
+  :is(.home-page, .ai-services-page, .solutions-page, .application-development-page, .application-modernization-page, .user-centered-design-page, .mad-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .services-page, .devops-consult-page, .infra-management-page, .about-us-page, .careers-page, .jobs-openings-page, .case-studies-page, .contact-us-page) .offer-link img,
+  :is(.home-page, .ai-services-page, .solutions-page, .application-development-page, .application-modernization-page, .user-centered-design-page, .mad-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .services-page, .devops-consult-page, .infra-management-page, .about-us-page, .careers-page, .jobs-openings-page, .case-studies-page, .contact-us-page) .case-card,
+  :is(.home-page, .ai-services-page, .solutions-page, .application-development-page, .application-modernization-page, .user-centered-design-page, .mad-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .services-page, .devops-consult-page, .infra-management-page, .about-us-page, .careers-page, .jobs-openings-page, .case-studies-page, .contact-us-page) .insight-card,
+  :is(.home-page, .ai-services-page, .solutions-page, .application-development-page, .application-modernization-page, .user-centered-design-page, .mad-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .services-page, .devops-consult-page, .infra-management-page, .about-us-page, .careers-page, .jobs-openings-page, .case-studies-page, .contact-us-page) .contact-visual img {
     transition: none;
     animation: none;
+    transform: none;
   }
 
 }

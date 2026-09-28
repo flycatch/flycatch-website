@@ -3,7 +3,7 @@ import { infraRelevance } from '../lib/infra-static';
 ---
 <section class="infra-relevance" aria-labelledby="infra-relevance-heading">
   <div class="container infra-relevance-layout">
-    <div class="infra-relevance-left">
+    <div class="infra-relevance-left" data-section-reveal data-reveal="rise">
       <h2 id="infra-relevance-heading">{infraRelevance.title}</h2>
       <p>{infraRelevance.description}</p>
       <img
@@ -15,11 +15,11 @@ import { infraRelevance } from '../lib/infra-static';
         loading="lazy"
       />
     </div>
-    <div class="infra-relevance-right">
+    <div class="infra-relevance-right" data-reveal-stagger>
       {infraRelevance.items.map((item, index) => (
         <>
           {index > 0 && <hr class="infra-relevance-divider" />}
-          <article class="infra-relevance-item">
+          <article class="infra-relevance-item" data-section-reveal data-reveal="rise">
             <h3>{item.title}</h3>
             <p>{item.body}</p>
           </article>

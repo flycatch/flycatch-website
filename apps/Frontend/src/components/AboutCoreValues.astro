@@ -29,15 +29,15 @@ const values = [
 ---
 <section class="about-values" aria-labelledby="values-heading">
   <div class="container">
-    <header class="about-values-head">
+    <header class="about-values-head" data-section-reveal data-reveal="rise">
       <h2 id="values-heading" class="type-section">Core values</h2>
       <p class="lede type-lede">
         Flycatch's journey all along is rooted by some firm beliefs and ethics which will never change.
       </p>
     </header>
-    <ul class="about-values-grid">
+    <ul class="about-values-grid" data-reveal-stagger>
       {values.map((value) => (
-        <li class="about-value-card">
+        <li class="about-value-card" data-section-reveal data-reveal="rise">
           <div class="about-value-media">
             <img src={value.image} alt="" width="100" height="100" loading="lazy" />
           </div>

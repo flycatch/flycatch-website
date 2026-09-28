@@ -18,7 +18,7 @@ const show = Boolean(title || paragraphs.length);
 {show && (
   <section class="mad-intro" aria-labelledby="mad-intro-heading">
     <div class="container">
-      <div class="mad-intro-inner">
+      <div class="mad-intro-inner" data-section-reveal data-reveal="rise">
         <h2 id="mad-intro-heading" class="type-section" hidden={!title}>{title}</h2>
         {paragraphs.map((item) =>
           item.html ? (
