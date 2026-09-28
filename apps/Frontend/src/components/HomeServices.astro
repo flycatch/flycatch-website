@@ -6,9 +6,11 @@ import type { HomeService } from '../lib/public-api';
 interface Props {
   services: HomeService[];
   error?: boolean;
+  title?: string;
 }
 
-const { services } = Astro.props;
+const { services, title = '' } = Astro.props;
+const heading = title.trim() || t('home.services');
 
 function serviceHref(raw: string): string {
   const value = raw.trim();
@@ -50,7 +52,7 @@ function serviceHref(raw: string): string {
   <div class="container services-stage-inner">
     <div class="services-layout">
         <div class="services-nav">
-          <h2 class="type-section">{t('home.services')}</h2>
+          <h2 class="type-section">{heading}</h2>
           <div class="services-nav-track">
             <span class="services-nav-arrow" aria-hidden="true"></span>
             <ul data-service-nav>
