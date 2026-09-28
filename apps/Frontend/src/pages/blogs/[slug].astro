@@ -1,9 +1,13 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/blogs.css';
+import '../../styles/blog-detail.css';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
+import HomeCta from '../../components/HomeCta.astro';
 import SectionState from '../../components/SectionState.astro';
-import { loadPublishedBlog, publicMediaUrl } from '../../lib/public-api';
+import { loadPublishedBlog, loadPublishedBlogs, publicMediaUrl } from '../../lib/public-api';
+import type { PublicBlogSummary } from '../../lib/public-api';
 import { fallbackMetadata, metadataFromBlog, publicSiteSettings } from '../../lib/metadata';
 import { blogStructuredData } from '../../lib/json-ld';
 import { t } from '../../lib/i18n';
@@ -11,9 +15,66 @@ import { t } from '../../lib/i18n';
 const { slug } = Astro.params;
 if (!slug) throw new Error('Blog slug missing');
 
-const siteSettings = publicSiteSettings();
-const result = await loadPublishedBlog(slug);
+function escapeAttr(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;');
+}
+
+function blogBodyHtml(html: string, cover: string | null, coverAlt: string) {
+  const withMedia = html.replace(/src=(["'])media:([^"']+)\1/gi, (_match, quote: string, key: string) => {
+    const url = publicMediaUrl(decodeURIComponent(key));
+    return url ? `src=${quote}${url}${quote}` : `src=${quote}${quote}`;
+  });
+  const withHeadings = withMedia.replace(/<h1(\s|>)/gi, '<h2$1').replace(/<\/h1>/gi, '</h2>');
+  if (cover && !/<img\b/i.test(withHeadings)) {
+    return `<img src="${escapeAttr(cover)}" alt="${escapeAttr(coverAlt)}" />${withHeadings}`;
+  }
+  return withHeadings;
+}
+
+function ordinalDay(day: number) {
+  const mod100 = day % 100;
+  if (mod100 >= 11 && mod100 <= 13) return `${day}th`;
+  if (day % 10 === 1) return `${day}st`;
+  if (day % 10 === 2) return `${day}nd`;
+  if (day % 10 === 3) return `${day}rd`;
+  return `${day}th`;
+}
+
+const monthsShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const monthsLong = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
+function formatArticleDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return `${ordinalDay(date.getUTCDate())} ${monthsShort[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
+}
+
+function formatRelatedDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  return `${day} ${monthsLong[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
+}
+
+const [result, listed] = await Promise.all([loadPublishedBlog(slug), loadPublishedBlogs()]);
 const blog = result.item;
+const siteSettings = publicSiteSettings();
 const metadata = blog
   ? metadataFromBlog(blog, siteSettings, `/blogs/${blog.slug}`)
   : fallbackMetadata(
@@ -22,34 +83,184 @@ const metadata = blog
       result.error ? t('home.error') : t('blog.not_found'),
     );
 const structuredData = blog ? blogStructuredData(blog, metadata, siteSettings) : [];
-const image = blog ? publicMediaUrl(blog.image_key) : null;
+const cover = blog ? publicMediaUrl(blog.image_key) : null;
+const summary = listed.items.find((item) => item.slug === slug);
+const publishedOn = summary ? formatArticleDate(summary.created_at) : '';
+const bodyHtml = blog ? blogBodyHtml(blog.body, cover, blog.image_alt || blog.title) : '';
+const shareLinks = blog
+  ? [
+      { href: blog.facebook.trim(), label: 'Facebook', icon: 'facebook' },
+      { href: blog.linkedin.trim(), label: 'LinkedIn', icon: 'linkedin' },
+      { href: blog.instagram.trim(), label: 'Instagram', icon: 'instagram' },
+      { href: blog.twitter.trim(), label: 'Twitter', icon: 'twitter' },
+    ].filter((item) => item.href)
+  : [];
+const categoryNames = new Set((blog?.categories ?? []).map((category) => category.name));
+const relatedBlogs: PublicBlogSummary[] =
+  blog && categoryNames.size > 0
+    ? [...listed.items]
+        .filter(
+          (item) =>
+            item.slug !== slug && item.categories.some((category) => categoryNames.has(category.name)),
+        )
+        .sort((a, b) => {
+          const dateA = Date.parse(a.created_at);
+          const dateB = Date.parse(b.created_at);
+          const hasA = Number.isFinite(dateA);
+          const hasB = Number.isFinite(dateB);
+          if (hasA && hasB && dateB !== dateA) return dateB - dateA;
+          if (hasA !== hasB) return hasA ? -1 : 1;
+          return a.title.localeCompare(b.title);
+        })
+        .slice(0, 2)
+    : [];
+const showRelated = Boolean(blog && categoryNames.size > 0 && (relatedBlogs.length > 0 || listed.error));
 ---
 <BaseLayout title={metadata.title} metadata={metadata} structuredData={structuredData}>
   <SiteHeader />
-  <main id="main" class="page-main" data-api-origin={result.origin}>
-    <article class="container">
-      <SectionState error={result.error} empty={!result.error && !blog} />{blog ? (
-        <div>
-          <p class="insight-meta">
-            <span>{t('home.blog_label')}</span>
-            <span>{t('blog.reading_time', { minutes: blog.reading_time })}</span>
+  <main id="main" class="blog-detail-page" data-api-origin={result.origin}>
+    {blog ? (
+      <article class="blog-detail-width blog-detail">
+        <a class="blog-back" href="/company/blogs">
+          <svg viewBox="64 64 896 896" focusable="false" aria-hidden="true">
+            <path fill="currentColor" d="M872 474H286.9l350.2-304c5.6-4.9 2.2-14-5.2-14h-88.5c-3.9 0-7.6 1.4-10.5 3.9L155 487.8a31.96 31.96 0 000 48.3L535.1 866c1.5 1.3 3.3 2 5.2 2h91.5c7.4 0 10.8-9.2 5.2-14L286.9 550H872c4.4 0 8-3.6 8-8v-60c0-4.4-3.6-8-8-8z"></path>
+          </svg>
+          {t('nav.blogs')}
+        </a>
+        <h1>{blog.title}</h1>
+        {blog.authors.map((author) => {
+          const portrait = publicMediaUrl(author.writer_image_keys[0]);
+          const initial = author.name.trim().charAt(0).toUpperCase();
+          const role = author.designation.trim()
+            ? `${author.designation.trim()}, ${t('blog.company')}`
+            : t('blog.company');
+          return (
+            <div class="blog-author">
+              {portrait ? (
+                <img class="blog-author-avatar" src={portrait} alt={author.name} width="50" height="50" />
+              ) : (
+                <span class="blog-author-fallback" aria-hidden="true">{initial}</span>
+              )}
+              <div>
+                <p class="blog-author-name">{author.name}</p>
+                <p class="blog-author-role">{role}</p>
+              </div>
+            </div>
+          );
+        })}
+        {(blog.reading_time || publishedOn) && (
+          <p class="blog-meta">
+            {blog.reading_time > 0 && <span>{t('blog.reading_time', { minutes: blog.reading_time })}</span>}
+            {publishedOn && <time datetime={summary?.created_at}>{publishedOn}</time>}
           </p>
-          <h1>{blog.title}</h1>
-          <p class="lede">{blog.description}</p>
-          <div class="media-frame" hidden={!image}>{image && <img src={image} alt={blog.image_alt || blog.title} width="1192" height="640" />}</div>
-          <div class="body-region" set:html={blog.body} />{blog.authors.length > 0 && (
-            <section>
-              <h2>{t('blog.authors')}</h2>
-              <ul>{blog.authors.map((author) => (
-                <li>{author.name}{author.designation ? ` — ${author.designation}` : ''}</li>
-              ))}</ul>
-            </section>
-          )}
-        </div>
-      ) : (
+        )}
+        {shareLinks.length > 0 && (
+          <ul class="blog-share">
+            {shareLinks.map((item) => (
+              <li>
+                <a href={item.href} target="_blank" rel="noopener noreferrer" aria-label={item.label}>
+                  {item.icon === 'facebook' && (
+                    <svg width="32" height="32" viewBox="0 0 24 24" aria-hidden="true">
+                      <path fill="currentColor" d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4V10c0-.6.4-1 1-1Z"></path>
+                    </svg>
+                  )}
+                  {item.icon === 'linkedin' && (
+                    <svg width="32" height="32" viewBox="0 0 24 24" aria-hidden="true">
+                      <path fill="currentColor" d="M6.5 9H4V20h2.5V9ZM5.2 4C4.2 4 3.4 4.8 3.4 5.8s.8 1.8 1.8 1.8 1.8-.8 1.8-1.8S6.3 4 5.2 4ZM20 20h-2.5v-5.6c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9V20H11V9h2.4v1.5c.3-.6 1.2-1.8 3.1-1.8 3.3 0 3.9 2.2 3.9 5V20Z"></path>
+                    </svg>
+                  )}
+                  {item.icon === 'instagram' && (
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <rect x="3.5" y="3.5" width="17" height="17" rx="5" stroke="currentColor" stroke-width="1.5"></rect>
+                      <circle cx="12" cy="12" r="3.75" stroke="currentColor" stroke-width="1.5"></circle>
+                      <circle cx="17.2" cy="6.8" r="1" fill="currentColor"></circle>
+                    </svg>
+                  )}
+                  {item.icon === 'twitter' && (
+                    <svg width="33" height="32" viewBox="0 0 24 24" aria-hidden="true">
+                      <path fill="currentColor" d="M14.7 10.3 22.4 2h-1.8l-6.7 7.2L8.8 2H2.2l8.1 11.2L2.2 22h1.8l7.1-7.6L15.2 22h6.6l-7.1-11.7Zm-2.5 2.7-.8-1.1L4.7 3.3h2.8l5.2 7 .8 1.1 6.8 9.3h-2.8l-5.3-7.4Z"></path>
+                    </svg>
+                  )}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+        {bodyHtml && <div class="blog-body" set:html={bodyHtml} />}
+        {blog.categories.length > 0 && (
+          <ul class="blog-tags">
+            {blog.categories.map((category) => (
+              <li>{category.name}</li>
+            ))}
+          </ul>
+        )}
+        <hr class="blog-divider" />
+      </article>
+    ) : (
+      <section class="blog-detail-width blog-detail">
+        <a class="blog-back" href="/company/blogs">
+          <svg viewBox="64 64 896 896" focusable="false" aria-hidden="true">
+            <path fill="currentColor" d="M872 474H286.9l350.2-304c5.6-4.9 2.2-14-5.2-14h-88.5c-3.9 0-7.6 1.4-10.5 3.9L155 487.8a31.96 31.96 0 000 48.3L535.1 866c1.5 1.3 3.3 2 5.2 2h91.5c7.4 0 10.8-9.2 5.2-14L286.9 550H872c4.4 0 8-3.6 8-8v-60c0-4.4-3.6-8-8-8z"></path>
+          </svg>
+          {t('nav.blogs')}
+        </a>
         <h1>{t('blog.not_found')}</h1>
-      )}
-    </article>
+        <SectionState error={result.error} empty={!result.error} />
+      </section>
+    )}
+    {showRelated && (
+      <section class="blog-related" aria-labelledby="related-blogs-heading">
+        <div class="blog-detail-width">
+          <h2 id="related-blogs-heading" class="blog-related-title">{t('blog.related')}</h2>
+          <div class="blog-related-content">
+            <SectionState error={listed.error} empty={!listed.error && relatedBlogs.length === 0} />
+            {relatedBlogs.length > 0 && (
+              <div class="blog-related-grid">
+                {relatedBlogs.map((item) => {
+                  const image = publicMediaUrl(item.image_key);
+                  const created = formatRelatedDate(item.created_at);
+                  const meta = [created, item.reading_time > 0 ? `${item.reading_time} min` : '']
+                    .filter(Boolean)
+                    .join(' - ');
+                  return (
+                    <article class="blogs-card">
+                      <a href={`/blogs/${item.slug}`}>
+                        {image ? (
+                          <div class="blogs-card-media">
+                            <img src={image} alt={item.image_alt || item.title} width="377" height="210" loading="lazy" />
+                          </div>
+                        ) : (
+                          <div class="blogs-card-media"></div>
+                        )}
+                        <div class="blogs-card-body">
+                          <p class="blogs-card-meta">
+                            <span class="blogs-card-category">{t('home.blog_label')}</span>
+                            {meta && <time datetime={item.created_at}>{meta}</time>}
+                          </p>
+                          <h3 class="blogs-card-title">{item.title}</h3>
+                          {item.categories.length > 0 && (
+                            <div class="blogs-card-tags">
+                              {item.categories.map((category) => (
+                                <span class="blogs-card-tag">{category.name}</span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </a>
+                    </article>
+                  );
+                })}
+              </div>
+            )}
+            <a class="btn blog-insights-btn" href="/company/blogs">
+              {t('home.view_insights')}
+              <img src="/icon-arrow-right.svg" width="21" height="21" alt="" />
+            </a>
+          </div>
+        </div>
+      </section>
+    )}
+    <HomeCta />
   </main>
   <SiteFooter />
 </BaseLayout>
