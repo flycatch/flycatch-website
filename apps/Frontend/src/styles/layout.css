@@ -2179,6 +2179,31 @@ html.js [data-ucd-reveal].is-visible {
   transform: none;
 }
 
+html.js [data-reveal-stagger] > [data-section-reveal][data-reveal='rise']:nth-child(1) {
+  transition-delay: 0ms;
+}
+html.js [data-reveal-stagger] > [data-section-reveal][data-reveal='rise']:nth-child(2) {
+  transition-delay: 70ms;
+}
+html.js [data-reveal-stagger] > [data-section-reveal][data-reveal='rise']:nth-child(3) {
+  transition-delay: 140ms;
+}
+html.js [data-reveal-stagger] > [data-section-reveal][data-reveal='rise']:nth-child(4) {
+  transition-delay: 210ms;
+}
+html.js [data-reveal-stagger] > [data-section-reveal][data-reveal='rise']:nth-child(5) {
+  transition-delay: 280ms;
+}
+html.js [data-reveal-stagger] > [data-section-reveal][data-reveal='rise']:nth-child(6) {
+  transition-delay: 350ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js [data-reveal-stagger] > [data-section-reveal][data-reveal='rise'] {
+    transition-delay: 0ms;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -2238,7 +2263,11 @@ html.js [data-ucd-reveal].is-visible {
   .clients-marquee-track,
   .offer-col,
   .offer-hover-visual,
-  .offer-link img {
+  .offer-link img,
+  .case-card,
+  .insight-card,
+  .about-value-card,
+  .contact-visual img {
     transition: none;
     animation: none;
   }

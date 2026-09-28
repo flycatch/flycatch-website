@@ -19,3 +19,21 @@ test('procure-flex rise clusters reveal once', async ({ page }) => {
   await page.evaluate(() => window.scrollTo(0, 0));
   await expect(cluster).toHaveClass(/is-visible/);
 });
+
+test('home contact rise reveals once', async ({ page }) => {
+  await page.goto('/');
+  const contact = page.locator('#contact [data-section-reveal][data-reveal="rise"]').first();
+  await contact.scrollIntoViewIfNeeded();
+  await expect(contact).toHaveClass(/is-visible/, { timeout: 1500 });
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(contact).toHaveClass(/is-visible/);
+});
+
+test('about intro rise reveals once', async ({ page }) => {
+  await page.goto('/company/about-us');
+  const row = page.locator('.about-intro-row[data-section-reveal][data-reveal="rise"]').first();
+  await row.scrollIntoViewIfNeeded();
+  await expect(row).toHaveClass(/is-visible/, { timeout: 1500 });
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(row).toHaveClass(/is-visible/);
+});

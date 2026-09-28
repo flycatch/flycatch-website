@@ -17,7 +17,7 @@ const show = Boolean(title || firstMarkup || secondMarkup);
 ---
 {show && (
   <section class="dt-intro" aria-labelledby="dt-intro-heading">
-    <div class="container dt-intro-layout">
+    <div class="container dt-intro-layout" data-section-reveal data-reveal="rise">
       <h2 id="dt-intro-heading" class="type-section dt-intro-title" hidden={!title}>{title}</h2>
       <div class="dt-intro-body" hidden={!(firstMarkup || secondMarkup)}>
         <div class="type-lede" hidden={!firstMarkup} set:html={firstMarkup}></div>

@@ -24,13 +24,15 @@ const show = Boolean(heading || body.html || body.text || image || rows.length);
 {show && (
   <section class="devops-experience ads-offerings" aria-labelledby="devops-experience-heading">
     <div class="container">
-      <h2 id="devops-experience-heading" class="type-section" hidden={!heading}>{heading}</h2>
+      <h2 id="devops-experience-heading" class="type-section" hidden={!heading} data-section-reveal data-reveal="rise">{heading}</h2>
       <div
         class="ads-offerings-description type-lede"
         hidden={!(body.html || body.text)}
         set:html={body.html || body.text}
+        data-section-reveal
+        data-reveal="rise"
       ></div>
-      <div class="ads-offerings-body" hidden={!(image || rows.length)}>
+      <div class="ads-offerings-body" hidden={!(image || rows.length)} data-section-reveal data-reveal="rise">
         <div class="ads-offerings-media" hidden={!image}>
           {image && <img src={image} alt="" width="375" height="450" loading="lazy" />}
         </div>

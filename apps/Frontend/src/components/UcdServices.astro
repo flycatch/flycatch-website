@@ -27,15 +27,17 @@ const services = [
 <section class="ucd-services" aria-labelledby="ucd-services-heading">
   <div class="ucd-services-desktop">
     <div class="container ucd-services-wrap">
-      <div class="ucd-services-left">
+      <div class="ucd-services-left" data-section-reveal data-reveal="rise">
         <h2 id="ucd-services-heading" class="type-section">{t('page.user_centered_design.services_title')}</h2>
         <p class="type-lede">{t('page.user_centered_design.services_description')}</p>
       </div>
-      <div class="ucd-services-right">
+      <div class="ucd-services-right" data-reveal-stagger>
         {services.map((service) => (
           <div
             class="ucd-services-panel"
             style={`background-image: url('${service.background}')`}
+            data-section-reveal
+            data-reveal="rise"
           >
             <h3 class="type-section">{service.title}</h3>
           </div>
@@ -44,12 +46,12 @@ const services = [
     </div>
   </div>
   <div class="ucd-services-mobile">
-    <div class="container ucd-services-mobile-intro">
+    <div class="container ucd-services-mobile-intro" data-section-reveal data-reveal="rise">
       <h2 class="type-section">{t('page.user_centered_design.services_title')}</h2>
       <p class="type-lede">{t('page.user_centered_design.services_description')}</p>
     </div>
     {services.map((service) => (
-      <div class="ucd-services-card">
+      <div class="ucd-services-card" data-section-reveal data-reveal="rise">
         <div class="container ucd-services-card-inner">
           <img src={service.icon} alt="" width="116" height="100" loading="lazy" />
           <h3 class="type-section">{service.title}</h3>

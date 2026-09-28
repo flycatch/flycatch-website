@@ -17,7 +17,7 @@ const items = [
 <section class="about-vision" aria-labelledby="vision-heading">
   <h2 id="vision-heading" class="seo-hidden">Vision</h2>
   {items.map((item) => (
-    <div class="container about-vision-row">
+    <div class="container about-vision-row" data-section-reveal data-reveal="rise">
       <div class="about-vision-media">
         <img src={item.image} alt={item.alt} width="240" height="240" loading="lazy" />
       </div>

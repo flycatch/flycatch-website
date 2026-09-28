@@ -22,7 +22,7 @@ const rows = [
 ---
 <section class="about-intro" id="who-we-are">
   {rows.map((row) => (
-    <div class="container about-intro-row">
+    <div class="container about-intro-row" data-section-reveal data-reveal="rise">
       <div class="about-intro-media">
         <img src={row.image} alt={row.alt} width="640" height="420" loading="lazy" />
       </div>

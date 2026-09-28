@@ -24,11 +24,11 @@ const show = Boolean(title || description || image || items.length);
 {show && (
   <section class="ai-expertise" aria-labelledby="ai-expertise-heading">
     <div class="container">
-      <div class="ai-expertise-head" hidden={!(title || description)}>
+      <div class="ai-expertise-head" hidden={!(title || description)} data-section-reveal data-reveal="rise">
         <h2 id="ai-expertise-heading" class="type-display-lg" hidden={!title}>{title}</h2>
         <div class="ai-copy" hidden={!description} set:html={description}></div>
       </div>
-      <div class="ai-expertise-body" hidden={!(image || items.length)}>
+      <div class="ai-expertise-body" hidden={!(image || items.length)} data-section-reveal data-reveal="rise">
         <div class="ai-expertise-media" hidden={!image}>{image && (
             <img src={image} alt="" width="377" height="450" loading="lazy" />
           )}

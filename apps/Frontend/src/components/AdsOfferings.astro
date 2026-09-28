@@ -18,13 +18,15 @@ const show = Boolean(title || description.html || description.text || image || i
 {show && (
   <section class="ads-offerings" id="ads-offerings" aria-labelledby="ads-offerings-heading">
     <div class="container">
-      <h2 id="ads-offerings-heading" class="type-section" hidden={!title}>{title}</h2>
+      <h2 id="ads-offerings-heading" class="type-section" hidden={!title} data-section-reveal data-reveal="rise">{title}</h2>
       <div
         class="ads-offerings-description type-lede"
         hidden={!(description.html || description.text)}
         set:html={description.html || description.text}
+        data-section-reveal
+        data-reveal="rise"
       ></div>
-      <div class="ads-offerings-body" hidden={!(image || items.length)}>
+      <div class="ads-offerings-body" hidden={!(image || items.length)} data-section-reveal data-reveal="rise">
         <div class="ads-offerings-media" hidden={!image}>
           {image && <img src={image} alt="" width="375" height="450" loading="lazy" />}
         </div>

@@ -47,12 +47,12 @@ const hideOnHome = home && visible.length === 0;
           </svg>
           <p class="case-works-label">{t('home.view_works')}</p>
         </div>
-        <div class="case-home-list">
+        <div class="case-home-list" data-reveal-stagger>
           {visible.map((study) => {
             const image = publicMediaUrl(study.image_key);
             const industry = study.industries[0]?.name;
             return (
-              <article class="case-card">
+              <article class="case-card" data-section-reveal data-reveal="rise">
                 {image ? (
                   <div class="media-frame case-media">
                     <img
@@ -92,7 +92,7 @@ const hideOnHome = home && visible.length === 0;
           const image = publicMediaUrl(study.image_key);
           const industry = study.industries[0]?.name;
           return (
-            <article class="case-card">
+            <article class="case-card" data-section-reveal data-reveal="rise">
               {image ? (
                 <div class="media-frame">
                   <img
