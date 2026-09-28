@@ -1,3 +1,4 @@
+// Documented exception: one-shot pin reveal, not shared zoom. Honour reduced motion.
 function initAboutGlobalPins() {
   const root = document.querySelector('[data-about-global]');
   if (!(root instanceof HTMLElement)) return;

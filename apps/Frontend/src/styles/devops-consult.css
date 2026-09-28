@@ -144,19 +144,6 @@
   display: block;
 }
 
-.devops-approach-media [data-ucd-reveal] {
-  opacity: 0;
-  transform: translateY(24px);
-  transition:
-    opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.devops-approach-media [data-ucd-reveal].is-visible {
-  opacity: 1;
-  transform: none;
-}
-
 .devops-experience {
   background: #ffffff;
 }
@@ -232,10 +219,3 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .devops-approach-media [data-ucd-reveal] {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-}

@@ -53,10 +53,14 @@ const jsonLd = structuredData.map((block) => JSON.stringify(block));
     <meta name="twitter:description" content={metadata.socialDescription} />{jsonLd.map((json) => (
       <script type="application/ld+json" set:html={json} />
     ))}
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#main">{t('site.skip_to_content')}</a>
     <slot />
+    <script src="../scripts/hero-entrance.ts"></script>
   </body>
 </html>
 

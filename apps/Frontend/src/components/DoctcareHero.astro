@@ -21,9 +21,8 @@ const alt = page.seo.image_alt.trim() || title || page.title;
   )}
   <div class="doctcare-hero-overlay" aria-hidden="true"></div>
   <div class="container doctcare-hero-copy">
-    <h1 id="doctcare-heading" class="doctcare-hero-title" hidden={!title}>{title}</h1>
+    <h1 id="doctcare-heading" class="doctcare-hero-title" hidden={!title} data-hero-entrance>{title}</h1>
     <p class="doctcare-hero-kicker" hidden={!subTitle}>{subTitle}</p>
     <p class="doctcare-hero-industry" hidden={!industry}>{industry}</p>
   </div>
 </section>
-<script src="../scripts/doctcare-hero.ts"></script>

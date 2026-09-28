@@ -31,9 +31,9 @@ const hideOnHome = home && visible.length === 0;
 >
   <div class="container">
     {home ? (
-      <h2 class="type-section">{t('home.clients')}</h2>
+      <h2 class="type-section" data-section-reveal>{t('home.clients')}</h2>
     ) : (
-      <h1 class="type-section">{t('home.clients')}</h1>
+      <h1 class="type-section" data-hero-entrance>{t('home.clients')}</h1>
     )}
     <p class="lede type-lede">{t('home.clients_intro')}</p>
     <SectionState error={error} empty={!home && !error && visible.length === 0} />

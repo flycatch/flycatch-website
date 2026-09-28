@@ -5,7 +5,7 @@ import { procureFlexCopy as copy } from '../lib/procure-flex-data';
 ---
 <section class="pf-quote" aria-label={t('page.procureflex.title')}>
   <div class="container pf-quote-inner">
-    <div data-pf-reveal>
+    <div data-section-reveal data-reveal="rise">
       <ProcureFlexWordmark
         tone="light"
         size="large"
@@ -14,7 +14,7 @@ import { procureFlexCopy as copy } from '../lib/procure-flex-data';
         alt={copy.wordmark.altLight}
       />
     </div>
-    <blockquote class="pf-quote-copy" data-pf-reveal>
+    <blockquote class="pf-quote-copy" data-section-reveal data-reveal="rise">
       <img
         class="pf-quote-mark"
         src="/procure-flex/quote.svg"

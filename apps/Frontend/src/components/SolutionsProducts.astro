@@ -15,7 +15,7 @@ const heading = title.trim();
 ---
 <section class="solutions-products" aria-labelledby="solutions-products-heading">
   <div class="container">
-    <h2 id="solutions-products-heading" class="type-display" hidden={!heading}>{heading}</h2>
+    <h2 id="solutions-products-heading" class="type-display" hidden={!heading} data-section-reveal>{heading}</h2>
     <SectionState error={error} empty={!error && products.length === 0} />
     <div class="solutions-product-list" hidden={!products.length}>{products.map((product) => {
         const image = publicMediaUrl(product.product_card_image_key);
@@ -28,6 +28,7 @@ const heading = title.trim();
         return (
           <article
             class:list={['solutions-product', { 'is-image-left': !product.card_image_on_right }]}
+            data-section-reveal
           >{image ? (
               <div class="solutions-product-media has-image">
                 <img src={image} alt="" width="705" height="420" loading="lazy" />
@@ -59,24 +60,3 @@ const heading = title.trim();
     </div>
   </div>
 </section>
-
-<script>
-  const products = document.querySelectorAll('.solutions-product');
-  if (products.length) {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-          } else {
-            entry.target.classList.remove('is-visible');
-          }
-        });
-      },
-      {
-        threshold: 0.1,
-      },
-    );
-    products.forEach((product) => observer.observe(product));
-  }
-</script>

@@ -38,7 +38,7 @@ const hideOnHome = home && featured.length === 0;
 {!hideOnHome && (
 <section class="section section-muted" id="insights">
   <div class="container">
-    <h2 class="type-section">{t('home.insights')}</h2>
+    <h2 class="type-section" data-section-reveal>{t('home.insights')}</h2>
     <SectionState error={error} empty={!home && !error && featured.length === 0} />
     {featured.length > 0 && (
       <div class="insight-grid">

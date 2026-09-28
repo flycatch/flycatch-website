@@ -23,7 +23,7 @@ const carouselSlides = [
   ...slides.map((slide) => ({ src: slide.src, alt: '', hidden: true })),
 ];
 ---
-<div class="acs-showcase-carousel" data-acs-reveal>
+<div class="acs-showcase-carousel" data-section-reveal data-reveal="rise">
   <div class="swiper acs-showcase-swiper acs-slider-push-down">
     <div class="swiper-wrapper">
       {carouselSlides.map((slide) => (

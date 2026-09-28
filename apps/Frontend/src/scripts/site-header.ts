@@ -206,18 +206,13 @@ function initSiteHeader() {
   const syncHeader = () => {
     const y = window.scrollY;
     const goingDown = y > lastY + 2;
-    const goingUp = y < lastY - 2;
 
     if (goingDown && y > 16 && !drawerOpen) {
-      header.classList.add('is-hidden');
       closeMenus();
-    } else if (goingUp || y <= 8 || drawerOpen) {
-      header.classList.remove('is-hidden');
     }
 
     if (header.dataset.tone === 'dark') {
-      const showSolid = y > 8 && !header.classList.contains('is-hidden');
-      header.classList.toggle('is-scrolled', showSolid);
+      header.classList.toggle('is-scrolled', y > 8);
     }
 
     lastY = y;

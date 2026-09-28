@@ -109,4 +109,6 @@
   --shadow-menu: 0 12px 40px var(--color-shadow);
   --motion-media: 0.45s ease;
   --motion-nav: 0.3s ease;
+  --motion-entrance: 0.6s ease-out;
+  --motion-nav-hover: 0.4s ease-in-out;
 }

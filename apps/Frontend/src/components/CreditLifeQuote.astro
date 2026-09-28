@@ -3,7 +3,7 @@ import { creditLifeCopy as copy } from '../lib/credit-life-data';
 ---
 <section class="cl-quote" aria-label={copy.hero.logoAlt}>
   <div class="container cl-quote-inner">
-    <div class="cl-quote-copy" data-cl-reveal>
+    <div class="cl-quote-copy" data-section-reveal data-reveal="rise">
       <img
         class="cl-quote-mark"
         src="/credit-life/quote.svg"
@@ -13,7 +13,7 @@ import { creditLifeCopy as copy } from '../lib/credit-life-data';
       />
       <p class="cl-quote-text">{copy.quote.text}</p>
     </div>
-    <div class="cl-quote-media" data-cl-reveal>
+    <div class="cl-quote-media" data-section-reveal data-reveal="rise">
       <img
         src="/credit-life/intro.webp"
         alt={copy.quote.imageAlt}

@@ -3,22 +3,6 @@ import { Autoplay, EffectCoverflow } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 
-function initCreditLifeReveal() {
-  const nodes = document.querySelectorAll('[data-cl-reveal]');
-  if (!nodes.length) return;
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-        }
-      });
-    },
-    { threshold: 0.12 },
-  );
-  nodes.forEach((node) => observer.observe(node));
-}
-
 function initCreditLifeShowcase() {
   const el = document.querySelector<HTMLElement>('.cl-showcase-swiper');
   if (!el || el.classList.contains('swiper-initialized')) return;
@@ -46,5 +30,4 @@ function initCreditLifeShowcase() {
   });
 }
 
-initCreditLifeReveal();
 initCreditLifeShowcase();

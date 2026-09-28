@@ -9,10 +9,10 @@ import { creditLifeCopy as copy } from '../lib/credit-life-data';
       width="703"
       height="491"
       loading="lazy"
-      data-cl-reveal
+      data-section-reveal data-reveal="rise"
     />
     {copy.stakeholders.items.map((item) => (
-      <p class="cl-stakeholders-text" data-cl-reveal>{item}</p>
+      <p class="cl-stakeholders-text" data-section-reveal data-reveal="rise">{item}</p>
     ))}
   </div>
 </section>

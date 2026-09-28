@@ -29,8 +29,7 @@ const heading = page?.banner_title.trim() || fallbackTitle;
   )}
   <div class="ads-hero-overlay" aria-hidden="true"></div>
   <div class="container ads-hero-copy">
-    <h1 id="ads-heading" class="type-hero">{heading}</h1>
+    <h1 id="ads-heading" class="type-hero" data-hero-entrance>{heading}</h1>
     {!page && <SectionState error={failed} empty={!failed} />}
   </div>
 </section>
-<script src="../scripts/ads-hero.ts"></script>

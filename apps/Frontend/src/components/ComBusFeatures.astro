@@ -4,8 +4,8 @@ import { comBusCopy as copy } from '../lib/com-bus-data';
 <section class="cb-features" aria-labelledby="cb-features-heading">
   <div class="container cb-features-inner">
     <div class="cb-features-aside">
-      <h2 id="cb-features-heading" class="cb-display" data-cb-reveal>{copy.features.heading}</h2>
-      <p class="cb-feature-intro" data-cb-reveal>{copy.features.intro}</p>
+      <h2 id="cb-features-heading" class="cb-display" data-section-reveal data-reveal="rise">{copy.features.heading}</h2>
+      <p class="cb-feature-intro" data-section-reveal data-reveal="rise">{copy.features.intro}</p>
       <img
         class="cb-features-visual"
         src="/com-bus/keyFeaturesIcon.webp"
@@ -13,12 +13,12 @@ import { comBusCopy as copy } from '../lib/com-bus-data';
         width="300"
         height="300"
         loading="lazy"
-        data-cb-reveal
+        data-section-reveal data-reveal="rise"
       />
     </div>
     <ul class="cb-feature-list">
       {copy.features.items.map((item) => (
-        <li class="cb-feature" data-cb-reveal>
+        <li class="cb-feature" data-section-reveal data-reveal="rise">
           <img
             class="cb-feature-icon"
             src={item.icon}

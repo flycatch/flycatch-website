@@ -127,7 +127,7 @@ const showRelated = Boolean(blog && categoryNames.size > 0 && (relatedBlogs.leng
           </svg>
           {t('nav.blogs')}
         </a>
-        <h1>{blog.title}</h1>
+        <h1 data-hero-entrance>{blog.title}</h1>
         {blog.authors.map((author) => {
           const portrait = publicMediaUrl(author.writer_image_keys[0]);
           const initial = author.name.trim().charAt(0).toUpperCase();
@@ -204,7 +204,7 @@ const showRelated = Boolean(blog && categoryNames.size > 0 && (relatedBlogs.leng
           </svg>
           {t('nav.blogs')}
         </a>
-        <h1>{t('blog.not_found')}</h1>
+        <h1 data-hero-entrance>{t('blog.not_found')}</h1>
         <SectionState error={result.error} empty={!result.error} />
       </section>
     )}

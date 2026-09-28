@@ -25,8 +25,7 @@ const alt = page?.seo.image_alt.trim() || heading || t('page.services.title');
   />
   <div class="services-hero-overlay" aria-hidden="true"></div>
   <div class="container services-hero-copy">
-    <h1 id="services-heading" class="type-display-lg" hidden={!heading}>{heading}</h1>
+    <h1 id="services-heading" class="type-display-lg" hidden={!heading} data-hero-entrance>{heading}</h1>
     {!page && <SectionState error={failed} empty={!failed} />}
   </div>
 </section>
-<script src="../scripts/services-hero.ts"></script>

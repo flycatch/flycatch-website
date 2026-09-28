@@ -4,8 +4,8 @@ import { aiChatSupportCopy as copy } from '../lib/ai-chat-support-data';
 <section class="acs-features" aria-labelledby="acs-features-heading">
   <div class="container acs-features-inner">
     <div class="acs-features-aside">
-      <h2 id="acs-features-heading" class="acs-display" data-acs-reveal>{copy.features.heading}</h2>
-      <p class="acs-feature-intro" data-acs-reveal>{copy.features.intro}</p>
+      <h2 id="acs-features-heading" class="acs-display" data-section-reveal data-reveal="rise">{copy.features.heading}</h2>
+      <p class="acs-feature-intro" data-section-reveal data-reveal="rise">{copy.features.intro}</p>
       <img
         class="acs-features-visual"
         src="/ai-chat-support/key-features.webp"
@@ -13,12 +13,12 @@ import { aiChatSupportCopy as copy } from '../lib/ai-chat-support-data';
         width="480"
         height="510"
         loading="lazy"
-        data-acs-reveal
+        data-section-reveal data-reveal="rise"
       />
     </div>
     <ul class="acs-feature-list">
       {copy.features.items.map((item) => (
-        <li class="acs-feature" data-acs-reveal>
+        <li class="acs-feature" data-section-reveal data-reveal="rise">
           <img
             class="acs-feature-icon"
             src={item.icon}
