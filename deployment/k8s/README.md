@@ -12,8 +12,20 @@ The Caddy gateway config is shared at [base/Caddyfile](base/Caddyfile) (Compose 
 deployment/k8s/
   base/                 # Namespace, Deployments, Services, ConfigMap, Caddyfile ConfigMap
   overlays/dev/         # Ingress (TLS), noindex Middleware, image tags, replica counts
-  scripts/deploy-dev.sh # Build/push Harbor images + bump overlay tags
+  scripts/deploy-dev.sh # Disabled: superseded by Jenkins, body commented out
 ```
+
+Jenkins (`Jenkinsfile` + `.cicd.yaml` at the repo root, using the shared
+`harborImagePipeline()`) now builds and pushes the three images on every push
+to `dev` and bumps `overlays/dev/kustomization.yaml` automatically.
+Jenkins-published tags look like `dev-v0.1.0.42` (mutable `dev` tag +
+immutable `dev-v0.1.0.42` tag), replacing the raw commit-SHA tags
+`deploy-dev.sh` used to produce.
+
+`deploy-dev.sh` is disabled (`exit 0` at the top) so it can't be run by
+accident and clash with Jenkins. Its body is commented out below that guard —
+uncomment it and remove the `exit 0` only if Jenkins is genuinely unavailable
+and you need to build/push/bump by hand.
 
 The Argo CD Application is owned by the platform app-of-apps in
 [flycatch/k3s-platform](https://github.com/flycatch/k3s-platform):
@@ -167,7 +179,13 @@ flycatch-website-dev.k3s.flycatchtech.in → <Traefik LoadBalancer IP>
 
 ## 6. Build, push, and bump image tags
 
-From a machine that can reach Harbor (LAN/VPN), with a clean git working tree:
+Normal path: push to `dev` and let the Jenkins multibranch pipeline
+(`harborImagePipeline()`, configured via `.cicd.yaml`) build, push, and bump
+`overlays/dev/kustomization.yaml` for you.
+
+Manual fallback (only if Jenkins is unavailable): `deploy-dev.sh` is disabled
+(commented out behind an `exit 0` guard). Uncomment it, then from a machine
+that can reach Harbor (LAN/VPN), with a clean git working tree:
 
 ```bash
 export HARBOR_USERNAME='robot$flycatch-website+githubbot'
