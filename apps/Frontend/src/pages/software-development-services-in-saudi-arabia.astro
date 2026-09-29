@@ -40,15 +40,12 @@ const siteSettings = publicSiteSettings();
 const page = saudiResult.item;
 const services = (page?.service_section ?? []).map(saudiSectionToHomeService);
 const metadata = page
-  ? metadataFromContentSeo(page.seo, siteSettings, t('page.saudi.title'))
+  ? metadataFromContentSeo(page.seo, siteSettings, pagePath, t('page.saudi.title'))
   : fallbackMetadata(
       pagePath,
       t('page.saudi.title'),
       saudiResult.error ? t('home.error') : t('home.empty'),
     );
-if (page && !page.seo.canonical_url.trim()) {
-  metadata.canonical = fallbackMetadata(pagePath, metadata.title, metadata.description).canonical;
-}
 const structuredData = page
   ? [
       {

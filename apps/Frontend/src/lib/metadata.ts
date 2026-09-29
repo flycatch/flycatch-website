@@ -37,8 +37,56 @@ export interface PageMetadata {
 
 export function buildCanonicalUrl(origin: string, path: string): string {
   const normalizedOrigin = origin.replace(/\/$/, '');
-  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  const normalizedPath = normalizePublicPath(path);
   return `${normalizedOrigin}${normalizedPath}`;
+}
+
+/** Normalize a public path: leading slash, no trailing slash except `/`. */
+export function normalizePublicPath(path: string): string {
+  const trimmed = path.trim() || '/';
+  const withSlash = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
+  if (withSlash.length > 1 && withSlash.endsWith('/')) return withSlash.slice(0, -1);
+  return withSlash || '/';
+}
+
+/** Strip a default-locale `/en` prefix from a pathname. */
+export function stripLocalePrefix(pathname: string): string {
+  const path = normalizePublicPath(pathname);
+  if (path === '/en') return '/';
+  if (path.startsWith('/en/')) return normalizePublicPath(path.slice(3));
+  return path;
+}
+
+/**
+ * Prefer the live page path for canonicals. Use a CMS absolute/relative URL only when
+ * its pathname (after `/en` strip) matches the current path. Never point a non-home
+ * page at `/`.
+ */
+export function resolvePublicCanonical(
+  origin: string,
+  path: string,
+  cmsUrl?: string | null,
+): string {
+  const expectedPath = normalizePublicPath(path);
+  const fallback = buildCanonicalUrl(origin, expectedPath);
+  const raw = cmsUrl?.trim() || '';
+  if (!raw) return fallback;
+
+  let cmsPathname = '';
+  if (raw.startsWith('http://') || raw.startsWith('https://')) {
+    try {
+      cmsPathname = new URL(raw).pathname;
+    } catch {
+      return fallback;
+    }
+  } else {
+    cmsPathname = raw;
+  }
+
+  const sanitizedCmsPath = stripLocalePrefix(cmsPathname);
+  if (sanitizedCmsPath !== expectedPath) return fallback;
+  if (expectedPath !== '/' && sanitizedCmsPath === '/') return fallback;
+  return buildCanonicalUrl(origin, expectedPath);
 }
 
 export function buildPageMetadata(
@@ -72,14 +120,16 @@ export function documentTitleFromSeo(
 export function metadataFromContentSeo(
   seo: ContentSeo,
   siteSettings: SiteSettings,
+  path: string,
   fallbackPageName = siteSettings.site_name,
 ): PageMetadata {
   const title = documentTitleFromSeo(seo, fallbackPageName);
   const description = seo.description.trim() || siteSettings.site_name;
-  const canonical =
-    seo.canonical_url.startsWith('http://') || seo.canonical_url.startsWith('https://')
-      ? seo.canonical_url
-      : buildCanonicalUrl(siteSettings.canonical_origin, seo.canonical_url || '/');
+  const canonical = resolvePublicCanonical(
+    siteSettings.canonical_origin,
+    path,
+    seo.canonical_url,
+  );
   const socialImageKey = seo.image_key ?? siteSettings.default_social_image_key ?? null;
   return {
     title,
@@ -103,10 +153,11 @@ export function metadataFromBlog(
   siteSettings: SiteSettings,
   path: string,
 ): PageMetadata {
-  const canonical =
-    blog.canonical_url.startsWith('http://') || blog.canonical_url.startsWith('https://')
-      ? blog.canonical_url
-      : buildCanonicalUrl(siteSettings.canonical_origin, path);
+  const canonical = resolvePublicCanonical(
+    siteSettings.canonical_origin,
+    path,
+    blog.canonical_url,
+  );
   return {
     title: blog.title.trim() || siteSettings.site_name,
     description: blog.description.trim() || siteSettings.site_name,
@@ -179,12 +230,11 @@ export function metadataFromNews(
     (seoDescription && !isGenericNewsLabel(seoDescription) ? seoDescription : '') ||
     news.description.trim() ||
     siteSettings.site_name;
-  const canonicalRaw = seo?.canonical_url?.trim() || '';
-  const canonical =
-    canonicalRaw.includes(news.slug) &&
-    (canonicalRaw.startsWith('http://') || canonicalRaw.startsWith('https://'))
-      ? canonicalRaw
-      : buildCanonicalUrl(siteSettings.canonical_origin, path);
+  const canonical = resolvePublicCanonical(
+    siteSettings.canonical_origin,
+    path,
+    seo?.canonical_url,
+  );
   const socialImageKey = seo?.image_key || news.image_key;
   return {
     title,

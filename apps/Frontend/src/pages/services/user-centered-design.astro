@@ -41,7 +41,7 @@ const page = detail.item;
 const failed = detail.error || (listed.error && !page);
 const siteSettings = publicSiteSettings();
 const metadata = page
-  ? metadataFromContentSeo(page.seo, siteSettings, t('page.user_centered_design.title'))
+  ? metadataFromContentSeo(page.seo, siteSettings, '/services/user-centered-design', t('page.user_centered_design.title'))
   : fallbackMetadata(
       '/services/user-centered-design',
       t('page.user_centered_design.title'),

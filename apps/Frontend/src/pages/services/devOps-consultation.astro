@@ -66,7 +66,7 @@ const failed = detail.error || (listed.error && !page);
 const siteSettings = publicSiteSettings();
 const fallbackTitle = t('page.devops_consult.title');
 const metadata = page
-  ? metadataFromContentSeo(page.seo, siteSettings, fallbackTitle)
+  ? metadataFromContentSeo(page.seo, siteSettings, '/services/devOps-consultation', fallbackTitle)
   : fallbackMetadata(
       '/services/devOps-consultation',
       fallbackTitle,

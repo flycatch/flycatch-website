@@ -37,7 +37,7 @@ const landing = page ? digitalTransformationAsOfferingsLanding(page) : null;
 const failed = detail.error || (listed.error && !page);
 const siteSettings = publicSiteSettings();
 const metadata = page
-  ? metadataFromContentSeo(page.seo, siteSettings, t('page.digital_transformation.title'))
+  ? metadataFromContentSeo(page.seo, siteSettings, '/services/digital-transformation', t('page.digital_transformation.title'))
   : fallbackMetadata(
       '/services/digital-transformation',
       t('page.digital_transformation.title'),

@@ -64,7 +64,7 @@ const failed = detail.error || (listed.error && !page);
 const siteSettings = publicSiteSettings();
 const fallbackTitle = t('page.infra_management.title');
 const metadata = page
-  ? metadataFromContentSeo(page.seo, siteSettings, fallbackTitle)
+  ? metadataFromContentSeo(page.seo, siteSettings, '/services/infrastructure-management-and-automation', fallbackTitle)
   : fallbackMetadata(
       '/services/infrastructure-management-and-automation',
       fallbackTitle,

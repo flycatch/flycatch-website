@@ -17,19 +17,12 @@ const membership = membershipResult.item;
 const failed = membershipResult.error;
 const siteSettings = publicSiteSettings();
 const metadata = membership
-  ? metadataFromContentSeo(membership.seo, siteSettings, t('page.memberships.title'))
+  ? metadataFromContentSeo(membership.seo, siteSettings, '/company/memberships', t('page.memberships.title'))
   : fallbackMetadata(
       '/company/memberships',
       t('page.memberships.title'),
       failed ? t('home.error') : t('home.empty'),
     );
-if (membership && !membership.seo.canonical_url.trim()) {
-  metadata.canonical = fallbackMetadata(
-    '/company/memberships',
-    metadata.title,
-    metadata.description,
-  ).canonical;
-}
 metadata.indexable = !failed;
 const structuredData =
   failed || !membership

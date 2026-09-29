@@ -42,7 +42,7 @@ function renderCard(blog: BlogCard) {
   article.dataset.categories = categoryNames.join('|');
 
   const link = document.createElement('a');
-  link.href = `/blogs/${blog.slug}`;
+  link.href = `/company/blogs/${blog.slug}`;
 
   const media = document.createElement('div');
   media.className = 'blogs-card-media';
@@ -183,7 +183,7 @@ function initBlogsListing() {
   const appendBlogs = (items: BlogCard[]) => {
     const seen = new Set(cards().map((card) => card.querySelector('a')?.getAttribute('href')));
     items.forEach((blog) => {
-      const href = `/blogs/${blog.slug}`;
+      const href = `/company/blogs/${blog.slug}`;
       if (seen.has(href)) return;
       seen.add(href);
       grid.append(renderCard(blog));

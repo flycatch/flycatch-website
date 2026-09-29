@@ -44,7 +44,7 @@ const failed = detail.error || (listed.error && !page);
 const siteSettings = publicSiteSettings();
 const fallbackTitle = t('page.mobile_application.title');
 const metadata = page
-  ? metadataFromContentSeo(page.seo, siteSettings, fallbackTitle)
+  ? metadataFromContentSeo(page.seo, siteSettings, '/services/mobile-application-development', fallbackTitle)
   : fallbackMetadata(
       '/services/mobile-application-development',
       fallbackTitle,

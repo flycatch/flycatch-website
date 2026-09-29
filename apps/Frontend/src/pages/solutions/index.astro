@@ -27,7 +27,7 @@ const page = listed.items[0] ?? null;
 const failed = listed.error && !page;
 const siteSettings = publicSiteSettings();
 const metadata = page
-  ? metadataFromContentSeo(page.seo, siteSettings, t('page.solutions.title'))
+  ? metadataFromContentSeo(page.seo, siteSettings, '/solutions', t('page.solutions.title'))
   : fallbackMetadata(
       '/solutions',
       t('page.solutions.title'),

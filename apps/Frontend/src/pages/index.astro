@@ -39,7 +39,7 @@ const [homesResult, logosResult, testimonialsResult, blogsResult] = await Promis
 const siteSettings = publicSiteSettings();
 const home = homesResult.items[0] ?? null;
 const metadata = home
-  ? metadataFromContentSeo(home.seo, siteSettings, t('page.home.title'))
+  ? metadataFromContentSeo(home.seo, siteSettings, '/', t('page.home.title'))
   : fallbackMetadata(
       '/',
       t('page.home.title'),

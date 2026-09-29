@@ -47,7 +47,7 @@ const hideOnHome = home && featured.length === 0;
           const created = formatCreatedDate(blog.created_at);
           return (
             <article class="insight-card" data-section-reveal data-reveal="rise">
-              <a href={`/blogs/${blog.slug}`}>
+              <a href={`/company/blogs/${blog.slug}`}>
                 {image ? (
                   <div class="media-frame">
                     <img src={image} alt={blog.image_alt || blog.title} width="377" height="244" loading="lazy" />

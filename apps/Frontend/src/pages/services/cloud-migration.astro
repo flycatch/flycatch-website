@@ -38,7 +38,7 @@ const landing = page ? namedServiceAsOfferingsLanding(page) : null;
 const failed = detail.error || (listed.error && !page);
 const siteSettings = publicSiteSettings();
 const metadata = page
-  ? metadataFromContentSeo(page.seo, siteSettings, t('page.cloud_migration.title'))
+  ? metadataFromContentSeo(page.seo, siteSettings, '/services/cloud-migration', t('page.cloud_migration.title'))
   : fallbackMetadata(
       '/services/cloud-migration',
       t('page.cloud_migration.title'),
