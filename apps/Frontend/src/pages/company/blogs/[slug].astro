@@ -74,6 +74,9 @@ function formatRelatedDate(value: string) {
 
 const [result, listed] = await Promise.all([loadPublishedBlog(slug), loadPublishedBlogs()]);
 const blog = result.item;
+if (!blog) {
+  Astro.response.status = result.error ? 503 : 404;
+}
 const siteSettings = publicSiteSettings();
 const metadata = blog
   ? metadataFromBlog(blog, siteSettings, `/company/blogs/${blog.slug}`)

@@ -11,8 +11,38 @@ describe('seo redirects', () => {
 
   it('maps legacy and duplicate paths', () => {
     expect(redirectTarget('/about')).toBe('/company/about-us');
+    expect(redirectTarget('/about-us')).toBe('/company/about-us');
     expect(redirectTarget('/company/membership')).toBe('/company/memberships');
     expect(redirectTarget('/blogs/my-post')).toBe('/company/blogs/my-post');
+    expect(redirectTarget('/services/data-management')).toBe('/services/data-migration');
+    expect(redirectTarget('/solutions/combus')).toBe('/solutions/com-bus');
+  });
+
+  it('normalizes lowercase AI solution slugs to sitemap camelCase', () => {
+    expect(redirectTarget('/solutions/flygrid-ai')).toBe('/solutions/flyGrid-ai');
+    expect(redirectTarget('/solutions/doctcare-ai')).toBe('/solutions/doctCare-ai');
+    expect(redirectTarget('/solutions/docsis-ai')).toBe('/solutions/docSis-ai');
+    expect(redirectTarget('/solutions/talkshop-ai')).toBe('/solutions/talkShop-ai');
+    expect(redirectTarget('/solutions/flyGrid-ai')).toBeNull();
+    expect(redirectTarget('/solutions/credit-life')).toBeNull();
+    expect(redirectTarget('/solutions/com-bus')).toBeNull();
+  });
+
+  it('redirects the truncated cloud-migration blog slug', () => {
+    const long =
+      '/company/blogs/explore-practical-cloud-migration-strategies-that-enhance-scalability-security-and-performance-learn-how-to-plan-execute-and-optimize-your-move-to-the-cloud';
+    const short =
+      '/company/blogs/explore-practical-cloud-migration-strategies-that-enhance-scalability-security-and-performance-learn-how-to-plan-execute-and-opt';
+    expect(redirectTarget(long)).toBe(short);
+    expect(redirectTarget(short)).toBeNull();
+  });
+
+  it('composes /en stripping with legacy maps in one hop', () => {
+    expect(redirectTarget('/en/company/membership')).toBe('/company/memberships');
+    expect(redirectTarget('/en/company/membership/')).toBe('/company/memberships');
+    expect(redirectTarget('/en/solutions/flygrid-ai/')).toBe('/solutions/flyGrid-ai');
+    expect(redirectTarget('/en/about-us')).toBe('/company/about-us');
+    expect(redirectTarget('/en/services/data-management')).toBe('/services/data-migration');
   });
 
   it('strips trailing slashes and skips admin/api', () => {

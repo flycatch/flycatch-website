@@ -44,6 +44,9 @@ const [result, listed, blogsResult, testimonials] = await Promise.all([
   loadPublishedClientTestimonials(),
 ]);
 const study = result.item;
+if (!study) {
+  Astro.response.status = result.error ? 503 : 404;
+}
 const siteSettings = publicSiteSettings();
 const metadata = study
   ? metadataFromCaseStudy(study, siteSettings, `/case-studies/${study.slug}`)
