@@ -8,6 +8,9 @@ resources:
 - ingress.yaml
 - noindex-middleware.yaml
 
+patches:
+- path: config-patch.yaml
+
 images:
 - name: registry.k3s.flycatchtech.in/flycatch-website/administration-fe
   newTag: dev-v0.1.0.19

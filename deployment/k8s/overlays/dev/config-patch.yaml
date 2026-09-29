@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flycatch-website-config
+  labels:
+    app.kubernetes.io/name: flycatch-website
+data:
+  # Dev reCAPTCHA v2 site key (pair with RECAPTCHA_SECRET_KEY in the dev Secret).
+  PUBLIC_RECAPTCHA_SITE_KEY: "6Ldx3M4tAAAAAEyHUp1Qt8GF3H3JuKHqFbdD9JsH"
