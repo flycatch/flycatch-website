@@ -4,17 +4,15 @@ metadata:
   name: flycatch-website
   labels:
     app.kubernetes.io/name: flycatch-website
-  # TLS / Let's Encrypt: enable ONLY after Cloudflare points www.flycatchtech.com
-  # at the Traefik LB. Enabling cert-manager before DNS causes failed HTTP-01
-  # Orders and can exhaust Let's Encrypt rate limits. After DNS:
-  #   annotations:
-  #     cert-manager.io/cluster-issuer: letsencrypt-production
-  #   spec.tls:
-  #     - hosts: [www.flycatchtech.com]
-  #       secretName: flycatch-website-prod-tls
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
   # Do not add Traefik noindex middleware on production.
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - www.flycatchtech.com
+      secretName: flycatch-website-prod-tls
   rules:
     - host: www.flycatchtech.com
       http:
