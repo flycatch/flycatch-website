@@ -1,5 +1,6 @@
 import { newsMetaLabel, youtubeEmbedUrl } from '../lib/news-media';
 import { t } from '../lib/i18n';
+import { descriptiveLinkSuffix } from '../lib/link-text';
 
 type NewsCategory = { name: string };
 type NewsItem = {
@@ -92,12 +93,15 @@ function renderItem(item: NewsItem) {
   link.href = `/company/news-and-events/${item.slug}`;
   const buttonName = item.button_name?.trim() || '';
   const linkText = buttonName || t('home.read_more');
-  link.setAttribute(
-    'aria-label',
-    buttonName || t('home.read_more_about', { title: item.title }),
-  );
+  const linkSuffix = descriptiveLinkSuffix(linkText, item.title);
   const text = document.createElement('span');
-  text.textContent = linkText;
+  text.append(document.createTextNode(linkText));
+  if (linkSuffix) {
+    const hidden = document.createElement('span');
+    hidden.className = 'visually-hidden';
+    hidden.textContent = linkSuffix;
+    text.append(hidden);
+  }
   const icon = document.createElement('img');
   icon.src = '/icon-arrow-right.svg';
   icon.width = 21;

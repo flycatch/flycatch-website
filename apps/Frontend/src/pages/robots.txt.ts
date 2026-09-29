@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { apiOrigin } from '../lib/public-api';
 
 // Dynamic env key — Vite must not replace this at build time (ConfigMap sets it in k8s).
 const publicEnvironment =
@@ -14,7 +15,7 @@ export const GET: APIRoute = () => {
         'Disallow: /admin',
         'Disallow: /api',
         '',
-        'Sitemap: /sitemap.xml',
+        `Sitemap: ${apiOrigin()}/sitemap.xml`,
         '',
       ].join('\n')
     : ['User-agent: *', 'Disallow: /', ''].join('\n');
