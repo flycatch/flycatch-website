@@ -357,6 +357,8 @@
   height: auto;
   object-fit: contain;
   border-radius: 12px;
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
 .about-career-copy {

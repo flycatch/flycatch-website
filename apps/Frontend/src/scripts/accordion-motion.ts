@@ -1,15 +1,24 @@
 const ACCORDION = '.ads-accordion, .ai-accordion, .mad-accordion, .faq-item';
-const DURATION = 450;
+const BASE_MS = 450;
+const MAX_MS = 900;
 const EASING = 'cubic-bezier(0.4, 0, 0.2, 1)';
-const TRANSITION = [
-  'height',
-  'padding-top',
-  'padding-bottom',
-  'margin-top',
-  'margin-bottom',
-]
-  .map((property) => `${property} ${DURATION}ms ${EASING}`)
-  .join(', ');
+
+function durationFor(from: Box, to: Box) {
+  const distance =
+    Math.abs(to.content - from.content) +
+    Math.abs((parseFloat(to.paddingTop) || 0) - (parseFloat(from.paddingTop) || 0)) +
+    Math.abs((parseFloat(to.paddingBottom) || 0) - (parseFloat(from.paddingBottom) || 0)) +
+    Math.abs((parseFloat(to.marginTop) || 0) - (parseFloat(from.marginTop) || 0)) +
+    Math.abs((parseFloat(to.marginBottom) || 0) - (parseFloat(from.marginBottom) || 0));
+  const ms = Math.round(distance / (480 / BASE_MS));
+  return Math.min(MAX_MS, Math.max(BASE_MS, ms));
+}
+
+function transitionFor(ms: number) {
+  return ['height', 'padding-top', 'padding-bottom', 'margin-top', 'margin-bottom']
+    .map((property) => `${property} ${ms}ms ${EASING}`)
+    .join(', ');
+}
 
 type Box = {
   content: number;
@@ -130,10 +139,13 @@ function applyBox(panel: HTMLElement, box: Box, transition: string) {
   panel.style.marginBottom = box.marginBottom;
 }
 
-function play(panel: HTMLElement, from: Box, to: Box) {
+function play(details: HTMLDetailsElement, panel: HTMLElement, from: Box, to: Box) {
+  const ms = durationFor(from, to);
+  const icon = details.querySelector('summary img');
+  if (icon instanceof HTMLElement) icon.style.transitionDuration = `${ms}ms`;
   applyBox(panel, from, 'none');
   panel.getBoundingClientRect();
-  applyBox(panel, to, TRANSITION);
+  applyBox(panel, to, transitionFor(ms));
   return new Promise<void>((resolve) => {
     let timer = 0;
     const done = () => {
@@ -144,7 +156,7 @@ function play(panel: HTMLElement, from: Box, to: Box) {
     const onEnd = (event: TransitionEvent) => {
       if (event.target === panel && event.propertyName === 'height') done();
     };
-    timer = window.setTimeout(done, DURATION + 60);
+    timer = window.setTimeout(done, ms + 80);
     panel.addEventListener('transitionend', onEnd);
   });
 }
@@ -173,7 +185,7 @@ function initAccordionMotion() {
         node.open = true;
         node.classList.remove('is-closing');
         node.dataset.accordionPhase = 'opening';
-        void play(panel, from, to).then(() => {
+        void play(node, panel, from, to).then(() => {
           if (run !== token) return;
           clearInline(panel);
           node.dataset.accordionPhase = 'open';
@@ -184,7 +196,7 @@ function initAccordionMotion() {
       const from = readBox(panel);
       node.classList.add('is-closing');
       node.dataset.accordionPhase = 'closing';
-      void play(panel, from, ZERO).then(() => {
+      void play(node, panel, from, ZERO).then(() => {
         if (run !== token) return;
         node.open = false;
         node.classList.remove('is-closing');
