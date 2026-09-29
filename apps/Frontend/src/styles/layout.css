@@ -268,6 +268,11 @@ input:focus-visible {
   color: var(--color-red);
 }
 
+.nav-trigger.is-current,
+.nav-link.is-current {
+  color: var(--color-red);
+}
+
 .flyout {
   display: none;
   position: absolute;
@@ -402,7 +407,8 @@ input:focus-visible {
   transition: color var(--motion-nav);
 }
 
-.flyout a:hover {
+.flyout a:hover,
+.flyout a.is-current {
   color: var(--color-red);
 }
 
@@ -437,7 +443,10 @@ input:focus-visible {
   color: var(--color-on-dark);
 }
 
-.contact-cta:hover {
+.contact-cta:hover,
+.contact-cta.is-current,
+.tone-light .contact-cta.is-current,
+.is-scrolled .contact-cta.is-current {
   background: var(--color-red);
   color: var(--color-on-dark);
 }
@@ -629,6 +638,10 @@ input:focus-visible {
   cursor: pointer;
 }
 
+.mobile-drawer-item.is-current {
+  color: var(--color-red);
+}
+
 .mobile-drawer-item img {
   width: 26px;
   height: 27px;
@@ -644,7 +657,8 @@ input:focus-visible {
   color: var(--color-text);
 }
 
-.mobile-drawer-cta:hover {
+.mobile-drawer-cta:hover,
+.mobile-drawer-cta.is-current {
   background: var(--color-red);
   color: var(--color-on-dark);
 }
@@ -2110,19 +2124,8 @@ body.is-mobile-drawer-open {
 }
 
 @media (min-width: 1024px) and (hover: hover) {
-  .nav-trigger,
-  .nav-link {
-    transition:
-      color var(--motion-nav-hover),
-      transform var(--motion-nav-hover);
-  }
-
   .nav-trigger:hover,
-  .nav-link:hover {
-    color: var(--color-red);
-    transform: scale(1.1);
-  }
-
+  .nav-link:hover,
   .nav-trigger:focus-visible,
   .nav-link:focus-visible {
     color: var(--color-red);
@@ -2244,10 +2247,12 @@ html.js [data-reveal-stagger] > [data-section-reveal][data-reveal='rise']:nth-ch
     animation: none;
   }
 
-  .nav-trigger,
-  .nav-link,
-  .nav-trigger:hover,
-  .nav-link:hover {
+  .site-header .nav-trigger,
+  .site-header .nav-link,
+  .site-header .flyout li > a,
+  .site-header .nav-trigger:hover,
+  .site-header .nav-link:hover,
+  .site-header .flyout li > a:hover {
     transform: none;
   }
 
@@ -2284,5 +2289,47 @@ html.js [data-reveal-stagger] > [data-section-reveal][data-reveal='rise']:nth-ch
   .contact-visual img {
     transition: none;
     animation: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .site-header .nav-cluster,
+  .site-header .nav-item,
+  .site-header .flyout li {
+    overflow: visible;
+  }
+
+  .site-header .nav-trigger,
+  .site-header .nav-link,
+  .site-header .flyout li > a {
+    transform: scale(1);
+    transform-origin: center;
+    transition:
+      color var(--motion-nav-hover),
+      transform var(--motion-nav-hover);
+  }
+
+  .site-header .flyout li > a {
+    transform-origin: left center;
+  }
+
+  .site-header .nav-trigger:hover,
+  .site-header .nav-link:hover,
+  .site-header .flyout li > a:hover {
+    position: relative;
+    z-index: 1;
+    transform: scale(1.1);
+  }
+}
+
+@media (min-width: 1024px) and (prefers-reduced-motion: reduce) {
+  .site-header .nav-trigger,
+  .site-header .nav-link,
+  .site-header .flyout li > a,
+  .site-header .nav-trigger:hover,
+  .site-header .nav-link:hover,
+  .site-header .flyout li > a:hover {
+    transform: none;
+    transition: none;
   }
 }
