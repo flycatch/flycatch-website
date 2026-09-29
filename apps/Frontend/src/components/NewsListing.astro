@@ -1,5 +1,6 @@
 ---
 import { t } from '../lib/i18n';
+import { descriptiveLinkSuffix } from '../lib/link-text';
 import { newsMetaLabel, youtubeEmbedUrl } from '../lib/news-media';
 import { publicMediaUrl } from '../lib/public-api';
 import type { PublicNews, PublicNewsCategory } from '../lib/public-api';
@@ -61,9 +62,7 @@ const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.n
         const alt = item.seo?.image_alt || item.title;
         const categoryNames = item.news_categories.map((category) => category.name).filter(Boolean);
         const label = item.button_name.trim() || t('home.read_more');
-        const readLabel = item.button_name.trim()
-          ? label
-          : t('home.read_more_about', { title: item.title });
+        const labelSuffix = descriptiveLinkSuffix(label, item.title);
         const featured = index === 0;
         return (
           <article
@@ -94,8 +93,11 @@ const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.n
               </p>
               <h2 class="news-title">{item.title}</h2>
               {item.description && <p class="news-description">{item.description}</p>}
-              <a class="news-read" href={`/company/news-and-events/${item.slug}`} aria-label={readLabel}>
-                <span>{label}</span>
+              <a class="news-read" href={`/company/news-and-events/${item.slug}`}>
+                <span>
+                  {label}
+                  {labelSuffix && <span class="visually-hidden">{labelSuffix}</span>}
+                </span>
                 <img src="/icon-arrow-right.svg" width="21" height="21" alt="" />
               </a>
             </div>
