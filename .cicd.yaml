@@ -1,0 +1,47 @@
+app:
+  name: flycatch-website
+
+registry: registry.k3s.flycatchtech.in
+
+notifications:
+  enabled: true
+
+# Only `dev` has a k8s overlay today (deployment/k8s/overlays/dev). qa/uat/main
+# are stubbed so pushes to those branches fail clearly at the GitOps Tag Bump
+# stage (missing overlay) instead of "branch not supported" - add the matching
+# overlay directory under deployment/k8s/overlays/<env> before relying on them.
+environments:
+  dev: dev
+  qa: qa
+  uat: uat
+  main: prod
+
+versioning:
+  releaseBranch: main
+
+gitops:
+  overlayPath: deployment/k8s/overlays
+  credentialsId: github-credential
+
+images:
+  - name: flycatch-website/backend
+    dockerfile: apps/Backend/Dockerfile
+    context: apps/Backend
+    args: {}
+
+  - name: flycatch-website/frontend
+    dockerfile: apps/Frontend/Dockerfile
+    context: apps/Frontend
+    args:
+      PUBLIC_ORIGIN: https://flycatch-website-dev.k3s.flycatchtech.in
+      PUBLIC_ENVIRONMENT: development
+      PUBLIC_RECAPTCHA_SITE_KEY: 6Ldx3M4tAAAAAEyHUp1Qt8GF3H3JuKHqFbdD9JsH
+
+  - name: flycatch-website/administration-fe
+    dockerfile: apps/Administration-FE/Dockerfile
+    context: apps/Administration-FE
+    additionalContexts:
+      specs: specs
+    args:
+      PUBLIC_ORIGIN: https://flycatch-website-dev.k3s.flycatchtech.in
+      PUBLIC_ENVIRONMENT: development
