@@ -1,5 +1,5 @@
 import type { PageMetadata } from './metadata';
-import type { PublicBlogDetail, PublicCaseStudy, PublicOpening } from './public-api';
+import type { PublicBlogDetail, PublicCaseStudy, PublicNews, PublicOpening } from './public-api';
 import type { SeoMetadata, SiteSettings } from './published-snapshot';
 import { absoluteMediaUrl } from './public-api';
 
@@ -83,6 +83,32 @@ export function blogStructuredData(
         jobTitle: author.designation,
       })),
       timeRequired: `PT${Math.max(blog.reading_time, 1)}M`,
+    },
+  ];
+}
+
+export function newsStructuredData(
+  news: PublicNews,
+  metadata: PageMetadata,
+  siteSettings: SiteSettings,
+) {
+  const imageKey = news.seo?.image_key || news.image_key;
+  return [
+    buildOrganizationJsonLd(siteSettings),
+    {
+      '@context': 'https://schema.org',
+      '@type': 'NewsArticle',
+      headline: news.title,
+      description: metadata.description,
+      url: metadata.canonical,
+      datePublished: news.created_at,
+      image: absoluteMediaUrl(siteSettings.canonical_origin, imageKey) ?? undefined,
+      author: (news.authors ?? []).map((author) => ({
+        '@type': 'Person',
+        name: author.name,
+        jobTitle: author.designation,
+      })),
+      timeRequired: `PT${Math.max(news.reading_time, 1)}M`,
     },
   ];
 }

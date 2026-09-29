@@ -274,11 +274,15 @@
   height: 40px;
   flex-shrink: 0;
   overflow: clip;
-  transition: transform 0.3s ease;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .ai-accordion[open] summary img {
   transform: rotate(180deg);
+}
+
+.ai-accordion.is-closing summary img {
+  transform: none;
 }
 
 .ai-accordion-body {
