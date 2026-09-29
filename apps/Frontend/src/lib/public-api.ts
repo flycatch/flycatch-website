@@ -831,6 +831,12 @@ export async function loadPublishedNewsCategories(): Promise<PublicListResult<Pu
   return loadPaginated<PublicNewsCategory>('/api/v1/public/news-categories');
 }
 
+export async function loadPublishedNews(slug: string): Promise<PublicItemResult<PublicNews>> {
+  return getJson<PublicNews>(`/api/v1/public/news/${encodeURIComponent(slug)}`).then(
+    ({ data, error, origin }) => ({ item: data, error, origin }),
+  );
+}
+
 const RESOURCE_PAGE_SIZE = 10;
 
 export async function loadPublishedResourcePage(

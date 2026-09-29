@@ -40,6 +40,24 @@ export function youtubeEmbedUrl(value: string | null | undefined): string | null
   return `https://www.youtube.com/embed/${encodeURIComponent(match[1])}`;
 }
 
+const MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function ordinalDay(day: number) {
+  const mod100 = day % 100;
+  if (mod100 >= 11 && mod100 <= 13) return `${day}th`;
+  if (day % 10 === 1) return `${day}st`;
+  if (day % 10 === 2) return `${day}nd`;
+  if (day % 10 === 3) return `${day}rd`;
+  return `${day}th`;
+}
+
+export function formatNewsDetailDate(value: string | null | undefined): string {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return `${ordinalDay(date.getUTCDate())} ${MONTHS_SHORT[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
+}
+
 export function formatNewsDate(value: string | null | undefined): string {
   if (!value) return '';
   const date = new Date(value);
