@@ -21,7 +21,18 @@ test.describe('header motion', () => {
         if (!match) return 1;
         return Number(match[1].split(',')[0]);
       });
-      expect(scale).toBeCloseTo(1.1, 1);
+      expect(scale).toBeCloseTo(1.1, 2);
+
+      const servicesItem = page.locator('.nav-item.has-menu').filter({ has: page.getByRole('button', { name: 'Services' }) });
+      await servicesItem.locator('.nav-trigger').hover();
+      const flyoutLink = servicesItem.locator('.flyout li > a').first();
+      await flyoutLink.hover();
+      await expect.poll(async () => flyoutLink.evaluate((el) => {
+        const { transform } = getComputedStyle(el);
+        const match = transform.match(/matrix\(([^)]+)\)/);
+        if (!match) return 1;
+        return Number(match[1].split(',')[0]);
+      })).toBeCloseTo(1.1, 2);
 
       await page.evaluate(() => window.scrollBy(0, 500));
       const header = page.locator('.site-header');
@@ -30,7 +41,6 @@ test.describe('header motion', () => {
       expect(headerTransform === 'none' || !headerTransform.includes('matrix')).toBeTruthy();
       await expect(header).not.toHaveClass(/is-hidden/);
 
-      const servicesItem = page.locator('.nav-item.has-menu').filter({ has: page.getByRole('button', { name: 'Services' }) });
       await servicesItem.locator('.nav-trigger').hover();
       const flyout = servicesItem.locator('.flyout-panel');
       await expect(flyout).toBeVisible();

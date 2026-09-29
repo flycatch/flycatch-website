@@ -2,6 +2,9 @@
 import { t } from '../lib/i18n';
 import {
   companyMenuColumns,
+  currentNavHref,
+  isCurrentNavHref,
+  isNavSectionActive,
   mobileApplicationLinks,
   mobileCompanyLinks,
   mobileDevopsLinks,
@@ -18,6 +21,18 @@ interface Props {
 }
 
 const { tone = 'light' } = Astro.props;
+const pathname = Astro.url.pathname;
+const activeHref = currentNavHref(pathname);
+const servicesActive = isNavSectionActive(pathname, '/services');
+const companyActive = isNavSectionActive(pathname, '/company');
+const applicationActive = mobileApplicationLinks.some((link) =>
+  isNavSectionActive(pathname, link.href),
+);
+const devopsActive = mobileDevopsLinks.some((link) => isNavSectionActive(pathname, link.href));
+
+function currentLink(href: string) {
+  return isCurrentNavHref(pathname, href, activeHref);
+}
 ---
 <header class={`site-header tone-${tone}`} data-tone={tone}>
   <div class="container header-bar">
@@ -29,11 +44,12 @@ const { tone = 'light' } = Astro.props;
       <div class="nav-cluster">
         <div class="nav-item has-menu">
           <button
-            class="nav-trigger type-nav"
+            class:list={['nav-trigger type-nav', { 'is-current': servicesActive }]}
             type="button"
             aria-expanded="false"
             aria-controls="services-flyout"
             aria-haspopup="true"
+            aria-current={servicesActive ? 'true' : undefined}
           >
             {t('nav.services')}
           </button>
@@ -42,7 +58,11 @@ const { tone = 'light' } = Astro.props;
               <div class="container flyout-grid flyout-grid-services">
                 <div class="flyout-intro">
                   <p class="flyout-tagline">{t('nav.services_intro')}</p>
-                  <a class="btn btn-on-dark" href={servicesOverview.href}>
+                  <a
+                    class:list={['btn btn-on-dark', { 'is-current': currentLink(servicesOverview.href) }]}
+                    href={servicesOverview.href}
+                    aria-current={currentLink(servicesOverview.href) ? 'page' : undefined}
+                  >
                     {t(servicesOverview.labelKey)}
                     <svg width="24" height="24" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                       <path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -53,7 +73,13 @@ const { tone = 'light' } = Astro.props;
                   <p class="flyout-heading">{t('nav.flyout_application_services')}</p>
                   <ul>
                     {serviceFlyoutApplication.links.map((link) => (
-                      <li><a href={link.href}>{t(link.labelKey)}</a></li>
+                      <li>
+                        <a
+                          href={link.href}
+                          class:list={{ 'is-current': currentLink(link.href) }}
+                          aria-current={currentLink(link.href) ? 'page' : undefined}
+                        >{t(link.labelKey)}</a>
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -61,28 +87,49 @@ const { tone = 'light' } = Astro.props;
                   <p class="flyout-heading">{t('nav.flyout_devops')}</p>
                   <ul>
                     {serviceFlyoutDevops.map((link) => (
-                      <li><a href={link.href}>{t(link.labelKey)}</a></li>
+                      <li>
+                        <a
+                          href={link.href}
+                          class:list={{ 'is-current': currentLink(link.href) }}
+                          aria-current={currentLink(link.href) ? 'page' : undefined}
+                        >{t(link.labelKey)}</a>
+                      </li>
                     ))}
                   </ul>
                 </div>
                 <ul>
                   {serviceFlyoutColumnFour.map((link) => (
-                    <li><a href={link.href}>{t(link.labelKey)}</a></li>
+                    <li>
+                      <a
+                        href={link.href}
+                        class:list={{ 'is-current': currentLink(link.href) }}
+                        aria-current={currentLink(link.href) ? 'page' : undefined}
+                      >{t(link.labelKey)}</a>
+                    </li>
                   ))}
                 </ul>
               </div>
             </div>
           </div>
         </div>
-        <a class="nav-link type-nav" href="/solutions">{t('nav.solutions')}</a>
-        <a class="nav-link type-nav" href="/case-studies">{t('nav.case_studies')}</a>
+        <a
+          class:list={['nav-link type-nav', { 'is-current': currentLink('/solutions') }]}
+          href="/solutions"
+          aria-current={currentLink('/solutions') ? 'page' : undefined}
+        >{t('nav.solutions')}</a>
+        <a
+          class:list={['nav-link type-nav', { 'is-current': currentLink('/case-studies') }]}
+          href="/case-studies"
+          aria-current={currentLink('/case-studies') ? 'page' : undefined}
+        >{t('nav.case_studies')}</a>
         <div class="nav-item has-menu">
           <button
-            class="nav-trigger type-nav"
+            class:list={['nav-trigger type-nav', { 'is-current': companyActive }]}
             type="button"
             aria-expanded="false"
             aria-controls="company-flyout"
             aria-haspopup="true"
+            aria-current={companyActive ? 'true' : undefined}
           >
             {t('nav.company')}
           </button>
@@ -93,7 +140,13 @@ const { tone = 'light' } = Astro.props;
               {companyMenuColumns.map((links) => (
                 <ul>
                   {links.map((link) => (
-                    <li><a href={link.href}>{t(link.labelKey)}</a></li>
+                    <li>
+                      <a
+                        href={link.href}
+                        class:list={{ 'is-current': currentLink(link.href) }}
+                        aria-current={currentLink(link.href) ? 'page' : undefined}
+                      >{t(link.labelKey)}</a>
+                    </li>
                   ))}
                 </ul>
               ))}
@@ -124,7 +177,11 @@ const { tone = 'light' } = Astro.props;
           </div>
         </div>
       </div>
-      <a class="contact-cta" href="/contact-us">{t('nav.contact')}</a>
+      <a
+        class:list={['contact-cta', { 'is-current': currentLink('/contact-us') }]}
+        href="/contact-us"
+        aria-current={currentLink('/contact-us') ? 'page' : undefined}
+      >{t('nav.contact')}</a>
     </nav>
     <button
       class="mobile-nav-toggle"
@@ -168,47 +225,73 @@ const { tone = 'light' } = Astro.props;
         <ul class="mobile-drawer-list">
           <li>
             <button
-              class="mobile-drawer-item"
+              class:list={['mobile-drawer-item', { 'is-current': servicesActive }]}
               type="button"
               data-mobile-push="services"
               aria-haspopup="true"
               aria-expanded="false"
               aria-controls="mobile-panel-services"
+              aria-current={servicesActive ? 'true' : undefined}
             >
               <span>{t('nav.services')}</span>
               <img src="/icon-menu-next.svg" width="26" height="27" alt="" aria-hidden="true" />
             </button>
           </li>
           <li>
-            <a class="mobile-drawer-item" href="/solutions">{t('nav.solutions')}</a>
+            <a
+              class:list={['mobile-drawer-item', { 'is-current': currentLink('/solutions') }]}
+              href="/solutions"
+              aria-current={currentLink('/solutions') ? 'page' : undefined}
+            >{t('nav.solutions')}</a>
           </li>
           <li>
-            <a class="mobile-drawer-item" href="/case-studies">{t('nav.mobile_case_studies')}</a>
+            <a
+              class:list={['mobile-drawer-item', { 'is-current': currentLink('/case-studies') }]}
+              href="/case-studies"
+              aria-current={currentLink('/case-studies') ? 'page' : undefined}
+            >{t('nav.mobile_case_studies')}</a>
           </li>
           <li>
             <button
-              class="mobile-drawer-item"
+              class:list={['mobile-drawer-item', { 'is-current': companyActive }]}
               type="button"
               data-mobile-push="company"
               aria-haspopup="true"
               aria-expanded="false"
               aria-controls="mobile-panel-company"
+              aria-current={companyActive ? 'true' : undefined}
             >
               <span>{t('nav.company')}</span>
               <img src="/icon-menu-next.svg" width="26" height="27" alt="" aria-hidden="true" />
             </button>
           </li>
           <li>
-            <a class="mobile-drawer-item" href="/company/blogs">{t('nav.resources')}</a>
+            <a
+              class:list={['mobile-drawer-item', { 'is-current': currentLink('/company/blogs') }]}
+              href="/company/blogs"
+              aria-current={currentLink('/company/blogs') ? 'page' : undefined}
+            >{t('nav.resources')}</a>
           </li>
           <li>
-            <a class="mobile-drawer-item" href="/company/clients">{t('nav.clients')}</a>
+            <a
+              class:list={['mobile-drawer-item', { 'is-current': currentLink('/company/clients') }]}
+              href="/company/clients"
+              aria-current={currentLink('/company/clients') ? 'page' : undefined}
+            >{t('nav.clients')}</a>
           </li>
           <li>
-            <a class="mobile-drawer-item" href="/company/testimonials">{t('nav.testimonials')}</a>
+            <a
+              class:list={['mobile-drawer-item', { 'is-current': currentLink('/company/testimonials') }]}
+              href="/company/testimonials"
+              aria-current={currentLink('/company/testimonials') ? 'page' : undefined}
+            >{t('nav.testimonials')}</a>
           </li>
           <li>
-            <a class="mobile-drawer-cta contact-cta" href="/contact-us">{t('nav.contact_us')}</a>
+            <a
+              class:list={['mobile-drawer-cta contact-cta', { 'is-current': currentLink('/contact-us') }]}
+              href="/contact-us"
+              aria-current={currentLink('/contact-us') ? 'page' : undefined}
+            >{t('nav.contact_us')}</a>
           </li>
         </ul>
       </div>
@@ -216,16 +299,21 @@ const { tone = 'light' } = Astro.props;
         <h2 class="mobile-drawer-heading">{t('nav.services')}</h2>
         <ul class="mobile-drawer-list">
           <li>
-            <a class="mobile-drawer-item" href={servicesOverview.href}>{t(servicesOverview.labelKey)}</a>
+            <a
+              class:list={['mobile-drawer-item', { 'is-current': currentLink(servicesOverview.href) }]}
+              href={servicesOverview.href}
+              aria-current={currentLink(servicesOverview.href) ? 'page' : undefined}
+            >{t(servicesOverview.labelKey)}</a>
           </li>
           <li>
             <button
-              class="mobile-drawer-item"
+              class:list={['mobile-drawer-item', { 'is-current': applicationActive }]}
               type="button"
               data-mobile-push="application"
               aria-haspopup="true"
               aria-expanded="false"
               aria-controls="mobile-panel-application"
+              aria-current={applicationActive ? 'true' : undefined}
             >
               <span>{t('nav.flyout_application_services')}</span>
               <img src="/icon-menu-next.svg" width="26" height="27" alt="" aria-hidden="true" />
@@ -233,12 +321,13 @@ const { tone = 'light' } = Astro.props;
           </li>
           <li>
             <button
-              class="mobile-drawer-item"
+              class:list={['mobile-drawer-item', { 'is-current': devopsActive }]}
               type="button"
               data-mobile-push="devops"
               aria-haspopup="true"
               aria-expanded="false"
               aria-controls="mobile-panel-devops"
+              aria-current={devopsActive ? 'true' : undefined}
             >
               <span>{t('nav.flyout_devops')}</span>
               <img src="/icon-menu-next.svg" width="26" height="27" alt="" aria-hidden="true" />
@@ -246,7 +335,11 @@ const { tone = 'light' } = Astro.props;
           </li>
           {mobileServiceLeaves.map((link) => (
             <li>
-              <a class="mobile-drawer-item" href={link.href}>{t(link.labelKey)}</a>
+              <a
+                class:list={['mobile-drawer-item', { 'is-current': currentLink(link.href) }]}
+                href={link.href}
+                aria-current={currentLink(link.href) ? 'page' : undefined}
+              >{t(link.labelKey)}</a>
             </li>
           ))}
         </ul>
@@ -256,7 +349,11 @@ const { tone = 'light' } = Astro.props;
         <ul class="mobile-drawer-list">
           {mobileApplicationLinks.map((link) => (
             <li>
-              <a class="mobile-drawer-item" href={link.href}>{t(link.labelKey)}</a>
+              <a
+                class:list={['mobile-drawer-item', { 'is-current': currentLink(link.href) }]}
+                href={link.href}
+                aria-current={currentLink(link.href) ? 'page' : undefined}
+              >{t(link.labelKey)}</a>
             </li>
           ))}
         </ul>
@@ -266,7 +363,11 @@ const { tone = 'light' } = Astro.props;
         <ul class="mobile-drawer-list">
           {mobileDevopsLinks.map((link) => (
             <li>
-              <a class="mobile-drawer-item" href={link.href}>{t(link.labelKey)}</a>
+              <a
+                class:list={['mobile-drawer-item', { 'is-current': currentLink(link.href) }]}
+                href={link.href}
+                aria-current={currentLink(link.href) ? 'page' : undefined}
+              >{t(link.labelKey)}</a>
             </li>
           ))}
         </ul>
@@ -276,7 +377,11 @@ const { tone = 'light' } = Astro.props;
         <ul class="mobile-drawer-list">
           {mobileCompanyLinks.map((link) => (
             <li>
-              <a class="mobile-drawer-item" href={link.href}>{t(link.labelKey)}</a>
+              <a
+                class:list={['mobile-drawer-item', { 'is-current': currentLink(link.href) }]}
+                href={link.href}
+                aria-current={currentLink(link.href) ? 'page' : undefined}
+              >{t(link.labelKey)}</a>
             </li>
           ))}
         </ul>
