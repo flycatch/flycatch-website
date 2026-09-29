@@ -45,6 +45,11 @@ describe('seo redirects', () => {
     expect(redirectTarget('/en/services/data-management')).toBe('/services/data-migration');
   });
 
+  it('maps /en catch-all paths used by en/[...slug]', () => {
+    expect(redirectTarget('/en/contact-us')).toBe('/contact-us');
+    expect(redirectTarget('/en/company/blogs/example')).toBe('/company/blogs/example');
+  });
+
   it('strips trailing slashes and skips admin/api', () => {
     expect(redirectTarget('/services/')).toBe('/services');
     expect(redirectTarget('/')).toBeNull();
