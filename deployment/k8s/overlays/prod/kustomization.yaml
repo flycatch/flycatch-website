@@ -6,6 +6,7 @@ namespace: flycatch-website-prod
 resources:
 - ../../base
 - ingress.yaml
+- letsencrypt-http01-issuer.yaml
 
 patches:
 - path: config-patch.yaml

@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: flycatch-website
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-production
+    cert-manager.io/issuer: letsencrypt-http01
   # Do not add Traefik noindex middleware on production.
 spec:
   ingressClassName: traefik
