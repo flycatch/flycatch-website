@@ -35,7 +35,7 @@ const structuredData = listed.error
 ---
 <BaseLayout title={metadata.title} metadata={metadata} structuredData={structuredData}>
   <SiteHeader />
-  <main id="main" class="jobs-openings-page" data-api-origin={listed.origin}>
+  <main id="main" class="page-shell jobs-openings-page" data-api-origin={listed.origin}>
     <JobsOpeningsBoard openings={listed.items} error={listed.error} />
     <HomeCta />
   </main>

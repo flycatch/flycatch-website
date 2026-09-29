@@ -70,7 +70,7 @@ const relatedError = casesResult.error || relatedDetails.some((result) => result
 ---
 <BaseLayout title={metadata.title} metadata={metadata}>
   <SiteHeader tone="dark" />
-  <main id="main" class="application-development-page" data-api-origin={detail.origin}>
+  <main id="main" class="page-shell service-detail-shell application-development-page" data-api-origin={detail.origin}>
     <AdsHero page={page} failed={failed} />
     {page && <AdsIntro page={page} />}
     <AdsContactPoster

@@ -47,7 +47,11 @@ const heading = title.trim();
               <p class="solutions-product-body" hidden={!body}>{body}</p>
               {href && (
                 <p class="solutions-product-actions">
-                  <a class="btn" href={href}>
+                  <a
+                    class="btn"
+                    href={href}
+                    aria-label={t('home.know_more_about', { title: name || tag || slug })}
+                  >
                     {t('home.know_more')}
                     <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
                   </a>

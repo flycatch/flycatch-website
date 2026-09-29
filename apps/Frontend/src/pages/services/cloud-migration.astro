@@ -48,7 +48,7 @@ const metadata = page
 ---
 <BaseLayout title={metadata.title} metadata={metadata}>
   <SiteHeader tone="dark" />
-  <main id="main" class="cloud-migration-page" data-api-origin={detail.origin}>
+  <main id="main" class="page-shell service-detail-shell cloud-migration-page" data-api-origin={detail.origin}>
     <AdsHero page={landing} failed={failed} fallbackTitle={t('page.cloud_migration.title')} />
     {landing && <AdsIntro page={landing} />}
     <AdsContactPoster

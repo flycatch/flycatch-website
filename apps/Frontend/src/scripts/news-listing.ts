@@ -1,4 +1,5 @@
 import { newsMetaLabel, youtubeEmbedUrl } from '../lib/news-media';
+import { t } from '../lib/i18n';
 
 type NewsCategory = { name: string };
 type NewsItem = {
@@ -89,8 +90,14 @@ function renderItem(item: NewsItem) {
   const link = document.createElement('a');
   link.className = 'news-read';
   link.href = `/company/news-and-events/${item.slug}`;
+  const buttonName = item.button_name?.trim() || '';
+  const linkText = buttonName || t('home.read_more');
+  link.setAttribute(
+    'aria-label',
+    buttonName || t('home.read_more_about', { title: item.title }),
+  );
   const text = document.createElement('span');
-  text.textContent = item.button_name?.trim() || 'Read more';
+  text.textContent = linkText;
   const icon = document.createElement('img');
   icon.src = '/icon-arrow-right.svg';
   icon.width = 21;

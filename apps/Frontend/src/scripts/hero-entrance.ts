@@ -1,5 +1,4 @@
 const ENTRANCE_SELECTOR = [
-  '[data-hero-entrance]',
   '[data-section-reveal]',
   '[data-pf-reveal]',
   '[data-cl-reveal]',

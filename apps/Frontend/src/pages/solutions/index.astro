@@ -36,7 +36,7 @@ const metadata = page
 ---
 <BaseLayout title={metadata.title} metadata={metadata}>
   <SiteHeader tone="dark" />
-  <main id="main" class="solutions-page" data-api-origin={listed.origin}>{page ? (
+  <main id="main" class="page-shell solutions-page" data-api-origin={listed.origin}>{page ? (
       <SolutionsHero page={page} />
     ) : (
       <section class="solutions-hero">

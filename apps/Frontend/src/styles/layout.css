@@ -2141,7 +2141,22 @@ body.is-mobile-drawer-open {
   }
 }
 
-html.js [data-hero-entrance],
+@keyframes hero-entrance {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Hero LCP: pure CSS so visibility does not wait on JS modules. */
+html.js [data-hero-entrance] {
+  animation: hero-entrance var(--motion-entrance) both;
+}
+
 html.js [data-section-reveal] {
   opacity: 0;
   transform: scale(0.85);
@@ -2150,7 +2165,6 @@ html.js [data-section-reveal] {
     transform var(--motion-entrance);
 }
 
-html.js [data-hero-entrance].is-visible,
 html.js [data-section-reveal].is-visible {
   opacity: 1;
   transform: scale(1);

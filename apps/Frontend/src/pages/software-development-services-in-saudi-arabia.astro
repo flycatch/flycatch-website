@@ -69,7 +69,7 @@ const structuredData = page
 ---
 <BaseLayout title={metadata.title} metadata={metadata} structuredData={structuredData}>
   <SiteHeader tone="dark" />
-  <main id="main" class="home-page" data-api-origin={saudiResult.origin}>{page ? (
+  <main id="main" class="page-shell home-page" data-api-origin={saudiResult.origin}>{page ? (
       <HomeHero home={page} exploreLabel={page.banner_explore_text} />
     ) : (
       <section class="hero">

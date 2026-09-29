@@ -1,5 +1,5 @@
 ---
-import '@fontsource/quicksand/600.css';
+import '@fontsource/quicksand/latin-600.css';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import '../../styles/home.css';
 import '../../styles/procure-flex.css';
@@ -28,7 +28,7 @@ metadata.indexable = true;
 ---
 <BaseLayout title={metadata.title} metadata={metadata}>
   <SiteHeader />
-  <main id="main" class="solutions-page procure-flex-page" data-api-origin={blogsResult.origin}>
+  <main id="main" class="page-shell solutions-page procure-flex-page" data-api-origin={blogsResult.origin}>
     <ProcureFlexHero />
     <ProcureFlexQuote />
     <ProcureFlexWhy />

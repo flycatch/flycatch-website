@@ -85,7 +85,7 @@ const relatedError = listed.error || relatedDetails.some((item) => item.error);
 ---
 <BaseLayout title={metadata.title} metadata={metadata} structuredData={structuredData}>
   <SiteHeader tone="dark" />
-  <main id="main" class="case-studies-page case-study-detail-page" data-api-origin={result.origin}>
+  <main id="main" class="page-shell case-studies-page case-study-detail-page" data-api-origin={result.origin}>
     {study ? (
       <>
         <section class="csd-banner" aria-labelledby="case-study-heading">

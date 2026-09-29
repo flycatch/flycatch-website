@@ -70,7 +70,11 @@ const hideOnHome = home && visible.length === 0;
                   {industry && <p class="case-industry type-meta">{industry}</p>}
                   <h3>{study.heading}</h3>
                   <p class="case-excerpt">{study.description}</p>
-                  <a class="btn" href={`/case-studies/${study.slug}`}>
+                  <a
+                    class="btn"
+                    href={`/case-studies/${study.slug}`}
+                    aria-label={t('home.read_more_about', { title: study.heading })}
+                  >
                     {t('home.read_more')}
                     <img src="/icon-arrow-right.svg" width="32" height="32" alt="" />
                   </a>
@@ -110,7 +114,11 @@ const hideOnHome = home && visible.length === 0;
                 {industry && <p class="case-industry type-meta">{industry}</p>}
                 <h3>{study.heading}</h3>
                 <p>{study.description}</p>
-                <a class="btn" href={`/case-studies/${study.slug}`}>
+                <a
+                  class="btn"
+                  href={`/case-studies/${study.slug}`}
+                  aria-label={t('home.read_more_about', { title: study.heading })}
+                >
                   {t('home.read_more')}
                   <img src="/icon-arrow-right.svg" width="32" height="32" alt="" />
                 </a>

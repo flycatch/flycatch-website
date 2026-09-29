@@ -96,7 +96,7 @@ const relatedError = casesResult.error || relatedDetails.some((result) => result
 ---
 <BaseLayout title={metadata.title} metadata={metadata}>
   <SiteHeader tone="dark" />
-  <main id="main" class="infra-management-page" data-api-origin={detail.origin}>
+  <main id="main" class="page-shell service-detail-shell infra-management-page" data-api-origin={detail.origin}>
     <LandingHero
       bannerKey={page?.banner_image_key}
       fallbackBanner={INFRA_FALLBACK_BANNER}
