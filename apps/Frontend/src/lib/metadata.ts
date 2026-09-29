@@ -1,5 +1,5 @@
 import type { SeoMetadata, SiteSettings } from './published-snapshot';
-import type { ContentSeo, PublicCaseStudy, PublicHome } from './public-api';
+import type { ContentSeo, PublicCaseStudy, PublicHome, PublicNews } from './public-api';
 import { absoluteMediaUrl, apiOrigin } from './public-api';
 import { getSiteSettings } from './published-snapshot';
 
@@ -156,6 +156,46 @@ export function homeStructuredData(
     });
   }
   return blocks;
+}
+
+function isGenericNewsLabel(value: string) {
+  return /^news(\s+(and|&)\s+events)?(\s*\|\s*flycatch)?$/i.test(value.trim());
+}
+
+export function metadataFromNews(
+  news: PublicNews,
+  siteSettings: SiteSettings,
+  path: string,
+): PageMetadata {
+  const seo = news.seo;
+  const articleTitle = news.title.trim() || siteSettings.site_name;
+  const metaTitle = seo?.meta_title?.trim() || seo?.title?.trim() || '';
+  const title =
+    metaTitle && articleTitle && metaTitle.toLowerCase().includes(articleTitle.slice(0, 24).toLowerCase())
+      ? metaTitle
+      : `${articleTitle} | News & Events | ${siteSettings.site_name}`;
+  const seoDescription = seo?.description?.trim() || '';
+  const description =
+    (seoDescription && !isGenericNewsLabel(seoDescription) ? seoDescription : '') ||
+    news.description.trim() ||
+    siteSettings.site_name;
+  const canonicalRaw = seo?.canonical_url?.trim() || '';
+  const canonical =
+    canonicalRaw.includes(news.slug) &&
+    (canonicalRaw.startsWith('http://') || canonicalRaw.startsWith('https://'))
+      ? canonicalRaw
+      : buildCanonicalUrl(siteSettings.canonical_origin, path);
+  const socialImageKey = seo?.image_key || news.image_key;
+  return {
+    title,
+    description,
+    canonical,
+    socialTitle: title,
+    socialDescription: description,
+    socialImageKey,
+    socialImageUrl: absoluteMediaUrl(siteSettings.canonical_origin, socialImageKey),
+    indexable: true,
+  };
 }
 
 export function metadataFromCaseStudy(
