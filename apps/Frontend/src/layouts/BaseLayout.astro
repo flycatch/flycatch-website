@@ -19,7 +19,9 @@ interface Props {
 }
 
 const { title, metadata, structuredData = [], lang = 'en', dir = 'ltr' } = Astro.props;
-const isProduction = (import.meta.env.PUBLIC_ENVIRONMENT || 'development') === 'production';
+const publicEnvironment =
+  process.env.PUBLIC_ENVIRONMENT || import.meta.env.PUBLIC_ENVIRONMENT || 'development';
+const isProduction = publicEnvironment === 'production';
 const shouldNoindex = !metadata.indexable || !isProduction;
 const extraMetas: { name?: string; property?: string; content: string }[] = [];
 if (shouldNoindex) {

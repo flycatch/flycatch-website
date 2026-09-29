@@ -1,6 +1,8 @@
 import type { APIRoute } from 'astro';
 
-const isProduction = (import.meta.env.PUBLIC_ENVIRONMENT || 'development') === 'production';
+const publicEnvironment =
+  process.env.PUBLIC_ENVIRONMENT || import.meta.env.PUBLIC_ENVIRONMENT || 'development';
+const isProduction = publicEnvironment === 'production';
 
 export const GET: APIRoute = () => {
   const body = isProduction
