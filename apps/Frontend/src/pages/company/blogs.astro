@@ -42,7 +42,7 @@ const structuredData = listed.error
             '@type': 'ListItem',
             position: index + 1,
             name: blog.title,
-            url: `${metadata.canonical.replace(/\/company\/blogs\/?$/, '')}/blogs/${blog.slug}`,
+            url: `${metadata.canonical.replace(/\/$/, '')}/${blog.slug}`,
           })),
         },
       },

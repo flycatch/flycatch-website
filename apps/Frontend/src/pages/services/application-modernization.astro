@@ -40,7 +40,7 @@ const page = detail.item;
 const failed = detail.error || (listed.error && !page);
 const siteSettings = publicSiteSettings();
 const metadata = page
-  ? metadataFromContentSeo(page.seo, siteSettings, t('page.application_modernization.title'))
+  ? metadataFromContentSeo(page.seo, siteSettings, '/services/application-modernization', t('page.application_modernization.title'))
   : fallbackMetadata(
       '/services/application-modernization',
       t('page.application_modernization.title'),

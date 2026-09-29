@@ -33,14 +33,7 @@ const page = detail.item;
 const failed = detail.error && !page;
 const siteSettings = publicSiteSettings();
 const metadata = page
-  ? metadataFromContentSeo(
-      {
-        ...page.seo,
-        canonical_url: page.seo.canonical_url.trim() || path,
-      },
-      siteSettings,
-      fallbackTitle,
-    )
+  ? metadataFromContentSeo(page.seo, siteSettings, path, fallbackTitle)
   : fallbackMetadata(path, fallbackTitle, failed ? t('home.error') : t('home.empty'));
 ---
 <BaseLayout title={metadata.title} metadata={metadata}>

@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/legal.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { fallbackMetadata } from '../lib/metadata';
+import { t } from '../lib/i18n';
+
+const metadata = fallbackMetadata(
+  '/terms-and-conditions',
+  t('page.terms.title'),
+  t('page.terms.description'),
+);
+metadata.indexable = true;
+
+const intro = [
+  "The website is provided by Flycatch Infotech Pvt. Ltd/ (hereinafter referred to as 'Flycatch'), a privately owned company with the following address: Flycatch Infotech Pvt. Ltd, Building No.16/3579, 2nd Floor, Adamstar Building Kalangattu Road, Ernakulam, Kakkanad, Kerala, India, 682030",
+  'By using the website or downloading materials from the website, you hereby agree to abide by below given Terms & Conditions:',
+];
+
+const rules = [
+  'You shall not defame, abuse, harass, threaten or violate the legal rights of Flycatch or any third party.',
+  'You shall not contribute, post, upload, or publish any content or Materials that might adversely affect the reputation of Flycatch.',
+  'You shall not publish or post any content or Materials that are detrimental to Flycatch in any manner.',
+  'You shall not post or upload any Materials for which you do not have requisite rights under the law or are protected by intellectual property rights (or by rights of privacy of publicity) unless You own or exercise these rights or have received all necessary consent to do the same.',
+  'You shall not conduct any contests, surveys or circulate any forwards.',
+  'You shall not in any manner disclose any confidential or proprietary information of any third party.',
+  'You shall not upload, post, publish or disseminate any information that is considered derogatory, profane, inappropriate, defamatory, obscene, indecent or unlawful.',
+  'You shall not falsify or delete any author attributions, legal or other proper notices or proprietary designations or labels of the origin or source of software or other Materials contained in a file that is uploaded.',
+  'You shall not prevent or restrict others from using this website or cause any damage to the website.',
+  "You shall not upload any files that contain viruses, Trojan horses, worms, malware or any other similar software or programs that may cause harm to another user's computer or any other such device.",
+  'The website provides access to certain third-party sites and content. You acknowledge that Flycatch shall not be responsible for the availability, appropriateness or any other such obligations with respect to the contents published in these third-party sites and You shall bear all risks associated with the use of such content.',
+  'You acknowledge that Flycatch, at its sole discretion, monitor, removes or edit any content on the website.',
+  'You acknowledge that Flycatch, at its sole discretion, may disclose any information as necessary to satisfy any applicable law, regulation or legal process and reserves the right to the same at all times.',
+  'You agree to indemnify and hold Flycatch harmless from any claims and loss that may arise as a result of Your violation of these Terms & Conditions.',
+];
+
+const updatesHeading = 'UPDATES TO OUR TERMS OF USE';
+const updatesBody =
+  'These Terms of Use may change from time to time in line with legislation or industry developments. We will not explicitly inform our clients or website users of these changes. Instead, we recommend that you check this page occasionally for any changes.';
+---
+<BaseLayout title={metadata.title} metadata={metadata}>
+  <SiteHeader />
+  <main id="main" class="legal-page">
+    <article class="legal-wrap">
+      <h1 class="legal-title" data-hero-entrance>{t('page.terms.heading')}</h1>
+      <p class="legal-updated">{t('page.terms.updated')}</p>
+      <hr class="legal-divider" />
+      <div class="legal-body">
+        <div class="legal-section">
+          {intro.map((paragraph) => <p>{paragraph}</p>)}
+        </div>
+        <ul class="legal-list">
+          {rules.map((rule) => (
+            <li>
+              <p>{rule}</p>
+            </li>
+          ))}
+        </ul>
+        <p class="legal-heading">{updatesHeading}</p>
+        <p>{updatesBody}</p>
+      </div>
+    </article>
+  </main>
+  <SiteFooter />
+</BaseLayout>

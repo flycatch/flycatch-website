@@ -8,12 +8,17 @@ export default defineConfig({
   output: 'server',
   adapter: node({ mode: 'standalone' }),
   site,
+  trailingSlash: 'never',
   integrations: [
     sitemap({
-      filter: (page) => !page.includes('/admin') && !page.includes('/api'),
+      filter: (page) =>
+        !page.includes('/admin') &&
+        !page.includes('/api') &&
+        !page.includes('/about') &&
+        !page.endsWith('/solutions/combus') &&
+        !page.includes('/solutions/combus/'),
       customPages: [
         `${site}/`,
-        `${site}/about`,
         `${site}/company/about-us`,
         `${site}/company/careers`,
         `${site}/company/jobs-openings`,
@@ -25,6 +30,9 @@ export default defineConfig({
         `${site}/services/mobile-application-development`,
         `${site}/services/devOps-consultation`,
         `${site}/services/infrastructure-management-and-automation`,
+        `${site}/services/cloud-migration`,
+        `${site}/services/data-migration`,
+        `${site}/services/digital-transformation`,
         `${site}/solutions`,
         `${site}/solutions/doctCare-ai`,
         `${site}/solutions/docSis-ai`,
@@ -42,6 +50,9 @@ export default defineConfig({
         `${site}/company/clients`,
         `${site}/company/testimonials`,
         `${site}/contact-us`,
+        `${site}/privacy-policy`,
+        `${site}/terms-and-conditions`,
+        `${site}/software-development-services-in-saudi-arabia`,
       ],
     }),
   ],
