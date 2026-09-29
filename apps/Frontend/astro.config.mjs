@@ -11,12 +11,14 @@ export default defineConfig({
   trailingSlash: 'never',
   integrations: [
     sitemap({
-      filter: (page) =>
-        !page.includes('/admin') &&
-        !page.includes('/api') &&
-        !page.includes('/about') &&
-        !page.endsWith('/solutions/combus') &&
-        !page.includes('/solutions/combus/'),
+      filter: (page) => {
+        if (page.includes('/admin') || page.includes('/api') || page.includes('/about')) return false;
+        if (page.endsWith('/en') || page.includes('/en/')) return false;
+        if (page.endsWith('/company/membership')) return false;
+        if (page.endsWith('/services/data-management')) return false;
+        if (page.endsWith('/solutions/combus') || page.includes('/solutions/combus/')) return false;
+        return true;
+      },
       customPages: [
         `${site}/`,
         `${site}/company/about-us`,

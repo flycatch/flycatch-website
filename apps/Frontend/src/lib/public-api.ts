@@ -678,6 +678,8 @@ async function getJson<T>(path: string): Promise<{ data: T | null; error: boolea
   const origin = apiOrigin();
   try {
     const response = await fetch(`${fetchOrigin()}${path}`);
+    // HTTP 404 is a clean miss — not a transport/server failure (so pages can return 404, not 503).
+    if (response.status === 404) return { data: null, error: false, origin };
     if (!response.ok) return { data: null, error: true, origin };
     return { data: (await response.json()) as T, error: false, origin };
   } catch {
