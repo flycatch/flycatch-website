@@ -46,7 +46,7 @@ const metadata = page
 ---
 <BaseLayout title={metadata.title} metadata={metadata}>
   <SiteHeader tone="dark" />
-  <main id="main" class="digital-transformation-page" data-api-origin={detail.origin}>
+  <main id="main" class="page-shell service-detail-shell digital-transformation-page" data-api-origin={detail.origin}>
     <DigitalTransformationHero page={page} failed={failed} />
     {page && <DigitalTransformationIntro page={page} />}
     <DigitalTransformationGuidelines />

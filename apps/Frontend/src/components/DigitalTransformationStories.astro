@@ -17,7 +17,11 @@ import { t } from '../lib/i18n';
       <p class="type-lede">{t('page.digital_transformation.stories_p1')}</p>
       <p class="type-lede">{t('page.digital_transformation.stories_p2')}</p>
       <p>
-        <a class="btn" href="/case-studies">
+        <a
+          class="btn"
+          href="/case-studies"
+          aria-label={t('home.read_more_about', { title: t('nav.case_studies') })}
+        >
           {t('page.digital_transformation.stories_action')}
           <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
         </a>

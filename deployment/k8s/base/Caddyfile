@@ -17,6 +17,7 @@
 
 :{$GATEWAY_PORT:8080} {
 	import base_security
+	encode zstd gzip
 
 	# Keep /admin on the Administration FE (never the public site)
 	redir /admin /admin/ 308

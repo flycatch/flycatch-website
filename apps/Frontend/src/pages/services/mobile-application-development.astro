@@ -79,7 +79,7 @@ const faqs = (page?.faq_accordion ?? [])
 ---
 <BaseLayout title={metadata.title} metadata={metadata}>
   <SiteHeader tone="dark" />
-  <main id="main" class="mad-page" data-api-origin={detail.origin}>
+  <main id="main" class="page-shell mad-page" data-api-origin={detail.origin}>
     <MadHero page={page} heading={heading} failed={failed} />
     {page && <MadIntro page={page} />}
     <MadPlatforms />

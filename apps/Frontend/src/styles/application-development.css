@@ -1,24 +1,24 @@
 /* Application Development Services. Explicit values; unique sections only. */
-:is(.application-development-page, .application-modernization-page, .user-centered-design-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .devops-consult-page, .infra-management-page) {
+.service-detail-shell {
   overflow-wrap: break-word;
   overflow-x: clip;
 }
 
-:is(.application-development-page, .application-modernization-page, .user-centered-design-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .devops-consult-page, .infra-management-page) [hidden] {
+.service-detail-shell [hidden] {
   display: none !important;
 }
 
-:is(.application-development-page, .application-modernization-page, .user-centered-design-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .devops-consult-page, .infra-management-page) > section:not(.ads-hero) {
+.service-detail-shell > section:not(.ads-hero) {
   padding-top: 50px;
   padding-bottom: 50px;
 }
 
-:is(.application-development-page, .application-modernization-page, .user-centered-design-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .devops-consult-page, .infra-management-page) .ai-minds {
+.service-detail-shell .ai-minds {
   padding-top: 50px;
   padding-bottom: 50px;
 }
 
-:is(.application-development-page, .application-modernization-page, .user-centered-design-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .devops-consult-page, .infra-management-page) .ai-minds h2 {
+.service-detail-shell .ai-minds h2 {
   font-size: 46px;
   font-weight: 300;
   line-height: 1.333;
@@ -68,7 +68,7 @@
   padding-bottom: 5vh;
 }
 
-:is(.application-development-page, .application-modernization-page, .user-centered-design-page, .cloud-migration-page, .data-migration-page, .digital-transformation-page, .devops-consult-page, .infra-management-page) .ads-hero h1 {
+.service-detail-shell .ads-hero h1 {
   margin: 0;
   max-width: 100%;
   width: 100%;

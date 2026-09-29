@@ -83,7 +83,11 @@ function serviceHref(raw: string): string {
                 <p class="type-lede">{service.services_contents}</p>
                 {href && (
                   <p class="service-actions">
-                    <a class="btn btn-on-dark" href={href}>
+                    <a
+                      class="btn btn-on-dark"
+                      href={href}
+                      aria-label={t('home.know_more_about', { title: service.services_types_title })}
+                    >
                       {t('home.know_more')}
                       <span class="services-btn-arrow" aria-hidden="true"></span>
                     </a>

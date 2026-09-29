@@ -68,7 +68,7 @@ const relatedError = casesResult.error || relatedDetails.some((result) => result
 ---
 <BaseLayout title={metadata.title} metadata={metadata}>
   <SiteHeader tone="dark" />
-  <main id="main" class="data-migration-page" data-api-origin={detail.origin}>
+  <main id="main" class="page-shell service-detail-shell data-migration-page" data-api-origin={detail.origin}>
     <AdsHero page={landing} failed={failed} fallbackTitle={t('page.data_migration.title')} />
     {landing && <AdsIntro page={landing} />}
     <AdsContactPoster

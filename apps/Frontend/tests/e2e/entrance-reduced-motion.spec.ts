@@ -12,8 +12,15 @@ test.describe('reduced motion entrance', () => {
       const heading = page.locator('[data-hero-entrance]').first();
       await expect(heading).toBeVisible();
       await expect(heading).toHaveCSS('opacity', '1');
-      const duration = await heading.evaluate((el) => getComputedStyle(el).transitionDuration);
-      expect(duration.split(',').every((part) => part.trim() === '0s')).toBe(true);
+      const motion = await heading.evaluate((el) => {
+        const style = getComputedStyle(el);
+        return {
+          transition: style.transitionDuration,
+          animation: style.animationDuration,
+        };
+      });
+      expect(motion.transition.split(',').every((part) => part.trim() === '0s')).toBe(true);
+      expect(motion.animation.split(',').every((part) => part.trim() === '0s')).toBe(true);
     });
   }
 });

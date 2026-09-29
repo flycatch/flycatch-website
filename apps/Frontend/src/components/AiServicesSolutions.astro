@@ -24,22 +24,39 @@ const show = Boolean(title || description || solutions.length);
           const image = publicMediaUrl(section?.image_key);
           const overlayTitle = (section?.title ?? '').trim();
           const overlayBody = (section?.description ?? '').trim();
-          const label = overlayTitle || solution.title.trim() || '';
+          const label = overlayTitle || solution.title.trim() || solution.slug.trim() || '';
           const showHover = Boolean(overlayTitle || overlayBody);
           const href = solution.slug.trim() ? `/solutions/${solution.slug}` : '';
-          return (
-            <a class="ai-solution-card" href={href || undefined} data-section-reveal data-reveal="rise">{image ? (
-                <img src={image} alt="" width="283" height="458" loading="lazy" />
-              ) : (
-                <span class="ai-solution-fallback"></span>
-              )}
+          const media = image ? (
+            <img src={image} alt="" width="283" height="458" loading="lazy" />
+          ) : (
+            <span class="ai-solution-fallback"></span>
+          );
+          const body = (
+            <>
+              {media}
               <span class="ai-solution-scrim" aria-hidden="true"></span>
               <span class="ai-solution-name" hidden={!label}>{label}</span>
               <span class="ai-solution-hover" hidden={!showHover}>
                 <span class="ai-solution-hover-title" hidden={!overlayTitle}>{overlayTitle}</span>
                 <span class="ai-solution-hover-body" hidden={!overlayBody}>{overlayBody}</span>
               </span>
+            </>
+          );
+          return href ? (
+            <a
+              class="ai-solution-card"
+              href={href}
+              aria-label={label}
+              data-section-reveal
+              data-reveal="rise"
+            >
+              {body}
             </a>
+          ) : (
+            <div class="ai-solution-card" data-section-reveal data-reveal="rise">
+              {body}
+            </div>
           );
         })}
       </div>
