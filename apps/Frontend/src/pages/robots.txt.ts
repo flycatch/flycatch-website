@@ -1,7 +1,8 @@
 import type { APIRoute } from 'astro';
 
+// Dynamic env key — Vite must not replace this at build time (ConfigMap sets it in k8s).
 const publicEnvironment =
-  process.env.PUBLIC_ENVIRONMENT || import.meta.env.PUBLIC_ENVIRONMENT || 'development';
+  process.env['PUBLIC_ENVIRONMENT'] || import.meta.env.PUBLIC_ENVIRONMENT || 'development';
 const isProduction = publicEnvironment === 'production';
 
 export const GET: APIRoute = () => {

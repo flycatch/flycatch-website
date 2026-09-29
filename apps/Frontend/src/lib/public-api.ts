@@ -651,15 +651,20 @@ export type PublicItemResult<T> = {
 export const DEFAULT_API_ORIGIN = 'http://localhost:8080';
 
 export function apiOrigin(): string {
-  return (process.env.PUBLIC_ORIGIN || import.meta.env.PUBLIC_ORIGIN || DEFAULT_API_ORIGIN).replace(
-    /\/$/,
-    '',
-  );
+  return (
+    process.env['PUBLIC_ORIGIN'] ||
+    import.meta.env.PUBLIC_ORIGIN ||
+    DEFAULT_API_ORIGIN
+  ).replace(/\/$/, '');
 }
 
 /** Server-side fetch target. In Docker/k8s this is the Backend service, not localhost. */
 export function fetchOrigin(): string {
-  return (process.env.API_ORIGIN || import.meta.env.API_ORIGIN || apiOrigin()).replace(/\/$/, '');
+  return (
+    process.env['API_ORIGIN'] ||
+    import.meta.env.API_ORIGIN ||
+    apiOrigin()
+  ).replace(/\/$/, '');
 }
 
 export function publicMediaUrl(key: string | null | undefined): string | null {
