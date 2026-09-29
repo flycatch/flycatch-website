@@ -10,14 +10,11 @@ resources:
 
 images:
 - name: registry.k3s.flycatchtech.in/flycatch-website/administration-fe
-  newName: registry.k3s.flycatchtech.in/flycatch-website/administration-fe
-  newTag: f77dd8623b0d7af4f541a0946c7b9a9ca6f6c9bb
+  newTag: dev-v0.1.0.1
 - name: registry.k3s.flycatchtech.in/flycatch-website/backend
-  newName: registry.k3s.flycatchtech.in/flycatch-website/backend
-  newTag: f77dd8623b0d7af4f541a0946c7b9a9ca6f6c9bb
+  newTag: dev-v0.1.0.1
 - name: registry.k3s.flycatchtech.in/flycatch-website/frontend
-  newName: registry.k3s.flycatchtech.in/flycatch-website/frontend
-  newTag: f77dd8623b0d7af4f541a0946c7b9a9ca6f6c9bb
+  newTag: dev-v0.1.0.1
 
 replicas:
 - count: 1
