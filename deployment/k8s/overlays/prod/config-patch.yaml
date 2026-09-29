@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flycatch-website-config
+  labels:
+    app.kubernetes.io/name: flycatch-website
+data:
+  PUBLIC_ORIGIN: https://www.flycatchtech.com
+  PUBLIC_ENVIRONMENT: production
+  ENVIRONMENT: production
+  S3_BUCKET: flycatch-website-prod

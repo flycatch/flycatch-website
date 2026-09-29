@@ -6,10 +6,9 @@ registry: registry.k3s.flycatchtech.in
 notifications:
   enabled: true
 
-# Only `dev` has a k8s overlay today (deployment/k8s/overlays/dev). qa/uat/main
-# are stubbed so pushes to those branches fail clearly at the GitOps Tag Bump
-# stage (missing overlay) instead of "branch not supported" - add the matching
-# overlay directory under deployment/k8s/overlays/<env> before relying on them.
+# Only `dev` and `prod` (main) have k8s overlays today. qa/uat are stubbed so
+# pushes to those branches fail clearly at the GitOps Tag Bump stage (missing
+# overlay) instead of "branch not supported".
 environments:
   dev: dev
   qa: qa
@@ -29,6 +28,10 @@ images:
     context: apps/Backend
     args: {}
 
+  # Image build args below are for the `dev` branch pipeline. Production SEO
+  # authenticity comes from overlays/prod ConfigMap (PUBLIC_ORIGIN /
+  # PUBLIC_ENVIRONMENT) plus runtime process.env reads in the Frontend SSR.
+  # Optional future: per-env build args when the shared library supports them.
   - name: flycatch-website/frontend
     dockerfile: apps/Frontend/Dockerfile
     context: apps/Frontend

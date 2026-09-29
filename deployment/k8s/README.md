@@ -1,4 +1,4 @@
-# Kubernetes (dev) — Harbor + Argo CD
+# Kubernetes — Harbor + Argo CD
 
 Secrets and credentials must never be committed. Bootstrap against the Flycatch k3s
 cluster using this file as the single source of truth.
@@ -10,27 +10,27 @@ The Caddy gateway config is shared at [base/Caddyfile](base/Caddyfile) (Compose 
 
 ```
 deployment/k8s/
-  base/                 # Namespace, Deployments, Services, ConfigMap, Caddyfile ConfigMap
-  overlays/dev/         # Ingress (TLS), noindex Middleware, image tags, replica counts
-  scripts/deploy-dev.sh # Disabled: superseded by Jenkins, body commented out
+  base/                  # Namespace, Deployments, Services, ConfigMap, Caddyfile ConfigMap
+  overlays/dev/          # Ingress (TLS), noindex Middleware, image tags
+  overlays/prod/         # www.flycatchtech.com Ingress (TLS deferred), prod ConfigMap
+  scripts/deploy-dev.sh  # Disabled: superseded by Jenkins, body commented out
 ```
 
 Jenkins (`Jenkinsfile` + `.cicd.yaml` at the repo root, using the shared
-`harborImagePipeline()`) now builds and pushes the three images on every push
-to `dev` and bumps `overlays/dev/kustomization.yaml` automatically.
-Jenkins-published tags look like `dev-v0.1.0.42` (mutable `dev` tag +
-immutable `dev-v0.1.0.42` tag), replacing the raw commit-SHA tags
-`deploy-dev.sh` used to produce.
+`harborImagePipeline()`) builds and pushes the three images on pushes to `dev`
+(and `main` → prod overlay) and bumps the matching overlay’s image tags.
+
+Jenkins-published tags look like `dev-v0.1.0.42` / `prod-v0.1.0.42` (mutable env
+tag + immutable versioned tag).
 
 `deploy-dev.sh` is disabled (`exit 0` at the top) so it can't be run by
-accident and clash with Jenkins. Its body is commented out below that guard —
-uncomment it and remove the `exit 0` only if Jenkins is genuinely unavailable
-and you need to build/push/bump by hand.
+accident and clash with Jenkins.
 
-The Argo CD Application is owned by the platform app-of-apps in
+Argo CD Applications are owned by the platform app-of-apps in
 [flycatch/k3s-platform](https://github.com/flycatch/k3s-platform):
 
-`infrastructure/flycatch-website/application.yaml`
+- `infrastructure/flycatch-website/application-dev.yaml`
+- `infrastructure/flycatch-website/application-prod.yaml`
 
 Do **not** `kubectl apply` an Application from this repo — that would duplicate the
 app and use the wrong Argo project (`default` instead of `platform`).
@@ -38,9 +38,19 @@ app and use the wrong Argo project (`default` instead of `platform`).
 Ingress routes only to `gateway:8080`. Caddy path-splits `/`, `/admin`, and `/api`
 to the Frontend, Administration FE, and Backend Services (same names as Compose).
 
-**SEO:** this overlay is a non-production environment. App builds use
-`PUBLIC_ENVIRONMENT=development` / `ENVIRONMENT=development`, and Traefik Middleware
-`noindex` adds `X-Robots-Tag: noindex, nofollow` on every response.
+Preview manifests:
+
+```bash
+kubectl kustomize deployment/k8s/overlays/dev
+kubectl kustomize deployment/k8s/overlays/prod
+```
+
+---
+
+# Dev environment
+
+**SEO:** non-production. ConfigMap uses `PUBLIC_ENVIRONMENT=development`, and Traefik
+Middleware `noindex` adds `X-Robots-Tag: noindex, nofollow` on every response.
 
 Hostname: `https://flycatch-website-dev.k3s.flycatchtech.in`
 
@@ -53,12 +63,6 @@ Hostname: `https://flycatch-website-dev.k3s.flycatchtech.in`
 - Traefik IngressClass and cert-manager ClusterIssuer `letsencrypt-production`
 - Cloudflare DNS access for `*.k3s.flycatchtech.in`
 - Local tools: `docker`, `kustomize`, `git`
-
-Preview manifests without applying:
-
-```bash
-kubectl kustomize deployment/k8s/overlays/dev
-```
 
 ## 0. Argo CD access to the app repo
 
@@ -193,10 +197,6 @@ export HARBOR_PASSWORD='...'
 ./deployment/k8s/scripts/deploy-dev.sh
 ```
 
-The script builds `linux/amd64` images, pushes `:SHA` and `:latest` to Harbor,
-updates `overlays/dev/kustomization.yaml` image tags, commits, and pushes so Argo CD
-can sync.
-
 Images:
 
 - `registry.k3s.flycatchtech.in/flycatch-website/backend`
@@ -263,8 +263,201 @@ no CSP violations (especially that the header hamburger drawer opens).
 Local Compose (HTTP on `:8080`) returns the same headers; browsers ignore
 HSTS over non-HTTPS.
 
-## Rollback
+## Rollback (dev)
 
 Revert the image-tag commit in `overlays/dev/kustomization.yaml` (or re-run
 `deploy-dev.sh` from an older commit) and let Argo CD sync. Secrets, DNS, and the
 shared Postgres/MinIO data are unchanged by that rollback.
+
+---
+
+# Production environment
+
+Namespace: `flycatch-website-prod`  
+Overlay: [overlays/prod](overlays/prod)  
+Hostname (Ingress): `www.flycatchtech.com`  
+Apex `flycatchtech.com` → www: handle with a Cloudflare Redirect Rule when you flip DNS
+(keeps a single Let’s Encrypt cert for `www`).
+
+**SEO:** ConfigMap sets `PUBLIC_ORIGIN=https://www.flycatchtech.com` and
+`PUBLIC_ENVIRONMENT=production`. There is **no** Traefik noindex middleware.
+Frontend SSR prefers `process.env.PUBLIC_ENVIRONMENT` / `PUBLIC_ORIGIN` from the
+ConfigMap over build-time defaults.
+
+**TLS:** cert-manager is **intentionally not** enabled on the Ingress yet. Enabling
+`letsencrypt-production` before Cloudflare points `www` at Traefik causes failed
+HTTP-01 Orders and can exhaust Let’s Encrypt rate limits. Enable TLS only after DNS
+(see “TLS after DNS” below).
+
+## P1. Namespace + Harbor pull secret
+
+```bash
+kubectl create namespace flycatch-website-prod --dry-run=client -o yaml | kubectl apply -f -
+
+kubectl -n flycatch-website-prod create secret docker-registry harbor-pull \
+  --docker-server=registry.k3s.flycatchtech.in \
+  --docker-username='robot$flycatch-website+githubbot' \
+  --docker-password='<harbor-robot-secret>' \
+  --dry-run=client -o yaml | kubectl apply -f -
+```
+
+## P2. Postgres role and empty database
+
+```bash
+kubectl -n database exec -it sts/postgres -c postgresql -- \
+  env PGPASSWORD="<postgres-admin-password>" \
+  psql -U postgres \
+  -c "CREATE ROLE flycatch_website_prod LOGIN PASSWORD '<prod-app-db-password>';" \
+  -c "CREATE DATABASE flycatch_website_prod OWNER flycatch_website_prod;"
+```
+
+## P3. MinIO bucket
+
+```bash
+kubectl -n database port-forward svc/minio 9000:9000
+# mc alias set ... then:
+mc mb myminio/flycatch-website-prod
+# Create/attach a policy that allows read/write only on bucket flycatch-website-prod
+```
+
+## P4. App secrets (new session/JWT/CSRF — do not copy from dev)
+
+Template: [overlays/prod/secret.example.yaml](overlays/prod/secret.example.yaml)
+
+```bash
+kubectl -n flycatch-website-prod create secret generic flycatch-website-secrets \
+  --from-literal=DATABASE_URL='postgresql+psycopg://flycatch_website_prod:<prod-app-db-password>@postgres.database.svc.cluster.local:5432/flycatch_website_prod' \
+  --from-literal=S3_ACCESS_KEY='<minio-access-key>' \
+  --from-literal=S3_SECRET_KEY='<minio-secret-key>' \
+  --from-literal=SESSION_SECRET='<long-random-new>' \
+  --from-literal=CSRF_SECRET='<long-random-new>' \
+  --from-literal=JWT_SECRET='<long-random-new>' \
+  --from-literal=BUILD_EXPORT_TOKEN='<long-random-new>' \
+  --from-literal=RECAPTCHA_SECRET_KEY='<recaptcha-secret-key>' \
+  --dry-run=client -o yaml | kubectl apply -f -
+```
+
+## P5. Argo CD sync
+
+Ensure `application-prod.yaml` is present in k3s-platform, then:
+
+```bash
+kubectl -n argocd get application flycatch-website-prod
+kubectl -n flycatch-website-prod get pods,ingress
+```
+
+Pods may start against an empty DB until the data clone below finishes.
+
+## P6. Clone latest data from `flycatch-website-dev`
+
+**Source of truth for production content is the current k3s dev environment**, not
+the legacy public server and not a fresh `flycatch-seed-records` run.
+
+Pause CMS writes on dev (or plan a second refresh right before DNS).
+
+### Postgres dump / restore
+
+```bash
+# Dump custom format from the shared Postgres (dev DB name: flycatch_website)
+kubectl -n database exec -i sts/postgres -c postgresql -- \
+  env PGPASSWORD="<dev-app-or-admin-password>" \
+  pg_dump -U flycatch_website -Fc -d flycatch_website \
+  > flycatch_website_dev.dump
+
+# Restore into empty prod DB (--no-owner so roles map cleanly)
+kubectl -n database exec -i sts/postgres -c postgresql -- \
+  env PGPASSWORD="<prod-app-db-password>" \
+  pg_restore -U flycatch_website_prod -d flycatch_website_prod \
+  --clean --if-exists --no-owner --role=flycatch_website_prod \
+  < flycatch_website_dev.dump
+```
+
+If `pg_restore` warns about existing objects on a second run, that is expected with
+`--clean`. Fix ownership if needed:
+
+```bash
+kubectl -n database exec -it sts/postgres -c postgresql -- \
+  env PGPASSWORD="<postgres-admin-password>" \
+  psql -U postgres -d flycatch_website_prod \
+  -c "ALTER DATABASE flycatch_website_prod OWNER TO flycatch_website_prod;" \
+  -c "REASSIGN OWNED BY flycatch_website TO flycatch_website_prod;"
+```
+
+### MinIO mirror
+
+```bash
+kubectl -n database port-forward svc/minio 9000:9000
+# mc alias set ... then:
+mc mirror --overwrite myminio/flycatch-website myminio/flycatch-website-prod
+```
+
+### After clone
+
+- **Do not** run `flycatch-seed-records` (it would overwrite cloned CMS data).
+- Staff users come with the DB dump; run `flycatch-bootstrap` only if logins are missing.
+- Restart backend so it reconnects cleanly:
+
+```bash
+kubectl -n flycatch-website-prod rollout restart deploy/backend
+kubectl -n flycatch-website-prod rollout status deploy/backend
+```
+
+### Smoke without public DNS
+
+```bash
+kubectl -n flycatch-website-prod port-forward svc/gateway 8080:8080
+# Browse http://127.0.0.1:8080/ — expect blogs, media, /admin login from cloned data
+curl -s http://127.0.0.1:8080/robots.txt
+# Expect Allow: / (PUBLIC_ENVIRONMENT=production from ConfigMap)
+```
+
+Optional: repeat dump + `mc mirror` immediately before the Cloudflare cutover if
+editors kept changing content on dev.
+
+## P7. TLS after DNS (rate-limit safe)
+
+1. Point Cloudflare **`www`** A/CNAME at the Traefik LoadBalancer IP (you do this later).
+2. Apex: Cloudflare Redirect Rule `flycatchtech.com/*` → `https://www.flycatchtech.com/$1` (301).
+3. In a follow-up PR, update [overlays/prod/ingress.yaml](overlays/prod/ingress.yaml):
+
+```yaml
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  tls:
+    - hosts:
+        - www.flycatchtech.com
+      secretName: flycatch-website-prod-tls
+```
+
+4. Let Argo sync once. Confirm:
+
+```bash
+kubectl -n flycatch-website-prod get certificate,order,challenge
+curl -sI https://www.flycatchtech.com/ | head
+```
+
+Do **not** toggle the issuer annotation repeatedly. One Certificate request for
+`www` only stays well within Let’s Encrypt limits.
+
+## P8. Post-cutover SEO checks
+
+```bash
+curl -s https://www.flycatchtech.com/robots.txt
+# Expect Allow: /, Sitemap, Disallow /admin and /api — not Disallow: /
+curl -sI https://www.flycatchtech.com/ | grep -i robots
+# Must NOT show X-Robots-Tag: noindex
+curl -sI https://www.flycatchtech.com/en/services
+# Expect 301 → /services
+curl -s https://www.flycatchtech.com/sitemap.xml | head
+# locs should use https://www.flycatchtech.com
+```
+
+Then resubmit the sitemap in Google Search Console.
+
+## Rollback (prod)
+
+- **Wrong image:** revert tags in `overlays/prod/kustomization.yaml`; Argo syncs.
+- **Bad cutover:** restore Cloudflare DNS to the legacy server; leave the k3s
+  prod namespace running for debugging.

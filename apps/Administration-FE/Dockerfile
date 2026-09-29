@@ -15,6 +15,10 @@ FROM node:22-alpine
 WORKDIR /app
 RUN npm install -g serve@14
 COPY --from=build /app/dist ./dist
+ARG PUBLIC_ORIGIN=
+ARG PUBLIC_ENVIRONMENT=
+ENV PUBLIC_ORIGIN=$PUBLIC_ORIGIN
+ENV PUBLIC_ENVIRONMENT=$PUBLIC_ENVIRONMENT
 RUN mkdir -p dist/admin \
   && cp dist/favicon.png dist/admin/favicon.png \
   && cp dist/favicon.ico dist/admin/favicon.ico \
