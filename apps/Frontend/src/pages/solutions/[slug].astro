@@ -4,7 +4,8 @@ import { resolveSolutionDetailRoute } from '../../lib/solution-detail';
 
 const product = resolveSolutionDetailRoute(Astro.params.slug);
 if (!product) {
-  return Astro.redirect('/404');
+  Astro.response.status = 404;
+  return Astro.rewrite('/404');
 }
 ---
 <SolutionDetailPage product={product} />

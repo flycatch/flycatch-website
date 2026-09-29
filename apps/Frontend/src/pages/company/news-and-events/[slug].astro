@@ -45,6 +45,9 @@ function ensureImageAlt(html: string, alt: string) {
 
 const result = await loadPublishedNews(slug);
 const news = result.item;
+if (!news) {
+  Astro.response.status = result.error ? 503 : 404;
+}
 const siteSettings = publicSiteSettings();
 const metadata = news
   ? metadataFromNews(news, siteSettings, `/company/news-and-events/${news.slug}`)

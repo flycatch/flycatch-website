@@ -17,6 +17,9 @@ if (!slug) throw new Error('Opening slug missing');
 const siteSettings = publicSiteSettings();
 const result = await loadPublishedOpening(slug);
 const opening = result.item;
+if (!opening) {
+  Astro.response.status = result.error ? 503 : 404;
+}
 const metadata = opening
   ? fallbackMetadata(
       `/company/jobs-openings/${opening.slug}`,
