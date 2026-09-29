@@ -29,6 +29,7 @@ import {
   loadPublishedBlogPage,
   loadPublishedCategories,
   loadPublishedIndustries,
+  loadPublishedNews,
   loadPublishedNewsCategories,
   loadPublishedNewsPage,
   loadPublishedFlycatchSaudiArabiaPage,
@@ -1407,6 +1408,45 @@ describe('public news page loader', () => {
     expect(newsHref).toContain('/api/v1/public/news?');
     expect(newsHref).toContain('q=launch');
     expect(String(fetchMock.mock.calls[1][0])).toContain('/api/v1/public/news-categories');
+    vi.unstubAllGlobals();
+  });
+
+  it('loads one published news record by slug', async () => {
+    const fetchMock = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({
+        title: 'Team Lunch',
+        slug: 'team-lunch',
+        body: '<p>Good food</p>',
+        description: 'A day out',
+        button_name: 'Read More',
+        reading_time: 4,
+        image_key: 'lunch.jpg',
+        youtube_url: '',
+        created_at: '2026-09-24T00:00:00.000Z',
+        facebook: '',
+        linkedin: '',
+        twitter: '',
+        instagram: '',
+        news_categories: [{ name: 'Company' }],
+        authors: [{ name: 'Ada', bio: '', designation: 'Editor', writer_image_keys: [] }],
+        seo: {
+          title: 'Team Lunch',
+          description: 'A day out',
+          canonical_url: '',
+          meta_title: '',
+          h1_tag: '',
+          image_alt: 'Team at lunch',
+          image_key: null,
+        },
+      }),
+    }));
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await loadPublishedNews('team lunch');
+    expect(result.error).toBe(false);
+    expect(result.item?.title).toBe('Team Lunch');
+    expect(result.item?.body).toContain('Good food');
+    expect(String(fetchMock.mock.calls[0][0])).toContain('/api/v1/public/news/team%20lunch');
     vi.unstubAllGlobals();
   });
 });
