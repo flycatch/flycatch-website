@@ -149,3 +149,64 @@ export const socialLinks: NavLink[] = [
   { href: 'https://www.linkedin.com/company/flycatch', labelKey: 'footer.linkedin' },
   { href: 'https://www.instagram.com/flycatchtech', labelKey: 'footer.instagram' },
 ];
+
+export function normalizeNavPath(pathname: string): string {
+  const path = (pathname.split('#')[0] ?? '').split('?')[0] || '/';
+  if (path.length > 1 && path.endsWith('/')) return path.slice(0, -1);
+  return path || '/';
+}
+
+/** Longest-prefix score for an in-site header href. External and hash links score 0. */
+export function navHrefScore(pathname: string, href: string): number {
+  if (!href.startsWith('/')) return 0;
+  const path = normalizeNavPath(pathname);
+  const target = normalizeNavPath(href);
+  if (path === target) return target.length;
+  if (target !== '/' && path.startsWith(`${target}/`)) return target.length;
+  return 0;
+}
+
+export function primaryNavHrefs(): string[] {
+  return [
+    servicesOverview.href,
+    ...serviceFlyoutApplication.links.map((link) => link.href),
+    ...serviceFlyoutDevops.map((link) => link.href),
+    ...serviceFlyoutColumnFour.map((link) => link.href),
+    '/solutions',
+    '/case-studies',
+    ...companyMenuColumns.flat().map((link) => link.href),
+    ...mobileApplicationLinks.map((link) => link.href),
+    ...mobileDevopsLinks.map((link) => link.href),
+    ...mobileServiceLeaves.map((link) => link.href),
+    ...mobileCompanyLinks.map((link) => link.href),
+    '/company/blogs',
+    '/company/clients',
+    '/company/testimonials',
+    '/contact-us',
+  ];
+}
+
+/** The single best header href for this pathname, or null on unrelated routes. */
+export function currentNavHref(pathname: string, hrefs: readonly string[] = primaryNavHrefs()): string | null {
+  let bestHref: string | null = null;
+  let bestScore = 0;
+  for (const href of hrefs) {
+    const score = navHrefScore(pathname, href);
+    if (score > bestScore) {
+      bestScore = score;
+      bestHref = normalizeNavPath(href);
+    }
+  }
+  return bestHref;
+}
+
+export function isCurrentNavHref(pathname: string, href: string, current: string | null = currentNavHref(pathname)): boolean {
+  if (!current) return false;
+  return normalizeNavPath(href) === current;
+}
+
+export function isNavSectionActive(pathname: string, prefix: string): boolean {
+  const path = normalizeNavPath(pathname);
+  const section = normalizeNavPath(prefix);
+  return path === section || path.startsWith(`${section}/`);
+}

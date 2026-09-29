@@ -15,10 +15,13 @@ const heading = title.trim() || t('home.services');
 function serviceHref(raw: string): string {
   const value = raw.trim();
   if (!value) return '';
-  if (/^[a-z][a-z0-9+.-]*:/i.test(value) || value.startsWith('/') || value.startsWith('#')) {
-    return value;
-  }
-  return `/${value}`;
+  const href =
+    /^[a-z][a-z0-9+.-]*:/i.test(value) || value.startsWith('/') || value.startsWith('#')
+      ? value
+      : `/${value}`;
+  const path = href.split(/[?#]/)[0].replace(/\/+$/, '');
+  if (path === '/services/cloud-services') return '/services/cloud-migration';
+  return href;
 }
 ---
 {services.length > 0 && (
