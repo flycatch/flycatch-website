@@ -7,9 +7,29 @@ describe('resolveApiBase', () => {
     expect(resolveApiBase('')).toBe('/api/v1');
   });
 
-  it('prefixes an absolute PUBLIC_ORIGIN when provided', () => {
+  it('prefixes an absolute origin for non-browser callers', () => {
     expect(resolveApiBase('https://flycatch-website-dev.k3s.flycatchtech.in')).toBe(
       'https://flycatch-website-dev.k3s.flycatchtech.in/api/v1',
     );
+  });
+
+  it('ignores a baked absolute origin in the browser', () => {
+    const previous = globalThis.window;
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: {},
+    });
+    try {
+      expect(resolveApiBase('https://flycatch-website-dev.k3s.flycatchtech.in')).toBe('/api/v1');
+    } finally {
+      if (previous === undefined) {
+        delete (globalThis as { window?: unknown }).window;
+      } else {
+        Object.defineProperty(globalThis, 'window', {
+          configurable: true,
+          value: previous,
+        });
+      }
+    }
   });
 });

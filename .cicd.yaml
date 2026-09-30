@@ -28,10 +28,13 @@ images:
     context: apps/Backend
     args: {}
 
-  # Image build args below are for the `dev` branch pipeline. Production SEO
+  # Frontend build args below are for the `dev` branch pipeline. Production SEO
   # authenticity comes from overlays/prod ConfigMap (PUBLIC_ORIGIN /
   # PUBLIC_ENVIRONMENT) plus runtime process.env reads in the Frontend SSR.
   # Optional future: per-env build args when the shared library supports them.
+  # Administration FE must not bake PUBLIC_ORIGIN: the static client is promoted
+  # as-is, and an absolute dev host is blocked by production CSP (connect-src 'self').
+  # The admin UI calls same-origin /api/v1 through the gateway.
   - name: flycatch-website/frontend
     dockerfile: apps/Frontend/Dockerfile
     context: apps/Frontend
@@ -46,5 +49,4 @@ images:
     additionalContexts:
       specs: specs
     args:
-      PUBLIC_ORIGIN: https://flycatch-website-dev.k3s.flycatchtech.in
       PUBLIC_ENVIRONMENT: development
