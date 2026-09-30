@@ -10,10 +10,16 @@ import { t } from '../lib/i18n';
 
 const metadata = fallbackMetadata('/contact-us', t('page.contact.title'), t('page.contact.description'));
 metadata.indexable = true;
-const runtimeEnv = process.env;
-const siteKey = (import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY || runtimeEnv.PUBLIC_RECAPTCHA_SITE_KEY || '').trim();
-const captchaDev =
-  (import.meta.env.PUBLIC_ENVIRONMENT || runtimeEnv.PUBLIC_ENVIRONMENT || 'development') !== 'production';
+// Dynamic env keys — Vite must not replace these at build time (ConfigMap sets them in k8s).
+// Prefer process.env so prod/dev ConfigMap keys override the value baked into the image.
+const siteKey = (
+  process.env['PUBLIC_RECAPTCHA_SITE_KEY'] ||
+  import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY ||
+  ''
+).trim();
+const publicEnvironment =
+  process.env['PUBLIC_ENVIRONMENT'] || import.meta.env.PUBLIC_ENVIRONMENT || 'development';
+const captchaDev = publicEnvironment !== 'production';
 
 const offices = [
   {
