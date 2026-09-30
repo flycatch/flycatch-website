@@ -432,9 +432,26 @@ button[aria-busy='true']::before {
   border-color: transparent;
 }
 
-.auth-form > button {
+.auth-form > button,
+.auth-form > a.microsoft-sign-in {
   width: 100%;
   margin-top: var(--space-sm);
+}
+
+.auth-form > a.microsoft-sign-in {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--control-height);
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
 }
 
 .panel-footer.actions {

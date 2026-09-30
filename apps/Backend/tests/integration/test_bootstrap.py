@@ -67,6 +67,34 @@ def test_bootstrap_creates_missing_user_of_the_pair(db):
     assert db.query(Administrator).count() == 2
 
 
+def test_bootstrap_assigns_administrator_to_seeded_microsoft_admin(db):
+    from datetime import UTC, datetime
+
+    seeded = Administrator(
+        email="liju@flycatchtech.com",
+        password_hash="kept-hash",
+        is_active=False,
+        created_at=datetime.now(UTC),
+        created_by="microsoft-seed",
+    )
+    db.add(seeded)
+    db.commit()
+    BootstrapService().run(
+        db,
+        BootstrapUser("admin1@example.com", "administrator-pass", "administrator"),
+        BootstrapUser("editor1@example.com", "editor-password", "editor"),
+    )
+    db.refresh(seeded)
+    assert seeded.password_hash == "kept-hash"
+    assert seeded.is_active is True
+    role_names = [
+        row.role.name
+        for row in db.query(AdministratorRole).filter_by(administrator_id=seeded.id).all()
+    ]
+    assert role_names == ["administrator"]
+    assert db.query(Administrator).count() == 3
+
+
 def test_bootstrap_fail_closed_missing_inputs(db):
     try:
         BootstrapService().run(

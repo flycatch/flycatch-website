@@ -43,6 +43,89 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FieldErrors'
+  /admin/auth/microsoft:
+    get:
+      operationId: adminMicrosoftSignIn
+      summary: Start Microsoft sign-in, or report whether it is configured
+      description: |
+        Starts an OpenID Connect authorization-code flow against the
+        organisation's single-tenant Entra ID directory. When `probe` is `1`,
+        the response reports whether Microsoft sign-in is configured and does
+        not set a state cookie or redirect. Password sign-in is unchanged.
+      security: []
+      parameters:
+        - name: probe
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: ["1"]
+          description: When `1`, return availability and do not start the flow.
+      responses:
+        '200':
+          description: Availability when probe=1. No state cookie is set.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MicrosoftSignInAvailability'
+        '302':
+          description: |
+            When Microsoft sign-in is configured, Location is the single-tenant
+            authorize URL on `login.microsoftonline.com` and the response sets a
+            signed HttpOnly state cookie (about 10 minutes,
+            Path=/api/v1/admin/auth/microsoft) carrying state, the PKCE verifier,
+            and nonce. When it is not configured, or the start cannot be
+            completed, Location is `/admin/sign-in/` with the generic
+            `admin.sign_in.error` message key. No session is issued.
+          headers:
+            Location:
+              required: true
+              schema:
+                type: string
+            Set-Cookie:
+              required: false
+              schema:
+                type: string
+  /admin/auth/microsoft/callback:
+    get:
+      operationId: adminMicrosoftCallback
+      summary: Complete Microsoft sign-in
+      description: |
+        Validates the state cookie and the ID token, then reconciles the staff
+        account. Success places the same access and refresh token pair password
+        sign-in returns into the URL fragment of `/admin/sign-in/microsoft/`
+        (`access_token`, `refresh_token`, `expires_in`). Tokens are not written
+        to the query string. Failure redirects to `/admin/sign-in/` with the
+        generic `admin.sign_in.error` message key and does not issue a session.
+      security: []
+      parameters:
+        - name: code
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: state
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: error
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '302':
+          description: |
+            Success: Location is `{PUBLIC_ORIGIN}/admin/sign-in/microsoft/` with
+            the token pair in the fragment. Failure: Location is
+            `{PUBLIC_ORIGIN}/admin/sign-in/?error=admin.sign_in.error`. The
+            failure response does not include tokens in the query string.
+          headers:
+            Location:
+              required: true
+              schema:
+                type: string
   /admin/auth/refresh:
     post:
       operationId: adminRefresh
@@ -215,6 +298,14 @@ components:
         absolute_expires_at:
           type: string
           format: date-time
+    MicrosoftSignInAvailability:
+      type: object
+      additionalProperties: false
+      required: [configured]
+      properties:
+        configured:
+          type: boolean
+          description: True when the Azure app settings required to start Microsoft sign-in are present.
     AuthError:
       type: object
       additionalProperties: false

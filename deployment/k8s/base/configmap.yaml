@@ -17,3 +17,8 @@ data:
   GATEWAY_PORT: "8080"
   # reCAPTCHA v2 site key (public). Domains: localhost, flycatch-website-dev, flycatchtech.com.
   PUBLIC_RECAPTCHA_SITE_KEY: "6Ldx3M4tAAAAAEyHUp1Qt8GF3H3JuKHqFbdD9JsH"
+  # Microsoft Entra ID. Client secret lives in the Secret, not here.
+  AZURE_AD_TENANT_ID: "23091cc8-6585-4c80-b3b9-a3b468ba78fc"
+  AZURE_AD_CLIENT_ID: "7564706b-f1ea-4ec2-bca2-02dc3083dfe3"
+  AZURE_AD_REDIRECT_URI: https://flycatch-website-dev.k3s.flycatchtech.in/api/v1/admin/auth/microsoft/callback
+  ALLOWED_EMAIL_DOMAIN: flycatchtech.com

@@ -6,6 +6,7 @@ metadata:
     app.kubernetes.io/name: flycatch-website
 data:
   PUBLIC_ORIGIN: https://www.flycatchtech.com
+  AZURE_AD_REDIRECT_URI: https://www.flycatchtech.com/api/v1/admin/auth/microsoft/callback
   PUBLIC_ENVIRONMENT: production
   ENVIRONMENT: production
   S3_BUCKET: flycatch-website-prod

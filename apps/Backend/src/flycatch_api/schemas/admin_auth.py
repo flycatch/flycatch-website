@@ -45,6 +45,12 @@ class TokenPair(BaseModel):
     session: SessionContext
 
 
+class MicrosoftSignInAvailability(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    configured: bool
+
+
 class AuthError(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

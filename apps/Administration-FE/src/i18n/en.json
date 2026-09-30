@@ -3,6 +3,7 @@
   "admin.sign_in.email": "Email",
   "admin.sign_in.password": "Password",
   "admin.sign_in.submit": "Sign in",
+  "admin.sign_in.microsoft": "Sign in with Microsoft",
   "admin.sign_in.error": "Invalid email or password.",
   "admin.workspace.load_failed": "Signed in, but workspace data could not be loaded. Ask the operator to run flycatch-seed-records, then sign in again.",
   "admin.workspace.request_failed": "This section could not be loaded. Try again, or ask the operator to apply database migrations.",
