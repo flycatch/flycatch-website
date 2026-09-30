@@ -1,5 +1,6 @@
 FROM node:22-alpine AS build
 WORKDIR /app
+# Rebuild trigger for Jenkins versioning on dev.
 RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
