@@ -421,12 +421,15 @@
   color: #ffffff;
 }
 
+.careers-join-copy {
+  container-type: inline-size;
+}
+
 .careers-join-actions {
   flex-flow: row nowrap;
   align-items: center;
   gap: 10px;
   width: 100%;
-  container-type: inline-size;
 }
 
 .careers-join-actions .btn {
