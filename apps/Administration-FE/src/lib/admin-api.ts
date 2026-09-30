@@ -28,8 +28,18 @@ import {
 } from './token-store';
 import { t } from './i18n';
 
-/** Same-origin `/api/v1` by default; `PUBLIC_ORIGIN` is an optional absolute override. */
+/**
+ * Same-origin `/api/v1` in the browser.
+ *
+ * The admin image is built once and promoted, so a baked absolute
+ * `PUBLIC_ORIGIN` (the dev host in CI) must not be used from the page.
+ * Production CSP allows `connect-src 'self'` only, which blocks that host.
+ * Non-browser callers may still pass an absolute origin.
+ */
 export function resolveApiBase(origin = import.meta.env.PUBLIC_ORIGIN): string {
+  if (typeof window !== 'undefined') {
+    return '/api/v1';
+  }
   return `${origin || ''}/api/v1`;
 }
 
