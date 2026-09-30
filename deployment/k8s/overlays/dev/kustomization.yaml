@@ -13,11 +13,11 @@ patches:
 
 images:
 - name: registry.k3s.flycatchtech.in/flycatch-website/administration-fe
-  newTag: dev-v0.1.0.37
+  newTag: dev-v0.1.0.39
 - name: registry.k3s.flycatchtech.in/flycatch-website/backend
-  newTag: dev-v0.1.0.37
+  newTag: dev-v0.1.0.39
 - name: registry.k3s.flycatchtech.in/flycatch-website/frontend
-  newTag: dev-v0.1.0.37
+  newTag: dev-v0.1.0.39
 
 replicas:
 - count: 1
