@@ -244,7 +244,10 @@ The shared Caddy gateway ([base/Caddyfile](base/Caddyfile)) sets HSTS, COOP,
 `Permissions-Policy` on every response. CSP is route-scoped: both the public
 site and `/admin*` allow `'unsafe-inline'` in `script-src` and `style-src`
 (Astro inlines small page scripts such as the header/hamburger module, plus
-JSON-LD; Admin also needs `blob:` for media previews). Poppins is self-hosted,
+JSON-LD; Admin also needs `blob:` for media previews). The public policy also
+allows Google Tag Manager / GA4 hosts (`googletagmanager.com`,
+`google-analytics.com`, `analytics.google.com`); production pages inject the
+GTM container when `PUBLIC_ENVIRONMENT=production`. Poppins is self-hosted,
 so Google Fonts is not in the policy.
 
 ```bash
