@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { AdminApiError, signIn } from '../lib/admin-api';
+import { useEffect, useState } from 'react';
+import { AdminApiError, microsoftSignInConfigured, resolveApiBase, signIn } from '../lib/admin-api';
 import { t } from '../lib/i18n';
+import { signInErrorKey } from '../lib/microsoft-sign-in';
 
 interface Props {
   onSignedIn: () => void;
@@ -12,6 +13,19 @@ export default function SignInForm({ onSignedIn }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [microsoft, setMicrosoft] = useState(false);
+
+  useEffect(() => {
+    const key = signInErrorKey(window.location.search);
+    if (key) setError(t(key));
+    let cancelled = false;
+    microsoftSignInConfigured().then((configured) => {
+      if (!cancelled) setMicrosoft(configured);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -104,6 +118,11 @@ export default function SignInForm({ onSignedIn }: Props) {
       <button type="submit" className="primary" disabled={loading} aria-busy={loading}>
         {t('admin.sign_in.submit')}
       </button>
+      {microsoft && (
+        <a className="microsoft-sign-in" href={`${resolveApiBase()}/admin/auth/microsoft`}>
+          {t('admin.sign_in.microsoft')}
+        </a>
+      )}
     </form>
   );
 }

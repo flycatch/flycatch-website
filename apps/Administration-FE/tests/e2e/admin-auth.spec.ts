@@ -6,7 +6,7 @@ const adminPassword = process.env.E2E_ADMIN_PASSWORD;
 test.skip(!adminEmail || !adminPassword, 'requires E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD');
 
 test('sign-in success, generic failure, no sign-up, and sign-out', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/admin/');
   await expect(page.getByRole('heading', { name: /sign in/i })).toBeVisible();
   await expect(page.getByRole('link', { name: /sign up|register|create account/i })).toHaveCount(0);
   await expect(page.getByRole('button', { name: /sign up|register|create account/i })).toHaveCount(0);

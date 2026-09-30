@@ -12,6 +12,7 @@ from flycatch_api.models import (
     RolePermission,
 )
 from flycatch_api.security.password import hash_password
+from flycatch_api.services.microsoft_seed import assign_default_microsoft_admin_role
 from flycatch_api.services.role_service import ROLE_DESCRIPTIONS, default_grants
 
 ROLE_ADMINISTRATOR = "administrator"
@@ -69,6 +70,7 @@ class BootstrapService:
             self._ensure_catalogue(db, result)
             self._ensure_user(db, user_1, created_by, result)
             self._ensure_user(db, user_2, created_by, result)
+            assign_default_microsoft_admin_role(db)
             db.commit()
         except Exception:
             db.rollback()

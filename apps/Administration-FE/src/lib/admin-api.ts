@@ -249,6 +249,19 @@ async function api<T>(path: string, options: RequestInit = {}, retry = true): Pr
   return response.json() as Promise<T>;
 }
 
+export async function microsoftSignInConfigured(): Promise<boolean> {
+  try {
+    const response = await fetch(`${API_BASE}/admin/auth/microsoft?probe=1`, {
+      headers: { Accept: 'application/json' },
+    });
+    if (!response.ok) return false;
+    const body = (await response.json()) as { configured?: boolean };
+    return body.configured === true;
+  } catch {
+    return false;
+  }
+}
+
 export async function signIn(email: string, password: string): Promise<TokenPair> {
   const pair = await api<TokenPair>('/admin/auth/sign-in', {
     method: 'POST',

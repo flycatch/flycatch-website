@@ -31,6 +31,19 @@ class Settings(BaseSettings):
     )
     smtp_password: str = ""
     smtp_use_tls: bool = True
+    azure_ad_tenant_id: str = ""
+    azure_ad_client_id: str = ""
+    azure_ad_client_secret: str = ""
+    azure_ad_redirect_uri: str = ""
+    allowed_email_domain: str = "flycatchtech.com"
+
+    def microsoft_sign_in_configured(self) -> bool:
+        return bool(
+            self.azure_ad_tenant_id.strip()
+            and self.azure_ad_client_id.strip()
+            and self.azure_ad_client_secret.strip()
+            and self.azure_ad_redirect_uri.strip()
+        )
 
 
 settings = Settings()

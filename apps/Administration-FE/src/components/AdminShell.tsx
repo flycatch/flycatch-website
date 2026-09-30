@@ -8,6 +8,7 @@ import {
   signOut,
   type SessionContext,
 } from '../lib/admin-api';
+import { consumeMicrosoftSignIn } from '../lib/microsoft-sign-in';
 import { hasTokens } from '../lib/token-store';
 import { t } from '../lib/i18n';
 import {
@@ -228,6 +229,10 @@ export default function AdminShell() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [workspaceError, setWorkspaceError] = useState<string | null>(null);
+  useState(() => {
+    consumeMicrosoftSignIn(window.location, window.history);
+    return 0;
+  });
   const [ready, setReady] = useState(!hasTokens());
   const [navOpen, setNavOpen] = useState(false);
   const [listEpoch, setListEpoch] = useState(0);

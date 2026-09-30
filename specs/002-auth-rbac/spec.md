@@ -16,7 +16,7 @@ This feature **defines** staff authentication and authorisation for the existing
 
 ### In scope
 
-- Password-based sign-in and sign-out for provisioned staff (no self-service sign-up)
+- Password-based sign-in and Microsoft work-account sign-in for Administration staff (no self-service sign-up)
 - Role-based access control: roles grant named permissions; a staff member’s allowed actions are the union of permissions from their assigned roles
 - Server-side enforcement of every protected administration action (the workspace MAY hide unauthorised controls; hiding is not sufficient)
 - A one-time, operator-run bootstrap that creates the default roles and at least two default administrative users, then assigns those users their roles
@@ -27,7 +27,7 @@ This feature **defines** staff authentication and authorisation for the existing
 
 - Public visitor accounts, customer login, or any authenticated public area
 - Self-service registration, invitation links, or “create account” on the sign-in screen
-- Single sign-on, social login, or third-party identity providers
+- Single sign-on for the public site, social login, or identity providers other than Microsoft Entra ID for Administration staff
 - Self-service password recovery, reset, or email verification
 - An Administration UI for creating users, editing roles, or assigning permissions (operators use bootstrap and the existing operator provisioning path)
 - Per-record or per-field access lists, approval workflows, or legal-review products
@@ -57,7 +57,7 @@ An authorised operator prepares a new environment so staff can sign in. They run
 
 A bootstrapped or later-provisioned staff member opens the Administration UI, enters their email and password, and reaches the workspace. Failed attempts do not reveal whether the email exists. There is no path to create an account from this screen.
 
-**Why this priority**: Password sign-in is the only way staff reach administration. If this fails, roles never matter.
+**Why this priority**: Password sign-in is how provisioned staff with a password reach administration. Microsoft sign-in is also available for organisation work accounts. If sign-in fails, roles never matter.
 
 **Independent Test**: Sign in with a valid bootstrapped account; retry with a wrong password and with an unknown email; confirm both failures look the same and no session is created.
 
@@ -124,9 +124,9 @@ A signed-in Editor (or any user whose roles lack publish) tries to publish. The 
 
 #### Password authentication (no sign-up)
 
-- **FR-001**: Staff MUST sign in to the Administration UI with an email and a password. No other sign-in method is in this feature.
+- **FR-001**: Staff MUST be able to sign in to the Administration UI with an email and a password, and with a Microsoft work account in the organisation's single-tenant directory. Self-service sign-up is not a sign-in method.
 - **FR-002**: The system MUST NOT offer or accept self-service sign-up, registration, or account creation from the Administration UI or any public page.
-- **FR-003**: Only provisioned, active users MUST be able to sign in. Inactive or unknown credentials MUST be rejected with the same generic error.
+- **FR-003**: Only active staff accounts MUST be able to sign in. Inactive or unknown credentials MUST be rejected with the same generic error. A first-time Microsoft sign-in for an allowed company email MAY create an active account with no roles.
 - **FR-004**: Sign-in MUST create a server-backed session with idle timeout and absolute lifetime consistent with the foundation. Credentials MUST NOT be usable as a cross-site request to change administration data.
 - **FR-005**: Sign-out MUST end the session. After sign-out, administration content MUST NOT remain usable from the same browser without signing in again.
 - **FR-006**: Failed sign-in MUST NOT disclose whether an account exists, whether it is inactive, or which roles it has.
@@ -157,7 +157,7 @@ A signed-in Editor (or any user whose roles lack publish) tries to publish. The 
 - **FR-020**: Bootstrap MUST require the operator to supply each default user’s identity and secret. Defaults MUST NOT ship with a well-known password in the product.
 - **FR-021**: Bootstrap MUST be idempotent for the default role names and the supplied user identities: a repeat run MUST NOT create duplicates and MUST leave existing matching users and roles intact.
 - **FR-022**: Bootstrap MUST fail closed if required inputs are missing or invalid, without leaving users who cannot sign in or roles that do not match FR-010.
-- **FR-023**: Additional staff MAY be added later only through the existing operator provisioning path (not through sign-up). Newly provisioned users MUST be assigned at least one role from the catalogue.
+- **FR-023**: Additional staff MAY be added later through the existing operator provisioning path or by a first successful Microsoft sign-in that creates an account with no roles (not through sign-up). Operator-provisioned users MUST be assigned at least one role from the catalogue. A Microsoft-created account has no roles until an operator assigns one.
 - **FR-024**: Bootstrap and provisioning are operator actions. They MUST NOT be available as self-service Administration UI screens in this feature.
 
 #### Non-functional (constitution)
@@ -171,7 +171,7 @@ A signed-in Editor (or any user whose roles lack publish) tries to publish. The 
 
 ### Key Entities
 
-- **Administrator (staff user)**: A provisioned staff identity (email, active flag, credential). Not a public visitor. Created by bootstrap or the operator provisioning path. Assigned one or more Roles.
+- **Administrator (staff user)**: A staff identity (email, active flag, password and/or Microsoft identifier). Not a public visitor. Created by bootstrap, the operator provisioning path, or a first Microsoft sign-in for an allowed company email. Assigned zero or more Roles.
 - **Role**: A named set of Permissions (at minimum Administrator and Editor). Assigned to users; does not itself sign in.
 - **Permission**: A named capability that corresponds to one existing administration action: view records, save drafts, or publish.
 - **Role assignment**: The link between a staff user and a Role. A user’s effective permissions are the union of assigned roles.
@@ -200,7 +200,7 @@ A signed-in Editor (or any user whose roles lack publish) tries to publish. The 
 - The two default users are both staff accounts for the Administration UI. At least one is a full Administrator. If the operator does not specify otherwise, both receive the Administrator role so a single person is not the only fully authorised operator.
 - The Editor role exists so RBAC is testable and so a later-provisioned (or operator-assigned) user can draft without publishing. This feature does not require a user-management screen to assign Editor.
 - Additional users after bootstrap use the existing operator provisioning path, now including a role assignment. No Administration UI for user or role management in this phase.
-- Password recovery, password change by the signed-in user, and SSO remain later work unless a later specification adds them.
+- Password recovery and password change by the signed-in user remain later work. Microsoft sign-in for Administration staff is in scope. Public-site single sign-on is not.
 - A user may hold more than one role; permissions combine as a union. A user with no permissions can be signed in but cannot complete protected mutations.
 - Permission names stay aligned with today’s three administration actions. New content types later SHOULD reuse view / draft / publish rather than inventing a parallel catalogue.
 - Bootstrap secrets are supplied by the operator per environment (local, preview, production). They are not committed as known defaults.
