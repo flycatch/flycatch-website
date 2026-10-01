@@ -9,6 +9,17 @@ const LONG_CLOUD_MIGRATION_BLOG =
 const SHORT_CLOUD_MIGRATION_BLOG =
   '/company/blogs/explore-practical-cloud-migration-strategies-that-enhance-scalability-security-and-performance-learn-how-to-plan-execute-and-opt';
 
+const OPTIMIZED_IMAGE_PATHS: Record<string, string> = {
+  '/procure-flex/hero-laptop.png': '/procure-flex/hero-laptop.webp',
+  '/procure-flex/why.jpg': '/procure-flex/why.webp',
+  '/procure-flex/showcase.png': '/procure-flex/showcase.webp',
+  '/solutions/motto-light.png': '/solutions/motto-light.webp',
+  '/homeOffering-gif-1.gif': '/homeOffering-gif-1.webp',
+  '/homeOffering-gif-2.gif': '/homeOffering-gif-2.webp',
+  '/homeOffering-gif-3.gif': '/homeOffering-gif-3.webp',
+  '/homeOffering-gif-4.gif': '/homeOffering-gif-4.webp',
+};
+
 function stripTrailingSlash(pathname: string): string {
   if (pathname.length > 1 && pathname.endsWith('/')) return pathname.slice(0, -1);
   return pathname;
@@ -42,6 +53,9 @@ function mapLegacyPath(pathname: string): string | null {
   if (path === '/application-development') return '/services/application-development-services';
   if (path === '/solutions/combus') return '/solutions/com-bus';
   if (path === LONG_CLOUD_MIGRATION_BLOG) return SHORT_CLOUD_MIGRATION_BLOG;
+
+  const optimizedImage = OPTIMIZED_IMAGE_PATHS[path];
+  if (optimizedImage) return optimizedImage;
 
   const blogsMatch = path.match(/^\/blogs\/([^/]+)$/);
   if (blogsMatch) return `/company/blogs/${blogsMatch[1]}`;
