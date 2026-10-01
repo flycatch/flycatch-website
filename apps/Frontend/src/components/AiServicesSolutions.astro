@@ -1,6 +1,7 @@
 ---
 import { publicMediaUrl } from '../lib/public-api';
 import type { PublicAiService } from '../lib/public-api';
+import { publicSolutionPath } from '../lib/solution-detail';
 
 interface Props {
   page: PublicAiService;
@@ -26,7 +27,7 @@ const show = Boolean(title || description || solutions.length);
           const overlayBody = (section?.description ?? '').trim();
           const label = overlayTitle || solution.title.trim() || solution.slug.trim() || '';
           const showHover = Boolean(overlayTitle || overlayBody);
-          const href = solution.slug.trim() ? `/solutions/${solution.slug}` : '';
+          const href = publicSolutionPath(solution.slug);
           const media = image ? (
             <img src={image} alt="" width="283" height="458" loading="lazy" />
           ) : (

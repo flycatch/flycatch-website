@@ -3,6 +3,7 @@ import SectionState from './SectionState.astro';
 import { publicMediaUrl } from '../lib/public-api';
 import type { PublicSolutionProduct } from '../lib/public-api';
 import { t } from '../lib/i18n';
+import { publicSolutionPath } from '../lib/solution-detail';
 
 interface Props {
   title: string;
@@ -24,7 +25,7 @@ const heading = title.trim();
         const name = product.product_title.trim();
         const body = product.product_description.trim();
         const slug = product.slug.trim();
-        const href = slug ? `/solutions/${slug}` : '';
+        const href = publicSolutionPath(slug);
         return (
           <article
             class:list={['solutions-product', { 'is-image-left': !product.card_image_on_right }]}

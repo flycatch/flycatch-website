@@ -7,17 +7,34 @@ import SiteFooter from '../../components/SiteFooter.astro';
 import ResourcesTabs from '../../components/ResourcesTabs.astro';
 import BlogsListing from '../../components/BlogsListing.astro';
 import HomeCta from '../../components/HomeCta.astro';
-import { loadPublishedBlogPage, loadPublishedCategories } from '../../lib/public-api';
-import { fallbackMetadata } from '../../lib/metadata';
+import { apiOrigin, loadPublishedBlogPage, loadPublishedCategories } from '../../lib/public-api';
+import { buildCanonicalUrl, fallbackMetadata } from '../../lib/metadata';
+import {
+  blogListingPageCount,
+  blogListingPath,
+  parseBlogListingPage,
+} from '../../lib/blog-listing';
 import { t } from '../../lib/i18n';
 
+const requestedPage = parseBlogListingPage(Astro.url.searchParams.get('page'));
+if (requestedPage === null || (requestedPage === 1 && Astro.url.searchParams.has('page'))) {
+  return Astro.redirect('/company/blogs', 301);
+}
+
 const [listed, categories] = await Promise.all([
-  loadPublishedBlogPage(1),
+  loadPublishedBlogPage(requestedPage),
   loadPublishedCategories(),
 ]);
+const pageCount = listed.error
+  ? requestedPage
+  : blogListingPageCount(listed.total, listed.per_page);
+if (!listed.error && requestedPage > pageCount) {
+  return Astro.redirect('/company/blogs', 301);
+}
+const page = listed.error ? requestedPage : listed.page;
 const metadata = fallbackMetadata(
-  '/company/blogs',
-  t('page.blog.title'),
+  blogListingPath(page),
+  page > 1 ? t('page.blog.paged_title', { page }) : t('page.blog.title'),
   listed.error ? t('home.error') : t('page.blog.description'),
 );
 metadata.indexable = !listed.error;
@@ -40,9 +57,9 @@ const structuredData = listed.error
           '@type': 'ItemList',
           itemListElement: listed.items.map((blog, index) => ({
             '@type': 'ListItem',
-            position: index + 1,
+            position: (page - 1) * listed.per_page + index + 1,
             name: blog.title,
-            url: `${metadata.canonical.replace(/\/$/, '')}/${blog.slug}`,
+            url: buildCanonicalUrl(apiOrigin(), `/company/blogs/${blog.slug}`),
           })),
         },
       },
@@ -56,9 +73,10 @@ const structuredData = listed.error
       blogs={listed.items}
       categories={categoryItems}
       error={listed.error}
-      page={listed.page}
+      page={page}
       perPage={listed.per_page}
       total={listed.total}
+      pageCount={pageCount}
     />
     <HomeCta />
   </main>

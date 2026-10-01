@@ -69,3 +69,41 @@ export function redirectTarget(pathname: string): string | null {
   if (target === null || target === pathname) return null;
   return target;
 }
+
+const SITE_HOSTS = new Set(['www.flycatchtech.com', 'flycatchtech.com']);
+
+/** Map a stored public href to the live path. Leave mailto, hashes, and off-site URLs. */
+export function rewritePublicHref(href: string): string {
+  const raw = href.trim();
+  if (!raw || raw.startsWith('#') || raw.startsWith('mailto:') || raw.startsWith('tel:')) {
+    return href;
+  }
+
+  if (raw.startsWith('/') && !raw.startsWith('//')) {
+    const url = new URL(raw, 'https://www.flycatchtech.com');
+    const target = redirectTarget(url.pathname);
+    if (!target) return href;
+    return `${target}${url.search}${url.hash}`;
+  }
+
+  if (!raw.startsWith('http://') && !raw.startsWith('https://')) return href;
+
+  try {
+    const url = new URL(raw);
+    if (!SITE_HOSTS.has(url.hostname.toLowerCase())) return href;
+    const target = redirectTarget(url.pathname);
+    if (!target) return href;
+    url.pathname = target;
+    return url.toString();
+  } catch {
+    return href;
+  }
+}
+
+/** Rewrite href attributes in CMS HTML through the public redirect map. */
+export function rewritePublicHrefs(html: string): string {
+  return html.replace(/href=(["'])([^"']*)\1/gi, (match, quote: string, value: string) => {
+    const next = rewritePublicHref(value);
+    return next === value ? match : `href=${quote}${next}${quote}`;
+  });
+}

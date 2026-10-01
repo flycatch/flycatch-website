@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { redirectTarget } from '../../src/lib/seo-redirects';
+import { redirectTarget, rewritePublicHref, rewritePublicHrefs } from '../../src/lib/seo-redirects';
 
 describe('seo redirects', () => {
   it('strips /en locale prefix', () => {
@@ -70,5 +70,35 @@ describe('seo redirects', () => {
     expect(redirectTarget('/')).toBeNull();
     expect(redirectTarget('/admin/blogs')).toBeNull();
     expect(redirectTarget('/api/v1/public/blogs')).toBeNull();
+  });
+
+  it('rewrites the Ahrefs broken blog hrefs to live service paths', () => {
+    expect(rewritePublicHref('/en/services/ai-services/agentic-ai')).toBe('/services/ai-services');
+    expect(rewritePublicHref('/en/services/big-data-analytics')).toBe('/services/data-migration');
+    expect(rewritePublicHref('/en/services/data-engineering')).toBe('/services/data-migration');
+    expect(rewritePublicHref('/en/services/data-management-strategy')).toBe(
+      '/services/data-migration',
+    );
+    expect(rewritePublicHref('/application-development')).toBe(
+      '/services/application-development-services',
+    );
+    expect(
+      rewritePublicHref('https://www.flycatchtech.com/en/services/big-data-analytics'),
+    ).toBe('https://www.flycatchtech.com/services/data-migration');
+    expect(rewritePublicHref('https://example.com/en/services/big-data-analytics')).toBe(
+      'https://example.com/en/services/big-data-analytics',
+    );
+    expect(rewritePublicHref('mailto:hello@flycatchtech.com')).toBe('mailto:hello@flycatchtech.com');
+    expect(rewritePublicHref('/services/data-migration')).toBe('/services/data-migration');
+  });
+
+  it('rewrites href attributes in CMS HTML', () => {
+    const html =
+      '<p><a href="/en/services/big-data-analytics">data analytics</a> and ' +
+      "<a href='https://www.flycatchtech.com/application-development'>apps</a></p>";
+    expect(rewritePublicHrefs(html)).toBe(
+      '<p><a href="/services/data-migration">data analytics</a> and ' +
+        "<a href='https://www.flycatchtech.com/services/application-development-services'>apps</a></p>",
+    );
   });
 });
