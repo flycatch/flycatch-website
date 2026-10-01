@@ -15,7 +15,20 @@ describe('seo redirects', () => {
     expect(redirectTarget('/company/membership')).toBe('/company/memberships');
     expect(redirectTarget('/blogs/my-post')).toBe('/company/blogs/my-post');
     expect(redirectTarget('/services/data-management')).toBe('/services/data-migration');
+    expect(redirectTarget('/services/data-management-strategy')).toBe('/services/data-migration');
+    expect(redirectTarget('/services/data-engineering')).toBe('/services/data-migration');
+    expect(redirectTarget('/services/big-data-analytics')).toBe('/services/data-migration');
+    expect(redirectTarget('/services/visualization-and-intelligence')).toBe(
+      '/services/data-migration',
+    );
+    expect(redirectTarget('/services/ai-services/agentic-ai')).toBe('/services/ai-services');
+    expect(redirectTarget('/application-development')).toBe(
+      '/services/application-development-services',
+    );
     expect(redirectTarget('/solutions/combus')).toBe('/solutions/com-bus');
+    expect(redirectTarget('/services/data-migration')).toBeNull();
+    expect(redirectTarget('/services/ai-services')).toBeNull();
+    expect(redirectTarget('/services/application-development-services')).toBeNull();
   });
 
   it('normalizes lowercase AI solution slugs to sitemap camelCase', () => {
@@ -43,6 +56,8 @@ describe('seo redirects', () => {
     expect(redirectTarget('/en/solutions/flygrid-ai/')).toBe('/solutions/flyGrid-ai');
     expect(redirectTarget('/en/about-us')).toBe('/company/about-us');
     expect(redirectTarget('/en/services/data-management')).toBe('/services/data-migration');
+    expect(redirectTarget('/en/services/data-engineering')).toBe('/services/data-migration');
+    expect(redirectTarget('/en/services/ai-services/agentic-ai/')).toBe('/services/ai-services');
   });
 
   it('maps /en catch-all paths used by en/[...slug]', () => {

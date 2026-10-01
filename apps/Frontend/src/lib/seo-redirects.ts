@@ -29,7 +29,17 @@ function mapLegacyPath(pathname: string): string | null {
 
   if (path === '/about' || path === '/about-us') return '/company/about-us';
   if (path === '/company/membership') return '/company/memberships';
-  if (path === '/services/data-management') return '/services/data-migration';
+  if (
+    path === '/services/data-management' ||
+    path === '/services/data-management-strategy' ||
+    path === '/services/data-engineering' ||
+    path === '/services/big-data-analytics' ||
+    path === '/services/visualization-and-intelligence'
+  ) {
+    return '/services/data-migration';
+  }
+  if (path === '/services/ai-services/agentic-ai') return '/services/ai-services';
+  if (path === '/application-development') return '/services/application-development-services';
   if (path === '/solutions/combus') return '/solutions/com-bus';
   if (path === LONG_CLOUD_MIGRATION_BLOG) return SHORT_CLOUD_MIGRATION_BLOG;
 
