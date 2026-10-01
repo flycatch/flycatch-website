@@ -27,6 +27,15 @@ export function solutionDetailPath(product: SolutionDetailProduct): string {
   return `/solutions/${product.pathSlug}`;
 }
 
+/** Public listing href. AI products use the camelCase path; others keep their CMS slug. */
+export function publicSolutionPath(slug: string): string {
+  const trimmed = slug.trim();
+  if (!trimmed) return '';
+  const product = resolveSolutionDetailRoute(trimmed);
+  if (product) return solutionDetailPath(product);
+  return `/solutions/${trimmed}`;
+}
+
 export function solutionDetailByPathSlug(pathSlug: string): SolutionDetailProduct {
   const product = SOLUTION_DETAIL_PRODUCTS.find((item) => item.pathSlug === pathSlug);
   if (!product) {

@@ -1,5 +1,6 @@
 ---
 import { t } from '../lib/i18n';
+import { blogListingPath, visibleBlogPages } from '../lib/blog-listing';
 import { publicMediaUrl } from '../lib/public-api';
 import type { PublicBlogSummary, PublicCategory } from '../lib/public-api';
 import SectionState from './SectionState.astro';
@@ -11,9 +12,19 @@ interface Props {
   page?: number;
   perPage?: number;
   total?: number;
+  pageCount?: number;
 }
 
-const { blogs, categories, error = false, page = 1, perPage = 10, total = blogs.length } = Astro.props;
+const {
+  blogs,
+  categories,
+  error = false,
+  page = 1,
+  perPage = 10,
+  total = blogs.length,
+  pageCount = 1,
+} = Astro.props;
+const pages = visibleBlogPages(page, pageCount);
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 function formatCreatedDate(value: string) {
@@ -28,6 +39,7 @@ function formatCreatedDate(value: string) {
   data-blogs-page={page}
   data-blogs-per-page={perPage}
   data-blogs-total={total}
+  data-blogs-page-count={pageCount}
   data-blogs-error={error ? 'true' : 'false'}
 >
   <div class="container">
@@ -102,6 +114,33 @@ function formatCreatedDate(value: string) {
         })}
     </div>
     <p class="blogs-loading" data-blogs-loading hidden>{t('resources.loading')}</p>
+    {!error && pageCount > 1 && (
+      <nav class="blogs-pages" aria-label={t('blogs.pagination')}>
+        {page > 1 && (
+          <a class="blogs-pages-link" href={blogListingPath(page - 1)} rel="prev">
+            {t('blogs.previous')}
+          </a>
+        )}
+        {pages.map((n) =>
+          n === '…' ? (
+            <span class="blogs-pages-ellipsis" aria-hidden="true">{n}</span>
+          ) : n === page ? (
+            <span class="blogs-pages-link is-current" aria-current="page">
+              {n}
+            </span>
+          ) : (
+            <a class="blogs-pages-link" href={blogListingPath(n)} aria-label={t('blogs.page', { page: n })}>
+              {n}
+            </a>
+          ),
+        )}
+        {page < pageCount && (
+          <a class="blogs-pages-link" href={blogListingPath(page + 1)} rel="next">
+            {t('blogs.next')}
+          </a>
+        )}
+      </nav>
+    )}
     <div class="blogs-sentinel" data-blogs-sentinel aria-hidden="true"></div>
   </div>
 </section>

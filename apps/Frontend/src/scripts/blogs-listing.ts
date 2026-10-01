@@ -151,6 +151,8 @@ function initBlogsListing() {
   let page = Number(root.dataset.blogsPage || '1');
   let total = Number(root.dataset.blogsTotal || '0');
   const perPage = Number(root.dataset.blogsPerPage || '10');
+  const pageCount = Number(root.dataset.blogsPageCount || '1');
+  const pager = root.querySelector<HTMLElement>('.blogs-pages');
   let query = '';
   let category = '';
   let pending = false;
@@ -172,6 +174,7 @@ function initBlogsListing() {
       if (show) visible += 1;
     });
     if (empty) empty.hidden = pending || visible !== 0;
+    if (pager) pager.hidden = Boolean(query.trim() || category);
   };
 
   const setLoading = (value: boolean) => {
@@ -253,7 +256,7 @@ function initBlogsListing() {
     void fillCategory();
   });
 
-  if (sentinel && 'IntersectionObserver' in window) {
+  if (pageCount <= 1 && sentinel && 'IntersectionObserver' in window) {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries.some((entry) => entry.isIntersecting)) void loadMore();

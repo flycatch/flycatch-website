@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  publicSolutionPath,
   resolveSolutionDetailRoute,
   solutionDetailByPathSlug,
   solutionDetailPath,
@@ -29,5 +30,12 @@ describe('solution detail routes', () => {
       '/solutions/flyGrid-ai',
     ]);
     expect(solutionDetailByPathSlug('docSis-ai').apiSlug).toBe('docsis-ai');
+  });
+
+  it('maps listing slugs to the public solution path', () => {
+    expect(publicSolutionPath('doctcare-ai')).toBe('/solutions/doctCare-ai');
+    expect(publicSolutionPath('doctCare-ai')).toBe('/solutions/doctCare-ai');
+    expect(publicSolutionPath('credit-life')).toBe('/solutions/credit-life');
+    expect(publicSolutionPath('')).toBe('');
   });
 });
