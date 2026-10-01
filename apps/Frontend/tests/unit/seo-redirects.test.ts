@@ -41,6 +41,19 @@ describe('seo redirects', () => {
     expect(redirectTarget('/solutions/com-bus')).toBeNull();
   });
 
+  it('redirects oversized legacy image files to WebP', () => {
+    expect(redirectTarget('/procure-flex/hero-laptop.png')).toBe('/procure-flex/hero-laptop.webp');
+    expect(redirectTarget('/procure-flex/why.jpg')).toBe('/procure-flex/why.webp');
+    expect(redirectTarget('/procure-flex/showcase.png')).toBe('/procure-flex/showcase.webp');
+    expect(redirectTarget('/solutions/motto-light.png')).toBe('/solutions/motto-light.webp');
+    expect(redirectTarget('/homeOffering-gif-1.gif')).toBe('/homeOffering-gif-1.webp');
+    expect(redirectTarget('/homeOffering-gif-2.gif')).toBe('/homeOffering-gif-2.webp');
+    expect(redirectTarget('/homeOffering-gif-3.gif')).toBe('/homeOffering-gif-3.webp');
+    expect(redirectTarget('/homeOffering-gif-4.gif')).toBe('/homeOffering-gif-4.webp');
+    expect(redirectTarget('/en/procure-flex/hero-laptop.png')).toBe('/procure-flex/hero-laptop.webp');
+    expect(redirectTarget('/procure-flex/hero-laptop.webp')).toBeNull();
+  });
+
   it('redirects the truncated cloud-migration blog slug', () => {
     const long =
       '/company/blogs/explore-practical-cloud-migration-strategies-that-enhance-scalability-security-and-performance-learn-how-to-plan-execute-and-optimize-your-move-to-the-cloud';
