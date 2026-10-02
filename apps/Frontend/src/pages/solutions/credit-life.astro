@@ -13,11 +13,11 @@ import CreditLifeFeatures from '../../components/CreditLifeFeatures.astro';
 import CreditLifeShowcase from '../../components/CreditLifeShowcase.astro';
 import CreditLifeStakeholders from '../../components/CreditLifeStakeholders.astro';
 import CreditLifeBenefits from '../../components/CreditLifeBenefits.astro';
-import { loadPublishedBlogs } from '../../lib/public-api';
+import { loadPublishedBlogPage } from '../../lib/public-api';
 import { fallbackMetadata } from '../../lib/metadata';
 import { t } from '../../lib/i18n';
 
-const blogsResult = await loadPublishedBlogs();
+const blogsResult = await loadPublishedBlogPage(1);
 const metadata = fallbackMetadata(
   '/solutions/credit-life',
   t('page.creditlife.title'),

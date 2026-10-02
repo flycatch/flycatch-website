@@ -12,7 +12,7 @@ import HomeCta from '../../components/HomeCta.astro';
 import AdsContactPoster from '../../components/AdsContactPoster.astro';
 import AdsRelatedCaseStudies from '../../components/AdsRelatedCaseStudies.astro';
 import {
-  loadPublishedBlogs,
+  loadPublishedBlogPage,
   loadPublishedCaseStudies,
   loadPublishedCaseStudy,
   loadPublishedClientTestimonials,
@@ -40,7 +40,7 @@ function caseStudyBodyHtml(html: string) {
 const [result, listed, blogsResult, testimonials] = await Promise.all([
   loadPublishedCaseStudy(slug),
   loadPublishedCaseStudies(),
-  loadPublishedBlogs(),
+  loadPublishedBlogPage(1),
   loadPublishedClientTestimonials(),
 ]);
 const study = result.item;

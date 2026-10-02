@@ -14,7 +14,7 @@ import AdsContactPoster from '../../components/AdsContactPoster.astro';
 import AdsRelatedCaseStudies from '../../components/AdsRelatedCaseStudies.astro';
 import AiServicesMinds from '../../components/AiServicesMinds.astro';
 import {
-  loadPublishedBlogs,
+  loadPublishedBlogPage,
   loadPublishedCaseStudies,
   loadPublishedCaseStudy,
   loadPublishedDataAnalytic,
@@ -28,7 +28,7 @@ import { t } from '../../lib/i18n';
 const preferred = 'data-migration';
 const [listed, blogsResult, casesResult] = await Promise.all([
   loadPublishedDataAnalytics(),
-  loadPublishedBlogs(),
+  loadPublishedBlogPage(1),
   loadPublishedCaseStudies(),
 ]);
 const pageName =

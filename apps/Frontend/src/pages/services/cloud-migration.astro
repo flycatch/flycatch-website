@@ -14,7 +14,7 @@ import AdsContactPoster from '../../components/AdsContactPoster.astro';
 
 import AiServicesMinds from '../../components/AiServicesMinds.astro';
 import {
-  loadPublishedBlogs,
+  loadPublishedBlogPage,
 
   loadPublishedCloudService,
   loadPublishedCloudServices,
@@ -26,7 +26,7 @@ import { t } from '../../lib/i18n';
 const preferred = 'cloud-migration';
 const [listed, blogsResult] = await Promise.all([
   loadPublishedCloudServices(),
-  loadPublishedBlogs(),
+  loadPublishedBlogPage(1),
 ]);
 const pageName =
   listed.items.find((item) => item.page_name === preferred)?.page_name ??

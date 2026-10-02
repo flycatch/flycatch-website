@@ -16,6 +16,7 @@ describe('sitemap routes', () => {
     expect(paths).toContain('/terms-and-conditions');
     expect(paths).toContain('/solutions/docSis-ai');
     expect(paths).not.toContain('/about');
+    expect(paths).not.toContain('/health');
     expect(paths).not.toContain('/solutions/combus');
     expect(new Set(paths).size).toBe(paths.length);
   });

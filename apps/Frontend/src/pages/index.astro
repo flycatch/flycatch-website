@@ -16,7 +16,7 @@ import HomeFaq from '../components/HomeFaq.astro';
 import HomeCta from '../components/HomeCta.astro';
 import SectionState from '../components/SectionState.astro';
 import {
-  loadPublishedBlogs,
+  loadPublishedBlogPage,
   loadPublishedClientLogos,
   loadPublishedClientTestimonials,
   loadPublishedHomes,
@@ -33,7 +33,7 @@ const [homesResult, logosResult, testimonialsResult, blogsResult] = await Promis
   loadPublishedHomes(),
   loadPublishedClientLogos(),
   loadPublishedClientTestimonials(),
-  loadPublishedBlogs(),
+  loadPublishedBlogPage(1),
 ]);
 
 const siteSettings = publicSiteSettings();

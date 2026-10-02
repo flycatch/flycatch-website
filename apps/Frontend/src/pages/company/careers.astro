@@ -16,7 +16,7 @@ import JobsOpeningsBoard from '../../components/JobsOpeningsBoard.astro';
 import HomeInsights from '../../components/HomeInsights.astro';
 import HomeCta from '../../components/HomeCta.astro';
 import {
-  loadPublishedBlogs,
+  loadPublishedBlogPage,
   loadPublishedEmployeeTestimonials,
   loadPublishedOpenings,
 } from '../../lib/public-api';
@@ -26,7 +26,7 @@ import { t } from '../../lib/i18n';
 const [openingsResult, storiesResult, blogsResult] = await Promise.all([
   loadPublishedOpenings(),
   loadPublishedEmployeeTestimonials(),
-  loadPublishedBlogs(),
+  loadPublishedBlogPage(1),
 ]);
 
 const metadata = fallbackMetadata(

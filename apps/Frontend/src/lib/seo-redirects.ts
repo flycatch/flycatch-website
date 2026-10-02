@@ -84,7 +84,8 @@ export function redirectTarget(pathname: string): string | null {
   return target;
 }
 
-const SITE_HOSTS = new Set(['www.flycatchtech.com', 'flycatchtech.com']);
+const CANONICAL_HOST = 'www.flycatchtech.com';
+const SITE_HOSTS = new Set([CANONICAL_HOST, 'flycatchtech.com']);
 
 /** Map a stored public href to the live path. Leave mailto, hashes, and off-site URLs. */
 export function rewritePublicHref(href: string): string {
@@ -104,10 +105,16 @@ export function rewritePublicHref(href: string): string {
 
   try {
     const url = new URL(raw);
-    if (!SITE_HOSTS.has(url.hostname.toLowerCase())) return href;
+    const host = url.hostname.toLowerCase();
+    if (!SITE_HOSTS.has(host)) return href;
     const target = redirectTarget(url.pathname);
-    if (!target) return href;
-    url.pathname = target;
+    const needsCanonicalHost = host !== CANONICAL_HOST;
+    if (!target && !needsCanonicalHost) return href;
+    if (target) url.pathname = target;
+    if (needsCanonicalHost) {
+      url.protocol = 'https:';
+      url.hostname = CANONICAL_HOST;
+    }
     return url.toString();
   } catch {
     return href;

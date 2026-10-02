@@ -19,7 +19,7 @@ import DevopsApproach from '../../components/DevopsApproach.astro';
 import DevopsExperience from '../../components/DevopsExperience.astro';
 import DevopsTools from '../../components/DevopsTools.astro';
 import {
-  loadPublishedBlogs,
+  loadPublishedBlogPage,
   loadPublishedCaseStudies,
   loadPublishedCaseStudy,
   loadPublishedDevOpsConsult,
@@ -53,7 +53,7 @@ function toOfferingsLanding(page: PublicDevOpsConsult): PublicOfferingsLanding {
 
 const [listed, blogsResult, casesResult] = await Promise.all([
   loadPublishedDevOpsConsults(),
-  loadPublishedBlogs(),
+  loadPublishedBlogPage(1),
   loadPublishedCaseStudies(),
 ]);
 const slug =

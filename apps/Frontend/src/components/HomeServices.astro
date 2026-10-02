@@ -2,6 +2,7 @@
 import { t } from '../lib/i18n';
 import { publicMediaUrl } from '../lib/public-api';
 import type { HomeService } from '../lib/public-api';
+import { rewritePublicHref } from '../lib/seo-redirects';
 
 interface Props {
   services: HomeService[];
@@ -19,9 +20,9 @@ function serviceHref(raw: string): string {
     /^[a-z][a-z0-9+.-]*:/i.test(value) || value.startsWith('/') || value.startsWith('#')
       ? value
       : `/${value}`;
-  const path = href.split(/[?#]/)[0].replace(/\/+$/, '');
-  if (path === '/services/cloud-services') return '/services/cloud-migration';
-  return href;
+  const path = href.split(/[?#]/)[0].replace(/\/+$/, '') || '/';
+  const normalized = path === '/services/cloud-services' ? '/services/cloud-migration' : href;
+  return rewritePublicHref(normalized);
 }
 ---
 {services.length > 0 && (
