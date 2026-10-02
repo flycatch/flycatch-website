@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  alignPageMetadataOrigin,
   buildPageMetadata,
   documentTitleFromSeo,
   metadataFromContentSeo,
@@ -139,5 +140,36 @@ describe('resolvePublicCanonical', () => {
     );
     expect(metadata.canonical).toBe('https://www.flycatchtech.com/services');
     expect(metadata.socialImageUrl).toBe('https://www.flycatchtech.com/og-default.png');
+  });
+});
+
+describe('alignPageMetadataOrigin', () => {
+  const baked = {
+    title: 'Privacy Policy | Flycatch',
+    description: 'Desc',
+    canonical: 'https://flycatch-website-dev.k3s.flycatchtech.in/privacy-policy',
+    socialTitle: 'Privacy Policy | Flycatch',
+    socialDescription: 'Desc',
+    socialImageKey: '/og-default.png',
+    socialImageUrl: 'https://flycatch-website-dev.k3s.flycatchtech.in/og-default.png',
+    indexable: true,
+  };
+
+  it('rewrites a baked k3s canonical when the request is for www', () => {
+    const aligned = alignPageMetadataOrigin(
+      baked,
+      new URL('https://www.flycatchtech.com/privacy-policy'),
+    );
+    expect(aligned.canonical).toBe('https://www.flycatchtech.com/privacy-policy');
+    expect(aligned.socialImageUrl).toBe('https://www.flycatchtech.com/og-default.png');
+  });
+
+  it('uses X-Forwarded-Host when the adapter URL is internal', () => {
+    const aligned = alignPageMetadataOrigin(
+      baked,
+      new URL('http://frontend:4321/privacy-policy'),
+      new Headers({ 'x-forwarded-host': 'www.flycatchtech.com' }),
+    );
+    expect(aligned.canonical).toBe('https://www.flycatchtech.com/privacy-policy');
   });
 });

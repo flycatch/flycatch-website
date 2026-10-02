@@ -8,6 +8,7 @@ import poppins600 from '@fontsource/poppins/files/poppins-latin-600-normal.woff2
 import '../styles/tokens.css';
 import '../styles/layout.css';
 import type { PageMetadata } from '../lib/metadata';
+import { alignPageMetadataOrigin } from '../lib/metadata';
 import { t } from '../lib/i18n';
 
 interface Props {
@@ -18,7 +19,8 @@ interface Props {
   dir?: string;
 }
 
-const { title, metadata, structuredData = [], lang = 'en', dir = 'ltr' } = Astro.props;
+const { title, metadata: incomingMetadata, structuredData = [], lang = 'en', dir = 'ltr' } = Astro.props;
+const metadata = alignPageMetadataOrigin(incomingMetadata, Astro.url, Astro.request.headers);
 // Dynamic env key — Vite must not replace this at build time (ConfigMap sets it in k8s).
 const publicEnvironment =
   process.env['PUBLIC_ENVIRONMENT'] || import.meta.env.PUBLIC_ENVIRONMENT || 'development';

@@ -1,6 +1,12 @@
 import type { SeoMetadata, SiteSettings } from './published-snapshot';
 import type { ContentSeo, PublicCaseStudy, PublicHome, PublicNews } from './public-api';
 import { absoluteMediaUrl, apiOrigin } from './public-api';
+import {
+  DEV_CLUSTER_ORIGIN,
+  isPublicProductionHost,
+  PRODUCTION_PUBLIC_ORIGIN,
+  requestHostname,
+} from './public-origin';
 import { getSiteSettings } from './published-snapshot';
 
 export function publicSiteSettings(): SiteSettings {
@@ -25,6 +31,27 @@ export function resolveSocialImage(
       absoluteMediaUrl(origin, socialImageKey) ??
       `${origin.replace(/\/$/, '')}${DEFAULT_SOCIAL_IMAGE_PATH}`,
   };
+}
+
+/** Point canonical and share URLs at www when the visitor hit the public host. */
+export function alignPageMetadataOrigin(
+  metadata: PageMetadata,
+  requestUrl: URL,
+  headers?: Headers,
+): PageMetadata {
+  const host = requestHostname(requestUrl, headers);
+  if (!isPublicProductionHost(host)) return metadata;
+  let path = requestUrl.pathname;
+  try {
+    path = new URL(metadata.canonical).pathname;
+  } catch {
+    /* keep request path */
+  }
+  const canonical = buildCanonicalUrl(PRODUCTION_PUBLIC_ORIGIN, path);
+  const socialImageUrl = metadata.socialImageUrl
+    ? metadata.socialImageUrl.split(DEV_CLUSTER_ORIGIN).join(PRODUCTION_PUBLIC_ORIGIN)
+    : metadata.socialImageUrl;
+  return { ...metadata, canonical, socialImageUrl };
 }
 
 export function fallbackMetadata(path: string, title: string, description: string): PageMetadata {

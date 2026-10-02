@@ -67,6 +67,18 @@ describe('public media URLs', () => {
     if (previous === undefined) delete process.env.API_ORIGIN;
     else process.env.API_ORIGIN = previous;
   });
+
+  it('does not publish the k3s origin when PUBLIC_ENVIRONMENT is production', () => {
+    const previousOrigin = process.env.PUBLIC_ORIGIN;
+    const previousEnv = process.env.PUBLIC_ENVIRONMENT;
+    process.env.PUBLIC_ORIGIN = 'https://flycatch-website-dev.k3s.flycatchtech.in';
+    process.env.PUBLIC_ENVIRONMENT = 'production';
+    expect(apiOrigin()).toBe('https://www.flycatchtech.com');
+    if (previousOrigin === undefined) delete process.env.PUBLIC_ORIGIN;
+    else process.env.PUBLIC_ORIGIN = previousOrigin;
+    if (previousEnv === undefined) delete process.env.PUBLIC_ENVIRONMENT;
+    else process.env.PUBLIC_ENVIRONMENT = previousEnv;
+  });
 });
 
 describe('public AI services loaders', () => {
