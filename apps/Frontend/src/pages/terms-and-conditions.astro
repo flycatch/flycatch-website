@@ -1,5 +1,5 @@
 ---
-// Stay server-rendered so production robots meta is not frozen at image build time.
+export const prerender = false;
 import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/legal.css';
 import SiteHeader from '../components/SiteHeader.astro';

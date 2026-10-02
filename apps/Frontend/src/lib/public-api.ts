@@ -1,3 +1,5 @@
+import { resolvePublicOrigin } from './public-origin';
+
 export type ContentSeo = {
   title: string;
   description: string;
@@ -651,11 +653,12 @@ export type PublicItemResult<T> = {
 export const DEFAULT_API_ORIGIN = 'http://localhost:8080';
 
 export function apiOrigin(): string {
-  return (
-    process.env['PUBLIC_ORIGIN'] ||
-    import.meta.env.PUBLIC_ORIGIN ||
-    DEFAULT_API_ORIGIN
-  ).replace(/\/$/, '');
+  return resolvePublicOrigin({
+    runtimeOrigin: process.env['PUBLIC_ORIGIN'],
+    runtimeEnvironment:
+      process.env['PUBLIC_ENVIRONMENT'] || String(import.meta.env.PUBLIC_ENVIRONMENT || ''),
+    fallbackOrigin: String(import.meta.env.PUBLIC_ORIGIN || DEFAULT_API_ORIGIN),
+  });
 }
 
 /** Server-side fetch target. In Docker/k8s this is the Backend service, not localhost. */
