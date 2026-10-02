@@ -26,7 +26,38 @@ describe('seo metadata helper', () => {
       },
     );
     expect(metadata.canonical).toBe('http://localhost:8080/');
-    expect(metadata.socialImageUrl).toBeNull();
+    expect(metadata.socialImageUrl).toBe('http://localhost:8080/og-default.png');
+  });
+
+  it('prefers a page social image, then the site default', () => {
+    const settings = {
+      site_name: 'Flycatch',
+      default_locale: 'en',
+      locale_url_strategy: 'unprefixed_default',
+      robots_policy: 'index_public',
+      canonical_origin: 'https://www.flycatchtech.com',
+      default_social_image_key: 'site-share',
+    };
+    const page = {
+      title: 'Test',
+      description: 'Desc',
+      canonical_path: '/services',
+      indexable: true,
+      primary_heading: 'Heading',
+      summary: 'Summary',
+    };
+    expect(buildPageMetadata(page, settings).socialImageUrl).toBe(
+      'https://www.flycatchtech.com/api/v1/public/media/site-share',
+    );
+    expect(
+      buildPageMetadata(
+        { ...page, social_image_key: 'page-share' },
+        settings,
+      ).socialImageUrl,
+    ).toBe('https://www.flycatchtech.com/api/v1/public/media/page-share');
+    expect(
+      buildPageMetadata(page, { ...settings, default_social_image_key: '  ' }).socialImageUrl,
+    ).toBe('https://www.flycatchtech.com/og-default.png');
   });
 
   it('prefers SEO meta title then page name', () => {
@@ -107,5 +138,6 @@ describe('resolvePublicCanonical', () => {
       'Services',
     );
     expect(metadata.canonical).toBe('https://www.flycatchtech.com/services');
+    expect(metadata.socialImageUrl).toBe('https://www.flycatchtech.com/og-default.png');
   });
 });

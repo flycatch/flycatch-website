@@ -10,16 +10,36 @@ export function publicSiteSettings(): SiteSettings {
   };
 }
 
+/** Static share image used when a page and site settings have no social image. */
+export const DEFAULT_SOCIAL_IMAGE_PATH = '/og-default.png';
+
+export function resolveSocialImage(
+  origin: string,
+  pageKey: string | null | undefined,
+  siteDefault?: string | null,
+): { socialImageKey: string; socialImageUrl: string } {
+  const socialImageKey = pageKey?.trim() || siteDefault?.trim() || DEFAULT_SOCIAL_IMAGE_PATH;
+  return {
+    socialImageKey,
+    socialImageUrl:
+      absoluteMediaUrl(origin, socialImageKey) ??
+      `${origin.replace(/\/$/, '')}${DEFAULT_SOCIAL_IMAGE_PATH}`,
+  };
+}
+
 export function fallbackMetadata(path: string, title: string, description: string): PageMetadata {
-  const origin = apiOrigin();
+  const siteSettings = publicSiteSettings();
   return {
     title,
     description,
-    canonical: buildCanonicalUrl(origin, path),
+    canonical: buildCanonicalUrl(siteSettings.canonical_origin, path),
     socialTitle: title,
     socialDescription: description,
-    socialImageKey: null,
-    socialImageUrl: null,
+    ...resolveSocialImage(
+      siteSettings.canonical_origin,
+      null,
+      siteSettings.default_social_image_key,
+    ),
     indexable: false,
   };
 }
@@ -93,15 +113,17 @@ export function buildPageMetadata(
   seo: SeoMetadata,
   siteSettings: SiteSettings,
 ): PageMetadata {
-  const socialImageKey = seo.social_image_key ?? siteSettings.default_social_image_key ?? null;
   return {
     title: seo.title,
     description: seo.description,
     canonical: buildCanonicalUrl(siteSettings.canonical_origin, seo.canonical_path),
     socialTitle: seo.social_title ?? seo.title,
     socialDescription: seo.social_description ?? seo.description,
-    socialImageKey,
-    socialImageUrl: absoluteMediaUrl(siteSettings.canonical_origin, socialImageKey),
+    ...resolveSocialImage(
+      siteSettings.canonical_origin,
+      seo.social_image_key,
+      siteSettings.default_social_image_key,
+    ),
     indexable: seo.indexable,
   };
 }
@@ -130,15 +152,17 @@ export function metadataFromContentSeo(
     path,
     seo.canonical_url,
   );
-  const socialImageKey = seo.image_key ?? siteSettings.default_social_image_key ?? null;
   return {
     title,
     description,
     canonical,
     socialTitle: seo.title.trim() || title,
     socialDescription: description,
-    socialImageKey,
-    socialImageUrl: absoluteMediaUrl(siteSettings.canonical_origin, socialImageKey),
+    ...resolveSocialImage(
+      siteSettings.canonical_origin,
+      seo.image_key,
+      siteSettings.default_social_image_key,
+    ),
     indexable: true,
   };
 }
@@ -164,8 +188,11 @@ export function metadataFromBlog(
     canonical,
     socialTitle: blog.title.trim() || siteSettings.site_name,
     socialDescription: blog.description.trim() || siteSettings.site_name,
-    socialImageKey: blog.image_key,
-    socialImageUrl: absoluteMediaUrl(siteSettings.canonical_origin, blog.image_key),
+    ...resolveSocialImage(
+      siteSettings.canonical_origin,
+      blog.image_key,
+      siteSettings.default_social_image_key,
+    ),
     indexable: true,
   };
 }
@@ -235,15 +262,17 @@ export function metadataFromNews(
     path,
     seo?.canonical_url,
   );
-  const socialImageKey = seo?.image_key || news.image_key;
   return {
     title,
     description,
     canonical,
     socialTitle: title,
     socialDescription: description,
-    socialImageKey,
-    socialImageUrl: absoluteMediaUrl(siteSettings.canonical_origin, socialImageKey),
+    ...resolveSocialImage(
+      siteSettings.canonical_origin,
+      seo?.image_key || news.image_key,
+      siteSettings.default_social_image_key,
+    ),
     indexable: true,
   };
 }
@@ -259,8 +288,11 @@ export function metadataFromCaseStudy(
     canonical: buildCanonicalUrl(siteSettings.canonical_origin, path),
     socialTitle: study.heading.trim() || siteSettings.site_name,
     socialDescription: study.description.trim() || siteSettings.site_name,
-    socialImageKey: study.image_key,
-    socialImageUrl: absoluteMediaUrl(siteSettings.canonical_origin, study.image_key),
+    ...resolveSocialImage(
+      siteSettings.canonical_origin,
+      study.image_key,
+      siteSettings.default_social_image_key,
+    ),
     indexable: true,
   };
 }
