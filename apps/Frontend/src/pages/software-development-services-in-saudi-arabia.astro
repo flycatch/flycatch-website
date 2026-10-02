@@ -16,7 +16,7 @@ import HomeFaq from '../components/HomeFaq.astro';
 import HomeCta from '../components/HomeCta.astro';
 import SectionState from '../components/SectionState.astro';
 import {
-  loadPublishedBlogs,
+  loadPublishedBlogPage,
   loadPublishedClientLogos,
   loadPublishedClientTestimonials,
   loadPublishedFlycatchSaudiArabiaPage,
@@ -32,7 +32,7 @@ const [saudiResult, homesResult, logosResult, testimonialsResult, blogsResult] =
   loadPublishedHomes(),
   loadPublishedClientLogos(),
   loadPublishedClientTestimonials(),
-  loadPublishedBlogs(),
+  loadPublishedBlogPage(1),
 ]);
 const home = homesResult.items[0] ?? null;
 

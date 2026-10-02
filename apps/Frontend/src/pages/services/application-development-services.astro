@@ -17,7 +17,7 @@ import AiServicesMinds from '../../components/AiServicesMinds.astro';
 import {
   loadPublishedApplicationDevelopment,
   loadPublishedApplicationDevelopments,
-  loadPublishedBlogs,
+  loadPublishedBlogPage,
   loadPublishedCaseStudies,
   loadPublishedCaseStudy,
   type PublicCaseStudy,
@@ -27,7 +27,7 @@ import { t } from '../../lib/i18n';
 
 const [listed, blogsResult, casesResult] = await Promise.all([
   loadPublishedApplicationDevelopments(),
-  loadPublishedBlogs(),
+  loadPublishedBlogPage(1),
   loadPublishedCaseStudies(),
 ]);
 const slug =

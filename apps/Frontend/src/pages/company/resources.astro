@@ -10,7 +10,7 @@ import ResourcesListing from '../../components/ResourcesListing.astro';
 import HomeInsights from '../../components/HomeInsights.astro';
 import HomeCta from '../../components/HomeCta.astro';
 import {
-  loadPublishedBlogs,
+  loadPublishedBlogPage,
   loadPublishedResourceCategories,
   loadPublishedResourcePage,
 } from '../../lib/public-api';
@@ -20,7 +20,7 @@ import { t } from '../../lib/i18n';
 const [listed, categories, blogs] = await Promise.all([
   loadPublishedResourcePage(1),
   loadPublishedResourceCategories(),
-  loadPublishedBlogs(),
+  loadPublishedBlogPage(1),
 ]);
 const metadata = fallbackMetadata(
   '/company/resources',

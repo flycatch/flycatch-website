@@ -6,7 +6,7 @@ import SiteHeader from '../../../components/SiteHeader.astro';
 import SiteFooter from '../../../components/SiteFooter.astro';
 import HomeCta from '../../../components/HomeCta.astro';
 import SectionState from '../../../components/SectionState.astro';
-import { loadPublishedBlog, loadPublishedBlogs, publicMediaUrl } from '../../../lib/public-api';
+import { loadPublishedBlog, loadPublishedBlogPage, publicMediaUrl } from '../../../lib/public-api';
 import type { PublicBlogSummary } from '../../../lib/public-api';
 import { fallbackMetadata, metadataFromBlog, publicSiteSettings } from '../../../lib/metadata';
 import { blogStructuredData } from '../../../lib/json-ld';
@@ -74,7 +74,7 @@ function formatRelatedDate(value: string) {
   return `${day} ${monthsLong[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
 }
 
-const [result, listed] = await Promise.all([loadPublishedBlog(slug), loadPublishedBlogs()]);
+const [result, listed] = await Promise.all([loadPublishedBlog(slug), loadPublishedBlogPage(1)]);
 const blog = result.item;
 if (!blog) {
   Astro.response.status = result.error ? 503 : 404;
@@ -90,7 +90,7 @@ const metadata = blog
 const structuredData = blog ? blogStructuredData(blog, metadata, siteSettings) : [];
 const cover = blog ? publicMediaUrl(blog.image_key) : null;
 const summary = listed.items.find((item) => item.slug === slug);
-const publishedOn = summary ? formatArticleDate(summary.created_at) : '';
+const publishedOn = formatArticleDate(summary?.created_at ?? '');
 const bodyHtml = blog ? blogBodyHtml(blog.body, cover, blog.image_alt || blog.title) : '';
 const shareLinks = blog
   ? [

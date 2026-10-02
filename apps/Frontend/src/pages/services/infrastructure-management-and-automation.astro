@@ -17,7 +17,7 @@ import LandingHero from '../../components/LandingHero.astro';
 import InfraRelevance from '../../components/InfraRelevance.astro';
 import InfraWorking from '../../components/InfraWorking.astro';
 import {
-  loadPublishedBlogs,
+  loadPublishedBlogPage,
   loadPublishedCaseStudies,
   loadPublishedCaseStudy,
   loadPublishedInfrastructureManagement,
@@ -51,7 +51,7 @@ function toOfferingsLanding(page: PublicInfrastructureManagement): PublicOfferin
 
 const [listed, blogsResult, casesResult] = await Promise.all([
   loadPublishedInfrastructureManagements(),
-  loadPublishedBlogs(),
+  loadPublishedBlogPage(1),
   loadPublishedCaseStudies(),
 ]);
 const slug =

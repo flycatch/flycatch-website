@@ -103,6 +103,16 @@ describe('seo redirects', () => {
     );
     expect(rewritePublicHref('mailto:hello@flycatchtech.com')).toBe('mailto:hello@flycatchtech.com');
     expect(rewritePublicHref('/services/data-migration')).toBe('/services/data-migration');
+    expect(rewritePublicHref('https://flycatchtech.com/services/ai-services')).toBe(
+      'https://www.flycatchtech.com/services/ai-services',
+    );
+    expect(rewritePublicHref('https://flycatchtech.com/')).toBe('https://www.flycatchtech.com/');
+    expect(rewritePublicHref('https://flycatchtech.com/services/data-management')).toBe(
+      'https://www.flycatchtech.com/services/data-migration',
+    );
+    expect(rewritePublicHref('https://www.flycatchtech.com/services/ai-services')).toBe(
+      'https://www.flycatchtech.com/services/ai-services',
+    );
   });
 
   it('rewrites href attributes in CMS HTML', () => {
