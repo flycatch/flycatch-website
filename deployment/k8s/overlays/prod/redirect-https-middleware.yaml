@@ -1,0 +1,10 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-https
+  labels:
+    app.kubernetes.io/name: flycatch-website
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
