@@ -30,11 +30,11 @@ const structuredData = listed.error
           itemListElement: listed.items.map((item, index) => ({
             '@type': 'ListItem',
             position: index + 1,
+            name: item.title,
             item: {
-              '@type': 'Review',
-              name: item.title,
-              reviewBody: item.review,
-              author: {
+              '@type': 'Quotation',
+              text: item.review,
+              creator: {
                 '@type': 'Person',
                 name: item.client_name,
                 jobTitle: item.client_designation || undefined,
