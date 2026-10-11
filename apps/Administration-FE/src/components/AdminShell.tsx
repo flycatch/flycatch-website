@@ -10,6 +10,7 @@ import {
 } from '../lib/admin-api';
 import { consumeMicrosoftSignIn } from '../lib/microsoft-sign-in';
 import { hasTokens } from '../lib/token-store';
+import { portalUrl } from '../lib/portal-link';
 import { t } from '../lib/i18n';
 import {
   adminFormHref,
@@ -621,6 +622,7 @@ export default function AdminShell() {
   const canManageRoles = canManageRolesFrom(session);
   const settingsCurrent = view === 'roles' || view === 'role_form';
   const initial = session.email.slice(0, 1).toUpperCase();
+  const portalHref = portalUrl();
   const canReadSiteSettings = canReadResource(session, 'site_settings');
   const canReadHome = canReadResource(session, 'home');
   const canReadSolutions = canReadResource(session, 'solutions');
@@ -1044,6 +1046,11 @@ export default function AdminShell() {
                 {initial}
               </span>
               <p>{session.email}</p>
+              {portalHref ? (
+                <a className="admin-portal-link" href={portalHref}>
+                  {t('admin.portal_link')}
+                </a>
+              ) : null}
               <button type="button" onClick={handleSignOut}>
                 {t('admin.sign_out')}
               </button>

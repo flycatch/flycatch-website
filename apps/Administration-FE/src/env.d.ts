@@ -5,6 +5,7 @@ declare global {
   namespace ImportMeta {
     interface Env {
       readonly PUBLIC_ORIGIN: string;
+      readonly PUBLIC_PORTAL_URL?: string;
     }
   }
 }
