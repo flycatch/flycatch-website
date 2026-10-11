@@ -22,7 +22,11 @@ from flycatch_api.security.dependencies import CurrentSession
 from flycatch_api.security.jwt import JwtError, decode_access_token_allow_expired
 from flycatch_api.security.oauth_state import COOKIE_MAX_AGE, COOKIE_NAME, COOKIE_PATH
 from flycatch_api.services.auth_service import AuthService
-from flycatch_api.services.microsoft_auth import MicrosoftAuthService, MicrosoftSignInRejected
+from flycatch_api.services.microsoft_auth import (
+    MicrosoftAuthService,
+    MicrosoftSignInRejected,
+    portal_hints,
+)
 
 router = APIRouter(prefix="/admin/auth", tags=["admin-auth"])
 _auth = AuthService()
@@ -54,15 +58,16 @@ def _failure_redirect(*, clear_cookie: bool) -> RedirectResponse:
     return response
 
 
-def _success_redirect(pair: TokenPair) -> RedirectResponse:
+def _success_redirect(pair: TokenPair, return_path: str | None = None) -> RedirectResponse:
     origin = settings.public_origin.rstrip("/")
-    fragment = urlencode(
-        {
-            "access_token": pair.access_token,
-            "refresh_token": pair.refresh_token,
-            "expires_in": pair.expires_in,
-        }
-    )
+    values = {
+        "access_token": pair.access_token,
+        "refresh_token": pair.refresh_token,
+        "expires_in": pair.expires_in,
+    }
+    if return_path:
+        values["next"] = return_path
+    fragment = urlencode(values)
     response = RedirectResponse(
         f"{origin}/admin/sign-in/microsoft/#{fragment}",
         status_code=status.HTTP_302_FOUND,
@@ -72,11 +77,16 @@ def _success_redirect(pair: TokenPair) -> RedirectResponse:
 
 
 @router.get("/microsoft", response_model=None)
-def admin_microsoft_start(probe: Annotated[str | None, Query()] = None):
+def admin_microsoft_start(
+    probe: Annotated[str | None, Query()] = None,
+    iss: Annotated[str | None, Query(max_length=512)] = None,
+    login_hint: Annotated[str | None, Query(max_length=512)] = None,
+    target_link_uri: Annotated[str | None, Query(max_length=2048)] = None,
+):
     if probe == "1":
         return MicrosoftSignInAvailability(configured=settings.microsoft_sign_in_configured())
     try:
-        url, cookie = _microsoft.authorize_redirect()
+        url, cookie = _microsoft.authorize_redirect(portal_hints(iss, login_hint, target_link_uri))
     except MicrosoftSignInRejected:
         return _failure_redirect(clear_cookie=False)
     response = RedirectResponse(url, status_code=status.HTTP_302_FOUND)
@@ -102,6 +112,7 @@ def admin_microsoft_callback(
 ):
     if error or not code or not state:
         return _failure_redirect(clear_cookie=True)
+    return_path = _microsoft.return_path(request.cookies.get(COOKIE_NAME))
     try:
         pair = _microsoft.complete(
             db,
@@ -111,7 +122,7 @@ def admin_microsoft_callback(
         )
     except MicrosoftSignInRejected:
         return _failure_redirect(clear_cookie=True)
-    return _success_redirect(pair)
+    return _success_redirect(pair, return_path)
 
 
 @router.get("/frontchannel-logout", status_code=status.HTTP_200_OK)
