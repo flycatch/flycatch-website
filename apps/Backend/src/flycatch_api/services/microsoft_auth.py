@@ -4,7 +4,7 @@ import hmac
 import logging
 import warnings
 from datetime import UTC, datetime
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 
 import httpx
 from joserfc import jwt as jose_jwt
@@ -24,6 +24,49 @@ logger = logging.getLogger(__name__)
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", message=r".*httpx module is deprecated.*")
     from authlib.integrations.httpx_client import OAuth2Client
+
+
+MAX_LOGIN_HINT = 254
+
+
+class PortalHints:
+    """Hints from the Flycatch auth portal launch. Only trusted when `iss` matches."""
+
+    def __init__(self, login_hint: str | None = None, return_path: str | None = None) -> None:
+        self.login_hint = login_hint
+        self.return_path = return_path
+
+
+def _origin(value: str) -> str:
+    return value.strip().rstrip("/").lower()
+
+
+def portal_hints(
+    iss: str | None, login_hint: str | None, target_link_uri: str | None
+) -> PortalHints:
+    """Validate portal launch parameters; unknown issuers drop every hint."""
+    trusted = _origin(settings.portal_issuer)
+    if not trusted or not iss or _origin(iss) != trusted:
+        return PortalHints()
+    hint = login_hint.strip() if login_hint else ""
+    if not hint or len(hint) > MAX_LOGIN_HINT or any(ord(c) < 32 for c in hint):
+        hint = ""
+    return PortalHints(hint or None, _return_path(target_link_uri))
+
+
+def _return_path(target_link_uri: str | None) -> str | None:
+    """Only same-origin /admin/ paths are allowed as a post-sign-in destination."""
+    if not target_link_uri:
+        return None
+    try:
+        parts = urlsplit(target_link_uri)
+    except ValueError:
+        return None
+    if _origin(f"{parts.scheme}://{parts.netloc}") != _origin(settings.public_origin):
+        return None
+    if not parts.path.startswith("/admin/") or "//" in parts.path or "\\" in parts.path:
+        return None
+    return f"{parts.path}?{parts.query}" if parts.query else parts.path
 
 
 class MicrosoftSignInRejected(Exception):
@@ -109,35 +152,41 @@ class MicrosoftAuthService:
         self._auth = AuthService()
         self._metadata: dict | None = None
 
-    def authorize_redirect(self) -> tuple[str, str]:
+    def authorize_redirect(self, hints: PortalHints | None = None) -> tuple[str, str]:
         if not settings.microsoft_sign_in_configured():
             raise MicrosoftSignInRejected()
         payload = new_state_payload()
-        query = urlencode(
-            {
-                "client_id": settings.azure_ad_client_id,
-                "response_type": "code",
-                "redirect_uri": settings.azure_ad_redirect_uri,
-                "response_mode": "query",
-                "scope": "openid email profile",
-                "state": payload["state"],
-                "nonce": payload["nonce"],
-                "code_challenge": payload["challenge"],
-                "code_challenge_method": "S256",
-            }
-        )
+        params = {
+            "client_id": settings.azure_ad_client_id,
+            "response_type": "code",
+            "redirect_uri": settings.azure_ad_redirect_uri,
+            "response_mode": "query",
+            "scope": "openid email profile",
+            "state": payload["state"],
+            "nonce": payload["nonce"],
+            "code_challenge": payload["challenge"],
+            "code_challenge_method": "S256",
+        }
+        if hints and hints.login_hint:
+            params["login_hint"] = hints.login_hint
+        query = urlencode(params)
         tenant = settings.azure_ad_tenant_id.strip()
         url = f"https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize?{query}"
-        cookie = sign_state(
-            {
-                "state": payload["state"],
-                "verifier": payload["verifier"],
-                "nonce": payload["nonce"],
-                "exp": payload["exp"],
-            },
-            settings.session_secret,
-        )
+        state = {
+            "state": payload["state"],
+            "verifier": payload["verifier"],
+            "nonce": payload["nonce"],
+            "exp": payload["exp"],
+        }
+        if hints and hints.return_path:
+            state["next"] = hints.return_path
+        cookie = sign_state(state, settings.session_secret)
         return url, cookie
+
+    def return_path(self, cookie: str | None) -> str | None:
+        payload = read_state(cookie, settings.session_secret)
+        value = payload.get("next") if payload else None
+        return _return_path(f"{settings.public_origin}{value}") if isinstance(value, str) else None
 
     def complete(self, db: Session, *, code: str, state: str, cookie: str | None) -> TokenPair:
         payload = read_state(cookie, settings.session_secret)
@@ -166,7 +215,9 @@ class MicrosoftAuthService:
     def _openid_configuration(self) -> dict:
         if self._metadata is None:
             tenant = settings.azure_ad_tenant_id.strip()
-            url = f"https://login.microsoftonline.com/{tenant}/v2.0/.well-known/openid-configuration"
+            url = (
+                f"https://login.microsoftonline.com/{tenant}/v2.0/.well-known/openid-configuration"
+            )
             response = httpx.get(url, timeout=10)
             response.raise_for_status()
             self._metadata = response.json()

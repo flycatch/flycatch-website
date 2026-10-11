@@ -11,8 +11,11 @@ export function consumeMicrosoftSignIn(location: Location, history: History): bo
   const refreshToken = params.get('refresh_token');
   if (!accessToken || !refreshToken) return false;
   setTokens(accessToken, refreshToken);
+  const returnPath = params.get('next');
+  const safeReturn =
+    returnPath && returnPath.startsWith('/admin/') && !returnPath.includes('//') ? returnPath : null;
   const next = location.pathname.includes('/sign-in/microsoft')
-    ? '/admin/'
+    ? (safeReturn ?? '/admin/')
     : `${location.pathname}${location.search}`;
   history.replaceState(null, '', next);
   return true;

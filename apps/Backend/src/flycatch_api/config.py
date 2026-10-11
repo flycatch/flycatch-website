@@ -36,6 +36,7 @@ class Settings(BaseSettings):
     azure_ad_client_secret: str = ""
     azure_ad_redirect_uri: str = ""
     allowed_email_domain: str = "flycatchtech.com"
+    portal_issuer: str = ""
 
     def microsoft_sign_in_configured(self) -> bool:
         return bool(
