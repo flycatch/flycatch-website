@@ -79,7 +79,7 @@ def reconcile_microsoft_account(db: Session, oid: str, email: str) -> Administra
     return admin
 
 
-def validate_id_token(id_token: str, jwks: dict, nonce: str) -> dict[str, str]:
+def validate_id_token(id_token: str, jwks: dict, nonce: str) -> dict[str, str | None]:
     tenant = settings.azure_ad_tenant_id.strip()
     issuer = f"https://login.microsoftonline.com/{tenant}/v2.0"
     try:
@@ -100,7 +100,8 @@ def validate_id_token(id_token: str, jwks: dict, nonce: str) -> dict[str, str]:
     email = token.claims.get("email") or token.claims.get("preferred_username")
     if not isinstance(oid, str) or not isinstance(email, str):
         raise MicrosoftSignInRejected()
-    return {"oid": oid, "email": email}
+    sid = token.claims.get("sid")
+    return {"oid": oid, "email": email, "sid": sid if isinstance(sid, str) and sid else None}
 
 
 class MicrosoftAuthService:
@@ -144,9 +145,9 @@ class MicrosoftAuthService:
             raise MicrosoftSignInRejected()
         identity = self.exchange_identity(code, payload["verifier"], payload["nonce"])
         admin = reconcile_microsoft_account(db, identity["oid"], identity["email"])
-        return self._auth.issue_token_pair(db, admin)
+        return self._auth.issue_token_pair(db, admin, entra_sid=identity.get("sid"))
 
-    def exchange_identity(self, code: str, verifier: str, nonce: str) -> dict[str, str]:
+    def exchange_identity(self, code: str, verifier: str, nonce: str) -> dict[str, str | None]:
         try:
             metadata = self._openid_configuration()
             token = self._fetch_token(metadata["token_endpoint"], code, verifier)

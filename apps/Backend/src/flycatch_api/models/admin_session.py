@@ -28,5 +28,6 @@ class AdminSession(Base):
     idle_expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     absolute_expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    entra_sid: Mapped[str | None] = mapped_column(String(128), nullable=True, index=True)
 
     administrator: Mapped[Administrator] = relationship(back_populates="sessions")

@@ -114,6 +114,17 @@ def admin_microsoft_callback(
     return _success_redirect(pair)
 
 
+@router.get("/frontchannel-logout", status_code=status.HTTP_200_OK)
+def admin_frontchannel_logout(
+    sid: Annotated[str | None, Query(max_length=128)] = None,
+    db: Session = Depends(get_db),
+):
+    # Called by Entra (loaded in an iframe) when the user signs out of the portal or
+    # another app. Always 200 so a missing or unknown sid reveals nothing.
+    _auth.revoke_by_entra_sid(db, sid)
+    return {}
+
+
 @router.post("/sign-in", response_model=TokenPair)
 def admin_sign_in(payload: SignInRequest, db: Session = Depends(get_db)):
     result = _auth.sign_in(db, payload)

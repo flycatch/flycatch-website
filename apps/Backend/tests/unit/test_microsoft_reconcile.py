@@ -104,7 +104,9 @@ def test_validate_id_token_requires_nonce_audience_and_issuer(monkeypatch):
         return jose_jwt.encode({"alg": "RS256"}, payload, key)
 
     identity = validate_id_token(token(), jwks, "nonce-1")
-    assert identity == {"oid": "oid-1", "email": "person@flycatchtech.com"}
+    assert identity == {"oid": "oid-1", "email": "person@flycatchtech.com", "sid": None}
+    with_sid = validate_id_token(token(sid="sid-1"), jwks, "nonce-1")
+    assert with_sid["sid"] == "sid-1"
     with pytest.raises(MicrosoftSignInRejected):
         validate_id_token(token(nonce="other"), jwks, "nonce-1")
     with pytest.raises(MicrosoftSignInRejected):
