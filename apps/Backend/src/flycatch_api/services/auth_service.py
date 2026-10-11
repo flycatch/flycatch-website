@@ -49,6 +49,7 @@ class AuthService:
         family_id: UUID | None = None,
         created_at: datetime | None = None,
         absolute_expires_at: datetime | None = None,
+        entra_sid: str | None = None,
     ) -> TokenPair:
         refresh_token = generate_session_token()
         now = datetime.now(UTC)
@@ -61,6 +62,7 @@ class AuthService:
             last_seen_at=now,
             idle_expires_at=session_idle_expiry(now),
             absolute_expires_at=absolute_expires_at or session_absolute_expiry(origin),
+            entra_sid=entra_sid,
         )
         db.add(session)
         db.commit()
@@ -125,7 +127,18 @@ class AuthService:
             family_id=session.family_id,
             created_at=session.created_at,
             absolute_expires_at=session.absolute_expires_at,
+            entra_sid=session.entra_sid,
         )
+
+    def revoke_by_entra_sid(self, db: Session, sid: str | None) -> None:
+        """Revoke every active session minted for this Entra session id (front-channel logout)."""
+        if not sid:
+            return
+        db.query(AdminSession).filter(
+            AdminSession.entra_sid == sid,
+            AdminSession.revoked_at.is_(None),
+        ).update({"revoked_at": datetime.now(UTC)}, synchronize_session=False)
+        db.commit()
 
     def sign_out(
         self,

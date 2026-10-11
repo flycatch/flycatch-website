@@ -7,3 +7,5 @@ metadata:
 data:
   # Dev reCAPTCHA v2 site key (pair with RECAPTCHA_SECRET_KEY in the dev Secret).
   PUBLIC_RECAPTCHA_SITE_KEY: "6Ldx3M4tAAAAAEyHUp1Qt8GF3H3JuKHqFbdD9JsH"
+  # Dev uses its own Entra app registration (prod uses the base client id).
+  AZURE_AD_CLIENT_ID: "30b026e7-e753-4ffb-a7f7-9df2081f2799"

@@ -22,3 +22,5 @@ data:
   AZURE_AD_CLIENT_ID: "7564706b-f1ea-4ec2-bca2-02dc3083dfe3"
   AZURE_AD_REDIRECT_URI: https://flycatch-website-dev.k3s.flycatchtech.in/api/v1/admin/auth/microsoft/callback
   ALLOWED_EMAIL_DOMAIN: flycatchtech.com
+  # Flycatch auth portal origin; its launch hints (iss, login_hint) are trusted only when iss matches.
+  PORTAL_ISSUER: https://auth-dev.k3s.flycatchtech.in
