@@ -23,4 +23,4 @@ data:
   AZURE_AD_REDIRECT_URI: https://flycatch-website-dev.k3s.flycatchtech.in/api/v1/admin/auth/microsoft/callback
   ALLOWED_EMAIL_DOMAIN: flycatchtech.com
   # Flycatch auth portal origin; its launch hints (iss, login_hint) are trusted only when iss matches.
-  PORTAL_ISSUER: https://auth-dev.k3s.flycatchtech.in
+  PORTAL_ISSUER: https://one.flycatchtech.com
