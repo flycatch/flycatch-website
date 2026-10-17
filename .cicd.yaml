@@ -50,5 +50,5 @@ images:
       specs: specs
     args:
       PUBLIC_ENVIRONMENT: development
-      # Baked at build and promoted as-is to prod; dev and prod both use the auth-dev portal.
-      PUBLIC_PORTAL_URL: https://auth-dev.k3s.flycatchtech.in
+      # Baked at build and promoted as-is to prod; dev and prod both use the production portal.
+      PUBLIC_PORTAL_URL: https://one.flycatchtech.com
