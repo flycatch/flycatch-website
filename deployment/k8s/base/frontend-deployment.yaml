@@ -28,6 +28,10 @@ spec:
           envFrom:
             - configMapRef:
                 name: flycatch-website-config
+            # Careers API key for the HRMS. Optional so the site still starts (openings show an error) without it.
+            - secretRef:
+                name: flycatch-website-careers
+                optional: true
           env:
             - name: HOST
               value: 0.0.0.0

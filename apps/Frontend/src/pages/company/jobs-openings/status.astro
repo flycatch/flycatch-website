@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import '../../../styles/home.css';
+import '../../../styles/jobs-openings.css';
+import SiteHeader from '../../../components/SiteHeader.astro';
+import SiteFooter from '../../../components/SiteFooter.astro';
+import { CAREERS_PROXY_PATH } from '../../../lib/careers-api';
+import { fallbackMetadata } from '../../../lib/metadata';
+
+export const prerender = false;
+
+const metadata = fallbackMetadata(
+  '/company/jobs-openings/status',
+  'Application status | Flycatch',
+  'Check the status of your Flycatch job application.',
+);
+metadata.indexable = false;
+---
+<BaseLayout title={metadata.title} metadata={metadata} structuredData={[]}>
+  <SiteHeader />
+  <main id="main" class="page-shell jobs-openings-page">
+    <article class="container jobs-detail jobs-status" data-job-status data-endpoint={CAREERS_PROXY_PATH}>
+      <p><a class="jobs-back" href="/company/jobs-openings">Back to openings</a></p>
+      <h1 class="type-section" data-hero-entrance>Application status</h1>
+
+      <form class="jobs-apply-form" novalidate data-status-login>
+        <p class="jobs-apply-help">Enter the email you applied with. We will send a 6-digit code to it.</p>
+        <div class="jobs-apply-field">
+          <label for="status-email">Email</label>
+          <input id="status-email" name="email" type="email" autocomplete="email" required />
+        </div>
+        <div class="jobs-apply-field" data-status-code-field hidden>
+          <label for="status-code">Verification code</label>
+          <input id="status-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" />
+        </div>
+        <p class="jobs-apply-error" data-status-error role="alert"></p>
+        <p class="jobs-apply-help" data-status-info role="status"></p>
+        <button type="submit" class="btn jobs-apply-submit" data-status-submit>
+          <span data-status-label>Send code</span>
+        </button>
+      </form>
+
+      <div data-status-results hidden>
+        <ul class="jobs-status-list" data-status-list></ul>
+        <p class="jobs-apply-help" data-status-empty hidden>We could not find any applications for this email.</p>
+        <p class="jobs-status-danger">
+          <button type="button" class="jobs-apply-secondary" data-status-delete>Request deletion of my data</button>
+        </p>
+        <p class="jobs-apply-error" data-status-action-error role="alert"></p>
+        <p class="jobs-apply-help" data-status-action-info role="status"></p>
+      </div>
+    </article>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+<script src="../../../scripts/job-status.ts"></script>

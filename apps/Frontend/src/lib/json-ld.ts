@@ -113,11 +113,32 @@ export function newsStructuredData(
   ];
 }
 
+const SCHEMA_EMPLOYMENT: Record<string, string> = {
+  'full-time': 'FULL_TIME',
+  'part-time': 'PART_TIME',
+  contract: 'CONTRACTOR',
+  internship: 'INTERN',
+  temporary: 'TEMPORARY',
+};
+
 export function openingStructuredData(
   opening: PublicOpening,
   metadata: PageMetadata,
   siteSettings: SiteSettings,
 ) {
+  const source = opening.careers;
+  const employmentType =
+    SCHEMA_EMPLOYMENT[opening.job_type.trim().toLowerCase()] ?? opening.job_type;
+  const places = source?.locations?.length
+    ? source.locations.map((place) => ({
+        '@type': 'Place',
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: place.label,
+          ...((place.country || source.country) ? { addressCountry: place.country || source.country } : {}),
+        },
+      }))
+    : [{ '@type': 'Place', address: opening.location }];
   return [
     buildOrganizationJsonLd(siteSettings),
     {
@@ -126,16 +147,15 @@ export function openingStructuredData(
       title: opening.role,
       description: opening.body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() || opening.role,
       url: metadata.canonical,
-      employmentType: opening.job_type,
-      jobLocation: {
-        '@type': 'Place',
-        address: opening.location,
-      },
+      employmentType,
+      jobLocation: places.length === 1 ? places[0] : places,
+      ...(source?.workMode === 'Remote' ? { jobLocationType: 'TELECOMMUTE' } : {}),
       hiringOrganization: {
         '@type': 'Organization',
-        name: siteSettings.site_name,
+        name: source?.organisation || siteSettings.site_name,
         url: siteSettings.canonical_origin,
       },
+      ...(source?.datePosted ? { datePosted: source.datePosted } : {}),
       validThrough: opening.exp_date ?? undefined,
       identifier: opening.job_id,
     },

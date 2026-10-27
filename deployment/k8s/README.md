@@ -171,6 +171,20 @@ kubectl -n flycatch-website-dev create secret generic flycatch-website-secrets \
   --dry-run=client -o yaml | kubectl apply -f -
 ```
 
+### Careers API key (HRMS integration)
+
+Job openings and applications come from the HRMS recruitment module (`PEOPLE_API_ORIGIN` in the overlay
+ConfigMap). The frontend calls it server to server with a key created in the HRMS under Recruitment settings
+(shown once). Only the frontend reads this Secret; it is optional, and without it the openings pages show
+the usual error state.
+
+```bash
+kubectl -n flycatch-website-dev create secret generic flycatch-website-careers \
+  --from-literal=PEOPLE_CAREERS_KEY='atsk_...' \
+  --dry-run=client -o yaml | kubectl apply -f -
+kubectl -n flycatch-website-dev rollout restart deploy/frontend
+```
+
 ## 5. DNS
 
 Create a Cloudflare A (or CNAME) record:
