@@ -1,3 +1,5 @@
+import { loadCareersOpening, loadCareersOpenings } from './careers-api';
+import type { CareersOpening } from './careers-api';
 import { resolvePublicOrigin } from './public-origin';
 
 export type ContentSeo = {
@@ -96,6 +98,8 @@ export type PublicOpening = {
   job_status: string;
   specialization: string;
   body: string;
+  /** The HRMS record this was built from; carries the id, apply form and flags the detail page needs. */
+  careers?: CareersOpening;
 };
 
 export type PublicEmployeeTestimonial = {
@@ -748,14 +752,16 @@ export async function loadPublishedClientTestimonials(): Promise<
   return { items: [...items].sort((a, b) => a.order - b.order), error: false, origin };
 }
 
+/** Openings come from the HRMS recruitment module, not the website backend. */
 export async function loadPublishedOpenings(): Promise<PublicListResult<PublicOpening>> {
-  return loadPaginated<PublicOpening>('/api/v1/public/openings');
+  return loadCareersOpenings(apiOrigin());
 }
 
-export async function loadPublishedOpening(slug: string): Promise<PublicItemResult<PublicOpening>> {
-  return getJson<PublicOpening>(`/api/v1/public/openings/${encodeURIComponent(slug)}`).then(
-    ({ data, error, origin }) => ({ item: data, error, origin }),
-  );
+export async function loadPublishedOpening(
+  slug: string,
+  ip?: string,
+): Promise<PublicItemResult<PublicOpening>> {
+  return loadCareersOpening(slug, apiOrigin(), ip);
 }
 
 export async function loadPublishedEmployeeTestimonials(): Promise<

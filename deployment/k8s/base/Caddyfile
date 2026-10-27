@@ -2,6 +2,14 @@
 # Compose mounts this path; k8s generates a ConfigMap from it.
 # Path-based gateway — single origin for Frontend, Administration FE, and Backend
 
+{
+	servers {
+		# Behind Traefik the client address arrives in X-Forwarded-For. Trust it from cluster-internal hops so
+		# the careers proxy can pass each visitor's real IP to the HRMS for its per-visitor rate limits.
+		trusted_proxies static private_ranges
+	}
+}
+
 (base_security) {
 	header {
 		# defer so these win over headers copied from upstream (e.g. Backend)
