@@ -510,3 +510,181 @@
     transition: none;
   }
 }
+
+/* Apply form and status page (HRMS careers integration) */
+.jobs-apply {
+  margin: 40px 0 50px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.jobs-apply-title {
+  font-size: 28px;
+  font-weight: 400;
+  margin: 0 0 20px;
+}
+
+.jobs-apply-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 24px;
+}
+
+.jobs-apply-field[hidden] {
+  display: none;
+}
+
+.jobs-apply-field.is-wide {
+  grid-column: 1 / -1;
+}
+
+.jobs-apply-field label,
+.jobs-apply-fieldset legend {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.jobs-apply-field input:not([type='radio']):not([type='checkbox']),
+.jobs-apply-field select,
+.jobs-apply-field textarea,
+.jobs-apply-otp input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  font: inherit;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  background: #fff;
+}
+
+.jobs-apply-field input[aria-invalid='true'],
+.jobs-apply-field select[aria-invalid='true'],
+.jobs-apply-field textarea[aria-invalid='true'] {
+  border-color: #c4000b;
+}
+
+.jobs-apply-field input:focus-visible,
+.jobs-apply-field select:focus-visible,
+.jobs-apply-field textarea:focus-visible,
+.jobs-apply-otp input:focus-visible,
+.jobs-apply-consent input:focus-visible,
+.jobs-apply-secondary:focus-visible {
+  outline: 2px solid #e50914;
+  outline-offset: 2px;
+}
+
+.jobs-apply-fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.jobs-apply-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 4px 0;
+  font-size: 15px;
+}
+
+.jobs-apply-consent {
+  margin-top: 20px;
+}
+
+.jobs-apply-help {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #4a4a4a;
+}
+
+.jobs-apply-error {
+  margin: 4px 0 0;
+  min-height: 0;
+  font-size: 13px;
+  color: #c4000b;
+}
+
+.jobs-apply-otp {
+  margin-top: 20px;
+}
+
+.jobs-apply-otp-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.jobs-apply-otp-row input {
+  width: 160px;
+}
+
+.jobs-apply-secondary {
+  padding: 9px 16px;
+  font: inherit;
+  color: #e50914;
+  background: #fff;
+  border: 1px solid #e50914;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.jobs-apply-secondary:hover:not(:disabled) {
+  color: #fff;
+  background: #e50914;
+}
+
+.jobs-apply-secondary:disabled,
+.jobs-apply-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.jobs-apply-submit {
+  margin-top: 20px;
+}
+
+.jobs-apply-done,
+.jobs-apply-closed {
+  margin: 32px 0 50px;
+  padding: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+}
+
+.jobs-apply-done[hidden] {
+  display: none;
+}
+
+.jobs-status-list {
+  list-style: none;
+  margin: 24px 0;
+  padding: 0;
+}
+
+.jobs-status-item {
+  display: grid;
+  gap: 6px;
+  justify-items: start;
+  padding: 15px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+}
+
+.jobs-status-item span {
+  color: #4a4a4a;
+  font-size: 15px;
+}
+
+.jobs-status-danger {
+  margin-top: 32px;
+}
+
+@media (max-width: 750px) {
+  .jobs-apply-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

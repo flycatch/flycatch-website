@@ -6,6 +6,8 @@ import SiteHeader from '../../../components/SiteHeader.astro';
 import SiteFooter from '../../../components/SiteFooter.astro';
 import SectionState from '../../../components/SectionState.astro';
 import HomeCta from '../../../components/HomeCta.astro';
+import JobApplyForm from '../../../components/JobApplyForm.astro';
+import { visitorIp } from '../../../lib/careers-api';
 import { loadPublishedOpening } from '../../../lib/public-api';
 import { fallbackMetadata, publicSiteSettings } from '../../../lib/metadata';
 import { openingStructuredData } from '../../../lib/json-ld';
@@ -15,7 +17,7 @@ const { slug } = Astro.params;
 if (!slug) throw new Error('Opening slug missing');
 
 const siteSettings = publicSiteSettings();
-const result = await loadPublishedOpening(slug);
+const result = await loadPublishedOpening(slug, visitorIp(Astro.request.headers));
 const opening = result.item;
 if (!opening) {
   Astro.response.status = result.error ? 503 : 404;
@@ -53,12 +55,16 @@ const structuredData = opening ? openingStructuredData(opening, metadata, siteSe
             <span>{opening.specialization}</span>
           </p>
           <div class="jobs-body" set:html={opening.body} />
-          <p class="jobs-apply-row">
-            <a class="btn" href="mailto:opportunity@flycatchtech.com">
-              Apply now
-              <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
-            </a>
-          </p>
+          {opening.careers ? (
+            <JobApplyForm opening={opening.careers} />
+          ) : (
+            <p class="jobs-apply-row">
+              <a class="btn" href="mailto:opportunity@flycatchtech.com">
+                Apply now
+                <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
+              </a>
+            </p>
+          )}
         </div>
       )}
     </article>
