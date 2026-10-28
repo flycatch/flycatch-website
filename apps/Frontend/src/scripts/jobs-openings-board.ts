@@ -16,7 +16,9 @@ function initJobsOpeningsBoard() {
   const empty = root.querySelector<HTMLElement>('[data-jobs-empty]');
   const accordion = root.querySelector<HTMLElement>('[data-jobs-accordion]');
   const groups = [...root.querySelectorAll<HTMLElement>('[data-jobs-group]')];
+  const countrySelect = root.querySelector<HTMLSelectElement>('[data-jobs-country]');
   const params = new URLSearchParams(window.location.search);
+  let country = (params.get('country') || '').toUpperCase();
   const requested = params.get('filter') || params.get('type') || '';
   let category = requested in CATEGORY_LABELS ? requested : '';
   let activeIndex = Math.max(0, options.findIndex((option) => option.dataset.value === category));
@@ -55,7 +57,7 @@ function initJobsOpeningsBoard() {
       const cards = [...group.querySelectorAll<HTMLElement>('.jobs-live-card')];
       let groupVisible = 0;
       cards.forEach((card) => {
-        const show = !category || card.dataset.jobType === category;
+        const show = (!category || card.dataset.jobType === category) && (!country || card.dataset.jobCountry === country);
         card.hidden = !show;
         if (show) groupVisible += 1;
       });
@@ -134,6 +136,18 @@ function initJobsOpeningsBoard() {
     if (!dropdown || !event.target || dropdown.contains(event.target as Node)) return;
     setMenuOpen(false);
   });
+
+  if (countrySelect) {
+    // An unknown ?country= falls back to all countries.
+    if (![...countrySelect.options].some((option) => option.value === country)) country = '';
+    countrySelect.value = country;
+    countrySelect.addEventListener('change', () => {
+      country = countrySelect.value;
+      apply();
+    });
+  } else {
+    country = '';
+  }
 
   setCategory(category);
   apply();
