@@ -15,6 +15,20 @@ const groups = [...openings.reduce((map, job) => {
   map.set(key, list);
   return map;
 }, new Map<string, PublicOpening[]>())].map(([name, items]) => ({ name, items }));
+
+// One site lists every legal entity's openings, so offer a country filter once they span several countries.
+const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+const countryName = (code: string) => {
+  try {
+    return regionNames.of(code) ?? code;
+  } catch {
+    return code;
+  }
+};
+const countries = [...new Set(openings.map((job) => job.careers?.country).filter((c): c is string => !!c))]
+  .map((code) => ({ code, name: countryName(code) }))
+  .sort((a, b) => a.name.localeCompare(b.name));
+const showCountries = countries.length > 1;
 ---
 <section id="job_opening_section" class="jobs-live" data-jobs-live>
   <div class="jobs-live-inner">
@@ -41,6 +55,12 @@ const groups = [...openings.reduce((map, job) => {
           <li role="option" class="jobs-live-option" data-value="Contract" tabindex="-1">Contract</li>
         </ul>
       </div>
+      {showCountries && (
+        <select class="jobs-live-country" data-jobs-country aria-label="Filter by country">
+          <option value="">All countries</option>
+          {countries.map((c) => <option value={c.code}>{c.name}</option>)}
+        </select>
+      )}
     </div>
     <div class="jobs-live-head">
       <p class="jobs-live-desc">
@@ -73,10 +93,12 @@ const groups = [...openings.reduce((map, job) => {
                   class="jobs-live-card"
                   data-job-type={job.job_type}
                   data-job-specialization={job.specialization}
+                  data-job-country={job.careers?.country ?? ''}
                 >
                   <div class="jobs-live-copy">
                     <a class="jobs-live-role" href={`/company/jobs-openings/${job.slug}`}>{job.role}</a>
                     <p class="jobs-live-exp">{job.experience.trim()} Experience</p>
+                    {showCountries && <p class="jobs-live-exp jobs-live-place">{job.location}</p>}
                   </div>
                   <a class="jobs-live-apply" href={`/company/jobs-openings/${job.slug}`}>
                     Apply now
