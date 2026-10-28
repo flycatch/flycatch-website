@@ -1,155 +1,110 @@
-const CATEGORY_LABELS: Record<string, string> = {
-  'Full-Time': 'All',
-  Contract: 'Contract',
-};
+import { FILTER_KEYS, filtersFromParams, matchesFilters, type FilterKey, type JobFacets } from '../lib/jobs-board';
+
+const split = (value: string | undefined) => (value ? value.split('|') : []);
 
 function initJobsOpeningsBoard() {
   const root = document.querySelector('[data-jobs-live]');
   if (!(root instanceof HTMLElement) || root.dataset.jobsReady === 'true') return;
   root.dataset.jobsReady = 'true';
 
-  const dropdown = root.querySelector<HTMLElement>('[data-jobs-dropdown]');
-  const toggle = root.querySelector<HTMLButtonElement>('[data-jobs-dropdown-toggle]');
-  const label = root.querySelector<HTMLElement>('[data-jobs-dropdown-label]');
-  const menu = root.querySelector<HTMLElement>('[data-jobs-dropdown-menu]');
-  const options = [...root.querySelectorAll<HTMLElement>('.jobs-live-option')];
+  const form = root.querySelector<HTMLFormElement>('[data-jobs-filters]');
+  const fields = new Map<FilterKey, HTMLInputElement | HTMLSelectElement>();
+  root.querySelectorAll<HTMLInputElement | HTMLSelectElement>('[data-jobs-filter]').forEach((field) => {
+    fields.set(field.dataset.jobsFilter as FilterKey, field);
+  });
+  const chips = [...root.querySelectorAll<HTMLButtonElement>('[data-jobs-country]')];
+  const summary = root.querySelector<HTMLElement>('[data-jobs-summary]');
   const empty = root.querySelector<HTMLElement>('[data-jobs-empty]');
-  const accordion = root.querySelector<HTMLElement>('[data-jobs-accordion]');
-  const groups = [...root.querySelectorAll<HTMLElement>('[data-jobs-group]')];
-  const countrySelect = root.querySelector<HTMLSelectElement>('[data-jobs-country]');
-  const params = new URLSearchParams(window.location.search);
-  let country = (params.get('country') || '').toUpperCase();
-  const requested = params.get('filter') || params.get('type') || '';
-  let category = requested in CATEGORY_LABELS ? requested : '';
-  let activeIndex = Math.max(0, options.findIndex((option) => option.dataset.value === category));
+  const list = root.querySelector<HTMLElement>('[data-jobs-list]');
+  const clears = [...root.querySelectorAll<HTMLButtonElement>('[data-jobs-clear]')];
+  const cards = [...root.querySelectorAll<HTMLElement>('[data-jobs-card]')].map((el) => ({
+    el,
+    facets: {
+      search: el.dataset.search ?? '',
+      countries: split(el.dataset.countries),
+      places: split(el.dataset.places),
+      dept: el.dataset.dept ?? '',
+      mode: el.dataset.mode ?? '',
+      type: el.dataset.type ?? '',
+    } satisfies JobFacets,
+  }));
 
-  const setOpen = (group: HTMLElement, open: boolean) => {
-    group.classList.toggle('is-open', open);
-    group.querySelector('[data-jobs-toggle]')?.setAttribute('aria-expanded', open ? 'true' : 'false');
-  };
+  const filters = filtersFromParams(new URLSearchParams(window.location.search));
+  // Values with nothing to match (a stale link, or a filter not shown for this set of roles) fall back to all.
+  for (const key of FILTER_KEYS) {
+    if (key === 'q') continue;
+    const options = key === 'country' ? chips.map((chip) => chip.dataset.jobsCountry) : [...((fields.get(key) as HTMLSelectElement | undefined)?.options ?? [])].map((o) => o.value);
+    if (!options.includes(filters[key])) filters[key] = '';
+  }
 
-  const setMenuOpen = (open: boolean) => {
-    if (!toggle || !menu) return;
-    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-    menu.hidden = !open;
-    if (open) {
-      options.forEach((option, index) => {
-        option.classList.toggle('is-active', index === activeIndex);
-      });
-      options[activeIndex]?.focus();
+  const placeSelect = fields.get('location') as HTMLSelectElement | undefined;
+  const narrowPlaces = () => {
+    if (!placeSelect) return;
+    for (const option of placeSelect.options) {
+      option.hidden = !!option.value && !!filters.country && !!option.dataset.country && option.dataset.country !== filters.country;
+    }
+    if (placeSelect.selectedOptions[0]?.hidden) {
+      placeSelect.value = '';
+      filters.location = '';
     }
   };
 
-  const setCategory = (value: string) => {
-    category = value in CATEGORY_LABELS ? value : '';
-    if (label) label.textContent = CATEGORY_LABELS[category] || 'Select categories';
-    toggle?.classList.toggle('is-placeholder', category === '');
-    options.forEach((option) => {
-      const selected = option.dataset.value === category;
-      option.setAttribute('aria-selected', selected ? 'true' : 'false');
-    });
-    activeIndex = Math.max(0, options.findIndex((option) => option.dataset.value === category));
+  const syncUrl = () => {
+    const params = new URLSearchParams(window.location.search);
+    for (const key of [...FILTER_KEYS, 'filter']) params.delete(key);
+    for (const key of FILTER_KEYS) if (filters[key]) params.set(key, filters[key]);
+    const query = params.toString();
+    window.history.replaceState(window.history.state, '', `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash}`);
   };
 
   const apply = () => {
+    narrowPlaces();
     let visible = 0;
-    groups.forEach((group) => {
-      const cards = [...group.querySelectorAll<HTMLElement>('.jobs-live-card')];
-      let groupVisible = 0;
-      cards.forEach((card) => {
-        const show = (!category || card.dataset.jobType === category) && (!country || card.dataset.jobCountry === country);
-        card.hidden = !show;
-        if (show) groupVisible += 1;
-      });
-      group.hidden = groupVisible === 0;
-      if (group.hidden) setOpen(group, false);
-      const count = group.querySelector('[data-jobs-count]');
-      if (count) count.textContent = String(groupVisible);
-      visible += groupVisible;
-    });
+    for (const card of cards) {
+      const show = matchesFilters(card.facets, filters);
+      card.el.hidden = !show;
+      if (show) visible += 1;
+    }
+    chips.forEach((chip) => chip.setAttribute('aria-pressed', String(chip.dataset.jobsCountry === filters.country)));
+    const active = FILTER_KEYS.some((key) => filters[key]);
+    const noun = (n: number) => `${n} ${n === 1 ? 'role' : 'roles'}`;
+    if (summary) summary.textContent = active ? `Showing ${visible} of ${noun(cards.length)}` : `Showing ${noun(cards.length)}`;
+    if (list) list.hidden = visible === 0;
     if (empty) empty.hidden = visible !== 0;
-    if (accordion) accordion.hidden = visible === 0;
+    clears.forEach((button) => {
+      if (button.closest('[data-jobs-empty]')) return;
+      button.hidden = !active || visible === 0;
+    });
+    syncUrl();
   };
 
-  groups.forEach((group) => {
-    group.querySelector('[data-jobs-toggle]')?.addEventListener('click', () => {
-      const willOpen = !group.classList.contains('is-open');
-      groups.forEach((item) => setOpen(item, false));
-      if (willOpen) setOpen(group, true);
-    });
-  });
-
-  toggle?.addEventListener('click', () => {
-    setMenuOpen(toggle.getAttribute('aria-expanded') !== 'true');
-  });
-
-  options.forEach((option, index) => {
-    option.addEventListener('click', () => {
-      setCategory(option.dataset.value || '');
-      setMenuOpen(false);
-      toggle?.focus();
+  fields.forEach((field, key) => {
+    field.value = filters[key];
+    field.addEventListener(field instanceof HTMLSelectElement ? 'change' : 'input', () => {
+      filters[key] = key === 'q' ? field.value : field.value.trim().toLowerCase();
       apply();
     });
-    option.addEventListener('mousemove', () => {
-      activeIndex = index;
-      options.forEach((item, itemIndex) => item.classList.toggle('is-active', itemIndex === activeIndex));
+  });
+
+  chips.forEach((chip) => {
+    chip.addEventListener('click', () => {
+      filters.country = chip.dataset.jobsCountry ?? '';
+      apply();
+    });
+  });
+
+  clears.forEach((button) => {
+    button.addEventListener('click', () => {
+      for (const key of FILTER_KEYS) filters[key] = '';
+      fields.forEach((field) => (field.value = ''));
+      apply();
+      fields.get('q')?.focus();
     });
   });
 
-  toggle?.addEventListener('keydown', (event) => {
-    if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      if (event.key === 'ArrowUp') activeIndex = options.length - 1;
-      if (event.key === 'ArrowDown') activeIndex = 0;
-      setMenuOpen(true);
-    }
-  });
+  // Filtering is live; Enter in the search box should not reload the page.
+  form?.addEventListener('submit', (event) => event.preventDefault());
 
-  menu?.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      setMenuOpen(false);
-      toggle?.focus();
-      return;
-    }
-    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-      event.preventDefault();
-      activeIndex = event.key === 'ArrowDown'
-        ? (activeIndex + 1) % options.length
-        : (activeIndex - 1 + options.length) % options.length;
-      options.forEach((option, index) => option.classList.toggle('is-active', index === activeIndex));
-      options[activeIndex]?.focus();
-      return;
-    }
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      const option = options[activeIndex];
-      if (!option) return;
-      setCategory(option.dataset.value || '');
-      setMenuOpen(false);
-      toggle?.focus();
-      apply();
-    }
-  });
-
-  document.addEventListener('click', (event) => {
-    if (!dropdown || !event.target || dropdown.contains(event.target as Node)) return;
-    setMenuOpen(false);
-  });
-
-  if (countrySelect) {
-    // An unknown ?country= falls back to all countries.
-    if (![...countrySelect.options].some((option) => option.value === country)) country = '';
-    countrySelect.value = country;
-    countrySelect.addEventListener('change', () => {
-      country = countrySelect.value;
-      apply();
-    });
-  } else {
-    country = '';
-  }
-
-  setCategory(category);
   apply();
 }
 
