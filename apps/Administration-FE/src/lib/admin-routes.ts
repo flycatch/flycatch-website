@@ -51,10 +51,6 @@ export type AdminView =
   | 'client_logo_form'
   | 'client_testimonials'
   | 'client_testimonial_form'
-  | 'applications'
-  | 'application_form'
-  | 'openings'
-  | 'opening_form'
   | 'employee_testimonials'
   | 'employee_testimonial_form'
   | 'email_configuration'
@@ -152,8 +148,6 @@ const LIST_HREF: Record<string, string> = {
   categories: '/admin/categories/',
   client_logos: '/admin/client-logos/',
   client_testimonials: '/admin/client-testimonials/',
-  applications: '/admin/applications/',
-  openings: '/admin/openings/',
   employee_testimonials: '/admin/employee-testimonials/',
   email_configuration: '/admin/email-configuration/',
   email_templates: '/admin/email-templates/',

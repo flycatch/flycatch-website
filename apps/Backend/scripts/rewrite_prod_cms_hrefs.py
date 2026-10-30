@@ -30,7 +30,7 @@ _SOLUTION_PATHS = {
     "flygrid-ai": "/solutions/flyGrid-ai",
 }
 _HREF_RE = re.compile(r'href=(["\'])([^"\']*)\1', re.IGNORECASE)
-TABLES = ("blogs", "news", "case_studies", "openings")
+TABLES = ("blogs", "news", "case_studies")
 
 
 def _strip_trailing_slash(pathname: str) -> str:

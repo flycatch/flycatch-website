@@ -26,87 +26,11 @@ def _admin(client: TestClient, bootstrapped):
 
 
 def test_unauthenticated_catalog_is_rejected(client):
-    assert client.get("/api/v1/admin/applications").status_code == 401
-    assert client.get("/api/v1/admin/openings").status_code == 401
     assert client.get("/api/v1/admin/news").status_code == 401
     assert client.get("/api/v1/admin/contacts").status_code == 401
     assert client.get("/api/v1/admin/downloads").status_code == 401
     assert client.get("/api/v1/admin/flycatch-saudi-arabia").status_code == 401
     assert client.get("/api/v1/admin/subscriptions").status_code == 401
-
-
-def test_application_opening_and_public_nested(client, bootstrapped):
-    headers = _admin(client, bootstrapped)
-    created = client.post(
-        "/api/v1/admin/applications",
-        headers=headers,
-        json={
-            "name": "Ada",
-            "last_name": "Lovelace",
-            "email": "ada@example.com",
-            "phone": "123",
-            "current_ctc": 10,
-            "expected_ctc": 12,
-            "notice_period": 30,
-            "experience": 5,
-            "resume_key": "cv.pdf",
-            "status": "publish",
-        },
-    )
-    assert created.status_code == 201, created.text
-    app_id = created.json()["id"]
-    assert created.json()["resume_format"] == "PDF"
-    listed = client.get("/api/v1/admin/applications", headers=headers)
-    assert listed.json()["per_page"] == 10
-    assert listed.json()["items"][0]["resume_format"] == "PDF"
-
-    photo = client.post(
-        "/api/v1/admin/applications",
-        headers=headers,
-        json={
-            "name": "Grace",
-            "last_name": "Hopper",
-            "email": "grace@example.com",
-            "resume_key": "resume.jpeg",
-            "status": "draft",
-        },
-    )
-    assert photo.status_code == 201, photo.text
-    assert photo.json()["resume_format"] == "JPG"
-
-    opening = client.post(
-        "/api/v1/admin/openings",
-        headers=headers,
-        json={
-            "job_id": "JOB-1",
-            "role": "Backend Engineer",
-            "location": "Kochi",
-            "job_type": "Full-Time",
-            "job_status": "Ongoing",
-            "specialization": "Backend",
-            "application_ids": [app_id],
-            "status": "publish",
-        },
-    )
-    assert opening.status_code == 201, opening.text
-    assert opening.json()["slug"] == "backend-engineer"
-    assert opening.json()["applications"][0]["email"] == "ada@example.com"
-
-    public = client.get("/api/v1/public/openings/backend-engineer")
-    assert public.status_code == 200
-    assert public.json()["applications"][0]["name"] == "Ada"
-    assert "status" not in public.json()
-
-    public_apps = client.get("/api/v1/public/applications")
-    assert public_apps.status_code == 200
-    assert public_apps.json()["items"][0]["email"] == "ada@example.com"
-
-    negative = client.post(
-        "/api/v1/admin/applications",
-        headers=headers,
-        json={"name": "Pat", "last_name": "Lee", "email": "pat@example.com", "current_ctc": -1},
-    )
-    assert negative.status_code == 422
 
 
 def test_named_categories_email_memberships_and_news(client, bootstrapped):

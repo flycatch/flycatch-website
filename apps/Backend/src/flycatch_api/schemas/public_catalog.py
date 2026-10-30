@@ -9,59 +9,6 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
 from flycatch_api.schemas.admin_homes import ContentSeo
 
 
-class PublicApplication(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    id: UUID
-    resume_key: str | None
-    resume_format: str
-    name: str
-    last_name: str
-    email: str
-    phone: str
-    opened: bool
-    current_ctc: float
-    expected_ctc: float
-    notice_period: float
-    experience: float
-    additional_info: str
-    openings: str
-
-
-class PublicApplicationList(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    items: list[PublicApplication]
-    page: int = Field(ge=1)
-    per_page: int = Field(ge=1)
-    total: int = Field(ge=0)
-
-
-class PublicOpening(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    job_id: str
-    exp_date: date | None
-    role: str
-    slug: str
-    experience: str
-    location: str
-    job_type: str
-    job_status: str
-    specialization: str
-    body: str
-    applications: list[PublicApplication]
-
-
-class PublicOpeningList(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    items: list[PublicOpening]
-    page: int = Field(ge=1)
-    per_page: int = Field(ge=1)
-    total: int = Field(ge=0)
-
-
 class PublicEmployeeTestimonial(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

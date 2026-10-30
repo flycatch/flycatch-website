@@ -55,8 +55,6 @@ CONTENT_RESOURCES: tuple[RoleResource, ...] = (
     RoleResource(id="categories", type="categories", slug="default"),
     RoleResource(id="client_logos", type="client_logos", slug="default"),
     RoleResource(id="client_testimonials", type="client_testimonials", slug="default"),
-    RoleResource(id="applications", type="applications", slug="default"),
-    RoleResource(id="openings", type="openings", slug="default"),
     RoleResource(id="employee_testimonials", type="employee_testimonials", slug="default"),
     RoleResource(id="email_configuration", type="email_configuration", slug="default"),
     RoleResource(id="email_templates", type="email_templates", slug="default"),
