@@ -30,8 +30,6 @@ const required = [
   'admin-mobile-application-development.v1.ts',
   'admin-user-centered-design.v1.ts',
   'admin-overview.v1.ts',
-  'admin-applications.v1.ts',
-  'admin-openings.v1.ts',
   'admin-employee-testimonials.v1.ts',
   'admin-email-configuration.v1.ts',
   'admin-email-templates.v1.ts',
