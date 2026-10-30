@@ -9,3 +9,6 @@ data:
   PUBLIC_RECAPTCHA_SITE_KEY: "6Ldx3M4tAAAAAEyHUp1Qt8GF3H3JuKHqFbdD9JsH"
   # Dev uses its own Entra app registration (prod uses the base client id).
   AZURE_AD_CLIENT_ID: "30b026e7-e753-4ffb-a7f7-9df2081f2799"
+  # Careers integration: openings and applications live in the HRMS (people-dev). The careers API key goes in
+  # the flycatch-website-careers Secret as PEOPLE_CAREERS_KEY (see secret.example.yaml).
+  PEOPLE_API_ORIGIN: https://people-dev.k3s.flycatchtech.in

@@ -12,3 +12,6 @@ data:
   S3_BUCKET: flycatch-website-prod
   # Production reCAPTCHA v2 site key (pair with RECAPTCHA_SECRET_KEY in the prod Secret).
   PUBLIC_RECAPTCHA_SITE_KEY: "6LdiCNYtAAAAAEFI4u2JU6YAEM7oUk9n8uEXedns"
+  # Careers integration: openings and applications live in the HRMS (people-prod). The careers API key goes in
+  # the flycatch-website-careers Secret as PEOPLE_CAREERS_KEY (see secret.example.yaml).
+  PEOPLE_API_ORIGIN: https://people.flycatchtech.com

@@ -9,6 +9,9 @@ export default defineConfig({
   adapter: node({ mode: 'standalone' }),
   site,
   trailingSlash: 'never',
+  // The only POST endpoints are the anonymous careers proxy (no cookies, no session), and the multipart
+  // application upload is rejected by Astro's origin check when it sits behind the gateway's host rewrite.
+  security: { checkOrigin: false },
   integrations: [
     sitemap({
       filter: (page) => {

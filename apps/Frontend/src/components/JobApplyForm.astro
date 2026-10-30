@@ -1,0 +1,211 @@
+---
+import type { CareersFormField, CareersOpening } from '../lib/careers-api';
+import { CAREERS_PROXY_PATH } from '../lib/careers-api';
+
+interface Props {
+  opening: CareersOpening;
+}
+
+const { opening } = Astro.props;
+const form = opening.form;
+
+const STANDARD_INPUT: Record<string, { type: string; autocomplete?: string; min?: number; step?: string }> = {
+  name: { type: 'text', autocomplete: 'name' },
+  email: { type: 'email', autocomplete: 'email' },
+  phone: { type: 'tel', autocomplete: 'tel' },
+  location: { type: 'text', autocomplete: 'address-level2' },
+  exp: { type: 'number', min: 0, step: '0.1' },
+  relExp: { type: 'number', min: 0, step: '0.1' },
+  company: { type: 'text', autocomplete: 'organization' },
+  designation: { type: 'text', autocomplete: 'organization-title' },
+  ctc: { type: 'number', min: 0, step: '1' },
+  ectc: { type: 'number', min: 0, step: '1' },
+  notice: { type: 'number', min: 0, step: '1' },
+  skills: { type: 'text' },
+};
+const HELP: Record<string, string> = {
+  ctc: 'Full annual amount, for example 1800000.',
+  ectc: 'Full annual amount, for example 1800000.',
+  phone: 'Include the country code, for example +966 50 123 4567.',
+};
+
+const standard = (form?.standardFields ?? []).filter((f) => f.id in STANDARD_INPUT);
+const hasResume = (form?.standardFields ?? []).some((f) => f.id === 'resume');
+
+const fieldTag = (field: CareersFormField) => ({
+  'data-field': field.id,
+  ...(field.shownWhen
+    ? { 'data-show-field': field.shownWhen.field, 'data-show-equals': field.shownWhen.equals }
+    : {}),
+});
+---
+{!form ? null : !opening.acceptingApplications ? (
+  <p class="jobs-apply-closed" role="status">
+    This role is not accepting applications right now. Check the other
+    <a href="/company/jobs-openings">openings</a> or send your resume to
+    <a href="mailto:opportunity@flycatchtech.com">opportunity@flycatchtech.com</a>.
+  </p>
+) : (
+  <section
+    class="jobs-apply"
+    id="apply"
+    data-job-apply
+    data-opening-id={opening.id}
+    data-otp-required={opening.otpRequired ? 'true' : 'false'}
+    data-consent-version={form.consent.version}
+    data-endpoint={CAREERS_PROXY_PATH}
+  >
+    <h2 class="jobs-apply-title">Apply for this role</h2>
+    <form class="jobs-apply-form" novalidate data-apply-form enctype="multipart/form-data">
+      <div class="jobs-apply-grid">
+        {standard.map((field) => {
+          const input = STANDARD_INPUT[field.id]!;
+          return (
+            <div class="jobs-apply-field" data-field={field.id} data-standard>
+              <label for={`apply-${field.id}`}>{field.label} <span aria-hidden="true">*</span></label>
+              <input
+                id={`apply-${field.id}`}
+                name={field.id}
+                type={input.type}
+                autocomplete={input.autocomplete}
+                min={input.min}
+                step={input.step}
+                required
+                aria-describedby={`apply-${field.id}-error`}
+              />
+              {HELP[field.id] && <p class="jobs-apply-help">{HELP[field.id]}</p>}
+              <p class="jobs-apply-error" id={`apply-${field.id}-error`} data-error-for={field.id}></p>
+            </div>
+          );
+        })}
+
+        {hasResume && (
+          <div class="jobs-apply-field" data-field="resume" data-standard>
+            <label for="apply-resume">Resume <span aria-hidden="true">*</span></label>
+            <input
+              id="apply-resume"
+              name="resume"
+              type="file"
+              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+              required
+              aria-describedby="apply-resume-error"
+            />
+            <p class="jobs-apply-help">PDF, DOC, DOCX, JPG or PNG. Up to 10 MB.</p>
+            <p class="jobs-apply-error" id="apply-resume-error" data-error-for="resume"></p>
+          </div>
+        )}
+
+        {form.fields.map((field) => {
+          const id = `apply-q-${field.id}`;
+          const label = field.label.en;
+          const common = { id, name: field.id, required: field.required, 'aria-describedby': `${id}-error` };
+          return (
+            <div class:list={['jobs-apply-field', field.type === 'long' && 'is-wide']} {...fieldTag(field)} data-question>
+              {field.type === 'multiselect' || field.type === 'yesno' ? (
+                <fieldset class="jobs-apply-fieldset" aria-describedby={`${id}-error`}>
+                  <legend>{label}{field.required && <span aria-hidden="true"> *</span>}</legend>
+                  {(field.type === 'yesno' ? ['Yes', 'No'] : field.options ?? []).map((option) => (
+                    <label class="jobs-apply-choice">
+                      <input
+                        type={field.type === 'yesno' ? 'radio' : 'checkbox'}
+                        name={field.id}
+                        value={option}
+                        data-type={field.type}
+                        required={field.required && field.type === 'yesno'}
+                      />
+                      {option}
+                    </label>
+                  ))}
+                </fieldset>
+              ) : (
+                <>
+                  <label for={id}>{label}{field.required && <span aria-hidden="true"> *</span>}</label>
+                  {field.type === 'long' ? (
+                    <textarea {...common} rows="4" maxlength="2000" data-type="long"></textarea>
+                  ) : field.type === 'select' ? (
+                    <select {...common} data-type="select">
+                      <option value="">Select</option>
+                      {(field.options ?? []).map((option) => <option value={option}>{option}</option>)}
+                    </select>
+                  ) : field.type === 'file' ? (
+                    <input
+                      {...common}
+                      type="file"
+                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                      data-type="file"
+                      data-kind={label}
+                    />
+                  ) : (
+                    <input
+                      {...common}
+                      type={field.type === 'date' ? 'date' : field.type === 'number' || field.type === 'currency' ? 'number' : 'text'}
+                      min={field.min}
+                      max={field.max}
+                      pattern={field.type === 'text' ? field.pattern : undefined}
+                      step={field.type === 'number' || field.type === 'currency' ? 'any' : undefined}
+                      data-type={field.type}
+                    />
+                  )}
+                </>
+              )}
+              {field.help && <p class="jobs-apply-help">{field.help}</p>}
+              <p class="jobs-apply-error" id={`${id}-error`} data-error-for={field.id}></p>
+            </div>
+          );
+        })}
+      </div>
+
+      {opening.otpRequired && (
+        <div class="jobs-apply-otp" data-otp>
+          <p class="jobs-apply-help">
+            We verify your email before you apply. Enter your email above, then request a code.
+          </p>
+          <div class="jobs-apply-otp-row">
+            <button type="button" class="jobs-apply-secondary" data-otp-send>Send code</button>
+            <input
+              type="text"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              maxlength="6"
+              placeholder="6-digit code"
+              aria-label="Verification code"
+              data-otp-code
+              hidden
+            />
+            <button type="button" class="jobs-apply-secondary" data-otp-verify hidden>Verify</button>
+          </div>
+          <p class="jobs-apply-error" data-error-for="otp"></p>
+          <p class="jobs-apply-help" data-otp-status role="status"></p>
+        </div>
+      )}
+
+      <label class="jobs-apply-choice jobs-apply-consent">
+        <input type="checkbox" name="consent" required aria-describedby="apply-consent-error" />
+        <span>{form.consent.text}</span>
+      </label>
+      <p class="jobs-apply-error" id="apply-consent-error" data-error-for="consent"></p>
+
+      {form.whatsappOffered && (
+        <label class="jobs-apply-choice">
+          <input type="checkbox" name="whatsappOptIn" />
+          <span>Send me updates about my application on WhatsApp.</span>
+        </label>
+      )}
+
+      <p class="jobs-apply-error" data-error-for="form" role="alert"></p>
+      <button type="submit" class="btn jobs-apply-submit" data-apply-submit>
+        <span data-apply-label>Submit application</span>
+      </button>
+    </form>
+
+    <div class="jobs-apply-done" data-apply-done hidden role="status" tabindex="-1">
+      <h3>Application received</h3>
+      <p>
+        Your reference is <strong data-apply-ref></strong>. We have sent a confirmation to
+        <span data-apply-email></span>.
+      </p>
+      <p><a href="/company/jobs-openings/status">Check your application status</a></p>
+    </div>
+  </section>
+)}
+<script src="../scripts/job-apply.ts"></script>
