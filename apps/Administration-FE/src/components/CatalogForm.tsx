@@ -160,11 +160,7 @@ export default function CatalogForm({ section, entryId, onCancel, onSaved }: Pro
           return [field.idsKey, result.items.map((item) => ({ id: item.id, name: item.name }))] as const;
         }
         const path =
-          field.optionsFrom === 'applications'
-            ? '/admin/applications'
-            : field.optionsFrom === 'news_categories'
-              ? '/admin/news-categories'
-              : '/admin/resource-categories';
+          field.optionsFrom === 'news_categories' ? '/admin/news-categories' : '/admin/resource-categories';
         const items = await listAllCatalog(path);
         return [
           field.idsKey,

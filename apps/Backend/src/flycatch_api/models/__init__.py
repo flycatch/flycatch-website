@@ -31,7 +31,6 @@ from flycatch_api.models.solution_detail import SolutionDetail
 from flycatch_api.models.solution_product import SolutionProduct
 from flycatch_api.models.technology import CaseStudyTechnology, Technology
 from flycatch_api.models.catalog import (
-    Application,
     Contact,
     Download,
     EmailConfiguration,
@@ -43,8 +42,6 @@ from flycatch_api.models.catalog import (
     NewsAuthorLink,
     NewsCategory,
     NewsCategoryLink,
-    Opening,
-    OpeningApplication,
     Resource,
     ResourceCategory,
     ResourceCategoryLink,
@@ -93,7 +90,6 @@ __all__ = [
     "SolutionDetail",
     "SolutionProduct",
     "Technology",
-    "Application",
     "Contact",
     "Download",
     "EmailConfiguration",
@@ -105,8 +101,6 @@ __all__ = [
     "NewsAuthorLink",
     "NewsCategory",
     "NewsCategoryLink",
-    "Opening",
-    "OpeningApplication",
     "Resource",
     "ResourceCategory",
     "ResourceCategoryLink",

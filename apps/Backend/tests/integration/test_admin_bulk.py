@@ -103,25 +103,23 @@ def test_bulk_actions_respect_permissions(client, bootstrapped, db):
     assert delete.json()["permission"] == "blogs.delete"
 
 
-def test_bulk_catalog_applications(client, bootstrapped):
+def test_bulk_catalog_employee_testimonials(client, bootstrapped):
     headers = _admin(client, bootstrapped)
     first = client.post(
-        "/api/v1/admin/applications",
+        "/api/v1/admin/employee-testimonials",
         headers=headers,
         json={
             "name": "Ada",
-            "last_name": "Lovelace",
-            "email": "ada-bulk@example.com",
+            "review": "Great place to work",
             "status": "publish",
         },
     )
     second = client.post(
-        "/api/v1/admin/applications",
+        "/api/v1/admin/employee-testimonials",
         headers=headers,
         json={
             "name": "Grace",
-            "last_name": "Hopper",
-            "email": "grace-bulk@example.com",
+            "review": "Great team",
             "status": "publish",
         },
     )
@@ -129,20 +127,20 @@ def test_bulk_catalog_applications(client, bootstrapped):
     assert second.status_code == 201, second.text
     ids = [first.json()["id"], second.json()["id"]]
     unpublished = client.post(
-        "/api/v1/admin/applications/bulk-unpublish",
+        "/api/v1/admin/employee-testimonials/bulk-unpublish",
         headers=headers,
         json={"ids": ids},
     )
     assert unpublished.status_code == 200, unpublished.text
-    listed = client.get("/api/v1/admin/applications", headers=headers)
+    listed = client.get("/api/v1/admin/employee-testimonials", headers=headers)
     states = {item["id"]: item["state"] for item in listed.json()["items"] if item["id"] in ids}
     assert set(states.values()) == {"draft"}
     deleted = client.post(
-        "/api/v1/admin/applications/bulk-delete",
+        "/api/v1/admin/employee-testimonials/bulk-delete",
         headers=headers,
         json={"ids": ids},
     )
     assert deleted.status_code == 200
-    listed = client.get("/api/v1/admin/applications", headers=headers)
+    listed = client.get("/api/v1/admin/employee-testimonials", headers=headers)
     remaining = {item["id"] for item in listed.json()["items"]}
     assert remaining.isdisjoint(ids)

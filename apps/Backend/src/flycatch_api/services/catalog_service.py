@@ -9,7 +9,6 @@ from sqlalchemy.orm import Session, joinedload
 from flycatch_api.models import Author
 from flycatch_api.models.case_study import ContentStatus
 from flycatch_api.models.catalog import (
-    Application as ApplicationRow,
     Contact as ContactRow,
     Download as DownloadRow,
     EmailConfiguration as EmailConfigurationRow,
@@ -21,8 +20,6 @@ from flycatch_api.models.catalog import (
     NewsAuthorLink,
     NewsCategory as NewsCategoryRow,
     NewsCategoryLink,
-    Opening as OpeningRow,
-    OpeningApplication,
     Resource as ResourceRow,
     ResourceCategory as ResourceCategoryRow,
     ResourceCategoryLink,
@@ -31,10 +28,6 @@ from flycatch_api.models.catalog import (
 from flycatch_api.schemas.admin_auth import FieldErrorDetail, FieldErrors
 from flycatch_api.schemas.admin_blogs import EntityNotFound
 from flycatch_api.schemas.admin_catalog import (
-    Application,
-    ApplicationList,
-    ApplicationSummary,
-    ApplicationWrite,
     EmailConfiguration,
     EmailConfigurationList,
     EmailConfigurationSummary,
@@ -78,10 +71,6 @@ from flycatch_api.schemas.admin_catalog import (
     NewsList,
     NewsSummary,
     NewsWrite,
-    Opening,
-    OpeningList,
-    OpeningSummary,
-    OpeningWrite,
     Resource,
     ResourceList,
     ResourceSummary,
@@ -93,8 +82,6 @@ from flycatch_api.schemas.admin_catalog import (
 )
 from flycatch_api.schemas.admin_homes import ContentSeo
 from flycatch_api.schemas.public_catalog import (
-    PublicApplication,
-    PublicApplicationList,
     PublicAuthor,
     PublicEmailConfiguration,
     PublicEmailConfigurationList,
@@ -120,8 +107,6 @@ from flycatch_api.schemas.public_catalog import (
     PublicNewsCategory,
     PublicNewsCategoryList,
     PublicNewsList,
-    PublicOpening,
-    PublicOpeningList,
     PublicResource,
     PublicResourceCategory,
     PublicResourceList,
@@ -136,20 +121,6 @@ from flycatch_api.services.industry_service import PER_PAGE, coerce_status
 from flycatch_api.services.landing_catalog import seo_snippet
 from flycatch_api.services.text import document_format, is_valid_media_key, is_valid_slug, sanitize_html, slugify
 
-LOCATIONS = {"Kochi", "Saudi Arabia", "Hybrid", "Remote"}
-JOB_TYPES = {"Full-Time", "Part-Time", "Contract"}
-JOB_STATUSES = {"Opening Soon", "Ongoing"}
-SPECIALIZATIONS = {
-    "Frontend",
-    "Backend",
-    "DevOps",
-    "Testing",
-    "BDE",
-    "CMS",
-    "FullStack",
-    "UI/UX",
-    "IT Recruiter",
-}
 TEMPLATE_TYPES = {"user_notification", "admin_notification"}
 
 
@@ -188,315 +159,6 @@ def _unique_slug(db: Session, model, slug: str, current_id: UUID | None, field: 
             FieldErrors(fields={field: FieldErrorDetail(message_key=dup_key)}).model_dump(),
         )
     return slug
-
-
-def _opening_label(row: OpeningRow) -> str:
-    return row.job_id or row.role
-
-
-def _openings_label(row: ApplicationRow) -> str:
-    return ", ".join(_opening_label(link.opening) for link in row.opening_links if link.opening)
-
-
-def application_schema(row: ApplicationRow) -> Application:
-    return Application(
-        id=row.id,
-        resume_key=row.resume_key,
-        resume_format=document_format(row.resume_key),
-        name=row.name,
-        last_name=row.last_name,
-        email=row.email,
-        phone=row.phone,
-        opened=row.opened,
-        current_ctc=row.current_ctc,
-        expected_ctc=row.expected_ctc,
-        notice_period=row.notice_period,
-        experience=row.experience,
-        additional_info=row.additional_info,
-        openings=_openings_label(row),
-        status=row.status,
-        created_at=row.created_at,
-    )
-
-
-def public_application(row: ApplicationRow) -> PublicApplication:
-    return PublicApplication(
-        id=row.id,
-        resume_key=row.resume_key,
-        resume_format=document_format(row.resume_key),
-        name=row.name,
-        last_name=row.last_name,
-        email=row.email,
-        phone=row.phone,
-        opened=row.opened,
-        current_ctc=row.current_ctc,
-        expected_ctc=row.expected_ctc,
-        notice_period=row.notice_period,
-        experience=row.experience,
-        additional_info=row.additional_info,
-        openings=_openings_label(row),
-    )
-
-
-class ApplicationService:
-    model = ApplicationRow
-
-    def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> ApplicationList:
-        query = db.query(ApplicationRow)
-        if q and q.strip():
-            term = f"%{q.strip()}%"
-            query = query.filter(
-                or_(
-                    ApplicationRow.name.ilike(term),
-                    ApplicationRow.last_name.ilike(term),
-                    ApplicationRow.email.ilike(term),
-                )
-            )
-        page, per_page, rows, total = _paginate(
-            query.order_by(ApplicationRow.created_at.desc()), page, per_page
-        )
-        return ApplicationList(
-            items=[
-                ApplicationSummary(
-                    id=row.id,
-                    openings=_openings_label(row),
-                    resume_format=document_format(row.resume_key),
-                    name=row.name,
-                    state=row.status,
-                )
-                for row in rows
-            ],
-            page=page,
-            per_page=per_page,
-            total=total,
-        )
-
-    def list_published(self, db: Session, q: str | None, page: int, per_page: int) -> PublicApplicationList:
-        query = db.query(ApplicationRow).filter(ApplicationRow.status == ContentStatus.publish)
-        if q and q.strip():
-            term = f"%{q.strip()}%"
-            query = query.filter(or_(ApplicationRow.name.ilike(term), ApplicationRow.email.ilike(term)))
-        page, per_page, rows, total = _paginate(
-            query.order_by(ApplicationRow.created_at.desc()), page, per_page
-        )
-        return PublicApplicationList(
-            items=[public_application(row) for row in rows],
-            page=page,
-            per_page=per_page,
-            total=total,
-        )
-
-    def get(self, db: Session, item_id: UUID) -> Application:
-        row = db.get(ApplicationRow, item_id)
-        if row is None:
-            raise _not_found("admin.applications.not_found")
-        return application_schema(row)
-
-    def get_published(self, db: Session, item_id: UUID) -> PublicApplication:
-        row = db.get(ApplicationRow, item_id)
-        if row is None or row.status != ContentStatus.publish:
-            raise _not_found("public.applications.not_found")
-        return public_application(row)
-
-    def create(self, db: Session, payload: ApplicationWrite) -> Application:
-        row = ApplicationRow(created_at=datetime.now(UTC))
-        self._apply(row, payload)
-        db.add(row)
-        db.commit()
-        db.refresh(row)
-        return application_schema(row)
-
-    def update(self, db: Session, item_id: UUID, payload: ApplicationWrite) -> Application:
-        row = db.get(ApplicationRow, item_id)
-        if row is None:
-            raise _not_found("admin.applications.not_found")
-        self._apply(row, payload)
-        db.commit()
-        db.refresh(row)
-        return application_schema(row)
-
-    def delete(self, db: Session, item_id: UUID) -> None:
-        row = db.get(ApplicationRow, item_id)
-        if row is None:
-            raise _not_found("admin.applications.not_found")
-        db.delete(row)
-        db.commit()
-
-    def _apply(self, row: ApplicationRow, payload: ApplicationWrite) -> None:
-        row.resume_key = payload.resume_key or None
-        row.name = _required(payload.name, "name")
-        row.last_name = _required(payload.last_name, "last_name")
-        row.email = str(payload.email)
-        row.phone = payload.phone.strip()
-        row.opened = payload.opened
-        row.current_ctc = payload.current_ctc
-        row.expected_ctc = payload.expected_ctc
-        row.notice_period = payload.notice_period
-        row.experience = payload.experience
-        row.additional_info = payload.additional_info.strip()
-        row.status = coerce_status(payload.status)
-
-
-class OpeningService:
-    model = OpeningRow
-    def list_items(self, db: Session, q: str | None, page: int, per_page: int) -> OpeningList:
-        query = db.query(OpeningRow)
-        if q and q.strip():
-            term = f"%{q.strip()}%"
-            query = query.filter(
-                or_(OpeningRow.job_id.ilike(term), OpeningRow.role.ilike(term), OpeningRow.slug.ilike(term))
-            )
-        page, per_page, rows, total = _paginate(query.order_by(OpeningRow.created_at.desc()), page, per_page)
-        return OpeningList(
-            items=[
-                OpeningSummary(
-                    id=row.id,
-                    job_id=row.job_id,
-                    exp_date=row.exp_date,
-                    role=row.role,
-                    state=row.status,
-                )
-                for row in rows
-            ],
-            page=page,
-            per_page=per_page,
-            total=total,
-        )
-
-    def list_published(self, db: Session, q: str | None, page: int, per_page: int) -> PublicOpeningList:
-        query = (
-            db.query(OpeningRow)
-            .options(joinedload(OpeningRow.application_links).joinedload(OpeningApplication.application))
-            .filter(OpeningRow.status == ContentStatus.publish)
-        )
-        if q and q.strip():
-            term = f"%{q.strip()}%"
-            query = query.filter(or_(OpeningRow.job_id.ilike(term), OpeningRow.role.ilike(term)))
-        page, per_page, rows, total = _paginate(query.order_by(OpeningRow.created_at.desc()), page, per_page)
-        return PublicOpeningList(
-            items=[self._public(row) for row in rows], page=page, per_page=per_page, total=total
-        )
-
-    def get(self, db: Session, item_id: UUID) -> Opening:
-        row = self._load(db, item_id)
-        return self._detail(row)
-
-    def get_published_by_slug(self, db: Session, slug: str) -> PublicOpening:
-        row = (
-            db.query(OpeningRow)
-            .options(joinedload(OpeningRow.application_links).joinedload(OpeningApplication.application))
-            .filter(func.lower(OpeningRow.slug) == slug.strip().lower(), OpeningRow.status == ContentStatus.publish)
-            .first()
-        )
-        if row is None:
-            raise _not_found("public.openings.not_found")
-        return self._public(row)
-
-    def create(self, db: Session, payload: OpeningWrite) -> Opening:
-        row = OpeningRow(created_at=datetime.now(UTC))
-        self._apply(db, row, payload, None)
-        db.add(row)
-        db.commit()
-        return self.get(db, row.id)
-
-    def update(self, db: Session, item_id: UUID, payload: OpeningWrite) -> Opening:
-        row = self._load(db, item_id)
-        self._apply(db, row, payload, row.id)
-        db.commit()
-        return self.get(db, row.id)
-
-    def delete(self, db: Session, item_id: UUID) -> None:
-        row = db.get(OpeningRow, item_id)
-        if row is None:
-            raise _not_found("admin.openings.not_found")
-        db.delete(row)
-        db.commit()
-
-    def _load(self, db: Session, item_id: UUID) -> OpeningRow:
-        row = (
-            db.query(OpeningRow)
-            .options(joinedload(OpeningRow.application_links).joinedload(OpeningApplication.application))
-            .filter(OpeningRow.id == item_id)
-            .first()
-        )
-        if row is None:
-            raise _not_found("admin.openings.not_found")
-        return row
-
-    def _apply(self, db: Session, row: OpeningRow, payload: OpeningWrite, current_id: UUID | None) -> None:
-        if payload.location not in LOCATIONS:
-            raise CatalogError(
-                422,
-                FieldErrors(fields={"location": FieldErrorDetail(message_key="admin.field.required")}).model_dump(),
-            )
-        slug = slugify(payload.slug) or slugify(payload.role)
-        row.job_id = _required(payload.job_id, "job_id")
-        row.exp_date = payload.exp_date
-        row.role = _required(payload.role, "role")
-        row.slug = _unique_slug(
-            db, OpeningRow, slug, current_id, "slug", "admin.openings.slug.invalid", "admin.openings.slug.duplicate"
-        )
-        row.experience = payload.experience.strip()
-        row.location = payload.location
-        row.job_type = payload.job_type
-        row.job_status = payload.job_status
-        row.specialization = payload.specialization
-        row.body = sanitize_html(payload.body)
-        row.status = coerce_status(payload.status)
-        apps = self._applications(db, payload.application_ids)
-        row.application_links = [OpeningApplication(application=item) for item in apps]
-
-    def _applications(self, db: Session, ids: list[UUID]) -> list[ApplicationRow]:
-        if not ids:
-            return []
-        unique = list(dict.fromkeys(ids))
-        rows = db.query(ApplicationRow).filter(ApplicationRow.id.in_(unique)).all()
-        if len(rows) != len(unique):
-            raise CatalogError(
-                422,
-                FieldErrors(
-                    fields={"application_ids": FieldErrorDetail(message_key="admin.openings.applications.invalid")}
-                ).model_dump(),
-            )
-        by_id = {row.id: row for row in rows}
-        return [by_id[item] for item in unique]
-
-    def _detail(self, row: OpeningRow) -> Opening:
-        apps = [application_schema(link.application) for link in row.application_links if link.application]
-        return Opening(
-            id=row.id,
-            job_id=row.job_id,
-            exp_date=row.exp_date,
-            role=row.role,
-            slug=row.slug,
-            experience=row.experience,
-            location=row.location,  # type: ignore[arg-type]
-            job_type=row.job_type,  # type: ignore[arg-type]
-            job_status=row.job_status,  # type: ignore[arg-type]
-            specialization=row.specialization,  # type: ignore[arg-type]
-            body=row.body,
-            application_ids=[item.id for item in apps],
-            applications=apps,
-            status=row.status,
-            created_at=row.created_at,
-        )
-
-    def _public(self, row: OpeningRow) -> PublicOpening:
-        return PublicOpening(
-            job_id=row.job_id,
-            exp_date=row.exp_date,
-            role=row.role,
-            slug=row.slug,
-            experience=row.experience,
-            location=row.location,
-            job_type=row.job_type,
-            job_status=row.job_status,
-            specialization=row.specialization,
-            body=row.body,
-            applications=[
-                public_application(link.application) for link in row.application_links if link.application
-            ],
-        )
 
 
 class NamedCatalogService:
@@ -1822,8 +1484,6 @@ class SubscriptionService:
         return PublicSubscription(id=row.id, email=row.email, active=row.active, created_at=row.created_at)
 
 
-application_service = ApplicationService()
-opening_service = OpeningService()
 employee_testimonial_service = EmployeeTestimonialService()
 email_configuration_service = EmailConfigurationService()
 email_template_service = EmailTemplateService()

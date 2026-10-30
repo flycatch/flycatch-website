@@ -11,7 +11,6 @@ from flycatch_api.security.dependencies import CurrentSession, assert_resource_a
 from flycatch_api.services.author_service import CatalogError
 from flycatch_api.services.contact_notifications import notify_contact_submission
 from flycatch_api.services.catalog_service import (
-    application_service,
     contact_service,
     download_service,
     email_configuration_service,
@@ -21,7 +20,6 @@ from flycatch_api.services.catalog_service import (
     membership_service,
     news_category_service,
     news_service,
-    opening_service,
     resource_category_service,
     resource_service,
     subscription_service,
@@ -178,26 +176,6 @@ def public_slug(*, prefix: str, tags: str, list_model, detail_model, svc):
     return router
 
 
-admin_applications = admin_crud(
-    prefix="/admin/applications",
-    tags="admin-applications",
-    resource="applications",
-    list_model=admin.ApplicationList,
-    detail_model=admin.Application,
-    write_model=admin.ApplicationWrite,
-    svc=application_service,
-    id_name="application_id",
-)
-admin_openings = admin_crud(
-    prefix="/admin/openings",
-    tags="admin-openings",
-    resource="openings",
-    list_model=admin.OpeningList,
-    detail_model=admin.Opening,
-    write_model=admin.OpeningWrite,
-    svc=opening_service,
-    id_name="opening_id",
-)
 admin_employee_testimonials = admin_crud(
     prefix="/admin/employee-testimonials",
     tags="admin-employee-testimonials",
@@ -319,21 +297,6 @@ admin_subscriptions = admin_crud(
     id_name="subscription_id",
 )
 
-public_applications = public_uuid(
-    prefix="/public/applications",
-    tags="public-applications",
-    list_model=public.PublicApplicationList,
-    detail_model=public.PublicApplication,
-    svc=application_service,
-    id_name="application_id",
-)
-public_openings = public_slug(
-    prefix="/public/openings",
-    tags="public-openings",
-    list_model=public.PublicOpeningList,
-    detail_model=public.PublicOpening,
-    svc=opening_service,
-)
 public_employee_testimonials = public_uuid(
     prefix="/public/employee-testimonials",
     tags="public-employee-testimonials",

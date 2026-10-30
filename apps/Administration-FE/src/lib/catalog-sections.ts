@@ -11,13 +11,10 @@ export type CatalogField =
   | { kind: 'slug'; key: string; labelKey: string; fromKey: string; required?: boolean }
   | { kind: 'select'; key: string; labelKey: string; options: string[] }
   | { kind: 'media'; key: string; labelKey: string; accept?: string; required?: boolean }
-  | { kind: 'multiselect'; key: string; idsKey: string; labelKey: string; optionsFrom: 'applications' | 'news_categories' | 'authors' | 'resource_categories'; manageView: string }
+  | { kind: 'multiselect'; key: string; idsKey: string; labelKey: string; optionsFrom: 'news_categories' | 'authors' | 'resource_categories'; manageView: string }
   | { kind: 'seo' }
   | { kind: 'images' }
   | { kind: 'repeatable'; key: string; labelKey: string; itemFields: RepeatableItemField[] };
-
-export const RESUME_ACCEPT =
-  'image/jpeg,image/png,image/gif,image/webp,image/svg+xml,.jpg,.jpeg,.png,.gif,.webp,.svg,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf,.doc,.docx';
 
 export type CatalogSection = {
   resource: string;
@@ -32,78 +29,6 @@ export type CatalogSection = {
 };
 
 export const CATALOG_SECTIONS: CatalogSection[] = [
-  {
-    resource: 'applications',
-    segment: 'applications',
-    listView: 'applications',
-    formView: 'application_form',
-    ns: 'admin.applications',
-    path: '/admin/applications',
-    idParam: 'application_id',
-    columns: [
-      { key: 'resume_format', labelKey: 'resume', kind: 'format' },
-      { key: 'name', labelKey: 'name', kind: 'text' },
-      { key: 'state', labelKey: 'state', kind: 'state' },
-    ],
-    fields: [
-      { kind: 'media', key: 'resume_key', labelKey: 'resume', accept: RESUME_ACCEPT },
-      { kind: 'text', key: 'name', labelKey: 'name', required: true },
-      { kind: 'text', key: 'last_name', labelKey: 'last_name', required: true },
-      { kind: 'email', key: 'email', labelKey: 'email', required: true },
-      { kind: 'text', key: 'phone', labelKey: 'phone' },
-      { kind: 'checkbox', key: 'opened', labelKey: 'opened' },
-      { kind: 'number', key: 'current_ctc', labelKey: 'current_ctc' },
-      { kind: 'number', key: 'expected_ctc', labelKey: 'expected_ctc' },
-      { kind: 'number', key: 'notice_period', labelKey: 'notice_period' },
-      { kind: 'number', key: 'experience', labelKey: 'experience' },
-      { kind: 'textarea', key: 'additional_info', labelKey: 'additional_info' },
-    ],
-  },
-  {
-    resource: 'openings',
-    segment: 'openings',
-    listView: 'openings',
-    formView: 'opening_form',
-    ns: 'admin.openings',
-    path: '/admin/openings',
-    idParam: 'opening_id',
-    columns: [
-      { key: 'job_id', labelKey: 'job_id', kind: 'text' },
-      { key: 'exp_date', labelKey: 'exp_date', kind: 'date' },
-      { key: 'role', labelKey: 'role', kind: 'text' },
-      { key: 'state', labelKey: 'state', kind: 'state' },
-    ],
-    fields: [
-      { kind: 'text', key: 'job_id', labelKey: 'job_id', required: true },
-      { kind: 'date', key: 'exp_date', labelKey: 'exp_date' },
-      { kind: 'text', key: 'role', labelKey: 'role', required: true },
-      { kind: 'slug', key: 'slug', labelKey: 'slug', fromKey: 'role', required: true },
-      { kind: 'text', key: 'experience', labelKey: 'experience' },
-      {
-        kind: 'select',
-        key: 'location',
-        labelKey: 'location',
-        options: ['Kochi', 'Saudi Arabia', 'Hybrid', 'Remote'],
-      },
-      { kind: 'select', key: 'job_type', labelKey: 'job_type', options: ['Full-Time', 'Part-Time', 'Contract'] },
-      { kind: 'select', key: 'job_status', labelKey: 'job_status', options: ['Opening Soon', 'Ongoing'] },
-      {
-        kind: 'select',
-        key: 'specialization',
-        labelKey: 'specialization',
-        options: ['Frontend', 'Backend', 'DevOps', 'Testing', 'BDE', 'CMS', 'FullStack', 'UI/UX', 'IT Recruiter'],
-      },
-      {
-        kind: 'multiselect',
-        key: 'applications',
-        idsKey: 'application_ids',
-        labelKey: 'applications',
-        optionsFrom: 'applications',
-        manageView: 'applications',
-      },
-      { kind: 'richtext', key: 'body', labelKey: 'body' },
-    ],
-  },
   {
     resource: 'employee_testimonials',
     segment: 'employee-testimonials',

@@ -45,8 +45,6 @@ describe('parseAdminLocation', () => {
     );
     expect(parseAdminLocation('/admin/user-centered-design/').view).toBe('user_centered_design');
     expect(parseAdminLocation('/admin/overview/').view).toBe('overview');
-    expect(parseAdminLocation('/admin/applications/').view).toBe('applications');
-    expect(parseAdminLocation('/admin/openings/').view).toBe('openings');
     expect(parseAdminLocation('/admin/employee-testimonials/').view).toBe('employee_testimonials');
     expect(parseAdminLocation('/admin/email-configuration/').view).toBe('email_configuration');
     expect(parseAdminLocation('/admin/email-templates/').view).toBe('email_templates');
@@ -112,8 +110,6 @@ describe('admin href helpers', () => {
     );
     expect(adminListHref('user_centered_design')).toBe('/admin/user-centered-design/');
     expect(adminListHref('overview')).toBe('/admin/overview/');
-    expect(adminListHref('applications')).toBe('/admin/applications/');
-    expect(adminListHref('openings')).toBe('/admin/openings/');
     expect(adminListHref('news')).toBe('/admin/news/');
     expect(adminListHref('memberships')).toBe('/admin/memberships/');
     expect(adminListHref('contacts')).toBe('/admin/contacts/');
