@@ -12,6 +12,8 @@ import { loadPublishedOpening } from '../../../lib/public-api';
 import { fallbackMetadata, publicSiteSettings } from '../../../lib/metadata';
 import { openingStructuredData } from '../../../lib/json-ld';
 import { t } from '../../../lib/i18n';
+import { renderRichText } from '../../../lib/rich-text';
+import { formatApplyBy } from '../../../lib/jobs-board';
 
 const { slug } = Astro.params;
 if (!slug) throw new Error('Opening slug missing');
@@ -34,38 +36,63 @@ const metadata = opening
       result.error ? t('home.error') : t('home.empty'),
     );
 metadata.indexable = Boolean(opening);
+const bodyHtml = opening ? renderRichText(opening.body) : '';
+const applyBy = opening?.exp_date ? formatApplyBy(opening.exp_date) : '';
+const canApply = Boolean(opening?.careers?.form && opening.careers.acceptingApplications);
+const facts = opening
+  ? [
+      { label: 'Location', value: opening.location },
+      { label: 'Experience', value: opening.experience },
+      { label: 'Job type', value: opening.job_type },
+      { label: 'Department', value: opening.specialization },
+      { label: 'Apply by', value: applyBy },
+    ].filter((fact) => fact.value)
+  : [];
 const structuredData = opening ? openingStructuredData(opening, metadata, siteSettings) : [];
 ---
 <BaseLayout title={metadata.title} metadata={metadata} structuredData={structuredData}>
   <SiteHeader />
   <main id="main" class="page-shell jobs-openings-page" data-api-origin={result.origin}>
-    <article class="container jobs-detail">
-      <p>
-        <a class="jobs-back" href="/company/jobs-openings">Back to openings</a>
-      </p>
+    <article class="jobs-detail-wrap">
+      <a class="jobs-back" href="/company/jobs-openings">
+        <span aria-hidden="true">&larr;</span> Back to openings
+      </a>
       <SectionState error={result.error} empty={!result.error && !opening} />
       {opening && (
-        <div>
-          <h1 class="type-section" data-hero-entrance>{opening.role}</h1>
-          <p class="jobs-card-meta">
-            <span>{opening.location}</span>
-            <span>{opening.experience}</span>
-            <span>{opening.job_type}</span>
-            <span>{opening.job_status}</span>
-            <span>{opening.specialization}</span>
-          </p>
-          <div class="jobs-body" set:html={opening.body} />
-          {opening.careers ? (
-            <JobApplyForm opening={opening.careers} />
-          ) : (
-            <p class="jobs-apply-row">
-              <a class="btn" href="mailto:opportunity@flycatchtech.com">
-                Apply now
-                <img src="/icon-arrow-right.svg" width="24" height="24" alt="" />
-              </a>
-            </p>
-          )}
-        </div>
+        <>
+          <header class="jobs-detail-head">
+            <p class="jobs-detail-eyebrow">{opening.specialization}</p>
+            <h1 class="jobs-detail-title" data-hero-entrance>{opening.role}</h1>
+            <ul class="jobs-detail-tags">
+              {[opening.location, opening.experience, opening.job_type].filter(Boolean).map((tag) => <li>{tag}</li>)}
+              {opening.job_status !== 'Open' && <li class="is-paused">{opening.job_status}</li>}
+            </ul>
+          </header>
+          <div class="jobs-detail-layout">
+            <div class="jobs-detail-main">
+              {bodyHtml
+                ? <div class="jobs-richtext" set:html={bodyHtml} />
+                : <p class="jobs-richtext">Details for this role will be shared during the process.</p>}
+            </div>
+            <aside class="jobs-detail-side" aria-label="Role summary">
+              <h2 class="jobs-detail-side-title">Role summary</h2>
+              <dl class="jobs-detail-facts">
+                {facts.map((fact) => (
+                  <div>
+                    <dt>{fact.label}</dt>
+                    <dd>{fact.value}</dd>
+                  </div>
+                ))}
+              </dl>
+              {canApply
+                ? <a class="jobs-detail-cta" href="#apply">Apply now</a>
+                : !opening.careers && (
+                  <a class="jobs-detail-cta" href="mailto:opportunity@flycatchtech.com">Apply by email</a>
+                )}
+            </aside>
+          </div>
+          {opening.careers && <JobApplyForm opening={opening.careers} />}
+        </>
       )}
     </article>
     <HomeCta />
