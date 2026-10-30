@@ -147,6 +147,40 @@ function initJobApply() {
   });
 
   // Client-side checks mirror what the HRMS enforces; the HRMS stays the authority.
+  // reCAPTCHA v2 (same widget as the contact form). Without a site key nothing renders and the HRMS decides.
+  type Recaptcha = { render: (el: HTMLElement, opts: Record<string, unknown>) => number; reset: (id?: number) => void };
+  const recaptcha = () => (window as unknown as { grecaptcha?: Recaptcha }).grecaptcha;
+  const captchaEl = form.querySelector<HTMLElement>('[data-apply-captcha]');
+  let captchaToken = '';
+  let captchaWidget: number | null = null;
+  const renderCaptcha = () => {
+    const siteKey = captchaEl?.dataset.sitekey;
+    if (!captchaEl || !siteKey) return;
+    const api = recaptcha();
+    if (!api?.render) {
+      window.setTimeout(renderCaptcha, 100);
+      return;
+    }
+    captchaWidget = api.render(captchaEl, {
+      sitekey: siteKey,
+      callback: (token: string) => {
+        captchaToken = token;
+        setError('captcha', '');
+      },
+      'expired-callback': () => {
+        captchaToken = '';
+      },
+      'error-callback': () => {
+        captchaToken = '';
+      },
+    });
+  };
+  renderCaptcha();
+  const resetCaptcha = () => {
+    captchaToken = '';
+    if (captchaWidget !== null) recaptcha()?.reset(captchaWidget);
+  };
+
   const validate = (): boolean => {
     clearErrors();
     let firstBad: HTMLElement | null = null;
@@ -184,6 +218,7 @@ function initJobApply() {
     const consent = form.querySelector<HTMLInputElement>('[name="consent"]');
     if (consent && !consent.checked) fail('consent', 'Consent is required to apply.', consent);
     if (otpRequired && !otpToken) fail('otp', 'Verify your email to continue.', otpSend);
+    if (captchaEl?.dataset.sitekey && !captchaToken) fail('captcha', 'Please complete the CAPTCHA.', captchaEl);
     const files = [...form.querySelectorAll<HTMLInputElement>('input[type="file"]:not(:disabled)')].flatMap((i) => [...(i.files ?? [])]);
     if (files.reduce((sum, f) => sum + f.size, 0) > MAX_TOTAL_BYTES) fail('form', 'Your files add up to more than 25 MB.', null);
     (firstBad as HTMLElement | null)?.focus();
@@ -225,6 +260,7 @@ function initJobApply() {
       whatsappOptIn: form.querySelector<HTMLInputElement>('[name="whatsappOptIn"]')?.checked ?? false,
       ...(source ? { source } : {}),
       ...(otpToken ? { otpToken } : {}),
+      ...(captchaToken ? { captchaToken } : {}),
       attachments: extras.map((e) => e.spec),
     };
 
@@ -242,6 +278,8 @@ function initJobApply() {
     });
     submit.disabled = false;
     label.textContent = idle;
+    // A reCAPTCHA token is single use, so a failed attempt needs a fresh one.
+    if (!result.ok) resetCaptcha();
 
     if (result.ok) {
       done.querySelector('[data-apply-ref]')!.textContent = result.data.ref;
