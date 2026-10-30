@@ -52,8 +52,6 @@ const userCenteredDesignContractsDir = join(
   'specs/021-admin-user-centered-design/contracts',
 );
 const overviewContractsDir = join(repoRoot, 'specs/022-admin-overview/contracts');
-const applicationsContractsDir = join(repoRoot, 'specs/023-admin-applications/contracts');
-const openingsContractsDir = join(repoRoot, 'specs/024-admin-openings/contracts');
 const employeeTestimonialsContractsDir = join(
   repoRoot,
   'specs/025-admin-employee-testimonials/contracts',
@@ -166,8 +164,6 @@ const contractSets = [
     dir: overviewContractsDir,
     files: ['admin-overview.v1.yaml'],
   },
-  { dir: applicationsContractsDir, files: ['admin-applications.v1.yaml'] },
-  { dir: openingsContractsDir, files: ['admin-openings.v1.yaml'] },
   { dir: employeeTestimonialsContractsDir, files: ['admin-employee-testimonials.v1.yaml'] },
   { dir: emailConfigurationContractsDir, files: ['admin-email-configuration.v1.yaml'] },
   { dir: emailTemplatesContractsDir, files: ['admin-email-templates.v1.yaml'] },
