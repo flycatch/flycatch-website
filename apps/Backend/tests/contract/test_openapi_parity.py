@@ -83,14 +83,14 @@ def _contract_paths() -> set[str]:
 
 def test_openapi_served():
     client = TestClient(app)
-    response = client.get("/openapi.json")
+    response = client.get("/api/openapi.json")
     assert response.status_code == 200
     assert "Flycatch API" in response.json()["info"]["title"]
 
 
 def test_openapi_includes_contract_paths():
     client = TestClient(app)
-    served = client.get("/openapi.json").json()
+    served = client.get("/api/openapi.json").json()
     served_paths = set(served.get("paths", {}))
     for path in _contract_paths():
         assert f"/api/v1{path}" in served_paths, f"missing {path}"
