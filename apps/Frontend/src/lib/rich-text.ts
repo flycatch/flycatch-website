@@ -16,6 +16,11 @@ function safeHref(raw: string): string | null {
  * shifted down a level because the page title is the only h1/h2 on the detail page.
  */
 export function renderRichText(html: string | null | undefined): string {
+  const safe = sanitize(html);
+  return /<(ul|ol|li|h[2-4])\b/.test(safe) ? safe : restructure(safe);
+}
+
+function sanitize(html: string | null | undefined): string {
   if (!html) return '';
   const cleaned = html.replace(/<!--[\s\S]*?-->/g, '').replace(DROP_WITH_CONTENT, '');
   return cleaned.replace(/<\/?([a-zA-Z][a-zA-Z0-9]*)\b([^>]*)>/g, (tag, name: string, attrs: string) => {
@@ -31,4 +36,38 @@ export function renderRichText(html: string | null | undefined): string {
     }
     return `<${out}>`;
   });
+}
+
+const BULLET = /^\s*(?:[•·▪●◦*]|[-–—])\s+/;
+const plain = (line: string) => line.replace(/<[^>]+>/g, '').trim();
+
+/**
+ * Descriptions pasted from a document arrive as one paragraph of <br>-separated lines with
+ * literal bullet characters. Rebuild lists, subheadings and paragraphs from those lines.
+ */
+function restructure(html: string): string {
+  const lines = html
+    .replace(/<\/p>\s*<p>/g, '<br>')
+    .replace(/<\/?p>/g, '')
+    .split(/<br\s*\/?>/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const out: string[] = [];
+  let items: string[] = [];
+  const flush = () => {
+    if (items.length) out.push(`<ul>${items.map((item) => `<li>${item}</li>`).join('')}</ul>`);
+    items = [];
+  };
+  for (const line of lines) {
+    if (BULLET.test(plain(line))) {
+      items.push(line.replace(BULLET, ''));
+      continue;
+    }
+    flush();
+    const text = plain(line);
+    const heading = text.length <= 60 && !/[.!?]$/.test(text) && !/:\s*\S/.test(text);
+    out.push(heading ? `<h3>${line.replace(/:\s*$/, '')}</h3>` : `<p>${line}</p>`);
+  }
+  flush();
+  return out.join('');
 }
