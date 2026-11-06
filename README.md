@@ -114,6 +114,25 @@ Gateway (default `http://localhost:8080`, `GATEWAY_PORT` in `.env`):
 | `deployment/k8s/base/Caddyfile` | Path-based gateway routing (compose + k8s) |
 | `deployment/k8s/` | Kubernetes manifests for the Flycatch k3s cluster |
 
+## Local Development (single command)
+
+From the repo root (needs Docker, Node 22, pnpm, [uv](https://docs.astral.sh/uv/)):
+
+```bash
+pnpm dev
+```
+
+This starts Postgres and MinIO in Docker (`deployment/compose/docker-compose.dev.yml`, no `.env` needed), installs missing dependencies, applies Alembic migrations, then runs the Backend, Frontend and Administration FE in watch mode.
+
+| Service | URL |
+| --- | --- |
+| Frontend | `http://localhost:8080` (dev server on `:4321`) |
+| Administration FE | `http://localhost:8081/admin/` (dev server on `:4173`; use the gateway port so `/api` works) |
+| Backend API docs | `http://localhost:8000/api/docs` |
+| MinIO console | `http://localhost:9001` (`minioadmin` / `change-me`) |
+
+Ctrl+C stops the apps; Postgres and MinIO keep running. Stop them with `pnpm dev:infra:down`. There is still no default login — create staff users once with `cd apps/Backend && uv run flycatch-bootstrap --user-1-email you@example.com --user-2-email other@example.com`.
+
 ## Local Development (Running Individually)
 
 While Docker Compose runs all services together, you can also run them individually during development. 

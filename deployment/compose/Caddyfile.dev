@@ -1,0 +1,23 @@
+# Public site: http://localhost:8080
+:8080 {
+	handle /api/* {
+		reverse_proxy host.docker.internal:8000
+	}
+
+	handle {
+		reverse_proxy host.docker.internal:4321
+	}
+}
+
+# Administration FE: http://localhost:8081/admin/
+# Separate origin because Astro's dev server serves the admin's assets from the root (/@vite, /src, ...),
+# which would collide with the public site's on a single port.
+:8081 {
+	handle /api/* {
+		reverse_proxy host.docker.internal:8000
+	}
+
+	handle {
+		reverse_proxy host.docker.internal:4173
+	}
+}

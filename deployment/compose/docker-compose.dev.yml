@@ -1,0 +1,55 @@
+# Local-dev infrastructure only (Postgres + MinIO), started by `pnpm dev` from the repo root.
+# Credentials match the defaults in apps/Backend/src/flycatch_api/config.py, so no .env is needed.
+
+name: flycatch-website-dev
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: flycatch
+      POSTGRES_USER: flycatch
+      POSTGRES_PASSWORD: change-me
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flycatch -d flycatch"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+
+  minio:
+    # Official MinIO images are no longer anonymously pullable; Silo is an S3-compatible fork.
+    image: docker.io/pgsty/silo:RELEASE.2026-09-16T00-00-00Z@sha256:635197cb9f36d01bee221d34d1c7d7960f6a95c48b0b6c01d99cd13bdae51a46
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: change-me
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:9000/minio/health/live"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+
+  # Gateway (public site on 8080, admin on 8081) in front of the host-run dev servers.
+  # Admin FE calls /api on its own origin, which Astro's dev server cannot proxy.
+  gateway:
+    image: caddy:2-alpine
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      - ./Caddyfile.dev:/etc/caddy/Caddyfile:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  postgres_data:
+  minio_data:
