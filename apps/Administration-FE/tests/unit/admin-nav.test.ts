@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { NAV_GROUPS, navGroupForView } from '../../src/lib/admin-nav';
+import { NAV_GROUPS, navGroupForView, navGroupIdForResource } from '../../src/lib/admin-nav';
 import { adminListHref, adminListViewOf, parseAdminLocation } from '../../src/lib/admin-routes';
 import { CATALOG_SECTIONS } from '../../src/lib/catalog-sections';
 import { LANDING_SECTIONS } from '../../src/lib/landing-sections';
@@ -36,5 +36,19 @@ describe('admin nav groups', () => {
   it('finds the group of a list view', () => {
     expect(navGroupForView('blogs')?.id).toBe('content');
     expect(navGroupForView('roles')?.id).toBe('settings');
+  });
+
+  it('maps permission resources to nav groups for the role matrix', () => {
+    expect(navGroupIdForResource('blogs')).toBe('content');
+    expect(navGroupIdForResource('page.home')).toBe('site');
+    expect(navGroupIdForResource('contacts')).toBe('inbox');
+    expect(navGroupIdForResource('something_new')).toBe('other');
+  });
+
+  it('puts the users page under settings, gated by role management', () => {
+    const users = items.find((entry) => entry.view === 'users');
+    expect(users?.manageRoles).toBe(true);
+    expect(navGroupForView('users')?.id).toBe('settings');
+    expect(parseAdminLocation('/admin/users/').view).toBe('users');
   });
 });

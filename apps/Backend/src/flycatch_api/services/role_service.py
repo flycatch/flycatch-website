@@ -74,6 +74,7 @@ DEFAULT_RESOURCES: tuple[RoleResource, ...] = (
     RoleResource(id="page.home", type="page", slug="home"),
 )
 PER_PAGE = 5
+MAX_PER_PAGE = 100
 ROLE_DESCRIPTIONS = {
     ROLE_ADMINISTRATOR: "Full access to administration",
     ROLE_EDITOR: "Can view and edit drafts",
@@ -148,7 +149,7 @@ class RoleService:
 
     def list_roles(self, db: Session, q: str | None, page: int, per_page: int) -> RoleList:
         page = max(page, 1)
-        per_page = min(max(per_page, 1), PER_PAGE)
+        per_page = min(max(per_page, 1), MAX_PER_PAGE)
         query = db.query(Role)
         if q and q.strip():
             term = f"%{q.strip()}%"

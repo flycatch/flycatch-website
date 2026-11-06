@@ -92,6 +92,12 @@ export const NAV_GROUPS: NavGroup[] = [
       catalog('email_configuration'),
       catalog('email_templates'),
       {
+        view: 'users',
+        resource: 'users',
+        labelKey: 'admin.nav.users',
+        manageRoles: true,
+      },
+      {
         view: 'roles',
         resource: 'roles',
         labelKey: 'admin.nav.roles',
@@ -111,4 +117,13 @@ export function navLabelKeyForView(listView: AdminView): string | undefined {
     if (found) return found.labelKey;
   }
   return undefined;
+}
+
+/** Nav group a permission resource belongs to (`page.home` follows `home`); `other` when unmapped. */
+export function navGroupIdForResource(resourceId: string): string {
+  const normalized = resourceId.replace(/^page\./, '');
+  const group = NAV_GROUPS.find((entry) =>
+    entry.items.some((navItem) => navItem.resource === normalized),
+  );
+  return group?.id ?? 'other';
 }

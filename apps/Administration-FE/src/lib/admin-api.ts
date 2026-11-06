@@ -1,6 +1,7 @@
 import type { components as AuthComponents } from '../generated/admin-auth.v2';
 import type { components as RbacComponents } from '../generated/admin-rbac.v1';
 import type { components as RolesComponents } from '../generated/admin-roles.v1';
+import type { components as UsersComponents } from '../generated/admin-users.v1';
 import type { components as BlogsComponents } from '../generated/admin-blogs.v1';
 import type { components as CaseStudiesComponents } from '../generated/admin-case-studies.v1';
 import type { components as ClientLogosComponents } from '../generated/admin-client-logos.v1';
@@ -54,6 +55,11 @@ export type RoleList = RolesComponents['schemas']['RoleList'];
 export type RoleDetail = RolesComponents['schemas']['RoleDetail'];
 export type RoleWrite = RolesComponents['schemas']['RoleWrite'];
 export type RoleCatalogue = RolesComponents['schemas']['RoleCatalogue'];
+export type UserList = UsersComponents['schemas']['UserList'];
+export type UserSummary = UsersComponents['schemas']['UserSummary'];
+export type UserCreate = UsersComponents['schemas']['UserCreate'];
+export type UserUpdate = UsersComponents['schemas']['UserUpdate'];
+export type UserBulkAssign = UsersComponents['schemas']['UserBulkAssign'];
 export type BlogList = BlogsComponents['schemas']['BlogList'];
 export type BlogDetail = BlogsComponents['schemas']['BlogDetail'];
 export type BlogWrite = BlogsComponents['schemas']['BlogWrite'];
@@ -333,8 +339,71 @@ function queryString(params: Record<string, string | number | undefined>): strin
   return encoded ? `?${encoded}` : '';
 }
 
-export async function listRoles(q: string, page: number): Promise<RoleList> {
-  return api<RoleList>(`/admin/roles${queryString({ q: q.trim() || undefined, page, per_page: 5 })}`);
+export async function listRoles(q: string, page: number, perPage = 10): Promise<RoleList> {
+  return api<RoleList>(
+    `/admin/roles${queryString({ q: q.trim() || undefined, page, per_page: perPage })}`,
+  );
+}
+
+const ALL_PAGE_SIZE = 100;
+
+async function listAll<T>(
+  fetchPage: (page: number) => Promise<{ items: T[]; total: number }>,
+): Promise<T[]> {
+  const items: T[] = [];
+  for (let page = 1; ; page += 1) {
+    const result = await fetchPage(page);
+    items.push(...result.items);
+    if (items.length >= result.total || result.items.length === 0) return items;
+  }
+}
+
+export async function listAllRoles(): Promise<RoleList['items']> {
+  return listAll((page) => listRoles('', page, ALL_PAGE_SIZE));
+}
+
+export async function listUsers(params: {
+  q?: string;
+  page: number;
+  perPage?: number;
+  roleId?: string;
+  status?: string;
+}): Promise<UserList> {
+  return api<UserList>(
+    `/admin/users${queryString({
+      q: params.q?.trim() || undefined,
+      page: params.page,
+      per_page: params.perPage ?? 20,
+      role_id: params.roleId || undefined,
+      status: params.status || undefined,
+    })}`,
+  );
+}
+
+export async function listAllUsers(): Promise<UserSummary[]> {
+  return listAll((page) => listUsers({ page, perPage: ALL_PAGE_SIZE }));
+}
+
+export async function createUser(payload: UserCreate): Promise<UserSummary> {
+  return api<UserSummary>('/admin/users', { method: 'POST', body: JSON.stringify(payload) });
+}
+
+export async function updateUser(id: string, payload: UserUpdate): Promise<UserSummary> {
+  return api<UserSummary>(`/admin/users/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function bulkAssignUsers(payload: UserBulkAssign): Promise<{ changed: number }> {
+  return api<{ changed: number }>('/admin/users/bulk-assign', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function listRoleUsers(roleId: string): Promise<UserSummary[]> {
+  return api<UserSummary[]>(`/admin/roles/${roleId}/users`);
 }
 
 export async function getRoleCatalogue(): Promise<RoleCatalogue> {

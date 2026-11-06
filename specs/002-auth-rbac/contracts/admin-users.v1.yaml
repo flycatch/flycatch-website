@@ -1,0 +1,234 @@
+openapi: 3.1.0
+info:
+  title: Administration User Management
+  version: 1.0.0
+  summary: List administrators, pre-add by company email, and assign roles.
+  description: |
+    Staff with roles.manage may manage administrator accounts. Sign-in is
+    Microsoft-first: users are pre-added by company email (no password) and are
+    matched on first sign-in. Accounts auto-created by Microsoft sign-in start
+    with no role and can be assigned one here. The last active administrator
+    cannot be demoted or deactivated, and an administrator cannot deactivate
+    themselves or remove their own administrator role.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+  /admin/users:
+    get:
+      operationId: listUsers
+      summary: List administrators with search, filters and pagination
+      parameters:
+        - { name: q, in: query, required: false, schema: { type: string } }
+        - { name: page, in: query, required: false, schema: { type: integer, minimum: 1, default: 1 } }
+        - { name: per_page, in: query, required: false, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+        - { name: role_id, in: query, required: false, schema: { type: string, format: uuid } }
+        - { name: status, in: query, required: false, schema: { type: string, enum: [active, inactive] } }
+      responses:
+        '200':
+          description: Paginated user list
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserList' }
+        '401': { $ref: './admin-rbac.v1.yaml#/components/responses/Unauthenticated' }
+        '403': { $ref: './admin-rbac.v1.yaml#/components/responses/PermissionDenied' }
+    post:
+      operationId: createUser
+      summary: Pre-add an administrator by company email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserCreate' }
+      responses:
+        '201':
+          description: Created user
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserSummary' }
+        '401': { $ref: './admin-rbac.v1.yaml#/components/responses/Unauthenticated' }
+        '403': { $ref: './admin-rbac.v1.yaml#/components/responses/PermissionDenied' }
+        '422': { $ref: '#/components/responses/FieldErrors' }
+  /admin/users/bulk-assign:
+    post:
+      operationId: bulkAssignUsers
+      summary: Add or remove one role for many users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserBulkAssign' }
+      responses:
+        '200':
+          description: Number of assignments changed
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserBulkAssignResult' }
+        '401': { $ref: './admin-rbac.v1.yaml#/components/responses/Unauthenticated' }
+        '403': { $ref: './admin-rbac.v1.yaml#/components/responses/PermissionDenied' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/UserConflict' }
+  /admin/users/{user_id}:
+    parameters:
+      - { name: user_id, in: path, required: true, schema: { type: string, format: uuid } }
+    get:
+      operationId: getUser
+      summary: Get a user
+      responses:
+        '200':
+          description: User
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserSummary' }
+        '401': { $ref: './admin-rbac.v1.yaml#/components/responses/Unauthenticated' }
+        '403': { $ref: './admin-rbac.v1.yaml#/components/responses/PermissionDenied' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      operationId: updateUser
+      summary: Change a user's roles or active state
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserUpdate' }
+      responses:
+        '200':
+          description: Updated user
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserSummary' }
+        '401': { $ref: './admin-rbac.v1.yaml#/components/responses/Unauthenticated' }
+        '403': { $ref: './admin-rbac.v1.yaml#/components/responses/PermissionDenied' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/UserConflict' }
+        '422': { $ref: '#/components/responses/FieldErrors' }
+  /admin/roles/{role_id}/users:
+    parameters:
+      - { name: role_id, in: path, required: true, schema: { type: string, format: uuid } }
+    get:
+      operationId: listRoleUsers
+      summary: List the users holding a role
+      responses:
+        '200':
+          description: Role members
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/UserSummary' }
+        '401': { $ref: './admin-rbac.v1.yaml#/components/responses/Unauthenticated' }
+        '403': { $ref: './admin-rbac.v1.yaml#/components/responses/PermissionDenied' }
+        '404': { $ref: '#/components/responses/NotFound' }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  schemas:
+    UserRole:
+      type: object
+      additionalProperties: false
+      required: [id, name]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+    UserSummary:
+      type: object
+      additionalProperties: false
+      required: [id, email, is_active, roles, created_by, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        email: { type: string }
+        is_active: { type: boolean }
+        roles:
+          type: array
+          items: { $ref: '#/components/schemas/UserRole' }
+        created_by: { type: string }
+        created_at: { type: string, format: date-time }
+    UserList:
+      type: object
+      additionalProperties: false
+      required: [items, page, per_page, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/UserSummary' }
+        page: { type: integer, minimum: 1 }
+        per_page: { type: integer, minimum: 1 }
+        total: { type: integer, minimum: 0 }
+    UserCreate:
+      type: object
+      additionalProperties: false
+      required: [email]
+      properties:
+        email: { type: string, minLength: 3, maxLength: 320 }
+        role_ids:
+          type: array
+          items: { type: string, format: uuid }
+    UserUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        role_ids:
+          type: [array, 'null']
+          items: { type: string, format: uuid }
+        is_active: { type: [boolean, 'null'] }
+    UserBulkAssign:
+      type: object
+      additionalProperties: false
+      required: [role_id, user_ids]
+      properties:
+        role_id: { type: string, format: uuid }
+        user_ids:
+          type: array
+          minItems: 1
+          maxItems: 500
+          items: { type: string, format: uuid }
+        action: { type: string, enum: [add, remove], default: add }
+    UserBulkAssignResult:
+      type: object
+      additionalProperties: false
+      required: [changed]
+      properties:
+        changed: { type: integer, minimum: 0 }
+    UserConflict:
+      type: object
+      additionalProperties: false
+      required: [code, message_key]
+      properties:
+        code: { type: string, enum: [last_administrator, self_protected] }
+        message_key: { type: string }
+    FieldErrorDetail:
+      type: object
+      additionalProperties: false
+      required: [message_key]
+      properties:
+        message_key: { type: string }
+    FieldErrors:
+      type: object
+      additionalProperties: false
+      required: [fields]
+      properties:
+        fields:
+          type: object
+          additionalProperties: { $ref: '#/components/schemas/FieldErrorDetail' }
+  responses:
+    NotFound:
+      description: Unknown user or role
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [code, message_key]
+            properties:
+              code: { type: string }
+              message_key: { type: string }
+    UserConflict:
+      description: Last administrator or self-protection conflict
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/UserConflict' }
+    FieldErrors:
+      description: Field-level validation errors
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/FieldErrors' }

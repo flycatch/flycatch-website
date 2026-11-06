@@ -9,7 +9,7 @@ interface Option {
 interface Props {
   id: string;
   label: string;
-  manageHref: string;
+  manageHref?: string;
   options: Option[];
   selectedIds: string[];
   onChange: (ids: string[]) => void;
@@ -52,14 +52,20 @@ export default function MultiSelect({
 
   return (
     <div className="multi-select">
-      <a
-        id={labelId}
-        className="multi-select-label"
-        href={manageHref}
-        onClick={onManageClick}
-      >
-        {label}
-      </a>
+      {manageHref ? (
+        <a
+          id={labelId}
+          className="multi-select-label"
+          href={manageHref}
+          onClick={onManageClick}
+        >
+          {label}
+        </a>
+      ) : (
+        <span id={labelId} className="multi-select-label">
+          {label}
+        </span>
+      )}
       {selected.length > 0 ? (
         <ul className="multi-select-chips">
           {selected.map((option) => (
@@ -69,15 +75,15 @@ export default function MultiSelect({
                 type="button"
                 className="multi-select-remove"
                 onClick={() => remove(option.id)}
-                aria-label={`${t('admin.blogs.multiselect.remove')} ${option.name}`}
+                aria-label={`${t('admin.multiselect.remove')} ${option.name}`}
               >
-                {t('admin.blogs.multiselect.remove')}
+                {t('admin.multiselect.remove')}
               </button>
             </li>
           ))}
         </ul>
       ) : (
-        <p className="hint">{t('admin.blogs.multiselect.empty')}</p>
+        <p className="hint">{t('admin.multiselect.empty')}</p>
       )}
       <select
         id={id}
@@ -91,8 +97,8 @@ export default function MultiSelect({
       >
         <option value="">
           {available.length === 0
-            ? t('admin.blogs.multiselect.none_left')
-            : t('admin.blogs.multiselect.add')}
+            ? t('admin.multiselect.none_left')
+            : t('admin.multiselect.add')}
         </option>
         {available.map((option) => (
           <option key={option.id} value={option.id}>

@@ -85,6 +85,7 @@ const contractSets = [
       'admin-rbac.v1.yaml',
       'admin-management.v2.yaml',
       'admin-roles.v1.yaml',
+      'admin-users.v1.yaml',
       'publish.v2.yaml',
     ],
   },

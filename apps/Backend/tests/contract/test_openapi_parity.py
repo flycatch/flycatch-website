@@ -11,6 +11,7 @@ CONTRACT_FILES = [
     SPECS / "002-auth-rbac" / "contracts" / "admin-rbac.v1.yaml",
     SPECS / "002-auth-rbac" / "contracts" / "admin-management.v2.yaml",
     SPECS / "002-auth-rbac" / "contracts" / "admin-roles.v1.yaml",
+    SPECS / "002-auth-rbac" / "contracts" / "admin-users.v1.yaml",
     SPECS / "002-auth-rbac" / "contracts" / "publish.v2.yaml",
     SPECS / "004-admin-blogs" / "contracts" / "admin-blogs.v1.yaml",
     SPECS / "004-admin-blogs" / "contracts" / "public-blogs.v1.yaml",

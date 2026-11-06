@@ -6,6 +6,7 @@ import {
   type RoleList,
 } from '../lib/admin-api';
 import { applyPagedResult, useBulkTable } from '../lib/use-bulk-table';
+import { adminListHref, pushAdminHref } from '../lib/admin-routes';
 import { t } from '../lib/i18n';
 import {
   BulkActionsBar,
@@ -137,9 +138,30 @@ export default function RolesList({ onAdd, onEdit, notice }: Props) {
             {data?.items.map((role) => (
               <tr key={role.id}>
                 <RowSelectCell bulk={bulk} id={role.id} />
-                <td data-label={t('admin.roles.name')}>{role.name}</td>
+                <td data-label={t('admin.roles.name')} className="role-name">
+                  {role.name}
+                  {role.is_system && <span className="badge badge-system">{t('admin.roles.system')}</span>}
+                </td>
                 <td data-label={t('admin.roles.description')}>{role.description || '—'}</td>
-                <td data-label={t('admin.roles.users')}>{role.user_count}</td>
+                <td data-label={t('admin.roles.users')}>
+                  {role.user_count > 0 ? (
+                    <a
+                      href={`${adminListHref('users')}?role_id=${role.id}`}
+                      title={t('admin.roles.users_link')}
+                      onClick={(event) => {
+                        if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) {
+                          return;
+                        }
+                        event.preventDefault();
+                        pushAdminHref(`${adminListHref('users')}?role_id=${role.id}`);
+                      }}
+                    >
+                      {role.user_count}
+                    </a>
+                  ) : (
+                    role.user_count
+                  )}
+                </td>
                 <td data-label={t('admin.roles.actions')} className="roles-row-actions">
                   <button type="button" onClick={() => onEdit(role.id)}>
                     {t('admin.roles.edit_action')}
@@ -160,6 +182,11 @@ export default function RolesList({ onAdd, onEdit, notice }: Props) {
                   >
                     {t('admin.roles.delete_action')}
                   </button>
+                  {(role.is_system || role.user_count > 0) && (
+                    <p className="hint role-delete-reason">
+                      {role.is_system ? t('admin.roles.system_protected') : t('admin.roles.in_use')}
+                    </p>
+                  )}
                 </td>
               </tr>
             ))}

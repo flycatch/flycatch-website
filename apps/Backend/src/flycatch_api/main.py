@@ -29,6 +29,7 @@ from flycatch_api.api import (
     admin_solution_products,
     admin_solutions,
     admin_technologies,
+    admin_users,
     landing_pages,
     catalog,
     public_ai_services,
@@ -113,6 +114,8 @@ app.add_middleware(
 app.include_router(admin_auth.router, prefix="/api/v1")
 app.include_router(admin_management.router, prefix="/api/v1")
 app.include_router(admin_roles.router, prefix="/api/v1")
+app.include_router(admin_users.router, prefix="/api/v1")
+app.include_router(admin_users.role_members, prefix="/api/v1")
 app.include_router(admin_blogs.router, prefix="/api/v1")
 app.include_router(admin_authors.router, prefix="/api/v1")
 app.include_router(admin_categories.router, prefix="/api/v1")

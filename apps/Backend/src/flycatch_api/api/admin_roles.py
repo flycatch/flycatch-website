@@ -8,7 +8,7 @@ from flycatch_api.db import get_db
 from flycatch_api.models import Role
 from flycatch_api.schemas.admin_roles import RoleCatalogue, RoleDetail, RoleList, RoleWrite
 from flycatch_api.security.dependencies import RequireRoles
-from flycatch_api.services.role_service import PER_PAGE, RoleError, RoleService
+from flycatch_api.services.role_service import MAX_PER_PAGE, PER_PAGE, RoleError, RoleService
 
 router = APIRouter(prefix="/admin/roles", tags=["admin-roles"])
 _roles = RoleService()
@@ -24,7 +24,7 @@ def list_roles(
     db: Session = Depends(get_db),
     q: str | None = Query(default=None),
     page: int = Query(default=1, ge=1),
-    per_page: int = Query(default=PER_PAGE, ge=1, le=PER_PAGE),
+    per_page: int = Query(default=PER_PAGE, ge=1, le=MAX_PER_PAGE),
 ):
     return _roles.list_roles(db, q, page, per_page)
 
