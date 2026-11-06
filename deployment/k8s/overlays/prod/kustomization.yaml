@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: flycatch-website-prod
 
 resources:
+- pdb.yaml
 - ../../base
 - ingress.yaml
 - letsencrypt-http01-issuer.yaml
@@ -23,9 +24,9 @@ images:
 replicas:
 - count: 1
   name: backend
-- count: 1
+- count: 2
   name: frontend
 - count: 1
   name: administration-fe
-- count: 1
+- count: 2
   name: gateway

@@ -23,6 +23,12 @@
 	}
 }
 
+# Retry failed dials (e.g. transient cluster DNS lookup timeouts) instead of returning 502 to the client.
+(upstream_retry) {
+	lb_try_duration 5s
+	lb_try_interval 250ms
+}
+
 :{$GATEWAY_PORT:8080} {
 	import base_security
 	encode zstd gzip
@@ -32,14 +38,18 @@
 
 	# Backend API
 	handle /api/* {
-		reverse_proxy backend:8000
+		reverse_proxy backend:8000 {
+			import upstream_retry
+		}
 	}
 
 	# Administration FE — astro preview serves built assets at /_astro, not /admin/_astro
 	handle /admin/_astro/* {
 		uri strip_prefix /admin
 		header Content-Security-Policy "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; worker-src 'self' blob:"
-		reverse_proxy administration-fe:4173
+		reverse_proxy administration-fe:4173 {
+			import upstream_retry
+		}
 	}
 
 	# Public files from Administration FE live at dist root (not under /admin/)
@@ -49,13 +59,17 @@
 	handle @admin_public_icons {
 		uri strip_prefix /admin
 		header Content-Security-Policy "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; worker-src 'self' blob:"
-		reverse_proxy administration-fe:4173
+		reverse_proxy administration-fe:4173 {
+			import upstream_retry
+		}
 	}
 
 	# Administration FE
 	handle /admin* {
 		header Content-Security-Policy "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; worker-src 'self' blob:"
-		reverse_proxy administration-fe:4173
+		reverse_proxy administration-fe:4173 {
+			import upstream_retry
+		}
 	}
 
 	# Public Frontend (SSR). Astro inlines small page scripts (header, home
@@ -66,6 +80,8 @@
 		# Allow Google reCAPTCHA v2 (contact form), YouTube embeds (News & Events),
 		# and Google Tag Manager / GA4 (production pages inject GTM-5SK96WK).
 		header Content-Security-Policy "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://*.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://www.gstatic.com https://www.google.com https://www.googletagmanager.com https://*.googletagmanager.com https://*.google-analytics.com; media-src 'self'; connect-src 'self' https://www.google.com https://www.googletagmanager.com https://*.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com; frame-src https://www.google.com https://recaptcha.google.com https://www.youtube.com https://www.googletagmanager.com"
-		reverse_proxy frontend:4321
+		reverse_proxy frontend:4321 {
+			import upstream_retry
+		}
 	}
 }
