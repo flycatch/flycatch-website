@@ -167,6 +167,10 @@ function sectionForList(view: AdminView): SectionConfig | undefined {
   return SECTIONS.find((section) => section.list === view || section.form === view);
 }
 
+export function adminListViewOf(view: AdminView): AdminView {
+  return sectionForList(view)?.list ?? view;
+}
+
 export function adminListHref(view: AdminView): string {
   const listView = sectionForList(view)?.list ?? view;
   return LIST_HREF[listView] ?? '/admin/';
