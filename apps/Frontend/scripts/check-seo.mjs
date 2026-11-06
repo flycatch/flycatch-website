@@ -13,6 +13,7 @@ function walkHtml(dir) {
     if (entry.isDirectory()) issues.push(...walkHtml(full));
     else if (entry.name.endsWith('.html')) {
       const html = readFileSync(full, 'utf8');
+      if (/<meta[^>]+name="robots"[^>]+content="[^"]*noindex/.test(html)) continue;
       const titles = [...html.matchAll(/<title>([^<]+)<\/title>/g)].map((m) => m[1]);
       const h1s = [...html.matchAll(/<h1[^>]*>([^<]+)<\/h1>/g)].map((m) => m[1]);
       const canonicals = [...html.matchAll(/rel="canonical" href="([^"]+)"/g)].map((m) => m[1]);
