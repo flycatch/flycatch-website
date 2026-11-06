@@ -23,6 +23,7 @@ import {
 import { NAV_GROUPS, navGroupForView, navLabelKeyForView, type NavItem } from '../lib/admin-nav';
 import RoleForm from './RoleForm';
 import RolesList from './RolesList';
+import UsersList from './UsersList';
 import SignInForm from './SignInForm';
 import SiteSettingsEditor from './SiteSettingsEditor';
 import AuthorsList from './AuthorsList';
@@ -804,6 +805,9 @@ export default function AdminShell() {
                 }
               />
             ) : null,
+          )}
+          {view === 'users' && (
+            <UsersList key={`users-${listEpoch}`} notice={message} currentEmail={session.email} />
           )}
           {view === 'roles' && (
             <RolesList

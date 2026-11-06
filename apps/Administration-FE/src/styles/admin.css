@@ -402,6 +402,106 @@ p {
   padding-left: 1rem;
 }
 
+.permission-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.permission-filter {
+  flex: 1 1 14rem;
+}
+
+.permission-summary {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.permission-table-wrap {
+  max-height: 70vh;
+  overflow: auto;
+}
+
+.permission-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--color-surface, #fff);
+}
+
+.permission-group-row th {
+  background: var(--color-surface-muted, rgb(0 0 0 / 0.04));
+  text-align: left;
+  font-weight: 700;
+}
+
+.permission-column span {
+  font-weight: 600;
+}
+
+.role-members {
+  margin-top: var(--space-md);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-active {
+  background: rgb(22 163 74 / 0.14);
+  color: #166534;
+}
+
+.badge-inactive {
+  background: rgb(0 0 0 / 0.08);
+  color: inherit;
+}
+
+.badge-system {
+  margin-left: 0.5rem;
+  background: rgb(0 0 0 / 0.08);
+  color: inherit;
+}
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.08);
+  font-size: 0.8125rem;
+}
+
+.users-filters {
+  flex-wrap: wrap;
+}
+
+.users-bulk {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: var(--space-sm) 0;
+}
+
+.role-delete-reason {
+  flex-basis: 100%;
+  margin: 0;
+}
+
 /* -------------------------------------------------------------------------- */
 /* Buttons                                                                    */
 /* -------------------------------------------------------------------------- */
@@ -870,7 +970,7 @@ input[type='search'] {
 
 .roles-table td.table-select + td {
   font-weight: 600;
-  word-break: break-all;
+  overflow-wrap: anywhere;
 }
 
 .roles-table td:nth-child(4) {

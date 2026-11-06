@@ -10,6 +10,7 @@ const required = [
   'admin-rbac.v1.ts',
   'admin-management.v2.ts',
   'admin-roles.v1.ts',
+  'admin-users.v1.ts',
   'publish.v2.ts',
   'admin-blogs.v1.ts',
   'admin-case-studies.v1.ts',

@@ -76,7 +76,8 @@ export type AdminView =
   | 'subscriptions'
   | 'subscription_form'
   | 'roles'
-  | 'role_form';
+  | 'role_form'
+  | 'users';
 
 export type AdminRoute = {
   view: AdminView;
@@ -119,6 +120,7 @@ const SECTIONS: SectionConfig[] = [
     form: section.formView as AdminView,
   })),
   { segment: 'roles', list: 'roles', form: 'role_form' },
+  { segment: 'users', list: 'users', form: 'users' },
   { segment: 'settings', list: 'roles', form: 'role_form' },
 ];
 
@@ -161,6 +163,7 @@ const LIST_HREF: Record<string, string> = {
   flycatch_saudi_arabia: '/admin/flycatch-saudi-arabia/',
   subscriptions: '/admin/subscriptions/',
   roles: '/admin/roles/',
+  users: '/admin/users/',
 };
 
 function sectionForList(view: AdminView): SectionConfig | undefined {
@@ -242,4 +245,14 @@ export function readAdminLocation(): AdminRoute {
 
 export function sameAdminRoute(a: AdminRoute, b: AdminRoute): boolean {
   return a.view === b.view && a.editingId === b.editingId;
+}
+
+/** Client-side navigation to an admin href (list or filtered list), handled by AdminShell's popstate listener. */
+export function pushAdminHref(href: string): void {
+  const url = new URL(href, window.location.origin);
+  const target = `${url.pathname}${url.search}`;
+  if (`${window.location.pathname}${window.location.search}` !== target) {
+    window.history.pushState(null, '', target);
+  }
+  window.dispatchEvent(new PopStateEvent('popstate'));
 }
