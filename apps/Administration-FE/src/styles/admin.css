@@ -358,6 +358,50 @@ p {
   color: #fff;
 }
 
+.admin-nav-group + .admin-nav-group {
+  margin-top: var(--space-sm);
+}
+
+.admin-nav .admin-nav-group-toggle {
+  justify-content: space-between;
+  min-height: 2rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.admin-nav .admin-nav-group-toggle:hover {
+  opacity: 1;
+}
+
+.admin-nav-chevron {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.15s ease;
+}
+
+.admin-nav-group-toggle[aria-expanded='false'] .admin-nav-chevron {
+  transform: rotate(-45deg);
+}
+
+.admin-nav-group ul {
+  margin-top: var(--space-xs);
+}
+
+.admin-nav-group ul[hidden] {
+  display: none;
+}
+
+.admin-nav-group ul a {
+  font-weight: 500;
+  padding-left: 1rem;
+}
+
 /* -------------------------------------------------------------------------- */
 /* Buttons                                                                    */
 /* -------------------------------------------------------------------------- */
